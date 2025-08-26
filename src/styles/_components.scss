@@ -1,0 +1,21 @@
+.rounded-button {
+  display: flex;
+  align-items: center;
+
+  padding: var(--rounded-button-padding);
+  border-radius: 9999px;
+  cursor: pointer;
+
+  background-color: var(--color-button-bg-dark);
+  color: var(--color-button-text-dark);
+
+  .dark-theme {
+    background-color: var(--color-button-bg-light);
+    color: var(--color-button-text-light);
+  }
+}
+
+.icon {
+  width: var(--icon-width);
+  height: var(--icon-height);
+}

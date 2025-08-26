@@ -1,0 +1,29 @@
+:root {
+  --app-width: 400px;
+  --app-height: 584px;
+
+  /* Переменные для светлой темы */
+  --color-background: #F9FAFC;
+  --color-text: #334155;
+  --color-zen-green: #34D399;
+  --color-button-bg-light: #F1F5F9;
+  --color-button-text-light: #475569;
+  --color-button-bg-dark: #334155;
+  --color-button-text-dark: #F1F5F9;
+
+  /* Переменные для компонентов */
+  --rounded-button-padding: 12px;
+  --icon-width: 24px;
+  --icon-height: 24px;
+}
+
+/* Переменные для темной темы */
+.dark-theme {
+  --color-background: #1E293B;
+  --color-text: #E2E8F0;
+  --color-zen-green: #10B981;
+  --color-button-bg-light: #475569;
+  --color-button-text-light: #F1F5F9;
+  --color-button-bg-dark: #F1F5F9;
+  --color-button-text-dark: #475569;
+}
