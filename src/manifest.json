@@ -6,7 +6,8 @@
   "permissions": [
     "declarativeNetRequest",
     "storage",
-    "tabs"
+    "tabs",
+    "history"
   ],
   "action": {
     "default_popup": "index.html"

@@ -1,11 +1,12 @@
-import {Component, inject, Signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject, Signal} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {COLOR_SCHEMA_ENUM, ColorSchemaType, ThemeService, ThemeSwitcherComponent} from '../modules/common';
 
 @Component({
-  selector: 'app',
+  selector: 'dz-app',
   templateUrl: './app.html',
   styleUrls: ['./app.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
 

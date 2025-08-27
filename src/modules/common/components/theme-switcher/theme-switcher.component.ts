@@ -1,10 +1,11 @@
-import {Component, inject, Signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject, Signal} from '@angular/core';
 import {ThemeService} from '../../services';
 import {COLOR_SCHEMA_ENUM, ColorSchemaType} from '../../enums';
 
 @Component({
-  selector: 'cz-theme-switcher',
+  selector: 'dz-theme-switcher',
   templateUrl: './theme-switcher.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ThemeSwitcherComponent {
   readonly #themeService: ThemeService = inject(ThemeService);
