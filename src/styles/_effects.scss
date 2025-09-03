@@ -1,0 +1,35 @@
+.shadow {
+  box-shadow: 0 8px var(--shadow-blur) var(--shadow-color);
+
+  transition: transform .3s, box-shadow .3s;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 20px var(--shadow-color);
+  }
+
+  &__activated {
+    box-shadow: 0 8px var(--shadow-blur) var(--color-zen-green);
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 20px var(--color-zen-green);
+    }
+  }
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  70% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.pulse {
+  animation: pulse 3s infinite;
+}

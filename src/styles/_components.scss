@@ -1,8 +1,10 @@
 .rounded-button {
   display: flex;
   align-items: center;
+  width: 48px;
+  height: 48px;
 
-  padding: var(--rounded-button-padding);
+  padding: var(--padding-default);
   border-radius: 9999px;
   cursor: pointer;
 

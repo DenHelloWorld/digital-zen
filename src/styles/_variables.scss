@@ -12,9 +12,11 @@
   --color-button-text-dark: #F1F5F9;
 
   /* Переменные для компонентов */
-  --rounded-button-padding: 12px;
-  --icon-width: 24px;
-  --icon-height: 24px;
+  --padding-default: 12px;
+  --icon-width: 100%;
+  --icon-height: 100%;
+  --shadow-color: rgba(0, 0, 0, 0.25);
+  --shadow-blur: 12px;
 }
 
 /* Переменные для темной темы */
@@ -26,4 +28,5 @@
   --color-button-text-light: #F1F5F9;
   --color-button-bg-dark: #F1F5F9;
   --color-button-text-dark: #475569;
+  --shadow-color: rgba(255, 255, 255, 0.25);
 }

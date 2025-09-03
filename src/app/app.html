@@ -1,8 +1,8 @@
-<div class="main-container" [class.dark-theme]="theme() === colorSchemes.DARK">
-  <h1 class="title">Цифровой Дзен</h1>
-  <p class="subtitle">
-    Переключите тему, чтобы найти свой баланс.
-  </p>
-
+<header class="dz-header" [class.dark-theme]="theme() === colorSchemes.DARK">
   <dz-theme-switcher />
-</div>
+</header>
+
+<main class="dz-main" [class.dark-theme]="theme() === colorSchemes.DARK">
+  <dz-focus />
+</main>
+

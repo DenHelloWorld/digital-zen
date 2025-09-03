@@ -1,6 +1,7 @@
 import {ChangeDetectionStrategy, Component, inject, Signal} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {COLOR_SCHEMA_ENUM, ColorSchemaType, ThemeService, ThemeSwitcherComponent} from '../modules/common';
+import {FocusComponent} from '../modules/focus/components/focus.component';
 
 @Component({
   selector: 'dz-app',
@@ -11,7 +12,8 @@ import {COLOR_SCHEMA_ENUM, ColorSchemaType, ThemeService, ThemeSwitcherComponent
     CommonModule,
 
     // components
-    ThemeSwitcherComponent
+    ThemeSwitcherComponent,
+    FocusComponent
   ],
 })
 export class App {
