@@ -1,19 +1,81 @@
 /// <reference types="chrome"/>
+namespace IFocus {
+  export interface Base {
+    id: string;
+    name: string;
+    description: string;
+    periods: IFocus.Period[];
+  }
+
+  export interface Period {
+    id: string;
+    name: string;
+    description: string;
+    startFrom: Date;
+    endTo: Date;
+    blockedSites: IFocus.BlockedSites[];
+  }
+
+  export interface BlockedSites {
+    id: string;
+    name: string;
+    description: string;
+    url: string;
+    imageUrl: string;
+  }
+}
 
 /**
  * @class BackgroundService
- * @description The main service class that manages the extension's background tasks,
- * such as listening for tab and browser history events.
+ * @description The main service class that manages the extension's background tasks and data persistence.
  */
 class BackgroundService {
+  #currentPeriod: IFocus.Period | null = null;
+  #timer: ReturnType<typeof setInterval> | undefined;
+  #isFocused: boolean = false;
 
   /**
    * @constructor
-   * @description Creates a new instance of BackgroundService and initializes the event listeners.
+   * @description Creates a new instance and initializes event listeners and state.
    */
   constructor() {
     this.initializeListeners();
-    this.updateBlockRules();
+    this.checkSessionStatus();
+  }
+
+  /**
+   * @method checkSessionStatus
+   * @description Checks if a focus session was active and continues it or stops it.
+   */
+  async checkSessionStatus(): Promise<void> {
+    const result = await chrome.storage.local.get(['currentPeriod', 'periods']);
+    const storedPeriod: IFocus.Period | null = result['currentPeriod'] || null;
+
+    if (storedPeriod) {
+      this.#currentPeriod = storedPeriod;
+      const now = new Date();
+      const endTime = new Date(storedPeriod.endTo);
+
+      if (now < endTime) {
+        const blockedUrls = storedPeriod.blockedSites.map(site => site.url);
+        this.updateBlockRules(blockedUrls);
+
+        this.#timer = setInterval(() => {
+          if (new Date() > endTime) {
+            this.stopFocus();
+          }
+        }, 1000);
+        console.log(`Continuing an active focus session for period: ${storedPeriod.name}`);
+      } else {
+        // Session has expired, stop it
+        this.stopFocus();
+        console.log(`Expired session found and stopped.`);
+      }
+    } else {
+      console.log('No active session found on startup.');
+      // No active session, ensure rules are clean just in case.
+      this.updateBlockRules([]);
+    }
   }
 
   /**
@@ -23,6 +85,61 @@ class BackgroundService {
    */
   initializeListeners(): void {
     console.log('Digital Zen Service Worker has started.');
+
+    // Message listener for communication with the popup
+    chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
+      switch (message.command) {
+        case 'addPeriod':
+          await this.addPeriod(message.period);
+          console.log('added period for period.', message.period);
+          sendResponse({ success: true });
+          return;
+        case 'removePeriod':
+          await this.removePeriod(message.id);
+          sendResponse({ success: true });
+          return;
+        case 'updatePeriod':
+          await this.updatePeriod(message.period);
+          sendResponse({ success: true });
+          return;
+        case 'startFocus': {
+          const result = await chrome.storage.local.get('periods');
+          const periods = result['periods'] || [];
+
+          const periodToStart = periods.find((p: IFocus.Period) => p.id === message.periodId);
+
+          console.log('startFocus periods',  periods);
+          console.log('startFocus periodToStart',  periodToStart);
+
+
+          if (periodToStart) {
+            this.startFocus(periodToStart);
+          } else {
+            // Handle the case where the period is not found
+            console.error(`Period with ID ${message.periodId} not found.`);
+          }
+          sendResponse({ success: true });
+          return;
+        }
+        case 'stopFocus':
+          this.stopFocus();
+          sendResponse({ success: true });
+          return;
+        case 'getPeriods':
+          { const periodsResult = await chrome.storage.local.get('periods');
+          sendResponse({ periods: periodsResult['periods'] || [] });
+          return true; } // Keep the message channel open for the response
+        case 'getIsFocused': {
+          sendResponse({ isFocused: this.#isFocused });
+          console.log('getIsFocused', this.#isFocused)
+          return true;
+        }
+        default:
+          console.warn('Unknown command received:', message.command);
+          sendResponse({ success: false, error: 'Unknown command' });
+          return;
+      }
+    });
 
     /**
      * @event chrome.tabs.onActivated
@@ -50,7 +167,6 @@ class BackgroundService {
      */
     chrome.history.onVisited.addListener((historyItem: chrome.history.HistoryItem) => {
       console.log(`An event occurred: onVisited. Visited page: ${historyItem.url}`);
-      // If the URL exists, save it to local storage.
       if (historyItem.url) {
         chrome.storage.local.set({ 'history_url': historyItem.url });
       }
@@ -58,39 +174,107 @@ class BackgroundService {
   }
 
   /**
-   * @method updateBlockRules
-   * @description Fetches the list of blocked domains from storage and updates the
-   * declarativeNetRequest rules accordingly.
+   * @method addPeriod
+   * @description Adds a new period to storage.
    */
-  updateBlockRules(): void {
-    chrome.storage.local.get('blocked_domains', (result: { blocked_domains?: string[] }) => {
-      let domainList: string[] = result.blocked_domains || [];
+  private async addPeriod(period: IFocus.Period): Promise<void> {
+    const result = await chrome.storage.local.get('periods');
+    const periods: IFocus.Period[] = result['periods'] || [];
+    periods.push(period);
+    await chrome.storage.local.set({ periods });
+    console.log('Period added successfully.', periods);
+  }
 
-      domainList = [...domainList, 'facebook.com'];
+  /**
+   * @method removePeriod
+   * @description Removes a period from storage by its ID.
+   */
+  private async removePeriod(periodId: string): Promise<void> {
+    const result = await chrome.storage.local.get('periods');
+    const periods: IFocus.Period[] = result['periods'] || [];
+    const newPeriods = periods.filter(p => p.id !== periodId);
+    await chrome.storage.local.set({ periods: newPeriods });
+    console.log('Period removed successfully. newPeriods', newPeriods);
+  }
 
-      chrome.declarativeNetRequest.getDynamicRules((dynamicRules: chrome.declarativeNetRequest.Rule[]) => {
-        const currentRuleIds: number[] = dynamicRules.map(rule => rule.id);
+  /**
+   * @method updatePeriod
+   * @description Updates an existing period in storage.
+   */
+  private async updatePeriod(period: IFocus.Period): Promise<void> {
+    const result = await chrome.storage.local.get('periods');
+    const periods: IFocus.Period[] = result['periods'] || [];
+    const index = periods.findIndex(p => p.id === period.id);
+    if (index !== -1) {
+      periods[index] = period;
+      await chrome.storage.local.set({ periods });
+      console.log('Period updated successfully.');
+    }
+  }
 
-        chrome.declarativeNetRequest.updateDynamicRules({
-          removeRuleIds: currentRuleIds
-        }, () => {
-          chrome.storage.local.get('last_rule_id', (idResult: { last_rule_id?: number }) => {
-            let nextId: number = idResult.last_rule_id || 1;
-            const rulesToAdd: chrome.declarativeNetRequest.Rule[] = domainList.map(domain => {
-              const rule = this.createRedirectRule(domain, nextId);
-              nextId++;
-              return rule;
-            });
+  /**
+   * @method startFocus
+   * @description Starts a focus session for a given period.
+   * @param period The period object containing the blocked sites.
+   */
+  startFocus(period: IFocus.Period): void {
+    this.stopFocus();
+    this.#currentPeriod = period;
 
-            chrome.declarativeNetRequest.updateDynamicRules({
-              addRules: rulesToAdd
-            });
+    chrome.storage.local.set({ currentPeriod: period });
 
-            chrome.storage.local.set({ 'last_rule_id': nextId });
+    const blockedUrls = period.blockedSites.map(site => site.url);
+    this.updateBlockRules(blockedUrls);
+    this.#isFocused = true;
 
-            console.log('Block rules updated successfully.');
-          });
-        });
+    this.#timer = setInterval(() => {
+      const now = new Date();
+      if (now > this.#currentPeriod!.endTo) {
+        this.stopFocus();
+      }
+    }, 1000);
+
+    console.log(`Focus started for period: ${period.name}`);
+  }
+
+  /**
+   * @method stopFocus
+   * @description Stops the current focus session.
+   */
+  stopFocus(): void {
+    if (this.#timer) {
+      clearInterval(this.#timer);
+      this.#timer = undefined;
+    }
+
+    if (this.#currentPeriod) {
+      this.updateBlockRules([]);
+      this.#currentPeriod = null;
+    }
+    chrome.storage.local.remove('currentPeriod');
+    this.#isFocused = false;
+    console.log('Focus stopped.');
+  }
+
+  /**
+   * @method updateBlockRules
+   * @description Updates the declarativeNetRequest rules with a new list of domains.
+   * @param domainList The list of domains to block.
+   */
+  updateBlockRules(domainList: string[]): void {
+    chrome.declarativeNetRequest.getDynamicRules((dynamicRules: chrome.declarativeNetRequest.Rule[]) => {
+      const currentRuleIds: number[] = dynamicRules.map(rule => rule.id);
+
+      const rulesToAdd: chrome.declarativeNetRequest.Rule[] = domainList.map((domain, index) => {
+        const ruleId: number = index + 1;
+        return this.createRedirectRule(domain, ruleId);
+      });
+
+      chrome.declarativeNetRequest.updateDynamicRules({
+        removeRuleIds: currentRuleIds,
+        addRules: rulesToAdd
+      }, () => {
+        console.log('Block rules updated successfully.');
       });
     });
   }
