@@ -2,31 +2,49 @@
   --app-width: 400px;
   --app-height: 584px;
 
-  /* Переменные для светлой темы */
+  /* Цветовые токены */
   --color-background: #F9FAFC;
   --color-text: #334155;
-  --color-zen-green: #34D399;
-  --color-button-bg-light: #F1F5F9;
-  --color-button-text-light: #475569;
-  --color-button-bg-dark: #334155;
-  --color-button-text-dark: #F1F5F9;
+  --color-zen-accent: #34D399;
+  --color-on-accent: #F1F5F9;
+  --color-component-bg-light: #F1F5F9;
+  --color-component-text-light: #475569;
+  --color-component-bg-dark: #334155;
+  --color-component-text-dark: #F1F5F9;
 
-  /* Переменные для компонентов */
+  /* Размеры кнопок */
+  --btn-size-xs: 24px;
+  --btn-size-sm: 32px;
+  --btn-size-md: 48px;
+  --btn-size-lg: 64px;
+  --btn-size-xl: 96px;
+  --btn-size-xxl: 130px;
+
+  /* Размеры текста */
+  --font-size-xs: 12px;
+  --font-size-sm: 14px;
+  --font-size-md: 16px;
+  --font-size-lg: 18px;
+  --font-size-xl: 20px;
+  --font-size-xxl: 24px;
+
+  /* Общие переменные */
   --padding-default: 12px;
   --icon-width: 100%;
   --icon-height: 100%;
   --shadow-color: rgba(0, 0, 0, 0.25);
   --shadow-blur: 12px;
+  --shadow-translate-width: 2px;
 }
 
-/* Переменные для темной темы */
+/* Для тёмной темы переопределяем только цвета */
 .dark-theme {
   --color-background: #1E293B;
   --color-text: #E2E8F0;
-  --color-zen-green: #10B981;
-  --color-button-bg-light: #475569;
-  --color-button-text-light: #F1F5F9;
-  --color-button-bg-dark: #F1F5F9;
-  --color-button-text-dark: #475569;
+  --color-zen-accent: #10B981;
+  --color-component-bg-light: #475569;
+  --color-component-text-light: #F1F5F9;
+  --color-component-bg-dark: #F1F5F9;
+  --color-component-text-dark: #475569;
   --shadow-color: rgba(255, 255, 255, 0.25);
 }

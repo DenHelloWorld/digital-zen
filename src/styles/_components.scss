@@ -1,23 +1,63 @@
-.rounded-button {
+.dz-button {
+  width: 100%;
+  height: var(--btn-size-md);
   display: flex;
   align-items: center;
-  width: 48px;
-  height: 48px;
-
-  padding: var(--padding-default);
   border-radius: 9999px;
+  padding: var(--padding-default);
+  font-size: var(--font-size-md);
   cursor: pointer;
+  background-color: var(--color-component-bg-dark);
+  color: var(--color-component-text-dark);
 
-  background-color: var(--color-button-bg-dark);
-  color: var(--color-button-text-dark);
+  &--xs  { height: var(--btn-size-xs); }
+  &--sm  { height: var(--btn-size-sm); }
+  &--md  { height: var(--btn-size-md); }
+  &--lg  { height: var(--btn-size-lg); }
+  &--xl  { height: var(--btn-size-xl); }
+  &--xxl { height: var(--btn-size-xxl); }
 
-  .dark-theme {
-    background-color: var(--color-button-bg-light);
-    color: var(--color-button-text-light);
+  &--circle {
+    &.dz-button--xs  { width: var(--btn-size-xs); }
+    &.dz-button--sm  { width: var(--btn-size-sm); }
+    &.dz-button--md  { width: var(--btn-size-md); }
+    &.dz-button--lg  { width: var(--btn-size-lg); }
+    &.dz-button--xl  { width: var(--btn-size-xl); }
+    &.dz-button--xxl { width: var(--btn-size-xxl); }
+  }
+
+  &--activated {
+    background-color: var(--color-zen-accent);
+    color: var(--color-on-accent);
   }
 }
 
-.icon {
+.dz-icon {
   width: var(--icon-width);
   height: var(--icon-height);
 }
+
+.dz-input {
+  display: block;
+  width: 100%;
+  height: var(--btn-size-md);
+  padding: 0 var(--padding-default);
+  border-radius: 9999px;
+  border: none;
+  outline: none;
+  background-color: var(--color-component-bg-dark);
+  color: var(--color-component-text-dark);
+  box-shadow: 0 0 var(--shadow-blur) var(--shadow-color);
+  transition: background-color .2s ease, color .2s ease, box-shadow .2s ease;
+  font-size: var(--font-size-sm);
+
+  &::placeholder {
+    color: var(--color-component-text-dark);
+    opacity: .6;
+  }
+
+  &:focus {
+    box-shadow: 0 0 0 2px var(--color-zen-accent);
+  }
+}
+

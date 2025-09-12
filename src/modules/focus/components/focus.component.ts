@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, inject, OnInit, Signal, WritableSignal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject, OnInit, Signal} from '@angular/core';
 import {FocusService} from '../services';
 import {IFocus} from '../../common/models';
 
@@ -15,7 +15,6 @@ export class FocusComponent implements OnInit {
   protected readonly focuses: Signal<IFocus.Base[]> = this.#focusService.entities;
 
   public ngOnInit(): void {
-    console.log('ngOnInit', this.isFocused());
     return;
   }
 

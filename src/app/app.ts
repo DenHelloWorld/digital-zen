@@ -1,7 +1,16 @@
-import {ChangeDetectionStrategy, Component, inject, Signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, inject, signal, Signal, WritableSignal} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {COLOR_SCHEMA_ENUM, ColorSchemaType, ThemeService, ThemeSwitcherComponent} from '../modules/common';
+import {
+  COLOR_SCHEMA_ENUM,
+  ColorSchemaType,
+  ThemeService,
+  ThemeSwitcherComponent,
+  VIEW_ENUM,
+  ViewType
+} from '../modules/common';
 import {FocusComponent} from '../modules/focus/components/focus.component';
+import {FocusService} from '../modules/focus/services';
+
 
 @Component({
   selector: 'dz-app',
@@ -18,8 +27,17 @@ import {FocusComponent} from '../modules/focus/components/focus.component';
 })
 export class App {
   readonly #themeService: ThemeService = inject(ThemeService);
+  readonly #focusService: FocusService = inject(FocusService);
 
   protected readonly theme: Signal<ColorSchemaType> = this.#themeService.theme;
+  protected readonly isFocused: Signal<boolean> = this.#focusService.isFocused;
+
+  protected readonly currentViewType: WritableSignal<VIEW_ENUM> = signal(VIEW_ENUM.FOCUS)
 
   protected readonly colorSchemes: typeof COLOR_SCHEMA_ENUM = COLOR_SCHEMA_ENUM;
+  protected readonly viewTypes: typeof VIEW_ENUM = VIEW_ENUM;
+
+  protected setViewType(viewType: ViewType) {
+    this.currentViewType.set(viewType);
+  }
 }

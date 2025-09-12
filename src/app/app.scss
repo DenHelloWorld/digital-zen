@@ -11,11 +11,18 @@
   .dz-header {
     width: 100%;
     display: flex;
-    justify-content: end;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
     padding: var(--padding-default) var(--padding-default) 0 var(--padding-default);
     background-color: var(--color-background);
 
     transition: color 0.3s, background-color 0.3s;
+
+    &__navigation {
+      display: flex;
+      gap: 0.5rem;
+    }
   }
 
   .dz-main {

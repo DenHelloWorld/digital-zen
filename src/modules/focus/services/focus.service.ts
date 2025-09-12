@@ -63,7 +63,6 @@ export class FocusService {
     this.#entities.set(this.#entities().map((e: IFocus.Base) => e.id === entity.id ? entity : e));
   }
 
-  // FocusService.ts
   public startFocus(periodId: string): void {
     // Only send the ID to the background
     if (typeof chrome !== 'undefined' && chrome.runtime) {

@@ -4,9 +4,12 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-direction: column;
 
-  .dz-focus-launcher {
-    width: 130px;
-    height: 130px;
+  .dz-button {
+    &--focus {
+      width: 130px;
+      height: 130px;
+    }
   }
 }

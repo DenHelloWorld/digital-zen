@@ -32,7 +32,7 @@ namespace IFocus {
 class BackgroundService {
   #currentPeriod: IFocus.Period | null = null;
   #timer: ReturnType<typeof setInterval> | undefined;
-  #isFocused: boolean = false;
+  #isFocused = false;
 
   /**
    * @constructor
@@ -128,7 +128,7 @@ class BackgroundService {
         case 'getPeriods':
           { const periodsResult = await chrome.storage.local.get('periods');
           sendResponse({ periods: periodsResult['periods'] || [] });
-          return true; } // Keep the message channel open for the response
+          return true; }
         case 'getIsFocused': {
           sendResponse({ isFocused: this.#isFocused });
           console.log('getIsFocused', this.#isFocused)
