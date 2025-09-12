@@ -1,29 +1,45 @@
 .dz-button {
-  width: 100%;
-  height: var(--btn-size-md);
   display: flex;
   align-items: center;
-  border-radius: 9999px;
+  border-radius: var(--radius-default);
   padding: var(--padding-default);
   font-size: var(--font-size-md);
   cursor: pointer;
   background-color: var(--color-component-bg-dark);
   color: var(--color-component-text-dark);
 
-  &--xs  { height: var(--btn-size-xs); }
-  &--sm  { height: var(--btn-size-sm); }
-  &--md  { height: var(--btn-size-md); }
-  &--lg  { height: var(--btn-size-lg); }
-  &--xl  { height: var(--btn-size-xl); }
-  &--xxl { height: var(--btn-size-xxl); }
+  &--xs  {
+    height: var(--btn-size-xs);
+    padding: var(--padding-xs);
+  }
+  &--sm  {
+    height: var(--btn-size-sm);
+    padding: var(--padding-sm);
+  }
+  &--md  {
+    height: var(--btn-size-md);
+    padding: var(--padding-md);
+  }
+  &--lg  {
+    height: var(--btn-size-lg);
+    padding: var(--padding-lg);
+  }
+  &--xl  {
+    height: var(--btn-size-xl);
+    padding: var(--padding-xl);
+  }
+  &--xxl {
+    height: var(--btn-size-xxl);
+    padding: var(--padding-xxl);
+  }
 
-  &--circle {
-    &.dz-button--xs  { width: var(--btn-size-xs); }
-    &.dz-button--sm  { width: var(--btn-size-sm); }
-    &.dz-button--md  { width: var(--btn-size-md); }
-    &.dz-button--lg  { width: var(--btn-size-lg); }
-    &.dz-button--xl  { width: var(--btn-size-xl); }
-    &.dz-button--xxl { width: var(--btn-size-xxl); }
+  &--round,
+  &--square {
+    aspect-ratio: 1 / 1;
+  }
+
+  &--round {
+    border-radius: 99999px;
   }
 
   &--activated {

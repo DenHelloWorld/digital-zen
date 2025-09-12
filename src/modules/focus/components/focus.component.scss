@@ -5,11 +5,15 @@
   align-items: center;
   justify-content: center;
   flex-direction: column;
+  gap: 0.5rem;
 
-  .dz-button {
-    &--focus {
-      width: 130px;
-      height: 130px;
+  .dz-list {
+    display: flex;
+    gap: 0.5rem;
+
+    &__item {
+
+
     }
   }
 }
