@@ -12,14 +12,22 @@ export namespace IFocus {
     description: string;
     startFrom: Date;
     endTo: Date;
-    blockedSites: IFocus.BlockedSites[];
+    blockedSites: IFocus.BlockedWebSite[];
   }
 
-  export interface BlockedSites {
+  export interface BlockedWebSite {
     id: string;
     name: string;
     description: string;
     url: string;
     imageUrl: string;
+    iconUrl: string;
+    type: IWebSiteType
   }
+
+  export enum EWebSiteType {
+    SOCIAL_MEDIA = 'Social Media',
+  }
+
+  export type IWebSiteType = IFocus.EWebSiteType.SOCIAL_MEDIA;
 }

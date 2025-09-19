@@ -180,6 +180,13 @@ class BackgroundService {
   private async addPeriod(period: IFocus.Period): Promise<void> {
     const result = await chrome.storage.local.get('periods');
     const periods: IFocus.Period[] = result['periods'] || [];
+
+    const exists = periods.some(p => p.id === period.id);
+    if (exists) {
+      console.warn(`Period with ID "${period.id}" already exists. Skipping add.`);
+      return;
+    }
+
     periods.push(period);
     await chrome.storage.local.set({ periods });
     console.log('Period added successfully.', periods);
@@ -190,12 +197,20 @@ class BackgroundService {
    * @description Removes a period from storage by its ID.
    */
   private async removePeriod(periodId: string): Promise<void> {
-    const result = await chrome.storage.local.get('periods');
+    const result = await chrome.storage.local.get(['periods', 'currentPeriod']);
     const periods: IFocus.Period[] = result['periods'] || [];
+    const current: IFocus.Period | null = result['currentPeriod'] || null;
+
     const newPeriods = periods.filter(p => p.id !== periodId);
     await chrome.storage.local.set({ periods: newPeriods });
+
+    if (current && current.id === periodId) {
+      this.stopFocus();
+    }
+
     console.log('Period removed successfully. newPeriods', newPeriods);
   }
+
 
   /**
    * @method updatePeriod
@@ -204,11 +219,19 @@ class BackgroundService {
   private async updatePeriod(period: IFocus.Period): Promise<void> {
     const result = await chrome.storage.local.get('periods');
     const periods: IFocus.Period[] = result['periods'] || [];
+    console.log('updatePeriod', periods);
+    console.log('period', period);
     const index = periods.findIndex(p => p.id === period.id);
     if (index !== -1) {
       periods[index] = period;
       await chrome.storage.local.set({ periods });
-      console.log('Period updated successfully.');
+      await this.updateAllBlockedSites(period.blockedSites);
+      if (this.#currentPeriod?.id === period.id) {
+        this.#currentPeriod = period;
+        if(this.#isFocused) {
+          this.updateBlockRules(period.blockedSites.map(s => s.url));
+        }
+      }
     }
   }
 
@@ -225,6 +248,7 @@ class BackgroundService {
 
     const blockedUrls = period.blockedSites.map(site => site.url);
     this.updateBlockRules(blockedUrls);
+    this.updateAllBlockedSites(period.blockedSites);
     this.#isFocused = true;
 
     this.#timer = setInterval(() => {
@@ -234,7 +258,7 @@ class BackgroundService {
       }
     }, 1000);
 
-    console.log(`Focus started for period: ${period.name}`);
+    console.log('Focus started for period:', period);
   }
 
   /**
@@ -247,13 +271,15 @@ class BackgroundService {
       this.#timer = undefined;
     }
 
-    if (this.#currentPeriod) {
-      this.updateBlockRules([]);
-      this.#currentPeriod = null;
-    }
-    chrome.storage.local.remove('currentPeriod');
+    this.updateBlockRules([]);
+
     this.#isFocused = false;
     console.log('Focus stopped.');
+  }
+
+  async updateAllBlockedSites(allBlockedSites: IFocus.BlockedSites[]): Promise<void> {
+    await chrome.storage.local.set({ allBlockedSites });
+    console.log('Updated allBlockedSites:', allBlockedSites);
   }
 
   /**
@@ -274,7 +300,7 @@ class BackgroundService {
         removeRuleIds: currentRuleIds,
         addRules: rulesToAdd
       }, () => {
-        console.log('Block rules updated successfully.');
+        console.log('Block rules updated successfully.', domainList);
       });
     });
   }
@@ -284,6 +310,8 @@ class BackgroundService {
    * @description Generates a redirect rule for a specific domain.
    */
   createRedirectRule(domain: string, ruleId: number): chrome.declarativeNetRequest.Rule {
+    const cleanDomain = domain.replace(/^https?:\/\//, '').replace(/^www\./, '');
+
     return {
       id: ruleId,
       priority: 1,
@@ -292,7 +320,7 @@ class BackgroundService {
         redirect: { url: chrome.runtime.getURL("pages/blocked-page.html") }
       },
       condition: {
-        urlFilter: `*://*.${domain}/*`,
+        urlFilter: `||${cleanDomain}^`,
         resourceTypes: ["main_frame"]
       }
     };

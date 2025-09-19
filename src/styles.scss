@@ -87,3 +87,20 @@ a {
   text-decoration: none;
   color: inherit;
 }
+
+/* Стили скролл-бара */
+*::-webkit-scrollbar {
+  width: 6px;
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: rgba(120,120,120,.6);
+  border-radius: 8px;
+  border: 0 solid transparent;
+}
+
+*::-webkit-scrollbar-corner {
+  background: transparent;
+}
+

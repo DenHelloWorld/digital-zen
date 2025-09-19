@@ -1,11 +1,13 @@
 :root {
   --app-width: 400px;
   --app-height: 584px;
+  --header-height: 60px;
 
   /* Цветовые токены */
   --color-background: #F9FAFC;
   --color-text: #334155;
   --color-zen-accent: #34D399;
+  --color-zen-error: #d33434;
   --color-on-accent: #F1F5F9;
   --color-component-bg-light: #F1F5F9;
   --color-component-text-light: #475569;
@@ -42,6 +44,7 @@
   --shadow-color: rgba(0, 0, 0, 0.25);
   --shadow-blur: 12px;
   --shadow-translate-width: 2px;
+  --list-gap: 0.5rem;
 }
 
 /* Для тёмной темы переопределяем только цвета */

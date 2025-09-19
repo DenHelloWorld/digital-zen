@@ -10,6 +10,7 @@
 
   .dz-header {
     width: 100%;
+    height: var(--header-height);
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -27,7 +28,8 @@
 
   .dz-main {
     width: 100%;
-    height: 100%;
+    height: calc(var(--app-height) - var(--header-height));
+    overflow: auto;
     display: flex;
     flex-direction: column;
     align-items: center;

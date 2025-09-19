@@ -8,7 +8,7 @@ import {
   VIEW_ENUM,
   ViewType
 } from '../modules/common';
-import {FocusComponent} from '../modules/focus/components/focus.component';
+import {FocusComponent} from '../modules/focus/focus.component';
 import {FocusService} from '../modules/focus/services';
 
 

@@ -1,0 +1,40 @@
+<div class="dz-actions">
+  <button (click)="toggleFocus()" class="dz-button dz-button--xxl dz-button--round shadow" [class.dz-button--activated]="isFocused()">
+    <svg class="dz-icon" [class.pulse]="isFocused()" aria-hidden="true" focusable="false">
+      <use href="#icon-person-zen"></use>
+    </svg>
+  </button>
+</div>
+
+<div class="dz-group">
+  <h2 class="dz-group__title" id="social-title">Social Media</h2>
+
+  <ul class="dz-list" aria-labelledby="social-title">
+    @for (site of defaultWebsites; track site) {
+      @if (site.type === websiteTypes.SOCIAL_MEDIA) {
+        <li class="dz-list__item">
+          <button
+            class="dz-button dz-button--md dz-button--square shadow"
+            [class.dz-button--error]="blockedUrls().includes(site.url)"
+            [title]="site.name"
+            (click)="onWebsiteChange(site)"
+          >
+            <svg class="dz-icon" aria-hidden="true" focusable="false">
+              <use [attr.href]="site.iconUrl"></use>
+            </svg>
+          </button>
+        </li>
+      }
+    }
+  </ul>
+
+  <ul class="dz-list">
+    @for(period of periods(); track period.id) {
+      <li class="dz-list__item">
+        <dz-period title="Social Media" [period]="period" [blockedUrls]="blockedUrls()" />
+      </li>
+    }
+  </ul>
+</div>
+
+

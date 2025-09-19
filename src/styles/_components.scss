@@ -46,6 +46,11 @@
     background-color: var(--color-zen-accent);
     color: var(--color-on-accent);
   }
+
+  &--error {
+    background-color: var(--color-zen-error);
+    color: var(--color-on-accent);
+  }
 }
 
 .dz-icon {
@@ -75,5 +80,11 @@
   &:focus {
     box-shadow: 0 0 0 2px var(--color-zen-accent);
   }
+}
+
+.dz-list {
+  display: flex;
+  gap: var(--list-gap);
+  flex-wrap: wrap;
 }
 

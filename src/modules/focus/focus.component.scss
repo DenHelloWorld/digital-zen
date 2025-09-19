@@ -1,0 +1,26 @@
+:host {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+
+  .dz-group {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .dz-group {
+    padding: var(--padding-default) var(--padding-default) calc(var(--padding-default) * 2) var(--padding-default);
+    height: calc(100% - var(--btn-size-xxl));
+    flex-direction: column;
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: auto;
+  }
+
+  .dz-actions {
+    padding: var(--padding-default);
+  }
+}
