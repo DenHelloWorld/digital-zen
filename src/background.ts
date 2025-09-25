@@ -317,7 +317,7 @@ class BackgroundService {
       priority: 1,
       action: {
         type: "redirect",
-        redirect: { url: chrome.runtime.getURL("pages/blocked-page.html") }
+        redirect: { url: chrome.runtime.getURL("blocked-page.html") }
       },
       condition: {
         urlFilter: `||${cleanDomain}^`,

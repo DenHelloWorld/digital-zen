@@ -21,7 +21,7 @@
   },
   "web_accessible_resources": [
     {
-      "resources": ["pages/blocked-page.html"],
+      "resources": ["blocked-page.html"],
       "matches": ["<all_urls>"]
     }
   ]
