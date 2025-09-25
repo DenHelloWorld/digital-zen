@@ -1,16 +1,24 @@
 .shadow {
-  box-shadow: 0 8px var(--shadow-blur) var(--shadow-color);
+  box-shadow: 0 4px 6px var(--shadow-color);
   transition: transform .3s, box-shadow .3s;
 
   &:hover {
-    box-shadow: 0 12px 20px var(--shadow-color);
+    box-shadow: 0 6px 8px var(--shadow-color);
+
+    &:has(.shadow:hover) {
+      box-shadow: 0 4px 6px var(--shadow-color);
+    }
   }
 
   &--activated {
-    box-shadow: 0 8px var(--shadow-blur) var(--color-zen-accent);
+    box-shadow: 0 4px 6px var(--color-zen-accent);
 
     &:hover {
-      box-shadow: 0 12px 20px var(--color-zen-accent);
+      box-shadow: 0 6px 8px var(--color-zen-accent);
+
+      &:has(.shadow:hover) {
+        box-shadow: 0 4px 6px var(--color-zen-accent);
+      }
     }
   }
 }
@@ -20,7 +28,7 @@
     transform: scale(1);
   }
   70% {
-    transform: scale(1.1);
+    transform: scale(1.3);
   }
   100% {
     transform: scale(1);
@@ -29,4 +37,21 @@
 
 .pulse {
   animation: pulse 3s infinite;
+}
+
+@keyframes rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.rotate {
+  animation: rotate 2s linear infinite;
+}
+
+.round {
+  border-radius: 99999px;
 }

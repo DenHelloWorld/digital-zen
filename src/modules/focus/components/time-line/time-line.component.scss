@@ -1,0 +1,38 @@
+:host {
+  display: flex;
+  align-items: center;
+  font-family: monospace;
+  position: relative;
+  margin-bottom: 1rem;
+  width: 100%;
+
+  .start-time, .end-time {
+    width: 50px;
+    text-align: center;
+    font-weight: bold;
+    font-size: var(--font-size-xs);
+  }
+
+  .scale-bar {
+    flex: 1;
+    height: 2px;
+    background-color: #ccc;
+    position: relative;
+    margin: 0 10px;
+  }
+
+  .now {
+    position: absolute;
+    top: -12px;
+    transform: translateX(-50%);
+    text-align: center;
+
+    &__indicator {
+      user-select: none;
+    }
+
+    &__label {
+      font-size: var(--font-size-xxs);
+    }
+  }
+}

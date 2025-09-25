@@ -1,8 +1,8 @@
 .dz-button {
   display: flex;
   align-items: center;
-  border-radius: var(--radius-default);
-  padding: var(--padding-default);
+  border-radius: var(--radius);
+  padding: var(--padding);
   font-size: var(--font-size-md);
   cursor: pointer;
   background-color: var(--color-component-bg-dark);
@@ -62,7 +62,7 @@
   display: block;
   width: 100%;
   height: var(--btn-size-md);
-  padding: 0 var(--padding-default);
+  padding: 0 var(--padding);
   border-radius: 9999px;
   border: none;
   outline: none;
@@ -86,5 +86,30 @@
   display: flex;
   gap: var(--list-gap);
   flex-wrap: wrap;
+  flex-direction: column;
+
+  &--horizontal {
+    flex-direction: row;
+  }
+
+  &--fit {
+    width: max-content;
+  }
+
+  &--full {
+    width: 100%;
+  }
 }
 
+.dz-box {
+  padding: var(--padding);
+  border-radius: var(--radius);
+
+  &--fit {
+    width: max-content;
+  }
+
+  &--full {
+    width: 100%;
+  }
+}

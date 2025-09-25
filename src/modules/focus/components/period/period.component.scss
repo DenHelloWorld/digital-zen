@@ -1,0 +1,12 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--padding);
+
+  .description,
+  .title {
+    width: 100%;
+  }
+}

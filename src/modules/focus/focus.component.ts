@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component, computed, inject, OnInit, Signal} from '@angular/core';
 import {FocusService} from './services';
 import {IFocus} from '../common/models';
-import {WEBSITES_SOCIAL_MEDIA} from '../common';
+import {LoaderComponent, WEBSITES_SOCIAL_MEDIA} from '../common';
 import {PeriodComponent} from './components/period/period.component';
 
 @Component({
@@ -9,7 +9,8 @@ import {PeriodComponent} from './components/period/period.component';
   templateUrl: './focus.component.html',
   styleUrls: ['./focus.component.scss'],
   imports: [
-    PeriodComponent
+    PeriodComponent,
+    LoaderComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
@@ -17,32 +18,25 @@ export class FocusComponent implements OnInit {
   #focusService: FocusService = inject(FocusService);
 
   protected readonly isFocused: Signal<boolean> = this.#focusService.isFocused;
-  protected readonly focuses: Signal<IFocus.Base[]> = this.#focusService.entities;
   protected readonly currentPeriod: Signal<IFocus.Period | null> = this.#focusService.currentPeriod;
   protected readonly periods: Signal<IFocus.Period[] | null> = this.#focusService.periods;
   protected readonly blockedUrls: Signal<string[]> = computed(() => this.#focusService.allBlockedSites()?.map(s => s.url) ?? []);
-
 
   protected readonly defaultWebsites: readonly IFocus.BlockedWebSite[] = WEBSITES_SOCIAL_MEDIA;
   protected readonly websiteTypes: typeof IFocus.EWebSiteType = IFocus.EWebSiteType;
 
   public ngOnInit(): void {
-    const dummyPeriod: IFocus.Period = {
-      id: 'dummy-period-123',
-      name: 'Test Focus Period',
-      description: 'A temporary period for testing.',
-      startFrom: new Date(),
-      endTo: new Date(Date.now() + 10 * 60 * 1000), // ✅ 10 минут
-      blockedSites: [],
+    const workHoursPeriod: IFocus.Period = {
+      id: 'work-social-block',
+      name: 'Work Hours Social Media Block',
+      description: 'Disables access to social media from 09:00 to 18:00 on weekdays.',
+      startFrom: new Date(new Date().setHours(9, 0, 0, 0)),
+      endTo: new Date(new Date().setHours(18, 0, 0, 0)),
+      blockedSites: [...this.defaultWebsites],
     };
 
     setTimeout(() => {
-      this.#focusService.add({
-        id: 'dummy-base-123',
-        name: 'Test Focus Base',
-        description: '',
-        periods: [dummyPeriod],
-      });
+      this.#focusService.addPeriod(workHoursPeriod);
     }, 1000);
   }
 
@@ -55,15 +49,14 @@ export class FocusComponent implements OnInit {
   }
 
   protected startTestFocus(): void {
-    this.#focusService.startFocus('dummy-period-123');
+    this.#focusService.startFocus();
   }
 
   protected stopFocus(): void {
     this.#focusService.stopFocus();
   }
 
-  protected onWebsiteChange(site: IFocus.BlockedWebSite): void {
-    // TODO: что-то не то при тогле, при перезапуске
+  protected onToggleBlockedWebsite(site: IFocus.BlockedWebSite): void {
     this.#focusService.toggleBlockedWebsite(site);
   }
 }

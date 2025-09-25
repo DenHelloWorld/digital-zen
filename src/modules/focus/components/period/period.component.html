@@ -2,22 +2,21 @@
   {{title()}}
 </h2>
 
-<div class="timeline">
-  startFrom: {{period().startFrom}}
-  endTo: {{period().endTo}}
-</div>
+<dz-time-line [startFrom]="period().startFrom" [endTo]="period().endTo" />
 
 <p class="description">
   {{period().description}}
 </p>
 
-<ul class="dz-list" aria-labelledby="social-title">
+<ul class="dz-list dz-list--horizontal dz-list--full" aria-labelledby="social-title">
   @for (site of period().blockedSites; track site) {
-      <li class="dz-list__item">
+      <li>
         <button
           class="dz-button dz-button--md dz-button--square shadow"
           [class.dz-button--error]="blockedUrls().includes(site.url)"
+          [class.shadow--activated]="blockedUrls().includes(site.url)"
           [title]="site.name"
+          (click)="onToggleBlockedWebsite(site)"
         >
           <svg class="dz-icon" aria-hidden="true" focusable="false">
             <use [attr.href]="site.iconUrl"></use>

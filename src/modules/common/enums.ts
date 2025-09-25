@@ -22,3 +22,25 @@ export enum VIEW_ENUM {
 }
 
 export type ViewType = VIEW_ENUM.FOCUS | VIEW_ENUM.MENU;
+
+export enum DATE_FORMAT_ENUM {
+  DATE_ONLY = 'dd.MM.yyyy',
+  DATE_TIME = 'dd.MM.yyyy HH:mm',
+  TIME_ONLY = 'HH:mm',
+  ISO = "yyyy-MM-dd'T'HH:mm:ss",
+  US_DATE = 'MM/dd/yyyy',
+  FULL_TEXT_RU = "d MMMM y 'г.', HH:mm",
+  WEEKDAY_SHORT = 'EEE, d MMM y',
+  WITH_TIMEZONE = 'dd.MM.yyyy HH:mm zzzz',
+}
+
+export type DateFormatType =
+  | DATE_FORMAT_ENUM.DATE_ONLY
+  | DATE_FORMAT_ENUM.DATE_TIME
+  | DATE_FORMAT_ENUM.TIME_ONLY
+  | DATE_FORMAT_ENUM.ISO
+  | DATE_FORMAT_ENUM.US_DATE
+  | DATE_FORMAT_ENUM.FULL_TEXT_RU
+  | DATE_FORMAT_ENUM.WEEKDAY_SHORT
+  | DATE_FORMAT_ENUM.WITH_TIMEZONE;
+

@@ -7,20 +7,17 @@
   flex-direction: column;
 
   .dz-group {
-    display: flex;
-    gap: 0.5rem;
-  }
-
-  .dz-group {
-    padding: var(--padding-default) var(--padding-default) calc(var(--padding-default) * 2) var(--padding-default);
+    width: 100%;
+    padding: var(--padding);
     height: calc(100% - var(--btn-size-xxl));
     flex-direction: column;
     flex: 1 1 auto;
     min-height: 0;
-    overflow: auto;
+    overflow-y: auto;
+    position: relative;
   }
 
   .dz-actions {
-    padding: var(--padding-default);
+    padding: var(--padding);
   }
 }

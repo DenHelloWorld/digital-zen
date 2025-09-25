@@ -1,0 +1,12 @@
+<span class="start-time">{{ startFrom() | date:'HH:mm' }}</span>
+
+<div class="scale-bar">
+  <div class="now" [style.left.%]="nowPercent()">
+    <div class="now__indicator">●</div>
+
+    <div class="now__label">now</div>
+  </div>
+</div>
+
+<span class="end-time">{{ endTo() | date:'HH:mm' }}</span>
+

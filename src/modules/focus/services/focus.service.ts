@@ -5,8 +5,9 @@ import {IFocus} from '../../common/models';
   providedIn: 'root'
 })
 export class FocusService {
+  readonly #isChromeRuntime: boolean = !!chrome.runtime;
+
   readonly #isFocused: WritableSignal<boolean> = signal<boolean>(false);
-  readonly #entities: WritableSignal<IFocus.Base[]> = signal<IFocus.Base[]>([])
   readonly #currentPeriod: WritableSignal<IFocus.Period | null> = signal<IFocus.Period | null>(null);
   readonly #allBlockedSites: WritableSignal<IFocus.BlockedWebSite[] | null> = signal(null);
   readonly #periods: WritableSignal<IFocus.Period[] | null> = signal(null);
@@ -14,9 +15,6 @@ export class FocusService {
   public readonly isFocused: Signal<boolean> = computed(() => {
     return this.#isFocused();
   })
-  public readonly entities: Signal<IFocus.Base[]> = computed(() => {
-    return this.#entities();
-  });
   public readonly currentPeriod: Signal<IFocus.Period | null> = computed(() => {
     return this.#currentPeriod();
   });
@@ -32,7 +30,7 @@ export class FocusService {
   }
 
   private async syncWithBackground(): Promise<void> {
-    if (typeof chrome === 'undefined' || !chrome.runtime) {
+    if (!this.#isChromeRuntime) {
       console.warn("Chrome API is not available. Running in development mode.");
       return;
     }
@@ -57,28 +55,25 @@ export class FocusService {
     this.#allBlockedSites.set(allBlockedSites);
   }
 
-  public add(entity: IFocus.Base): void {
-    if (this.#entities().find(e => e.id === entity.id)) {
-      console.warn(`Entity with id "${entity.id}" already exists. Skipping add.`);
-      this.update(entity);
+  public addPeriod(period: IFocus.Period): void {
+    if ((this.#periods() ?? []).some(p => p.id === period.id)) {
       return;
     }
 
-    if (typeof chrome !== 'undefined' && chrome.runtime) {
-      for (const period of entity.periods) {
-        chrome.runtime.sendMessage({ command: 'addPeriod', period });
-      }
+    if (this.#isChromeRuntime) {
+      chrome.runtime.sendMessage({ command: 'addPeriod', period });
     }
-    this.#entities.set([...this.#entities(), entity]);
+
+    this.#periods.set([...this.#periods() ?? [], period]);
 
     if (!this.#currentPeriod()) {
       // set default
-      this.#currentPeriod.set(entity.periods[0]);
+      this.#currentPeriod.set(period);
     }
   }
 
   public removePeriod(id: string): void {
-    if (typeof chrome !== 'undefined' && chrome.runtime) {
+    if (this.#isChromeRuntime) {
       chrome.runtime.sendMessage({ command: 'removePeriod', id });
     }
 
@@ -87,34 +82,10 @@ export class FocusService {
     }
   }
 
-  public update(entity: IFocus.Base): void {
-    if (typeof chrome !== 'undefined' && chrome.runtime) {
-      chrome.runtime.sendMessage({ command: 'updatePeriod', period: entity });
-    }
-
-    this.#entities.set(this.#entities().map((e: IFocus.Base) => e.id === entity.id ? entity : e));
-
-    const updated = entity.periods.find(p => p.id === this.#currentPeriod()?.id);
-    if (updated) {
-      this.#currentPeriod.set(updated);
-    }
-  }
-
   public updatePeriod(period: IFocus.Period): void {
-    if (typeof chrome !== 'undefined' && chrome.runtime) {
+    if (this.#isChromeRuntime) {
       chrome.runtime.sendMessage({ command: 'updatePeriod', period });
     }
-
-    const allEntities = this.#entities();
-    const newEntities = allEntities.map(base => {
-      if (base.periods.some(p => p.id === period.id)) {
-        const updatedPeriods = base.periods.map(p => p.id === period.id ? period : p);
-        return { ...base, periods: updatedPeriods };
-      }
-      return base;
-    });
-
-    this.#entities.set(newEntities);
 
     if (this.#currentPeriod()?.id === period.id) {
       this.#currentPeriod.set(period);
@@ -123,27 +94,28 @@ export class FocusService {
     this.#allBlockedSites.set(period.blockedSites);
   }
 
-
-
-  public startFocus(periodId: string): void {
-    if (typeof chrome !== 'undefined' && chrome.runtime) {
-      chrome.runtime.sendMessage({ command: 'startFocus', periodId: periodId });
-    }
-
-    const periodToFocus = this.entities().flatMap(f => f.periods).find(p => p.id === periodId);
-    if (periodToFocus) {
-      this.#currentPeriod.set(periodToFocus);
+  public startFocus(): void {
+    if (this.#isChromeRuntime) {
+      chrome.runtime.sendMessage({ command: 'startFocus', periodId: this.#currentPeriod()?.id });
     }
 
     this.#isFocused.set(true);
   }
 
   public stopFocus(): void {
-    if (typeof chrome !== 'undefined' && chrome.runtime) {
+    if (this.#isChromeRuntime) {
       chrome.runtime.sendMessage({ command: 'stopFocus' });
     }
-    // this.#currentPeriod.set(null);
+
     this.#isFocused.set(false);
+  }
+
+  public setCurrentPeriod(currentPeriod: IFocus.Period): void {
+    if (this.#isChromeRuntime) {
+      chrome.runtime.sendMessage({ command: 'setCurrentPeriod' });
+    }
+
+    this.#currentPeriod.set(currentPeriod);
   }
 
   public toggleBlockedWebsite(site: IFocus.BlockedWebSite): void {

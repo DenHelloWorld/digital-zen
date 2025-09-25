@@ -7,7 +7,7 @@
     </button>
 
     <button (click)="setViewType(viewTypes.MENU)"  class="dz-button dz-button--round dz-button--md">
-      <svg class="dz-icon" [class.pulse]="isFocused()" aria-hidden="true" focusable="false">
+      <svg class="dz-icon" aria-hidden="true" focusable="false">
         <use href="#icon-menu"></use>
       </svg>
     </button>
@@ -24,7 +24,7 @@
       }
 
       @case (viewTypes.MENU) {
-        menu
+        <dz-menu />
       }
     }
   }
