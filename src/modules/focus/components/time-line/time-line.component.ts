@@ -21,6 +21,7 @@ import {DatePipe} from '@angular/common';
   ]
 })
 export class TimeLineComponent implements OnInit, OnDestroy {
+  // TODO: mark focused time in line
   #intervalId!: number;
 
   readonly #now: WritableSignal<number> = signal(Date.now());

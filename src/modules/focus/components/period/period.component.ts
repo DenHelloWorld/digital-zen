@@ -15,7 +15,6 @@ import {TimeLineComponent} from '../time-line/time-line.component';
 export class PeriodComponent {
   protected dateFormats: typeof DATE_FORMAT_ENUM = DATE_FORMAT_ENUM;
 
-  public readonly title: InputSignal<string> = input.required<string>();
   public readonly period: InputSignal<IFocus.Period> = input.required<IFocus.Period>();
   public readonly blockedUrls: InputSignal<string[]> = input<string[]>([]);
 

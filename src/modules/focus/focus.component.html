@@ -14,8 +14,15 @@
   @if (periods()?.length) {
     <ul class="dz-list">
       @for(period of periods(); track period.id) {
-        <li class="dz-box shadow">
-          <dz-period [title]="period.name" [period]="period" [blockedUrls]="blockedUrls()" (toggleBlockedWebsite)="onToggleBlockedWebsite($event)" />
+        <li
+          class="dz-box shadow"
+          [class.shadow--activated]="period.id === currentPeriod()?.id"
+        >
+          <dz-period
+            [period]="period"
+            [blockedUrls]="blockedUrls()"
+            (toggleBlockedWebsite)="onToggleBlockedWebsite($event)"
+          />
         </li>
       }
     </ul>
