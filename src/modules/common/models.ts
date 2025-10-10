@@ -1,9 +1,15 @@
+import {FormControl} from '@angular/forms';
+import {DayOfWeekNameType, DayOfWeekType} from './enums';
+
 export namespace IFocus {
-  export interface Base {
-    id: string;
-    name: string;
-    description: string;
-    periods: IFocus.Period[];
+  export interface Form {
+    id: FormControl<string>;
+    name: FormControl<string>;
+    description: FormControl<string>;
+    startFrom: FormControl<Date>;
+    endTo: FormControl<Date>;
+    blockedSites: FormControl<IFocus.BlockedWebSite[]>;
+    daysOfWeek: FormControl<DayOfWeekType[]>;
   }
 
   export interface Period {
@@ -13,6 +19,7 @@ export namespace IFocus {
     startFrom: Date;
     endTo: Date;
     blockedSites: IFocus.BlockedWebSite[];
+    daysOfWeek: DayOfWeekType[];
   }
 
   export interface BlockedWebSite {
@@ -30,4 +37,9 @@ export namespace IFocus {
   }
 
   export type IWebSiteType = IFocus.EWebSiteType.SOCIAL_MEDIA;
+
+  export interface DayOfWeek {
+    day: DayOfWeekType;
+    name: DayOfWeekNameType;
+  }
 }

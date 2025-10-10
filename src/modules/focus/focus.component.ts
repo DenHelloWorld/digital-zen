@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component, computed, inject, OnInit, Signal} from '@angular/core';
 import {FocusService} from './services';
 import {IFocus} from '../common/models';
-import {LoaderComponent, WEBSITES_SOCIAL_MEDIA} from '../common';
+import {DayOfWeekType, LoaderComponent, WEBSITES_SOCIAL_MEDIA, WORK_DAYS_OF_WEEK} from '../common';
 import {PeriodComponent} from './components/period/period.component';
 
 @Component({
@@ -23,6 +23,7 @@ export class FocusComponent implements OnInit {
   protected readonly blockedUrls: Signal<string[]> = computed(() => this.#focusService.allBlockedSites()?.map(s => s.url) ?? []);
 
   protected readonly defaultWebsites: readonly IFocus.BlockedWebSite[] = WEBSITES_SOCIAL_MEDIA;
+  protected readonly defaultDaysOfWeek: readonly DayOfWeekType[] = WORK_DAYS_OF_WEEK;
   protected readonly websiteTypes: typeof IFocus.EWebSiteType = IFocus.EWebSiteType;
 
   public ngOnInit(): void {
@@ -33,6 +34,7 @@ export class FocusComponent implements OnInit {
       startFrom: new Date(new Date().setHours(9, 0, 0, 0)),
       endTo: new Date(new Date().setHours(18, 0, 0, 0)),
       blockedSites: [...this.defaultWebsites],
+      daysOfWeek: [...this.defaultDaysOfWeek],
     };
 
     setTimeout(() => {

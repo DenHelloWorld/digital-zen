@@ -1,19 +1,13 @@
 /// <reference types="chrome"/>
 namespace IFocus {
-  export interface Base {
-    id: string;
-    name: string;
-    description: string;
-    periods: IFocus.Period[];
-  }
-
   export interface Period {
     id: string;
     name: string;
     description: string;
     startFrom: Date;
     endTo: Date;
-    blockedSites: IFocus.BlockedSites[];
+    blockedSites: BlockedSites[];
+    daysOfWeek?: number[];
   }
 
   export interface BlockedSites {
@@ -241,6 +235,12 @@ class BackgroundService {
    * @param period The period object containing the blocked sites.
    */
   startFocus(period: IFocus.Period): void {
+    const today = new Date().getDay();
+    if (period.daysOfWeek && !period.daysOfWeek.includes(today)) {
+      console.log('Сегодня не входит в список дней недели для этого периода.');
+      return;
+    }
+
     this.stopFocus();
     this.#currentPeriod = period;
 

@@ -13,7 +13,7 @@
   --color-component-text-light: #475569;
   --color-component-bg-dark: #334155;
   --color-component-text-dark: #F1F5F9;
-  --color-glass-component-text-dark: #475569;
+  --color-glass-text: rgba(71, 85, 105, 0.5);
 
   /* Размеры кнопок */
   --btn-size-xs: 24px;
@@ -33,21 +33,21 @@
   --font-size-xxl: 24px;
 
   /* Общие переменные */
-  --padding: 12px;
+  --spacing: 12px;
   --radius: 12px;
-  --padding-xs: 4px;
-  --padding-sm: 6px;
-  --padding-md: 12px;
-  --padding-lg: 16px;
-  --padding-xl: 24px;
-  --padding-xxl: 32px;
-  --icon-width: 100%;
+  --spacing-xs: 4px;
+  --spacing-sm: 6px;
+  --spacing-md: 12px;
+  --spacing-lg: 16px;
+  --spacing-xl: 24px;
+  --spacing-xxl: 32px;
   --icon-height: 100%;
   --shadow-color: rgba(0, 0, 0, 0.25);
   --shadow-blur: 12px;
   --shadow-translate-width: 2px;
   --list-gap: 0.5rem;
   --loader-size: 24px;
+  --button-text-icon-gap: .5rem;
 }
 
 /* Для тёмной темы переопределяем только цвета */
@@ -59,6 +59,6 @@
   --color-component-text-light: #F1F5F9;
   --color-component-bg-dark: #F1F5F9;
   --color-component-text-dark: #475569;
-  --color-glass-component-text-dark: #F1F5F9;
+  --color-glass-text: rgba(241, 245, 249, 0.5);
   --shadow-color: rgba(0, 0, 0, 0.8);
 }

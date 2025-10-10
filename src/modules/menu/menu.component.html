@@ -1,1 +1,17 @@
-Menu
+<div class="dz-box">
+  @if(isAddPeriodFormShow()) {
+    <dz-add-period-form />
+  } @else {
+    <button
+      class="dz-button dz-button--md dz-button--fit shadow dz-button--mb"
+      (click)="onAddClick()"
+    >
+      Add Period
+      <svg class="dz-icon" aria-hidden="true" focusable="false">
+        <use href="#icon-plus"></use>
+      </svg>
+
+
+    </button>
+  }
+</div>

@@ -1,0 +1,74 @@
+<form
+  [formGroup]="form"
+  class="dz-form"
+>
+  <div class="dz-form__field">
+    <span class="dz-form__hint">
+      <span class="dz-form__required">*</span> Name
+    </span>
+
+    <input
+      class="dz-input"
+      [class.dz-input--invalid]="form.controls.name.invalid"
+      formControlName="name"
+      placeholder="Enter periods name..."
+    />
+  </div>
+
+  <div class="dz-form__field">
+    <span class="dz-form__hint">
+      <span class="dz-form__required">*</span> Description
+    </span>
+
+    <textarea
+      class="dz-input dz-input--textarea"
+      [class.dz-input--invalid]="form.controls.description.invalid"
+      formControlName="description"
+      placeholder="Enter periods description..."
+    ></textarea>
+  </div>
+
+  <div class="dz-form__field">
+    <span class="dz-form__hint">
+      <span class="dz-form__required">*</span> Days of week
+    </span>
+
+    <dz-weekdays-selector [(selectedDays)]="selectedDays" />
+  </div>
+
+  <ul class="dz-list dz-list--horizontal dz-list--full">
+    <li class="dz-form__field--fit">
+      <span class="dz-form__hint">
+        <span class="dz-form__required">*</span> Start from
+      </span>
+
+      <input
+        type="time"
+        class="dz-input dz-input--fit"
+        [class.dz-input--invalid]="form.controls.startFrom.invalid"
+        formControlName="startFrom"
+        placeholder="* Start From"
+      />
+    </li>
+
+    <li class="dz-form__field--fit">
+      <span class="dz-form__hint">
+        <span class="dz-form__required">*</span> End to
+      </span>
+
+      <input
+        type="time"
+        class="dz-input dz-input--fit"
+        [class.dz-input--invalid]="form.controls.endTo.invalid"
+        formControlName="endTo"
+        placeholder="* End To"
+      />
+    </li>
+  </ul>
+
+  @if(form.errors?.['invalidTimeRange']) {
+    <span class="dz-form__hint">
+      <span class="dz-form__required">Invalid time range</span>
+    </span>
+  }
+</form>
