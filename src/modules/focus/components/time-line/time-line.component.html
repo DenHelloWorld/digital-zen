@@ -4,7 +4,9 @@
   <div class="now" [style.left.%]="nowPercent()">
     <div class="now__indicator">●</div>
 
-    <div class="now__label">now</div>
+    <div class="now__label">
+      now: {{ nowTime() | date:'HH:mm' }}
+    </div>
   </div>
 </div>
 

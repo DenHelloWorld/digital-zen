@@ -1,17 +1,17 @@
 <ul
-  class="dz-list"
+  class="dz-list dz-list--full"
   [class.dz-list--horizontal]="orientation() === 'horizontal'"
   [class.dz-list--vertical]="orientation() === 'vertical'"
 >
   @for (entity of entities(); track entity[this.idKey()]) {
     <li>
       <button
+        [disabled]="isReadonly(entity)"
         class="dz-button dz-button--sm"
         [class.dz-button--activated]="isSelected(entity)"
-        [class.dz-button--disabled]="isDisabled(entity)"
         (click)="toggle(entity)"
       >
-        {{ String(entity[labelKey()]) | titlecase }}
+        {{ getLabel(entity) | titlecase }}
       </button>
     </li>
   }

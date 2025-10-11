@@ -1,7 +1,16 @@
-import {ChangeDetectionStrategy, Component, input, InputSignal, output, OutputEmitterRef} from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component, computed,
+  input,
+  InputSignal,
+  output,
+  OutputEmitterRef,
+  Signal,
+} from '@angular/core';
 import {IFocus} from '../../../common/models';
-import {DATE_FORMAT_ENUM} from '../../../common';
+import {ALL_DAYS_OF_WEEK} from '../../../common';
 import {TimeLineComponent} from '../time-line/time-line.component';
+import {WeekdaysSelectorComponent} from '../../../common/components/weekdays-selector/weekdays-selector.component';
 
 @Component({
   selector: "dz-period",
@@ -9,11 +18,17 @@ import {TimeLineComponent} from '../time-line/time-line.component';
   styleUrls: ["./period.component.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    TimeLineComponent
+    TimeLineComponent,
+    WeekdaysSelectorComponent
   ]
 })
 export class PeriodComponent {
-  protected dateFormats: typeof DATE_FORMAT_ENUM = DATE_FORMAT_ENUM;
+  protected readonly allDays: Readonly<IFocus.DayOfWeek>[] = [...ALL_DAYS_OF_WEEK];
+  protected readonly selectedDays: Signal<IFocus.DayOfWeek[]> = computed(() => {
+    const selected = this.period().daysOfWeek;
+    return this.allDays.filter(day => selected.includes(day.day));
+  });
+
 
   public readonly period: InputSignal<IFocus.Period> = input.required<IFocus.Period>();
   public readonly blockedUrls: InputSignal<string[]> = input<string[]>([]);

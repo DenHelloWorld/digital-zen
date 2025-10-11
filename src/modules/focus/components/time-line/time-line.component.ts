@@ -40,6 +40,7 @@ export class TimeLineComponent implements OnInit, OnDestroy {
 
     return ((now - start) / (end - start)) * 100;
   });
+  readonly nowTime: Signal<Date> = computed(() => new Date(this.#now()));
 
   public readonly startFrom: InputSignal<Date> = input.required<Date>();
   public readonly endTo: InputSignal<Date> = input.required<Date>();

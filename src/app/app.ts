@@ -34,7 +34,7 @@ export class App {
   protected readonly theme: Signal<ColorSchemaType> = this.#themeService.theme;
   protected readonly isFocused: Signal<boolean> = this.#focusService.isFocused;
 
-  protected readonly currentViewType: WritableSignal<VIEW_ENUM> = signal(VIEW_ENUM.MENU)
+  protected readonly currentViewType: WritableSignal<VIEW_ENUM> = signal(VIEW_ENUM.FOCUS)
 
   protected readonly colorSchemes: typeof COLOR_SCHEMA_ENUM = COLOR_SCHEMA_ENUM;
   protected readonly viewTypes: typeof VIEW_ENUM = VIEW_ENUM;

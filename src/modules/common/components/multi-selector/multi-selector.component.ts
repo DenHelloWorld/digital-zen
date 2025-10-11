@@ -21,24 +21,34 @@ export class MultiSelectorComponent<T> {
   public readonly entities: InputSignal<T[]> = input.required<T[]>();
   public readonly labelKey: InputSignal<keyof T> = input.required<keyof T>();
   public readonly idKey: InputSignal<keyof T> = input.required<keyof T>();
-  public readonly disabledKeys: InputSignal<T[keyof T][]> = input<T[keyof T][]>([]);
+  public readonly readonlyKeys: InputSignal<T[keyof T][]> = input<T[keyof T][]>([]);
   public readonly orientation: InputSignal<'vertical' | 'horizontal'> = input<'vertical' | 'horizontal'>('vertical');
+  public readonly isSelectable: InputSignal<boolean> = input<boolean>(true);
 
   public readonly selectedEntities: ModelSignal<T[] | undefined> = model<T[]>();
-
+  
   protected isSelected = (item: T): boolean => {
     const selected = this.selectedEntities() ?? [];
     const itemId = item[this.idKey()];
     return selected.some(e => e[this.idKey()] === itemId);
   };
 
-  protected isDisabled = (item: T): boolean => {
-    const itemId = item[this.idKey()];
-    return this.disabledKeys().includes(itemId);
+  protected getLabel(item: T): string {
+    const label: T[keyof T] = item[this.labelKey()];
+    return typeof label === 'string' ? label : String(label);
+  }
+
+  protected isReadonly = (item: T): boolean => {
+    if (this.isSelectable()) {
+      const itemId = item[this.idKey()];
+      return this.readonlyKeys().includes(itemId);
+    } else {
+      return true;
+    }
   };
 
   protected toggle(item: T): void {
-    if (this.isDisabled(item)) {
+    if (this.isReadonly(item) || !this.isSelectable()) {
       return;
     }
 
@@ -52,6 +62,4 @@ export class MultiSelectorComponent<T> {
         : [...current, item]
     );
   }
-
-  protected readonly String = String;
 }

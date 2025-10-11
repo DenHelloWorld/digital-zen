@@ -1,5 +1,5 @@
 import {FormControl} from '@angular/forms';
-import {DayOfWeekNameType, DayOfWeekType} from './enums';
+import {DayOfWeekShortNameType, DayOfWeekType} from './enums';
 
 export namespace IFocus {
   export interface Form {
@@ -40,6 +40,6 @@ export namespace IFocus {
 
   export interface DayOfWeek {
     day: DayOfWeekType;
-    name: DayOfWeekNameType;
+    name: DayOfWeekShortNameType;
   }
 }

@@ -8,6 +8,10 @@
   {{period().description}}
 </p>
 
+<div class="weekdays">
+  <dz-weekdays-selector [selectedDays]="selectedDays()" [isSelectable]="false" />
+</div>
+
 <ul class="dz-list dz-list--horizontal dz-list--full" aria-labelledby="social-title">
   @for (site of period().blockedSites; track site) {
       <li>
