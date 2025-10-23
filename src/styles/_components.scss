@@ -8,6 +8,7 @@
   cursor: pointer;
   background-color: var(--color-component-bg-dark);
   color: var(--color-component-text-dark);
+  justify-content: center;
 
   &--xs  {
     height: var(--btn-size-xs);
@@ -154,6 +155,7 @@
     width: 100%;
     text-align: start;
   }
+
   &__hint {
     width: 100%;
     font-size: var(--font-size-xs);

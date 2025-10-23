@@ -33,7 +33,10 @@
       <span class="dz-form__required">*</span> Days of week
     </span>
 
-    <dz-weekdays-selector [(selectedDays)]="selectedDays" />
+    <dz-weekdays-selector
+      [(selectedDays)]="selectedDays"
+      [isTodayShow]="false"
+    />
   </div>
 
   <ul class="dz-list dz-list--horizontal dz-list--full">
@@ -71,4 +74,15 @@
       <span class="dz-form__required">Invalid time range</span>
     </span>
   }
+
+  <div class="dz-form__field">
+    <button
+      [disabled]="form.invalid"
+      class="dz-button dz-button--activated shadow"
+      [class.dz-button--error]="form.invalid"
+      (click)="addPeriod()"
+    >
+      Create
+    </button>
+  </div>
 </form>

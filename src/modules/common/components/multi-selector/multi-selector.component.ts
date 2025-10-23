@@ -24,9 +24,10 @@ export class MultiSelectorComponent<T> {
   public readonly readonlyKeys: InputSignal<T[keyof T][]> = input<T[keyof T][]>([]);
   public readonly orientation: InputSignal<'vertical' | 'horizontal'> = input<'vertical' | 'horizontal'>('vertical');
   public readonly isSelectable: InputSignal<boolean> = input<boolean>(true);
+  public readonly highlightedId: InputSignal<T[keyof T] | null> = input<T[keyof T] | null>(null);
 
   public readonly selectedEntities: ModelSignal<T[] | undefined> = model<T[]>();
-  
+
   protected isSelected = (item: T): boolean => {
     const selected = this.selectedEntities() ?? [];
     const itemId = item[this.idKey()];
@@ -62,4 +63,9 @@ export class MultiSelectorComponent<T> {
         : [...current, item]
     );
   }
+
+  protected isHighlighted = (item: T): boolean => {
+    const highlighted = this.highlightedId();
+    return highlighted != null && item[this.idKey()] === highlighted;
+  };
 }

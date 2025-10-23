@@ -2,14 +2,16 @@ import {FormControl} from '@angular/forms';
 import {DayOfWeekShortNameType, DayOfWeekType} from './enums';
 
 export namespace IFocus {
-  export interface Form {
-    id: FormControl<string>;
-    name: FormControl<string>;
-    description: FormControl<string>;
-    startFrom: FormControl<Date>;
-    endTo: FormControl<Date>;
-    blockedSites: FormControl<IFocus.BlockedWebSite[]>;
-    daysOfWeek: FormControl<DayOfWeekType[]>;
+  export namespace Form {
+    export interface UpsertPeriod {
+      id: FormControl<string>;
+      name: FormControl<string>;
+      description: FormControl<string>;
+      startFrom: FormControl<Date>;
+      endTo: FormControl<Date>;
+      blockedSites: FormControl<IFocus.BlockedWebSite[]>;
+      daysOfWeek: FormControl<DayOfWeekType[]>;
+    }
   }
 
   export interface Period {

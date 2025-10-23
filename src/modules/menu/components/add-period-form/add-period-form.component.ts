@@ -1,9 +1,9 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  DestroyRef, effect,
-  forwardRef,
-  inject, Injector,
+  DestroyRef,
+  inject,
+  Injector,
   OnInit,
   signal,
   WritableSignal
@@ -11,13 +11,11 @@ import {
 import {
   FormBuilder,
   FormGroup,
-  NG_VALIDATORS,
-  NG_VALUE_ACCESSOR,
   ReactiveFormsModule,
-  ValidationErrors
+
 } from '@angular/forms';
 import {IFocus} from '../../../common/models';
-import {distinctUntilChanged, filter, map} from 'rxjs';
+import {distinctUntilChanged, map} from 'rxjs';
 import {takeUntilDestroyed, toObservable} from '@angular/core/rxjs-interop';
 import {
   arrayMinLengthValidator,
@@ -25,24 +23,13 @@ import {
   timeRangeValidator
 } from '../../../common';
 import {WeekdaysSelectorComponent} from '../../../common/components/weekdays-selector/weekdays-selector.component';
+import {FocusService} from '../../../focus/services';
 
 @Component({
   selector: "dz-add-period-form",
   templateUrl: "add-period-form.component.html",
   styleUrls: ["add-period-form.component.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  providers: [
-    {
-      provide: NG_VALUE_ACCESSOR,
-      useExisting: forwardRef(() => AddPeriodFormComponent),
-      multi: true,
-    },
-    {
-      provide: NG_VALIDATORS,
-      useExisting: AddPeriodFormComponent,
-      multi: true,
-    },
-  ],
   imports: [
     ReactiveFormsModule,
     WeekdaysSelectorComponent
@@ -52,16 +39,14 @@ export class AddPeriodFormComponent implements OnInit {
   readonly #fb: FormBuilder = inject(FormBuilder);
   readonly #destroyRef: DestroyRef = inject(DestroyRef);
   readonly #injector: Injector = inject(Injector);
+  readonly #focusService: FocusService = inject(FocusService);
 
-  protected form: FormGroup<IFocus.Form>;
+  protected form: FormGroup<IFocus.Form.UpsertPeriod>;
 
   protected selectedDays: WritableSignal<IFocus.DayOfWeek[]> = signal<IFocus.DayOfWeek[]>([]);
 
-  #onTouched: () => void = () => { /* empty */ };
-  #onChange: (value: IFocus.Period) => void = () => { /* empty */ };
-
   public ngOnInit(): void {
-    this.#init();
+    this.#initForm();
 
     this.form.valueChanges
       .pipe(
@@ -70,18 +55,7 @@ export class AddPeriodFormComponent implements OnInit {
         takeUntilDestroyed(this.#destroyRef)
       )
       .subscribe((value: IFocus.Period) => {
-        this.#onChange(value);
         console.log(value);
-      });
-
-    this.form.statusChanges
-      .pipe(
-        filter(() => typeof this.#onTouched === 'function'),
-        distinctUntilChanged(),
-        takeUntilDestroyed(this.#destroyRef)
-      )
-      .subscribe((): void => {
-        this.#onTouched();
       });
 
     toObservable(this.selectedDays, {injector: this.#injector })
@@ -94,28 +68,22 @@ export class AddPeriodFormComponent implements OnInit {
       })
   }
 
-  // ––––––––––––– Value Accessor –––––––––––––––
-
-  public writeValue(value: IFocus.Period): void {
-    this.form.patchValue(value, { emitEvent: false });
+  protected addPeriod() {
+    if (this.form.valid) {
+      this.#focusService.addPeriod({
+        id: this.form.controls.id.value,
+        name: this.form.controls.name.value,
+        description: this.form.controls.description.value,
+        startFrom: this.form.controls.startFrom.value,
+        endTo: this.form.controls.endTo.value,
+        blockedSites: this.form.controls.blockedSites.value,
+        daysOfWeek: this.form.controls.daysOfWeek.value,
+      })
+    }
   }
 
-  public registerOnChange(fn: (value: IFocus.Period) => void): void {
-    this.#onChange = fn;
-  }
-
-  public registerOnTouched(fn: () => void): void {
-    this.#onTouched = fn;
-  }
-
-  // ––––––––-––––– Validator –––––––––––––––
-
-  public validate(): ValidationErrors | null {
-    return this.form.valid ? null : { formInvalid: true };
-  }
-
-  #init(): void {
-    this.form = this.#fb.group<IFocus.Form>({
+  #initForm(): void {
+    this.form = this.#fb.group<IFocus.Form.UpsertPeriod>({
       id: this.#fb.nonNullable.control<string>(
         `${Date.now()}-${Math.floor(Math.random() * 10000)}`
       ),

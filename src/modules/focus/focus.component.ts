@@ -15,7 +15,7 @@ import {PeriodComponent} from './components/period/period.component';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class FocusComponent implements OnInit {
-  #focusService: FocusService = inject(FocusService);
+  readonly #focusService: FocusService = inject(FocusService);
 
   protected readonly isFocused: Signal<boolean> = this.#focusService.isFocused;
   protected readonly currentPeriod: Signal<IFocus.Period | null> = this.#focusService.currentPeriod;
@@ -24,7 +24,6 @@ export class FocusComponent implements OnInit {
 
   protected readonly defaultWebsites: readonly IFocus.BlockedWebSite[] = WEBSITES_SOCIAL_MEDIA;
   protected readonly defaultDaysOfWeek: readonly DayOfWeekType[] = WORK_DAYS_OF_WEEK;
-  protected readonly websiteTypes: typeof IFocus.EWebSiteType = IFocus.EWebSiteType;
 
   public ngOnInit(): void {
     const workHoursPeriod: IFocus.Period = {

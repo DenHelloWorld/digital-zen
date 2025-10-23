@@ -9,6 +9,7 @@
         [disabled]="isReadonly(entity)"
         class="dz-button dz-button--sm"
         [class.dz-button--activated]="isSelected(entity)"
+        [class.shadow--activated]="isHighlighted(entity)"
         (click)="toggle(entity)"
       >
         {{ getLabel(entity) | titlecase }}

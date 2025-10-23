@@ -16,8 +16,9 @@ export class WeekdaysSelectorComponent {
   protected readonly idKey: keyof IFocus.DayOfWeek  = 'day';
   protected readonly labelKey: keyof IFocus.DayOfWeek  = 'name';
   protected readonly allDays: Readonly<IFocus.DayOfWeek>[] = [...ALL_DAYS_OF_WEEK];
+  protected readonly todayDayId: number = new Date().getDay();
 
   public readonly isSelectable: InputSignal<boolean> = input<boolean>(true);
-
+  public readonly isTodayShow: InputSignal<boolean> = input<boolean>(true);
   public readonly selectedDays: ModelSignal<IFocus.DayOfWeek[] | undefined> = model<IFocus.DayOfWeek[]>();
 }
