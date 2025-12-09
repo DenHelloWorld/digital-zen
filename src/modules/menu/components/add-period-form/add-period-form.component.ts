@@ -85,18 +85,44 @@ export class AddPeriodFormComponent implements OnInit {
 
   protected addPeriod() {
     if (this.form.valid) {
+      const rawValue = this.form.getRawValue();
+
+      const webSitesWithFavicons: IFocus.WebSite[] = rawValue.webSites.map(site => {
+        const imageUrl = this.#focusService.getGoogleFaviconUrl(site.url);
+
+        return {
+          ...site,
+          imageUrl,
+
+        };
+      });
+
       this.#focusService.addPeriod({
-        id: this.form.controls.id.value,
-        name: this.form.controls.name.value,
-        description: this.form.controls.description.value,
-        startFrom: this.form.controls.startFrom.value,
-        endTo: this.form.controls.endTo.value,
-        webSites: this.form.controls.webSites.value,
-        daysOfWeek: this.form.controls.daysOfWeek.value,
+        id: rawValue.id,
+        name: rawValue.name,
+        description: rawValue.description,
+        startFrom:  this.#timeStringToDate(rawValue.startFrom as unknown as string),
+        endTo:  this.#timeStringToDate(rawValue.endTo as unknown as string),
+        webSites: webSitesWithFavicons,
+        daysOfWeek: rawValue.daysOfWeek,
         focusedTimes: [],
         isFocused: false
-      })
+      });
     }
+  }
+
+  /**
+   * Converts a time string "HH:mm" to a Date object.
+   * @param timeString The time string from the input (e.g., "14:30").
+   * @returns A Date object set to the specified time.
+   */
+  #timeStringToDate(timeString: string): Date {
+    const date = new Date();
+    const [hours, minutes] = timeString.split(':').map(Number);
+
+    date.setHours(hours, minutes, 0, 0);
+
+    return date;
   }
 
   #initForm(): void {

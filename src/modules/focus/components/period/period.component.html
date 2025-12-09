@@ -1,31 +1,93 @@
-<h2 class="title">
-  {{period().name}}
-</h2>
+<details
+  class="dz-accordion dz-accordion--accent"
+  [class.dz-accordion--accent]="period().isFocused"
+>
+  <summary class="dz-accordion__header">
+    <span>
+      <h2 class="title">
+        {{period().name}}
+      </h2>
+    </span>
 
-<dz-time-line [startFrom]="period().startFrom" [endTo]="period().endTo" />
+    <span class="dz-accordion__icon">⯆</span>
+  </summary>
 
-<p class="description">
-  {{period().description}}
-</p>
+  <div class="dz-accordion__content">
+    <dz-time-line [startFrom]="period().startFrom" [endTo]="period().endTo" />
 
-<div class="weekdays">
-  <dz-weekdays-selector [selectedDays]="selectedDays()" [isSelectable]="false" />
-</div>
+    <p class="description">
+      {{period().description}}
+    </p>
 
-<ul class="dz-list dz-list--horizontal dz-list--full" aria-labelledby="social-title">
-  @for (site of period().webSites; track site) {
-      <li>
-        <button
-          class="dz-button dz-button--md dz-button--square shadow"
-          [class.dz-button--error]="site.isBlocked"
-          [class.shadow--activated]="site.isBlocked"
-          [title]="site.name"
-          (click)="onToggleBlockedWebsite(site)"
-        >
-          <svg class="dz-icon" aria-hidden="true" focusable="false">
-            <use [attr.href]="site.iconUrl"></use>
-          </svg>
-        </button>
-      </li>
-  }
-</ul>
+    <div class="weekdays">
+      <dz-weekdays-selector [selectedDays]="selectedDays()" [isSelectable]="false" />
+    </div>
+
+    <ul class="dz-list dz-list--horizontal dz-list--full" aria-labelledby="social-title">
+      @for (site of period().webSites; track site) {
+        <li>
+          <button
+            class="dz-button dz-button--md dz-button--square shadow"
+            [class.dz-button--error]="site.isBlocked"
+            [class.shadow--activated]="site.isBlocked"
+            [title]="site.name"
+            (click)="onToggleBlockedWebsite(site)"
+          >
+            @if (site.iconUrl) {
+              <svg class="dz-icon" aria-hidden="true" focusable="false">
+                <use [attr.href]="site.iconUrl"></use>
+              </svg>
+            } @else if (site.imageUrl) {
+              <img
+                [src]="site.imageUrl"
+                [alt]="site.name"
+              />
+            }
+
+          </button>
+        </li>
+      }
+    </ul>
+  </div>
+</details>
+
+
+<!--<h2 class="title">-->
+<!--  {{period().name}}-->
+<!--</h2>-->
+
+<!--<dz-time-line [startFrom]="period().startFrom" [endTo]="period().endTo" />-->
+
+<!--<p class="description">-->
+<!--  {{period().description}}-->
+<!--</p>-->
+
+<!--<div class="weekdays">-->
+<!--  <dz-weekdays-selector [selectedDays]="selectedDays()" [isSelectable]="false" />-->
+<!--</div>-->
+
+<!--<ul class="dz-list dz-list&#45;&#45;horizontal dz-list&#45;&#45;full" aria-labelledby="social-title">-->
+<!--  @for (site of period().webSites; track site) {-->
+<!--      <li>-->
+<!--        <button-->
+<!--          class="dz-button dz-button&#45;&#45;md dz-button&#45;&#45;square shadow"-->
+<!--          [class.dz-button&#45;&#45;error]="site.isBlocked"-->
+<!--          [class.shadow&#45;&#45;activated]="site.isBlocked"-->
+<!--          [title]="site.name"-->
+<!--          (click)="onToggleBlockedWebsite(site)"-->
+<!--        >-->
+<!--          @if (site.iconUrl) {-->
+<!--            <svg class="dz-icon" aria-hidden="true" focusable="false">-->
+<!--              <use [attr.href]="site.iconUrl"></use>-->
+<!--            </svg>-->
+<!--          } @else if (site.imageUrl) {-->
+<!--            <img-->
+<!--              [src]="site.imageUrl"-->
+<!--              [alt]="site.name"-->
+<!--            />-->
+<!--          }-->
+
+<!--        </button>-->
+<!--      </li>-->
+<!--  }-->
+<!--</ul>-->

@@ -28,6 +28,7 @@ import {PeriodComponent} from './components/period/period.component';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class FocusComponent implements OnInit {
+  // TODO: set current period
   readonly #focusService: FocusService = inject(FocusService);
   readonly #injector = inject(Injector);
 
@@ -78,9 +79,11 @@ export class FocusComponent implements OnInit {
       effect(() => {
         const currentPeriods = this.periods();
 
+
+
         if (currentPeriods !== null) {
           const exists = currentPeriods.some(p => p.id === workHoursPeriod.id);
-
+          console.log(currentPeriods);
           if (!exists) {
             this.#focusService.addPeriod(workHoursPeriod);
           }
