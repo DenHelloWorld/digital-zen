@@ -9,7 +9,6 @@ import {
   ViewType
 } from '../modules/common';
 import {FocusComponent} from '../modules/focus/focus.component';
-import {FocusService} from '../modules/focus/services';
 import {MenuComponent} from '../modules/menu/menu.component';
 
 
@@ -29,7 +28,6 @@ import {MenuComponent} from '../modules/menu/menu.component';
 })
 export class App {
   readonly #themeService: ThemeService = inject(ThemeService);
-  readonly #focusService: FocusService = inject(FocusService);
 
   protected readonly theme: Signal<ColorSchemaType> = this.#themeService.theme;
 

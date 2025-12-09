@@ -29,8 +29,8 @@ export class FocusService {
     }
 
     const result = await chrome.storage.local.get(['currentPeriod', 'periods', 'allBlockedSites']);
-    const currentPeriod: IFocus.Period | null = result['currentPeriod'] || null;
-    const periods: IFocus.Period[] = result['periods'] || [];
+    const currentPeriod: IFocus.Period | null = result['currentPeriod'] as IFocus.Period || null;
+    const periods: IFocus.Period[] = result['periods'] as IFocus.Period[] || [];
 
     this.#periods.set(periods);
     this.#currentPeriod.set(currentPeriod);
@@ -88,13 +88,11 @@ export class FocusService {
     }
   }
 
-  // public setCurrentPeriod(currentPeriod: IFocus.Period): void {
-  //   if (this.#isChromeRuntime) {
-  //     chrome.runtime.sendMessage({ command: 'setCurrentPeriod' });
-  //   }
-  //
-  //   // this.#currentPeriod.set(currentPeriod);
-  // }
+  public setCurrentPeriod(currentPeriod: IFocus.Period): void {
+    if (this.#isChromeRuntime) {
+      chrome.runtime.sendMessage({ command: 'setCurrentPeriod', currentPeriod });
+    }
+  }
 
   public toggleBlockedWebsite(site: IFocus.WebSite): void {
     if (this.#isChromeRuntime) {

@@ -33,7 +33,6 @@ export class FocusComponent implements OnInit {
 
   protected readonly currentPeriod: Signal<IFocus.Period | null> = this.#focusService.currentPeriod;
   protected readonly periods: Signal<IFocus.Period[] | null> = this.#focusService.periods;
-  // protected readonly blockedUrls: Signal<string[]> = computed(() => this.#focusService.allBlockedSites()?.map(s => s.url) ?? []);
 
   protected readonly defaultWebsites: IFocus.WebSite[] = [...WEBSITES_SOCIAL_MEDIA];
   protected readonly defaultDaysOfWeek: DayOfWeekType[] = [...ALL_DAYS_OF_WEEK_DAYS];
@@ -59,7 +58,6 @@ export class FocusComponent implements OnInit {
   }
 
   protected onToggleBlockedWebsite(site: IFocus.WebSite): void {
-    console.log('onToggleBlockedWebsite',site);
     this.#focusService.toggleBlockedWebsite(site);
   }
 
