@@ -26,49 +26,73 @@ export class FocusService {
   })
 
   public constructor() {
-    this.syncWithBackground();
+    this.syncInitialState();
+    this.listenToStorageChanges();
   }
 
-  private async syncWithBackground(): Promise<void> {
+  private async syncInitialState(): Promise<void> {
     if (!this.#isChromeRuntime) {
       console.warn("Chrome API is not available. Running in development mode.");
       return;
     }
 
-    const getPeriods = await chrome.runtime.sendMessage({ command: 'getPeriods' });
-    const getIsFocused = await chrome.runtime.sendMessage({ command: 'getIsFocused' });
-    const current = await chrome.storage.local.get('currentPeriod');
-    const blocked = await chrome.storage.local.get('allBlockedSites');
+    const result = await chrome.storage.local.get(['currentPeriod', 'periods', 'allBlockedSites']);
+    const currentPeriod: IFocus.Period | null = result['currentPeriod'] || null;
+    const periods: IFocus.Period[] = result['periods'] || [];
+    const allBlockedSites: IFocus.BlockedWebSite[] = result['allBlockedSites'] || [];
+    const isFocused = !!currentPeriod;
 
-    const periods = getPeriods?.periods ?? [];
-    const isFocused = getIsFocused?.isFocused ?? false;
-    const currentPeriod = current['currentPeriod'] ?? null;
-    const allBlockedSites = blocked['allBlockedSites'] ?? [];
-
-
-    console.log('periods', periods);
-    console.log('currentPeriod', currentPeriod);
     this.#isFocused.set(isFocused);
-    if (currentPeriod) {
-      this.#currentPeriod.set(currentPeriod);
-    }
     this.#allBlockedSites.set(allBlockedSites);
+    this.#periods.set(periods);
+
+    if (isFocused) {
+      this.#currentPeriod.set(currentPeriod);
+    } else if (periods.length > 0) {
+      this.#currentPeriod.set(periods[0]);
+    } else {
+      this.#currentPeriod.set(null);
+    }
   }
 
-  public addPeriod(period: IFocus.Period): void {
-    if ((this.#periods() ?? []).some(p => p.id === period.id)) {
+  private listenToStorageChanges(): void {
+    if (!this.#isChromeRuntime) {
       return;
     }
 
+    chrome.storage.onChanged.addListener((changes, areaName) => {
+      if (areaName === 'local') {
+
+        if (changes['periods']) {
+          const newPeriods = changes['periods'].newValue as IFocus.Period[] || [];
+          this.#periods.set(newPeriods);
+
+          if (!this.#currentPeriod() && newPeriods.length > 0) {
+            this.#currentPeriod.set(newPeriods[0]);
+          }
+        }
+
+        if (changes['currentPeriod']) {
+          const newCurrentPeriod = changes['currentPeriod'].newValue as IFocus.Period | null;
+
+          this.#currentPeriod.set(newCurrentPeriod);
+          this.#isFocused.set(!!newCurrentPeriod); // Если currentPeriod есть, значит, фокус активен
+
+          if (!newCurrentPeriod && this.#periods() && this.#periods()!.length > 0) {
+            this.#currentPeriod.set(this.#periods()![0]);
+          }
+        }
+
+        if (changes['allBlockedSites'] && changes['allBlockedSites'].newValue) {
+          this.#allBlockedSites.set(changes['allBlockedSites'].newValue as IFocus.BlockedWebSite[]);
+        }
+      }
+    });
+  }
+
+  public addPeriod(period: IFocus.Period): void {
     if (this.#isChromeRuntime) {
       chrome.runtime.sendMessage({ command: 'addPeriod', period });
-    }
-
-    this.#periods.set([...this.#periods() ?? [], period]);
-
-    if (!this.#currentPeriod()) {
-      // set default
-      this.#currentPeriod.set(period);
     }
   }
 
@@ -76,47 +100,33 @@ export class FocusService {
     if (this.#isChromeRuntime) {
       chrome.runtime.sendMessage({ command: 'removePeriod', id });
     }
-
-    if (this.#currentPeriod()?.id === id) {
-      this.#currentPeriod.set(null);
-    }
   }
 
   public updatePeriod(period: IFocus.Period): void {
     if (this.#isChromeRuntime) {
       chrome.runtime.sendMessage({ command: 'updatePeriod', period });
     }
-
-    if (this.#currentPeriod()?.id === period.id) {
-      this.#currentPeriod.set(period);
-    }
-
-    this.#allBlockedSites.set(period.blockedSites);
   }
 
   public startFocus(): void {
     if (this.#isChromeRuntime) {
       chrome.runtime.sendMessage({ command: 'startFocus', periodId: this.#currentPeriod()?.id });
     }
-
-    this.#isFocused.set(true);
   }
 
   public stopFocus(): void {
     if (this.#isChromeRuntime) {
       chrome.runtime.sendMessage({ command: 'stopFocus' });
     }
-
-    this.#isFocused.set(false);
   }
 
-  public setCurrentPeriod(currentPeriod: IFocus.Period): void {
-    if (this.#isChromeRuntime) {
-      chrome.runtime.sendMessage({ command: 'setCurrentPeriod' });
-    }
-
-    this.#currentPeriod.set(currentPeriod);
-  }
+  // public setCurrentPeriod(currentPeriod: IFocus.Period): void {
+  //   if (this.#isChromeRuntime) {
+  //     chrome.runtime.sendMessage({ command: 'setCurrentPeriod' });
+  //   }
+  //
+  //   // this.#currentPeriod.set(currentPeriod);
+  // }
 
   public toggleBlockedWebsite(site: IFocus.BlockedWebSite): void {
     const current = this.#currentPeriod();
@@ -126,12 +136,7 @@ export class FocusService {
     }
 
     const allBlockedSites: IFocus.BlockedWebSite[] = this.#allBlockedSites() ?? [];
-
-    console.log('currentPeriod', current);
-
     const alreadyBlocked = allBlockedSites.some(s => s.id === site.id);
-
-    console.log('alreadyBlocked', alreadyBlocked);
 
     const updatedSites = alreadyBlocked
       ? allBlockedSites?.filter(s => s.id !== site.id)

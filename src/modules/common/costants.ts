@@ -1,5 +1,5 @@
 import {IFocus} from './models';
-import {DAY_OF_WEEK_ENUM, DAY_OF_WEEK_SWORT_NAME_ENUM, DayOfWeekType} from './enums';
+import {DAY_OF_WEEK_ENUM, DAY_OF_WEEK_SHORT_NAME_ENUM, DayOfWeekType} from './enums';
 
 export const WEBSITE_X: Readonly<IFocus.BlockedWebSite> = {
   id: 'x',
@@ -106,40 +106,40 @@ export const WEBSITES_SOCIAL_MEDIA: Readonly<readonly IFocus.BlockedWebSite[]> =
 
 export const DAY_SUNDAY: Readonly<IFocus.DayOfWeek> = {
   day: DAY_OF_WEEK_ENUM.SUNDAY,
-  name: DAY_OF_WEEK_SWORT_NAME_ENUM.SUNDAY,
+  name: DAY_OF_WEEK_SHORT_NAME_ENUM.SUNDAY,
 }
 
 export const DAY_MONDAY: Readonly<IFocus.DayOfWeek> = {
   day: DAY_OF_WEEK_ENUM.MONDAY,
-  name: DAY_OF_WEEK_SWORT_NAME_ENUM.MONDAY,
+  name: DAY_OF_WEEK_SHORT_NAME_ENUM.MONDAY,
 }
 
 export const DAY_TUESDAY: Readonly<IFocus.DayOfWeek> = {
   day: DAY_OF_WEEK_ENUM.TUESDAY,
-  name: DAY_OF_WEEK_SWORT_NAME_ENUM.TUESDAY,
+  name: DAY_OF_WEEK_SHORT_NAME_ENUM.TUESDAY,
 }
 
 export const DAY_WEDNESDAY: Readonly<IFocus.DayOfWeek> = {
   day: DAY_OF_WEEK_ENUM.WEDNESDAY,
-  name: DAY_OF_WEEK_SWORT_NAME_ENUM.WEDNESDAY,
+  name: DAY_OF_WEEK_SHORT_NAME_ENUM.WEDNESDAY,
 }
 
 export const DAY_THURSDAY: Readonly<IFocus.DayOfWeek> = {
   day: DAY_OF_WEEK_ENUM.THURSDAY,
-  name: DAY_OF_WEEK_SWORT_NAME_ENUM.THURSDAY,
+  name: DAY_OF_WEEK_SHORT_NAME_ENUM.THURSDAY,
 }
 
 export const DAY_FRIDAY: Readonly<IFocus.DayOfWeek> = {
   day: DAY_OF_WEEK_ENUM.FRIDAY,
-  name: DAY_OF_WEEK_SWORT_NAME_ENUM.FRIDAY,
+  name: DAY_OF_WEEK_SHORT_NAME_ENUM.FRIDAY,
 }
 
 export const DAY_SATURDAY: Readonly<IFocus.DayOfWeek> = {
   day: DAY_OF_WEEK_ENUM.SATURDAY,
-  name: DAY_OF_WEEK_SWORT_NAME_ENUM.SATURDAY,
+  name: DAY_OF_WEEK_SHORT_NAME_ENUM.SATURDAY,
 }
 
-export const WORK_DAYS_OF_WEEK: Readonly<readonly DayOfWeekType[]> =
+export const WORK_DAYS_OF_WEEK_DAYS: Readonly<readonly DayOfWeekType[]> =
   Object.freeze([
     // DAY_SUNDAY.day,
     DAY_MONDAY.day,
@@ -148,6 +148,17 @@ export const WORK_DAYS_OF_WEEK: Readonly<readonly DayOfWeekType[]> =
     DAY_THURSDAY.day,
     DAY_FRIDAY.day,
     // DAY_SATURDAY.day
+  ]);
+
+export const ALL_DAYS_OF_WEEK_DAYS: Readonly<readonly DayOfWeekType[]> =
+  Object.freeze([
+    DAY_SUNDAY.day,
+    DAY_MONDAY.day,
+    DAY_TUESDAY.day,
+    DAY_WEDNESDAY.day,
+    DAY_THURSDAY.day,
+    DAY_FRIDAY.day,
+    DAY_SATURDAY.day
   ]);
 
 export const ALL_DAYS_OF_WEEK: readonly Readonly<IFocus.DayOfWeek>[] =

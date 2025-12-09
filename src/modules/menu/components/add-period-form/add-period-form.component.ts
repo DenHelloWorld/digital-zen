@@ -20,10 +20,13 @@ import {takeUntilDestroyed, toObservable} from '@angular/core/rxjs-interop';
 import {
   arrayMinLengthValidator,
   requiredTrimmedValidator,
-  timeRangeValidator
+  timeRangeValidator,
+  WEBSITE_FACEBOOK,
+  WEBSITE_TIKTOK,
 } from '../../../common';
 import {WeekdaysSelectorComponent} from '../../../common/components/weekdays-selector/weekdays-selector.component';
 import {FocusService} from '../../../focus/services';
+import {DynamicInputComponent} from '../../../common/components/dynamic-input/dynamic-input.component';
 
 @Component({
   selector: "dz-add-period-form",
@@ -32,7 +35,8 @@ import {FocusService} from '../../../focus/services';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     ReactiveFormsModule,
-    WeekdaysSelectorComponent
+    WeekdaysSelectorComponent,
+    DynamicInputComponent
   ]
 })
 export class AddPeriodFormComponent implements OnInit {
@@ -44,6 +48,7 @@ export class AddPeriodFormComponent implements OnInit {
   protected form: FormGroup<IFocus.Form.UpsertPeriod>;
 
   protected selectedDays: WritableSignal<IFocus.DayOfWeek[]> = signal<IFocus.DayOfWeek[]>([]);
+  protected selectedWebSites: WritableSignal<IFocus.BlockedWebSite[]> = signal<IFocus.BlockedWebSite[]>([WEBSITE_TIKTOK, WEBSITE_FACEBOOK]);
 
   public ngOnInit(): void {
     this.#initForm();
@@ -62,9 +67,17 @@ export class AddPeriodFormComponent implements OnInit {
       .pipe(
         takeUntilDestroyed(this.#destroyRef),
       )
-      .subscribe((days: IFocus.DayOfWeek[]) => {
-        this.form.controls.daysOfWeek.setValue(days.map((value: IFocus.DayOfWeek) => value.day)
+      .subscribe((value: IFocus.DayOfWeek[]) => {
+        this.form.controls.daysOfWeek.setValue(value.map((value: IFocus.DayOfWeek) => value.day)
         )
+      })
+
+    toObservable(this.selectedWebSites, {injector: this.#injector })
+      .pipe(
+        takeUntilDestroyed(this.#destroyRef),
+      )
+      .subscribe((value: IFocus.BlockedWebSite[]) => {
+        this.form.controls.blockedSites.setValue(value);
       })
   }
 
@@ -78,6 +91,7 @@ export class AddPeriodFormComponent implements OnInit {
         endTo: this.form.controls.endTo.value,
         blockedSites: this.form.controls.blockedSites.value,
         daysOfWeek: this.form.controls.daysOfWeek.value,
+        focusedTimes: []
       })
     }
   }
@@ -93,6 +107,7 @@ export class AddPeriodFormComponent implements OnInit {
       endTo: this.#fb.nonNullable.control(new Date(0)),
       blockedSites: this.#fb.nonNullable.control([], arrayMinLengthValidator()),
       daysOfWeek: this.#fb.nonNullable.control([], arrayMinLengthValidator()),
+      focusedTimes: this.#fb.nonNullable.control([]),
     }, { validators: timeRangeValidator('startFrom', 'endTo') });
   }
 }

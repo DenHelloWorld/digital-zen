@@ -1,3 +1,7 @@
 :host {
-
+  .dz-input {
+    &--mb {
+      margin-bottom: var(--spacing);
+    }
+  }
 }

@@ -11,6 +11,7 @@ export namespace IFocus {
       endTo: FormControl<Date>;
       blockedSites: FormControl<IFocus.BlockedWebSite[]>;
       daysOfWeek: FormControl<DayOfWeekType[]>;
+      focusedTimes: FormControl<IFocus.FocusedTime[]>;
     }
   }
 
@@ -22,6 +23,7 @@ export namespace IFocus {
     endTo: Date;
     blockedSites: IFocus.BlockedWebSite[];
     daysOfWeek: DayOfWeekType[];
+    focusedTimes: IFocus.FocusedTime[];
   }
 
   export interface BlockedWebSite {
@@ -43,5 +45,12 @@ export namespace IFocus {
   export interface DayOfWeek {
     day: DayOfWeekType;
     name: DayOfWeekShortNameType;
+  }
+
+  export interface FocusedTime {
+    id: string;
+    periodId: string;
+    startFrom: Date;
+    endTo: Date;
   }
 }

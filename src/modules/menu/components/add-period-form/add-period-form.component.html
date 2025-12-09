@@ -76,6 +76,18 @@
   }
 
   <div class="dz-form__field">
+    <span class="dz-form__hint">
+      <span class="dz-form__required">*</span> Blocked Url's
+    </span>
+
+    <dz-dynamic-input
+      [(entities)]="selectedWebSites"
+      idKey="id"
+      labelKey="name"
+    />
+  </div>
+
+  <div class="dz-form__field">
     <button
       [disabled]="form.invalid"
       class="dz-button dz-button--activated shadow"

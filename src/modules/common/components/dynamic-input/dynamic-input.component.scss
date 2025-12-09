@@ -1,0 +1,33 @@
+:host {
+  .dz-list {
+    margin-bottom: var(--list-gap);
+
+    .item {
+      position: relative;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: var(--list-gap);
+
+      .delete {
+        position: absolute;
+        right: var(--list-gap);
+      }
+    }
+  }
+
+  .actions {
+    display: flex;
+    align-items: center;
+    gap: var(--list-gap);
+    justify-content: flex-end;
+  }
+
+  .placeholder {
+    display: flex;
+    height: var(--placeholder-height);
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+  }
+}

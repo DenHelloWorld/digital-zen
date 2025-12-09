@@ -1,0 +1,151 @@
+<ul class="dz-list dz-list--full">
+  @for (entity of entities(); track entity[idKey()]) {
+    <li
+      class="item"
+    >
+      <input
+        disabled
+        type="text"
+        class="dz-input dz-input--borderless"
+        [readonly]="isReadonly(entity)"
+        [value]="getLabel(entity)"
+        (input)="updateEntity(entity)"
+      />
+
+      <button
+        title="Remove"
+        type="button"
+        class="dz-button dz-button--xs dz-button--ghost dz-button--error delete"
+        (click)="removeEntity(entity)"
+        [disabled]="isReadonly(entity)"
+      >
+        <svg class="dz-icon" aria-hidden="true" focusable="false">
+          <use href="#icon-delete"></use>
+        </svg>
+      </button>
+    </li>
+  }
+
+  @if(isAdding()) {
+    <li
+      class="item dz-box shadow"
+    >
+      <ul
+        class="dz-list dz-list--full"
+      >
+      <span class="dz-form__hint">
+        Fill to add...
+      </span>
+
+        @for (key of entityKeys(); track key) {
+          @if (key !== idKey()) {
+            <li>
+              <input
+                class="dz-input dz-input--borderless"
+                [placeholder]="key"
+                (input)="updateField(key, $any($event.target).value)"
+              />
+            </li>
+          }
+        }
+
+        <div
+          class="actions"
+        >
+          <button
+            [disabled]="!isNewEntityValid()"
+            type="button"
+            title="Save"
+            class="dz-button dz-button--xs dz-button--icon dz-button--activated dz-button--ghost shadow"
+            (click)="addEntity()"
+          >
+            <svg class="dz-icon" aria-hidden="true" focusable="false">
+              <use href="#icon-save"></use>
+            </svg>
+          </button>
+
+          <button
+            type="button"
+            title="Cancel"
+            class="dz-button dz-button--xs dz-button--icon dz-button--error dz-button--ghost shadow"
+            (click)="cancelAdding()"
+          >
+            <svg class="dz-icon" aria-hidden="true" focusable="false">
+              <use href="#icon-close"></use>
+            </svg>
+          </button>
+        </div>
+      </ul>
+    </li>
+  }
+
+  @if (isPlaceholderShown()) {
+    <li
+      class="dz-placeholder"
+    >
+      <div class="dz-placeholder__icon">
+        <svg class="dz-icon" aria-hidden="true" focusable="false">
+          <use href="#icon-folder-off"></use>
+        </svg>
+      </div>
+
+      <div class="dz-placeholder__text">Empty...</div>
+
+      <button
+        type="button"
+        title="Add"
+        class="dz-button dz-button--md dz-button--icon dz-button--ghost shadow"
+        (click)="toggleIsAdding()"
+      >
+        Add
+        <svg class="dz-icon" aria-hidden="true" focusable="false">
+          <use href="#icon-plus"></use>
+        </svg>
+      </button>
+    </li>
+  }
+</ul>
+
+@if (!isAdding()) {
+  <div
+    class="actions"
+  >
+    @if (entities()?.length) {
+      <button
+        type="button"
+        title="Add"
+        class="dz-button dz-button--xs dz-button--icon dz-button--ghost shadow"
+        (click)="toggleIsAdding()"
+      >
+        <svg class="dz-icon" aria-hidden="true" focusable="false">
+          <use href="#icon-plus"></use>
+        </svg>
+      </button>
+    }
+
+    <button
+      type="button"
+      title="Reset"
+      class="dz-button dz-button--xs dz-button--icon dz-button--ghost shadow"
+      (click)="resetEntities()"
+    >
+      <svg class="dz-icon" aria-hidden="true" focusable="false">
+        <use href="#icon-reset"></use>
+      </svg>
+    </button>
+
+    @if (entities()?.length) {
+      <button
+        type="button"
+        title="Delete All"
+        class="dz-button dz-button--xs dz-button--icon dz-button--ghost shadow"
+        (click)="clearEntities()"
+      >
+        <svg class="dz-icon" aria-hidden="true" focusable="false">
+          <use href="#icon-delete"></use>
+        </svg>
+      </button>
+    }
+  </div>
+}
+

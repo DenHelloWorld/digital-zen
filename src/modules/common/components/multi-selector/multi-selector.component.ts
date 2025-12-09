@@ -41,8 +41,7 @@ export class MultiSelectorComponent<T> {
 
   protected isReadonly = (item: T): boolean => {
     if (this.isSelectable()) {
-      const itemId = item[this.idKey()];
-      return this.readonlyKeys().includes(itemId);
+      return this.readonlyKeys().includes(item[this.idKey()]);
     } else {
       return true;
     }

@@ -33,8 +33,9 @@
   --font-size-xxl: 24px;
 
   /* Общие переменные */
-  --spacing: 12px;
+  --spacing: 8px;
   --radius: 12px;
+  --radius-xs: 8px;
   --spacing-xs: 4px;
   --spacing-sm: 6px;
   --spacing-md: 12px;
@@ -48,6 +49,7 @@
   --list-gap: 0.5rem;
   --loader-size: 24px;
   --button-text-icon-gap: .5rem;
+  --placeholder-height: 5rem;
 }
 
 /* Для тёмной темы переопределяем только цвета */
