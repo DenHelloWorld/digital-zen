@@ -99,4 +99,21 @@ export class FocusService {
       chrome.runtime.sendMessage({ command: 'toggleBlockedWebsite', site });
     }
   }
+
+  public getGoogleFaviconUrl(siteUrl: string, size = 32): string {
+    let normalizedUrl = siteUrl.trim();
+    if (!normalizedUrl.startsWith('http://') && !normalizedUrl.startsWith('https://')) {
+      normalizedUrl = 'https://' + normalizedUrl;
+    }
+
+    try {
+      const url = new URL(normalizedUrl);
+      const domain = url.hostname;
+
+      return `https://s2.googleusercontent.com/s2/favicons?domain=${domain}&size=${size}`;
+    } catch (e) {
+      console.error("Invalid URL provided:", siteUrl, e);
+      return 'favicon.ico';
+    }
+  }
 }
