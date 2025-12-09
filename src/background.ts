@@ -319,6 +319,7 @@ class BackgroundService {
     const activelyBlockedUrls = activelyBlockedSites.map(site => site.url);
 
     this.updateBlockRules(activelyBlockedUrls);
+    this.updateExtensionIcon(true);
 
     this.#timer = setInterval(() => {
       const now = new Date();
@@ -362,6 +363,7 @@ class BackgroundService {
 
     this.updateBlockRules([]);
     await this.setCurrentPeriodIfNone();
+    this.updateExtensionIcon(false);
   }
 
   /**
@@ -419,6 +421,25 @@ class BackgroundService {
       periods[index] = period;
       await chrome.storage.local.set({ periods });
     }
+  }
+
+  /**
+   * @method updateExtensionIcon
+   * @description Переключает иконку расширения в зависимости от статуса фокусировки.
+   * @param isFocused Статус режима фокусировки.
+   */
+  private updateExtensionIcon(isFocused: boolean): void {
+    const iconPath = isFocused
+      ? "icon-spa-colored.png"
+      : "icon-spa-transparent.png";
+
+    chrome.action.setIcon({
+      path: {
+        "16": iconPath,
+        "48": iconPath,
+        "128": iconPath
+      }
+    });
   }
 }
 
