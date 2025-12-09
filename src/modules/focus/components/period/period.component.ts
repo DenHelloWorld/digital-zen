@@ -31,11 +31,10 @@ export class PeriodComponent {
 
 
   public readonly period: InputSignal<IFocus.Period> = input.required<IFocus.Period>();
-  public readonly blockedUrls: InputSignal<string[]> = input<string[]>([]);
 
-  public readonly toggleBlockedWebsite: OutputEmitterRef<IFocus.BlockedWebSite> = output<IFocus.BlockedWebSite>();
+  public readonly toggleBlockedWebsite: OutputEmitterRef<IFocus.WebSite> = output<IFocus.WebSite>();
 
-  protected onToggleBlockedWebsite(site: IFocus.BlockedWebSite): void {
+  protected onToggleBlockedWebsite(site: IFocus.WebSite): void {
     this.toggleBlockedWebsite.emit(site);
   }
 }

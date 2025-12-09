@@ -9,9 +9,10 @@ export namespace IFocus {
       description: FormControl<string>;
       startFrom: FormControl<Date>;
       endTo: FormControl<Date>;
-      blockedSites: FormControl<IFocus.BlockedWebSite[]>;
+      webSites: FormControl<IFocus.WebSite[]>;
       daysOfWeek: FormControl<DayOfWeekType[]>;
       focusedTimes: FormControl<IFocus.FocusedTime[]>;
+      isFocused: FormControl<boolean>;
     }
   }
 
@@ -21,12 +22,13 @@ export namespace IFocus {
     description: string;
     startFrom: Date;
     endTo: Date;
-    blockedSites: IFocus.BlockedWebSite[];
+    webSites: IFocus.WebSite[];
     daysOfWeek: DayOfWeekType[];
     focusedTimes: IFocus.FocusedTime[];
+    isFocused: boolean;
   }
 
-  export interface BlockedWebSite {
+  export interface WebSite {
     id: string;
     name: string;
     description: string;
@@ -34,6 +36,7 @@ export namespace IFocus {
     imageUrl: string;
     iconUrl: string;
     type: IWebSiteType
+    isBlocked: boolean;
   }
 
   export enum EWebSiteType {

@@ -1,7 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  computed, effect,
+  effect,
   inject, Injector,
   OnInit,
   runInInjectionContext,
@@ -31,12 +31,11 @@ export class FocusComponent implements OnInit {
   readonly #focusService: FocusService = inject(FocusService);
   readonly #injector = inject(Injector);
 
-  protected readonly isFocused: Signal<boolean> = this.#focusService.isFocused;
   protected readonly currentPeriod: Signal<IFocus.Period | null> = this.#focusService.currentPeriod;
   protected readonly periods: Signal<IFocus.Period[] | null> = this.#focusService.periods;
-  protected readonly blockedUrls: Signal<string[]> = computed(() => this.#focusService.allBlockedSites()?.map(s => s.url) ?? []);
+  // protected readonly blockedUrls: Signal<string[]> = computed(() => this.#focusService.allBlockedSites()?.map(s => s.url) ?? []);
 
-  protected readonly defaultWebsites: IFocus.BlockedWebSite[] = [...WEBSITES_SOCIAL_MEDIA];
+  protected readonly defaultWebsites: IFocus.WebSite[] = [...WEBSITES_SOCIAL_MEDIA];
   protected readonly defaultDaysOfWeek: DayOfWeekType[] = [...ALL_DAYS_OF_WEEK_DAYS];
 
   public ngOnInit(): void {
@@ -44,7 +43,7 @@ export class FocusComponent implements OnInit {
   }
 
   protected toggleFocus(): void {
-    if(this.isFocused()){
+    if(this.currentPeriod()?.isFocused){
       this.stopFocus();
     } else {
       this.startTestFocus();
@@ -59,7 +58,8 @@ export class FocusComponent implements OnInit {
     this.#focusService.stopFocus();
   }
 
-  protected onToggleBlockedWebsite(site: IFocus.BlockedWebSite): void {
+  protected onToggleBlockedWebsite(site: IFocus.WebSite): void {
+    console.log('onToggleBlockedWebsite',site);
     this.#focusService.toggleBlockedWebsite(site);
   }
 
@@ -70,9 +70,10 @@ export class FocusComponent implements OnInit {
       description: 'Disables access to social media 24/7.',
       startFrom: new Date(new Date().setHours(0, 0, 0, 0)),
       endTo: new Date(new Date().setHours(23, 59, 59, 999)),
-      blockedSites: this.defaultWebsites,
+      webSites: this.defaultWebsites,
       daysOfWeek: this.defaultDaysOfWeek,
-      focusedTimes: []
+      focusedTimes: [],
+      isFocused: false,
     };
 
     runInInjectionContext(this.#injector, () => {

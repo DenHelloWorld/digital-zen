@@ -13,12 +13,12 @@
 </div>
 
 <ul class="dz-list dz-list--horizontal dz-list--full" aria-labelledby="social-title">
-  @for (site of period().blockedSites; track site) {
+  @for (site of period().webSites; track site) {
       <li>
         <button
           class="dz-button dz-button--md dz-button--square shadow"
-          [class.dz-button--error]="blockedUrls().includes(site.url)"
-          [class.shadow--activated]="blockedUrls().includes(site.url)"
+          [class.dz-button--error]="site.isBlocked"
+          [class.shadow--activated]="site.isBlocked"
           [title]="site.name"
           (click)="onToggleBlockedWebsite(site)"
         >

@@ -2,9 +2,9 @@
   <button
     (click)="toggleFocus()"
     class="dz-button dz-button--xxl dz-button--round shadow"
-    [class.shadow--activated]="isFocused()"
+    [class.shadow--activated]="currentPeriod()?.isFocused"
   >
-    <svg class="dz-icon" [class.pulse]="isFocused()" aria-hidden="true" focusable="false">
+    <svg class="dz-icon" [class.pulse]="currentPeriod()?.isFocused" aria-hidden="true" focusable="false">
       <use href="#icon-person-zen"></use>
     </svg>
   </button>
@@ -20,7 +20,6 @@
         >
           <dz-period
             [period]="period"
-            [blockedUrls]="blockedUrls()"
             (toggleBlockedWebsite)="onToggleBlockedWebsite($event)"
           />
         </li>

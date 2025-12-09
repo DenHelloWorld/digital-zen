@@ -6,17 +6,19 @@ namespace IFocus {
     description: string;
     startFrom: Date;
     endTo: Date;
-    blockedSites: BlockedSites[];
+    webSites: WebSite[];
     daysOfWeek?: number[];
     focusedTimes: IFocus.FocusedTime[];
+    isFocused: boolean;
   }
 
-  export interface BlockedSites {
+  export interface WebSite {
     id: string;
     name: string;
     description: string;
     url: string;
     imageUrl: string;
+    isBlocked: boolean;
   }
 
   export interface FocusedTime {
@@ -34,7 +36,7 @@ namespace IFocus {
 class BackgroundService {
   #currentPeriod: IFocus.Period | null = null;
   #timer: ReturnType<typeof setInterval> | undefined;
-  #isFocused = false;
+  // #isFocused = false;
   #sessionStartTime: Date | null = null;
 
   /**
@@ -44,6 +46,7 @@ class BackgroundService {
   constructor() {
     this.initializeListeners();
     this.checkSessionStatus();
+    this.setCurrentPeriodIfNone();
   }
 
   /**
@@ -60,8 +63,11 @@ class BackgroundService {
       const endTime = new Date(storedPeriod.endTo);
 
       if (now < endTime) {
-        const blockedUrls = storedPeriod.blockedSites.map(site => site.url);
-        this.updateBlockRules(blockedUrls);
+        const activelyBlockedUrls = storedPeriod.webSites
+          .filter(site => site.isBlocked)
+          .map(site => site.url);
+
+        this.updateBlockRules(activelyBlockedUrls);
 
         this.#timer = setInterval(() => {
           if (new Date() > endTime) {
@@ -79,6 +85,8 @@ class BackgroundService {
       // No active session, ensure rules are clean just in case.
       this.updateBlockRules([]);
     }
+
+    this.setCurrentPeriodIfNone();
   }
 
   /**
@@ -103,6 +111,10 @@ class BackgroundService {
           return;
         case 'updatePeriod':
           await this.updatePeriod(message.period);
+          sendResponse({ success: true });
+          return;
+        case 'toggleBlockedWebsite':
+          await this.toggleWebSiteBlocking(message.site);
           sendResponse({ success: true });
           return;
         case 'startFocus': {
@@ -180,6 +192,7 @@ class BackgroundService {
 
     periods.push(period);
     await chrome.storage.local.set({ periods });
+    await this.setCurrentPeriodIfNone();
     console.log('Period added successfully.', periods);
   }
 
@@ -199,6 +212,7 @@ class BackgroundService {
       this.stopFocus();
     }
 
+    await this.setCurrentPeriodIfNone();
     console.log('Period removed successfully. newPeriods', newPeriods);
   }
 
@@ -216,13 +230,107 @@ class BackgroundService {
     if (index !== -1) {
       periods[index] = period;
       await chrome.storage.local.set({ periods });
-      await this.updateAllBlockedSites(period.blockedSites);
+
+      const activelyBlockedSites = period.webSites.filter(site => site.isBlocked);
+      const activelyBlockedUrls = activelyBlockedSites.map(s => s.url);
+
+      // await this.updateAllBlockedSites(period.webSites);
       if (this.#currentPeriod?.id === period.id) {
         this.#currentPeriod = period;
-        if(this.#isFocused) {
-          this.updateBlockRules(period.blockedSites.map(s => s.url));
+        if(period.isFocused) {
+          this.updateBlockRules(activelyBlockedUrls);
         }
       }
+    }
+  }
+// В BackgroundService class
+
+  /**
+   * @method toggleWebSiteBlocking
+   * @description Toggles the isBlocked status for a site in the currently selected period,
+   * regardless of whether focus is active.
+   * @param toggledSite The WebSite object to toggle (contains the ID).
+   */
+  private async toggleWebSiteBlocking(toggledSite: IFocus.WebSite): Promise<void> {
+    const result = await chrome.storage.local.get(['currentPeriod', 'periods']);
+    const periodToUpdate: IFocus.Period | null = result['currentPeriod'] || null;
+    const allPeriods: IFocus.Period[] = result['periods'] || [];
+
+    if (!periodToUpdate) {
+      console.warn('⚠️ Cannot toggle site: No period is currently selected (currentPeriod is null).');
+      return;
+    }
+
+    let siteFoundAndToggled = false;
+
+    // 1. Создаем новый массив сайтов с переключенным статусом
+    const updatedWebSites = periodToUpdate.webSites.map(site => {
+      if (site.id === toggledSite.id) {
+        siteFoundAndToggled = true;
+        // ✅ Переключаем статус isBlocked
+        return {
+          ...site,
+          isBlocked: !site.isBlocked,
+        };
+      }
+      return site;
+    });
+
+    if (!siteFoundAndToggled) {
+      console.warn(`Site with ID ${toggledSite.id} not found in current period.`);
+      return;
+    }
+
+    // 2. Обновляем объект текущего периода
+    const updatedPeriod: IFocus.Period = {
+      ...periodToUpdate,
+      webSites: updatedWebSites,
+    };
+
+    // 3. Обновляем период в основном массиве `periods` в хранилище (чтобы изменения сохранились)
+    const periodIndexInArray = allPeriods.findIndex(p => p.id === updatedPeriod.id);
+    if (periodIndexInArray !== -1) {
+      allPeriods[periodIndexInArray] = updatedPeriod;
+      await chrome.storage.local.set({ periods: allPeriods });
+    }
+
+    // 4. Обновляем текущий период в хранилище (currentPeriod)
+    await chrome.storage.local.set({ currentPeriod: updatedPeriod });
+
+    // 5. Если фокус был активен (т.е. #isFocused === true), обновляем правила блокировки.
+    // Если фокус не активен, правила не меняются, но статус в хранилище обновлен.
+    if (updatedPeriod.isFocused) {
+      this.#currentPeriod = updatedPeriod; // Обновляем локальную ссылку
+
+      const activelyBlockedUrls = updatedWebSites
+        .filter(site => site.isBlocked)
+        .map(site => site.url);
+
+      this.updateBlockRules(activelyBlockedUrls);
+    }
+
+    console.log(`Toggled site ${toggledSite.name}. Status updated.`);
+  }
+
+  // В BackgroundService class
+
+  /**
+   * @method setCurrentPeriodIfNone
+   * @description Ensures that if periods exist, one is selected as currentPeriod in storage.
+   */
+  private async setCurrentPeriodIfNone(): Promise<void> {
+    const result = await chrome.storage.local.get(['currentPeriod', 'periods']);
+    const current: IFocus.Period | null = result['currentPeriod'] || null;
+    const periods: IFocus.Period[] = result['periods'] || [];
+
+    // Если нет текущего периода и есть периоды в списке, устанавливаем первый
+    if (!current && periods.length > 0) {
+      await chrome.storage.local.set({ currentPeriod: periods[0] });
+      console.log(`Initial currentPeriod set to: ${periods[0].name}`);
+    } else if (current && periods.length === 0) {
+      // Удаляем currentPeriod, если список периодов пуст
+      await chrome.storage.local.remove('currentPeriod');
+      console.log('Removed currentPeriod as periods list is now empty.');
     }
   }
 
@@ -231,7 +339,7 @@ class BackgroundService {
    * @description Starts a focus session for a given period.
    * @param period The period object containing the blocked sites.
    */
-  private startFocus(period: IFocus.Period): void {
+  private async startFocus(period: IFocus.Period): Promise<void> { // ✅ Сделаем async
     const today = new Date().getDay();
     if (period.daysOfWeek && !period.daysOfWeek.includes(today)) {
       console.log('Сегодня не входит в список дней недели для этого периода.');
@@ -240,13 +348,14 @@ class BackgroundService {
 
     this.#currentPeriod = period;
     this.#sessionStartTime = new Date();
+    this.#currentPeriod.isFocused = true;
 
-    chrome.storage.local.set({ currentPeriod: period });
+    await chrome.storage.local.set({ currentPeriod: period })
+    await this.updatePeriodInPeriodsArray(period);
+    const activelyBlockedSites = period.webSites.filter(site => site.isBlocked);
+    const activelyBlockedUrls = activelyBlockedSites.map(site => site.url);
 
-    const blockedUrls = period.blockedSites.map(site => site.url);
-    this.updateBlockRules(blockedUrls);
-    this.updateAllBlockedSites(period.blockedSites);
-    this.#isFocused = true;
+    this.updateBlockRules(activelyBlockedUrls);
 
     this.#timer = setInterval(() => {
       const now = new Date();
@@ -268,7 +377,7 @@ class BackgroundService {
       this.#timer = undefined;
     }
 
-    if (this.#isFocused && this.#currentPeriod && this.#sessionStartTime) {
+    if (this.#currentPeriod && this.#sessionStartTime) {
       const endTime = new Date();
 
       const newFocusedTime: IFocus.FocusedTime = {
@@ -277,6 +386,8 @@ class BackgroundService {
         startFrom: this.#sessionStartTime,
         endTo: endTime,
       };
+
+      this.#currentPeriod.isFocused = false;
 
       this.#currentPeriod.focusedTimes = [
         ...(this.#currentPeriod.focusedTimes || []),
@@ -287,22 +398,22 @@ class BackgroundService {
 
       await this.updatePeriodInPeriodsArray(this.#currentPeriod);
 
+      await chrome.storage.local.set({ currentPeriod: this.#currentPeriod });
+
       this.#sessionStartTime = null;
     }
 
-    await chrome.storage.local.remove('currentPeriod');
-
-    this.#currentPeriod = null;
+    // this.#currentPeriod = null;
     this.updateBlockRules([]);
 
-    this.#isFocused = false;
+    await this.setCurrentPeriodIfNone();
     console.log('Focus stopped.');
   }
 
-  private async updateAllBlockedSites(allBlockedSites: IFocus.BlockedSites[]): Promise<void> {
-    await chrome.storage.local.set({ allBlockedSites });
-    console.log('Updated allBlockedSites:', allBlockedSites);
-  }
+  // private async updateAllBlockedSites(allBlockedSites: IFocus.WebSite[]): Promise<void> {
+  //   await chrome.storage.local.set({ allBlockedSites });
+  //   console.log('Updated allBlockedSites:', allBlockedSites);
+  // }
 
   /**
    * @method updateBlockRules

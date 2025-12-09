@@ -1,7 +1,7 @@
 <header class="dz-header" [class.dark-theme]="theme() === colorSchemes.DARK">
   <nav class="dz-header__navigation">
-    <button (click)="setViewType(viewTypes.FOCUS)" class="dz-button dz-button--round dz-button--md" [class.dz-button--activated]="isFocused()">
-      <svg class="dz-icon" [class.pulse]="isFocused()" aria-hidden="true" focusable="false">
+    <button (click)="setViewType(viewTypes.FOCUS)" class="dz-button dz-button--round dz-button--md">
+      <svg class="dz-icon" aria-hidden="true" focusable="false">
         <use href="#icon-person-zen"></use>
       </svg>
     </button>

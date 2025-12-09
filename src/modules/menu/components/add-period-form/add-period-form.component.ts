@@ -48,7 +48,7 @@ export class AddPeriodFormComponent implements OnInit {
   protected form: FormGroup<IFocus.Form.UpsertPeriod>;
 
   protected selectedDays: WritableSignal<IFocus.DayOfWeek[]> = signal<IFocus.DayOfWeek[]>([]);
-  protected selectedWebSites: WritableSignal<IFocus.BlockedWebSite[]> = signal<IFocus.BlockedWebSite[]>([WEBSITE_TIKTOK, WEBSITE_FACEBOOK]);
+  protected selectedWebSites: WritableSignal<IFocus.WebSite[]> = signal<IFocus.WebSite[]>([WEBSITE_TIKTOK, WEBSITE_FACEBOOK]);
 
   public ngOnInit(): void {
     this.#initForm();
@@ -76,8 +76,8 @@ export class AddPeriodFormComponent implements OnInit {
       .pipe(
         takeUntilDestroyed(this.#destroyRef),
       )
-      .subscribe((value: IFocus.BlockedWebSite[]) => {
-        this.form.controls.blockedSites.setValue(value);
+      .subscribe((value: IFocus.WebSite[]) => {
+        this.form.controls.webSites.setValue(value);
       })
   }
 
@@ -89,9 +89,10 @@ export class AddPeriodFormComponent implements OnInit {
         description: this.form.controls.description.value,
         startFrom: this.form.controls.startFrom.value,
         endTo: this.form.controls.endTo.value,
-        blockedSites: this.form.controls.blockedSites.value,
+        webSites: this.form.controls.webSites.value,
         daysOfWeek: this.form.controls.daysOfWeek.value,
-        focusedTimes: []
+        focusedTimes: [],
+        isFocused: false
       })
     }
   }
@@ -105,9 +106,10 @@ export class AddPeriodFormComponent implements OnInit {
       description: this.#fb.nonNullable.control('', requiredTrimmedValidator),
       startFrom: this.#fb.nonNullable.control(new Date(0)),
       endTo: this.#fb.nonNullable.control(new Date(0)),
-      blockedSites: this.#fb.nonNullable.control([], arrayMinLengthValidator()),
+      webSites: this.#fb.nonNullable.control([], arrayMinLengthValidator()),
       daysOfWeek: this.#fb.nonNullable.control([], arrayMinLengthValidator()),
       focusedTimes: this.#fb.nonNullable.control([]),
+      isFocused: this.#fb.nonNullable.control(false),
     }, { validators: timeRangeValidator('startFrom', 'endTo') });
   }
 }

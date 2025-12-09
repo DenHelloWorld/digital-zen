@@ -32,7 +32,6 @@ export class App {
   readonly #focusService: FocusService = inject(FocusService);
 
   protected readonly theme: Signal<ColorSchemaType> = this.#themeService.theme;
-  protected readonly isFocused: Signal<boolean> = this.#focusService.isFocused;
 
   protected readonly currentViewType: WritableSignal<VIEW_ENUM> = signal(VIEW_ENUM.FOCUS)
 

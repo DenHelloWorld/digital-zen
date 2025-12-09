@@ -1,7 +1,7 @@
 import {IFocus} from './models';
 import {DAY_OF_WEEK_ENUM, DAY_OF_WEEK_SHORT_NAME_ENUM, DayOfWeekType} from './enums';
 
-export const WEBSITE_X: Readonly<IFocus.BlockedWebSite> = {
+export const WEBSITE_X: Readonly<IFocus.WebSite> = {
   id: 'x',
   name: 'X',
   description: 'X',
@@ -9,9 +9,10 @@ export const WEBSITE_X: Readonly<IFocus.BlockedWebSite> = {
   imageUrl: '',
   iconUrl: '#icon-x',
   type: IFocus.EWebSiteType.SOCIAL_MEDIA,
+  isBlocked: false
 }
 
-export const WEBSITE_INST: Readonly<IFocus.BlockedWebSite> = {
+export const WEBSITE_INST: Readonly<IFocus.WebSite> = {
   id: 'instagram',
   name: 'Instagram',
   description: 'Instagram',
@@ -19,9 +20,10 @@ export const WEBSITE_INST: Readonly<IFocus.BlockedWebSite> = {
   imageUrl: '',
   iconUrl: '#icon-instagram',
   type: IFocus.EWebSiteType.SOCIAL_MEDIA,
+  isBlocked: false
 }
 
-export const WEBSITE_FACEBOOK: Readonly<IFocus.BlockedWebSite> = {
+export const WEBSITE_FACEBOOK: Readonly<IFocus.WebSite> = {
   id: 'facebook',
   name: 'Facebook',
   description: 'Facebook',
@@ -29,9 +31,10 @@ export const WEBSITE_FACEBOOK: Readonly<IFocus.BlockedWebSite> = {
   imageUrl: '',
   iconUrl: '#icon-facebook',
   type: IFocus.EWebSiteType.SOCIAL_MEDIA,
+  isBlocked: false
 }
 
-export const WEBSITE_TIKTOK: Readonly<IFocus.BlockedWebSite> = {
+export const WEBSITE_TIKTOK: Readonly<IFocus.WebSite> = {
   id: 'tiktok',
   name: 'TikTok',
   description: 'TikTok',
@@ -39,9 +42,10 @@ export const WEBSITE_TIKTOK: Readonly<IFocus.BlockedWebSite> = {
   imageUrl: '',
   iconUrl: '#icon-tiktok',
   type: IFocus.EWebSiteType.SOCIAL_MEDIA,
+  isBlocked: false
 };
 
-export const WEBSITE_VK: Readonly<IFocus.BlockedWebSite> = {
+export const WEBSITE_VK: Readonly<IFocus.WebSite> = {
   id: 'vk',
   name: 'VK',
   description: 'ВКонтакте',
@@ -49,9 +53,10 @@ export const WEBSITE_VK: Readonly<IFocus.BlockedWebSite> = {
   imageUrl: '',
   iconUrl: '#icon-vk',
   type: IFocus.EWebSiteType.SOCIAL_MEDIA,
+  isBlocked: false
 };
 
-export const WEBSITE_TELEGRAM: Readonly<IFocus.BlockedWebSite> = {
+export const WEBSITE_TELEGRAM: Readonly<IFocus.WebSite> = {
   id: 'telegram',
   name: 'Telegram',
   description: 'Telegram Web',
@@ -59,9 +64,10 @@ export const WEBSITE_TELEGRAM: Readonly<IFocus.BlockedWebSite> = {
   imageUrl: '',
   iconUrl: '#icon-telegram',
   type: IFocus.EWebSiteType.SOCIAL_MEDIA,
+  isBlocked: false
 };
 
-export const WEBSITE_SNAPCHAT: Readonly<IFocus.BlockedWebSite> = {
+export const WEBSITE_SNAPCHAT: Readonly<IFocus.WebSite> = {
   id: 'snapchat',
   name: 'Snapchat',
   description: 'Snapchat',
@@ -69,9 +75,10 @@ export const WEBSITE_SNAPCHAT: Readonly<IFocus.BlockedWebSite> = {
   imageUrl: '',
   iconUrl: '#icon-snapchat',
   type: IFocus.EWebSiteType.SOCIAL_MEDIA,
+  isBlocked: false
 };
 
-export const WEBSITE_LINKEDIN: Readonly<IFocus.BlockedWebSite> = {
+export const WEBSITE_LINKEDIN: Readonly<IFocus.WebSite> = {
   id: 'linkedin',
   name: 'LinkedIn',
   description: 'LinkedIn',
@@ -79,9 +86,10 @@ export const WEBSITE_LINKEDIN: Readonly<IFocus.BlockedWebSite> = {
   imageUrl: '',
   iconUrl: '#icon-linkedin',
   type: IFocus.EWebSiteType.SOCIAL_MEDIA,
+  isBlocked: false
 };
 
-export const WEBSITE_PINTEREST: Readonly<IFocus.BlockedWebSite> = {
+export const WEBSITE_PINTEREST: Readonly<IFocus.WebSite> = {
   id: 'pinterest',
   name: 'Pinterest',
   description: 'Pinterest',
@@ -89,9 +97,10 @@ export const WEBSITE_PINTEREST: Readonly<IFocus.BlockedWebSite> = {
   imageUrl: '',
   iconUrl: '#icon-pinterest',
   type: IFocus.EWebSiteType.SOCIAL_MEDIA,
+  isBlocked: false
 };
 
-export const WEBSITES_SOCIAL_MEDIA: Readonly<readonly IFocus.BlockedWebSite[]> =
+export const WEBSITES_SOCIAL_MEDIA: Readonly<readonly IFocus.WebSite[]> =
   Object.freeze([
     WEBSITE_X,
     WEBSITE_INST,
