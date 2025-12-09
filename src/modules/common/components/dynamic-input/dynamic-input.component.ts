@@ -9,7 +9,6 @@ import {
   signal,
   WritableSignal
 } from '@angular/core';
-import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 
 @Component({
   selector: 'dz-dynamic-input',
@@ -26,9 +25,18 @@ export class DynamicInputComponent<T> implements OnInit {
   protected readonly entityKeys = computed(() => {
     const list = this.#initEntities();
     const first = list && list.length > 0 ? list[0] : null;
-    return first && typeof first === 'object' && !Array.isArray(first)
-      ? Object.keys(first)
-      : [];
+
+    if (!first || typeof first !== 'object' || Array.isArray(first)) {
+      return [];
+    }
+
+    const allKeys = Object.keys(first);
+    const idKey = this.idKey();
+    const excludeKeys = this.excludeKeys() as string[];
+
+    return allKeys.filter((key: string) =>
+      key !== idKey && !excludeKeys.includes(key)
+    );
   });
   protected readonly isNewEntityValid = computed(() => {
     const obj = this.newEntity() as Record<string, unknown>;
@@ -48,6 +56,7 @@ export class DynamicInputComponent<T> implements OnInit {
   public readonly labelKey: InputSignal<keyof T> = input.required<keyof T>();
   public readonly idKey: InputSignal<keyof T> = input.required<keyof T>();
   public readonly readonlyKeys: InputSignal<T[keyof T][]> = input<T[keyof T][]>([]);
+  public readonly excludeKeys: InputSignal<(keyof T)[]> = input<(keyof T)[]>([]);
 
   public readonly entities: ModelSignal<T[] | undefined> = model<T[]>();
 

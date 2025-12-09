@@ -47,6 +47,8 @@ export class AddPeriodFormComponent implements OnInit {
 
   protected form: FormGroup<IFocus.Form.UpsertPeriod>;
 
+  protected excludedSiteKeysArray: (keyof IFocus.WebSite)[] = ['imageUrl', 'iconUrl', 'isBlocked', 'description', 'type'];
+
   protected selectedDays: WritableSignal<IFocus.DayOfWeek[]> = signal<IFocus.DayOfWeek[]>([]);
   protected selectedWebSites: WritableSignal<IFocus.WebSite[]> = signal<IFocus.WebSite[]>([WEBSITE_TIKTOK, WEBSITE_FACEBOOK]);
 
