@@ -88,6 +88,12 @@ export class FocusService {
     }
   }
 
+  public toggleFocus(): void {
+    if (this.#isChromeRuntime) {
+      chrome.runtime.sendMessage({ command: 'toggleFocus' });
+    }
+  }
+
   public setCurrentPeriod(currentPeriod: IFocus.Period): void {
     if (this.#isChromeRuntime) {
       chrome.runtime.sendMessage({ command: 'setCurrentPeriod', currentPeriod });

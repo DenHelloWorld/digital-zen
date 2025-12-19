@@ -4,10 +4,12 @@
   "version": "1.0",
   "description": "An extension to improve focus and manage distracting websites.",
   "permissions": [
+    "alarms",
     "declarativeNetRequest",
     "storage",
     "tabs",
-    "history"
+    "history",
+    "unlimitedStorage"
   ],
   "host_permissions": [
     "<all_urls>"
@@ -19,8 +21,7 @@
     }
   },
   "background": {
-    "service_worker": "background.js",
-    "type": "module"
+    "service_worker": "background.js"
   },
   "web_accessible_resources": [
     {

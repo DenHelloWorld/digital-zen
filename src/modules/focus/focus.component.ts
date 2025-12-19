@@ -43,11 +43,7 @@ export class FocusComponent implements OnInit {
   }
 
   protected toggleFocus(): void {
-    if(this.currentPeriod()?.isFocused){
-      this.stopFocus();
-    } else {
-      this.startTestFocus();
-    }
+    this.#focusService.toggleFocus();
   }
 
   protected startTestFocus(): void {
@@ -79,11 +75,9 @@ export class FocusComponent implements OnInit {
       effect(() => {
         const currentPeriods = this.periods();
 
-
-
+        console.log(currentPeriods);
         if (currentPeriods !== null) {
           const exists = currentPeriods.some(p => p.id === workHoursPeriod.id);
-          console.log(currentPeriods);
           if (!exists) {
             this.#focusService.addPeriod(workHoursPeriod);
           }

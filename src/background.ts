@@ -4,8 +4,8 @@ namespace IFocus {
     id: string;
     name: string;
     description: string;
-    startFrom: Date;
-    endTo: Date;
+    startFrom: Date | null;
+    endTo: Date | null;
     webSites: WebSite[];
     daysOfWeek?: number[];
     focusedTimes: IFocus.FocusedTime[];
@@ -24,8 +24,103 @@ namespace IFocus {
   export interface FocusedTime {
     id: string;
     periodId: string;
-    startFrom: Date;
-    endTo: Date;
+    startFrom: Date | null;
+    endTo: Date | null;
+  }
+}
+
+/**
+ * Тип данных, который реально хранится в storage (ISO строки вместо Date)
+ */
+interface StoredPeriod extends Omit<IFocus.Period, 'startFrom' | 'endTo' | 'focusedTimes'> {
+  startFrom: string | null;
+  endTo: string | null;
+  focusedTimes: StoredFocusedTime[];
+}
+
+interface StoredFocusedTime extends Omit<IFocus.FocusedTime, 'startFrom' | 'endTo'> {
+  startFrom: string | null;
+  endTo: string | null;
+}
+
+class StorageAdapter {
+  private static writeQueue: Promise<unknown> = Promise.resolve();
+
+  private static async enqueue<T>(task: () => Promise<T>): Promise<T> {
+    const nextTask = this.writeQueue.then(() => task());
+    this.writeQueue = nextTask;
+    return nextTask;
+  }
+
+  // === Public API ===
+
+  static async savePeriod(period: IFocus.Period): Promise<void> {
+    const stored = this.toStorageFormat(period);
+
+    const result = await chrome.storage.local.get('periods');
+    const periods: StoredPeriod[] = Array.isArray(result['periods']) ? result['periods'] : [];
+
+    const index = periods.findIndex(p => p.id === period.id);
+    if (index !== -1) periods[index] = stored;
+    else periods.push(stored);
+
+    await chrome.storage.local.set({ periods });
+  }
+
+  static async saveCurrentPeriod(period: IFocus.Period): Promise<void> {
+    await chrome.storage.local.set({ currentPeriod: this.toStorageFormat(period) });
+  }
+
+  static async getPeriods(): Promise<IFocus.Period[]> {
+    const result = await chrome.storage.local.get('periods');
+    const raw: StoredPeriod[] = Array.isArray(result['periods']) ? result['periods'] : [];
+    return raw.map(this.fromStorageFormat);
+  }
+
+  static async getCurrentPeriod(): Promise<IFocus.Period | null> {
+    const result = await chrome.storage.local.get('currentPeriod');
+    const rawObj = result['currentPeriod'];
+
+    // Если rawObj пустой объект или null, возвращаем null
+    if (!rawObj || typeof rawObj !== 'object') return null;
+
+    // Теперь приводим к StoredPeriod
+    const raw = rawObj as StoredPeriod;
+
+    return this.fromStorageFormat(raw);
+  }
+
+  // === Private helpers ===
+
+  private static toStorageFormat(period: IFocus.Period): StoredPeriod {
+    const toISOStringSafe = (d: Date | string | null) => {
+      if (!d) return null;
+      return d instanceof Date ? d.toISOString() : String(d);
+    };
+
+    return {
+      ...period,
+      startFrom: toISOStringSafe(period.startFrom),
+      endTo: toISOStringSafe(period.endTo),
+      focusedTimes: (period.focusedTimes || []).map(ft => ({
+        ...ft,
+        startFrom: toISOStringSafe(ft.startFrom),
+        endTo: toISOStringSafe(ft.endTo),
+      })),
+    };
+  }
+
+  private static fromStorageFormat(stored: StoredPeriod): IFocus.Period {
+    return {
+      ...stored,
+      startFrom: stored.startFrom ? new Date(stored.startFrom) : null,
+      endTo: stored.endTo ? new Date(stored.endTo) : null,
+      focusedTimes: (stored.focusedTimes || []).map(ft => ({
+        ...ft,
+        startFrom: ft.startFrom ? new Date(ft.startFrom) : null,
+        endTo: ft.endTo ? new Date(ft.endTo) : null,
+      })),
+    };
   }
 }
 
@@ -33,62 +128,18 @@ namespace IFocus {
  * @class BackgroundService
  * @description The main service class that manages the extension's background tasks and data persistence.
  */
-class BackgroundService {
+/// <reference types="chrome"/>
+class BackgroundServiceMV3 {
   #currentPeriod: IFocus.Period | null = null;
-  #timer: ReturnType<typeof setInterval> | undefined;
   #sessionStartTime: Date | null = null;
 
-  /**
-   * @constructor
-   * @description Creates a new instance and initializes event listeners and state.
-   */
   constructor() {
     this.initializeListeners();
-    this.checkSessionStatus();
-    this.setCurrentPeriodIfNone();
+    this.initializeAlarms();
+    this.restoreCurrentPeriod();
   }
 
-  /**
-   * @method checkSessionStatus
-   * @description Checks if a focus session was active and continues it or stops it.
-   */
-  private async checkSessionStatus(): Promise<void> {
-    const result = await chrome.storage.local.get(['currentPeriod', 'periods']);
-    const storedPeriod: IFocus.Period | null = result['currentPeriod'] as IFocus.Period || null;
-
-    if (storedPeriod) {
-      this.#currentPeriod = storedPeriod;
-      const now = new Date();
-      const endTime = new Date(storedPeriod.endTo);
-
-      if (now < endTime) {
-        const activelyBlockedUrls = storedPeriod.webSites
-          .filter(site => site.isBlocked)
-          .map(site => site.url);
-
-        this.updateBlockRules(activelyBlockedUrls);
-
-        this.#timer = setInterval(() => {
-          if (new Date() > endTime) {
-            this.stopFocus();
-          }
-        }, 1000);
-      } else {
-        // Session has expired, stop it
-        this.stopFocus();
-      }
-    } else {
-      this.updateBlockRules([]);
-    }
-
-    this.setCurrentPeriodIfNone();
-  }
-
-  /**
-   * @method initializeListeners
-   * @description Initializes all event handlers that listen for changes in the Chrome API.
-   * These listeners allow the extension to react to user actions in the background.
-   */
+  /** Инициализация сообщений и событий */
   private initializeListeners(): void {
     chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
       switch (message.command) {
@@ -109,239 +160,149 @@ class BackgroundService {
           sendResponse({ success: true });
           return;
         case 'startFocus': {
-          const result = await chrome.storage.local.get('periods');
-          const periods = result['periods'] as IFocus.Period[] || [];
-          const periodToStart = periods.find((p: IFocus.Period) => p.id === message.periodId);
-
-          if (periodToStart) {
-            this.startFocus(periodToStart);
-          } else {
-            console.error(`Period with ID ${message.periodId} not found.`);
-          }
+          const periods = await StorageAdapter.getPeriods();
+          const periodToStart = periods.find(p => p.id === message.periodId);
+          if (periodToStart) await this.startFocus(periodToStart);
           sendResponse({ success: true });
           return;
         }
         case 'stopFocus':
-          this.stopFocus();
+          await this.stopFocus();
+          sendResponse({ success: true });
+          return;
+        case 'toggleFocus':
+          console.log('toggleFocus');
+          await this.toggleFocus();
           sendResponse({ success: true });
           return;
         default:
-          console.warn('Unknown command received:', message.command);
           sendResponse({ success: false, error: 'Unknown command' });
-          return;
       }
     });
 
-    /**
-     * @event chrome.tabs.onActivated
-     * @description Listens for when the user activates (switches to) another tab.
-     */
-    chrome.tabs.onActivated.addListener((activeInfo: chrome.tabs.OnActivatedInfo) => {
+    chrome.tabs.onActivated.addListener(activeInfo => {
       chrome.storage.local.set({ 'tab_id': activeInfo.tabId });
     });
 
-    /**
-     * @event chrome.tabs.onUpdated
-     * @description Listens for when a tab updates its status (e.g., completes loading).
-     */
-    chrome.tabs.onUpdated.addListener((tabId: number, changeInfo: chrome.tabs.OnUpdatedInfo, tab: chrome.tabs.Tab) => {
+    chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
       if (changeInfo.status === 'complete' && tab.active && tab.url) {
         chrome.storage.local.set({ 'tab_url': tab.url });
       }
     });
+  }
 
-    /**
-     * @event chrome.history.onVisited
-     * @description Listens for when the user visits a new page.
-     */
-    chrome.history.onVisited.addListener((historyItem: chrome.history.HistoryItem) => {
-      if (historyItem.url) {
-        chrome.storage.local.set({ 'history_url': historyItem.url });
+  /** Инициализация alarms для контроля фокуса */
+  private initializeAlarms(): void {
+    chrome.alarms.onAlarm.addListener(async alarm => {
+      if (alarm.name === 'checkFocusEnd') {
+        const current = await StorageAdapter.getCurrentPeriod();
+        if (current?.isFocused && current.endTo && new Date() > current.endTo) {
+          await this.stopFocus();
+        }
       }
     });
   }
 
-  /**
-   * @method addPeriod
-   * @description Adds a new period to storage.
-   */
-  private async addPeriod(period: IFocus.Period): Promise<void> {
-    const result = await chrome.storage.local.get('periods');
-    const periods: IFocus.Period[] = result['periods'] as IFocus.Period[] || [];
+  /** Восстановление текущего периода при старте extension */
+  private async restoreCurrentPeriod(): Promise<void> {
+    const current = await StorageAdapter.getCurrentPeriod();
+    const periods = await StorageAdapter.getPeriods();
 
-    const exists = periods.some(p => p.id === period.id);
-    if (exists) {
-      console.warn(`Period with ID "${period.id}" already exists. Skipping add.`);
-      return;
+    if (!current && periods.length > 0) {
+      await StorageAdapter.saveCurrentPeriod(periods[0]);
+      this.#currentPeriod = periods[0];
+    } else {
+      this.#currentPeriod = current;
     }
 
-    periods.push(period);
-    await chrome.storage.local.set({ periods });
-    await this.setCurrentPeriodIfNone();
+    if (this.#currentPeriod?.isFocused) {
+      this.updateBlockRules(this.#currentPeriod.webSites.filter(s => s.isBlocked).map(s => s.url));
+      this.scheduleAlarm();
+    } else {
+      this.updateBlockRules([]);
+    }
   }
 
-  /**
-   * @method removePeriod
-   * @description Removes a period from storage by its ID.
-   */
+  /** Таймер теперь заменен на alarm */
+  private scheduleAlarm(): void {
+    // Проверка каждую минуту
+    chrome.alarms.create('checkFocusEnd', { periodInMinutes: 1 });
+  }
+
+  /** Добавление периода */
+  private async addPeriod(period: IFocus.Period): Promise<void> {
+    const periods = await StorageAdapter.getPeriods();
+    if (!periods.some(p => p.id === period.id)) {
+      await StorageAdapter.savePeriod(period);
+      await this.restoreCurrentPeriod();
+    }
+  }
+
+  /** Удаление периода */
   private async removePeriod(periodId: string): Promise<void> {
-    const result = await chrome.storage.local.get(['periods', 'currentPeriod']);
-    const periods: IFocus.Period[] = result['periods'] as IFocus.Period[] || [];
-    const current: IFocus.Period | null = result['currentPeriod'] as IFocus.Period || null;
+    const periods = await StorageAdapter.getPeriods();
+    const current = await StorageAdapter.getCurrentPeriod();
 
     const newPeriods = periods.filter(p => p.id !== periodId);
     await chrome.storage.local.set({ periods: newPeriods });
 
-    if (current && current.id === periodId) {
-      this.stopFocus();
-    }
-
-    await this.setCurrentPeriodIfNone();
+    if (current?.id === periodId) await this.stopFocus();
+    await this.restoreCurrentPeriod();
   }
 
-  /**
-   * @method updatePeriod
-   * @description Updates an existing period in storage.
-   */
+  /** Обновление периода */
   private async updatePeriod(period: IFocus.Period): Promise<void> {
-    const result = await chrome.storage.local.get('periods');
-    const periods: IFocus.Period[] = result['periods'] as IFocus.Period[] || [];
-    const index = periods.findIndex(p => p.id === period.id);
+    await StorageAdapter.savePeriod(period);
 
-    if (index !== -1) {
-      periods[index] = period;
-      await chrome.storage.local.set({ periods });
-
-      const activelyBlockedSites = period.webSites.filter(site => site.isBlocked);
-      const activelyBlockedUrls = activelyBlockedSites.map(s => s.url);
-
-      if (this.#currentPeriod?.id === period.id) {
-        this.#currentPeriod = period;
-        if(period.isFocused) {
-          this.updateBlockRules(activelyBlockedUrls);
-        }
-      }
+    if (this.#currentPeriod?.id === period.id && period.isFocused) {
+      this.updateBlockRules(period.webSites.filter(s => s.isBlocked).map(s => s.url));
+      this.#currentPeriod = period;
+      this.scheduleAlarm();
     }
   }
 
-  /**
-   * @method toggleWebSiteBlocking
-   * @description Toggles the isBlocked status for a site in the currently selected period,
-   * regardless of whether focus is active.
-   * @param toggledSite The WebSite object to toggle (contains the ID).
-   */
+  /** Переключение блокировки сайта */
   private async toggleWebSiteBlocking(toggledSite: IFocus.WebSite): Promise<void> {
-    const result = await chrome.storage.local.get(['currentPeriod', 'periods']);
-    const periodToUpdate: IFocus.Period | null = result['currentPeriod'] as IFocus.Period || null;
-    const allPeriods: IFocus.Period[] = result['periods'] as IFocus.Period[] || [];
+    const current = await StorageAdapter.getCurrentPeriod();
+    if (!current) return;
 
-    if (!periodToUpdate) {
-      console.warn('⚠️ Cannot toggle site: No period is currently selected (currentPeriod is null).');
-      return;
-    }
+    const updatedWebSites = current.webSites.map(site =>
+      site.id === toggledSite.id ? { ...site, isBlocked: !site.isBlocked } : site
+    );
 
-    let siteFoundAndToggled = false;
-
-    const updatedWebSites = periodToUpdate.webSites.map(site => {
-      if (site.id === toggledSite.id) {
-        siteFoundAndToggled = true;
-        return {
-          ...site,
-          isBlocked: !site.isBlocked,
-        };
-      }
-      return site;
-    });
-
-    if (!siteFoundAndToggled) {
-      console.warn(`Site with ID ${toggledSite.id} not found in current period.`);
-      return;
-    }
-
-    const updatedPeriod: IFocus.Period = {
-      ...periodToUpdate,
-      webSites: updatedWebSites,
-    };
-    const periodIndexInArray = allPeriods.findIndex(p => p.id === updatedPeriod.id);
-
-    if (periodIndexInArray !== -1) {
-      allPeriods[periodIndexInArray] = updatedPeriod;
-      await chrome.storage.local.set({ periods: allPeriods });
-    }
-
-    await chrome.storage.local.set({ currentPeriod: updatedPeriod });
+    const updatedPeriod = { ...current, webSites: updatedWebSites };
+    await StorageAdapter.savePeriod(updatedPeriod);
+    await StorageAdapter.saveCurrentPeriod(updatedPeriod);
 
     if (updatedPeriod.isFocused) {
+      this.updateBlockRules(updatedWebSites.filter(s => s.isBlocked).map(s => s.url));
       this.#currentPeriod = updatedPeriod;
-      const activelyBlockedUrls = updatedWebSites
-        .filter(site => site.isBlocked)
-        .map(site => site.url);
-
-      this.updateBlockRules(activelyBlockedUrls);
     }
   }
 
-  /**
-   * @method setCurrentPeriodIfNone
-   * @description Ensures that if periods exist, one is selected as currentPeriod in storage.
-   */
-  private async setCurrentPeriodIfNone(): Promise<void> {
-    const result = await chrome.storage.local.get(['currentPeriod', 'periods']);
-    const current: IFocus.Period | null = result['currentPeriod'] as IFocus.Period || null;
-    const periods: IFocus.Period[] = result['periods'] as IFocus.Period[] || [];
-
-    if (!current && periods.length > 0) {
-      await chrome.storage.local.set({ currentPeriod: periods[0] });
-    } else if (current && periods.length === 0) {
-      await chrome.storage.local.remove('currentPeriod');
-    }
-  }
-
-  /**
-   * @method startFocus
-   * @description Starts a focus session for a given period.
-   * @param period The period object containing the blocked sites.
-   */
-  private async startFocus(period: IFocus.Period): Promise<void> { // ✅ Сделаем async
+  /** Старт фокуса */
+  private async startFocus(period: IFocus.Period): Promise<void> {
     const today = new Date().getDay();
-    if (period.daysOfWeek && !period.daysOfWeek.includes(today)) {
-      return;
-    }
+    if (period.daysOfWeek && !period.daysOfWeek.includes(today)) return;
 
     this.#currentPeriod = period;
     this.#sessionStartTime = new Date();
     this.#currentPeriod.isFocused = true;
 
-    await chrome.storage.local.set({ currentPeriod: period })
-    await this.updatePeriodInPeriodsArray(period);
+    await StorageAdapter.saveCurrentPeriod(this.#currentPeriod);
+    await StorageAdapter.savePeriod(this.#currentPeriod);
 
-    const activelyBlockedSites = period.webSites.filter(site => site.isBlocked);
-    const activelyBlockedUrls = activelyBlockedSites.map(site => site.url);
-
-    this.updateBlockRules(activelyBlockedUrls);
+    this.updateBlockRules(period.webSites.filter(site => site.isBlocked).map(site => site.url));
     this.updateExtensionIcon(true);
-
-    this.#timer = setInterval(() => {
-      const now = new Date();
-      if ( this.#currentPeriod?.endTo && now > this.#currentPeriod.endTo) {
-        this.stopFocus();
-      }
-    }, 1000);
+    this.scheduleAlarm();
   }
 
-  /**
-   * @method stopFocus
-   * @description Stops the current focus session.
-   */
+  /** Стоп фокуса */
   private async stopFocus(): Promise<void> {
-    if (this.#timer) {
-      clearInterval(this.#timer);
-      this.#timer = undefined;
-    }
+    if (!this.#currentPeriod) return;
 
-    if (this.#currentPeriod && this.#sessionStartTime) {
-      const endTime = new Date();
-
+    const endTime = new Date();
+    if (this.#sessionStartTime) {
       const newFocusedTime: IFocus.FocusedTime = {
         id: Date.now().toString(),
         periodId: this.#currentPeriod.id,
@@ -349,98 +310,57 @@ class BackgroundService {
         endTo: endTime,
       };
 
-      this.#currentPeriod.isFocused = false;
-
-      this.#currentPeriod.focusedTimes = [
-        ...(this.#currentPeriod.focusedTimes || []),
-        newFocusedTime,
-      ];
-
-      await this.updatePeriodInPeriodsArray(this.#currentPeriod);
-      await chrome.storage.local.set({ currentPeriod: this.#currentPeriod });
+      this.#currentPeriod.focusedTimes = [...(this.#currentPeriod.focusedTimes || []), newFocusedTime];
       this.#sessionStartTime = null;
     }
 
+    this.#currentPeriod.isFocused = false;
+    await StorageAdapter.savePeriod(this.#currentPeriod);
+    await StorageAdapter.saveCurrentPeriod(this.#currentPeriod);
+
     this.updateBlockRules([]);
-    await this.setCurrentPeriodIfNone();
     this.updateExtensionIcon(false);
   }
 
-  /**
-   * @method updateBlockRules
-   * @description Updates the declarativeNetRequest rules with a new list of domains.
-   * @param domainList The list of domains to block.
-   */
-  private updateBlockRules(domainList: string[]): void {
-    chrome.declarativeNetRequest.getDynamicRules((dynamicRules: chrome.declarativeNetRequest.Rule[]) => {
-      const currentRuleIds: number[] = dynamicRules.map(rule => rule.id);
+  /** Переключение фокуса */
+  private async toggleFocus(): Promise<void> {
+    const current = await StorageAdapter.getCurrentPeriod();
+    if (!current) return;
 
-      const rulesToAdd: chrome.declarativeNetRequest.Rule[] = domainList.map((domain, index) => {
-        const ruleId: number = index + 1;
-        return this.createRedirectRule(domain, ruleId);
-      });
+    if (current.isFocused) await this.stopFocus();
+    else await this.startFocus(current);
+  }
+
+  /** Обновление правил блокировки */
+  private updateBlockRules(domainList: string[]): void {
+    chrome.declarativeNetRequest.getDynamicRules(dynamicRules => {
+      const currentRuleIds = dynamicRules.map(r => r.id);
+      const rulesToAdd = domainList.map((domain, index) => this.createRedirectRule(domain, index + 1));
 
       chrome.declarativeNetRequest.updateDynamicRules({
         removeRuleIds: currentRuleIds,
-        addRules: rulesToAdd
+        addRules: rulesToAdd,
       });
     });
   }
 
-  /**
-   * @method createRedirectRule
-   * @description Generates a redirect rule for a specific domain.
-   */
+  /** Создание правила блокировки */
   private createRedirectRule(domain: string, ruleId: number): chrome.declarativeNetRequest.Rule {
     const cleanDomain = domain.replace(/^https?:\/\//, '').replace(/^www\./, '');
-
     return {
       id: ruleId,
       priority: 1,
-      action: {
-        type: "redirect",
-        redirect: { url: chrome.runtime.getURL("blocked-page.html") }
-      },
-      condition: {
-        urlFilter: `||${cleanDomain}^`,
-        resourceTypes: ["main_frame"]
-      }
+      action: { type: "redirect", redirect: { url: chrome.runtime.getURL("blocked-page.html") } },
+      condition: { urlFilter: `||${cleanDomain}^`, resourceTypes: ["main_frame"] },
     };
   }
 
-  /**
-   * @method updatePeriodInPeriodsArray
-   * @description Finds and updates a period within the main 'periods' array in storage.
-   */
-  private async updatePeriodInPeriodsArray(period: IFocus.Period): Promise<void> {
-    const result = await chrome.storage.local.get('periods');
-    const periods: IFocus.Period[] = result['periods'] as IFocus.Period[] || [];
-    const index = periods.findIndex(p => p.id === period.id);
-
-    if (index !== -1) {
-      periods[index] = period;
-      await chrome.storage.local.set({ periods });
-    }
-  }
-
-  /**
-   * @method updateExtensionIcon
-   * @description Переключает иконку расширения в зависимости от статуса фокусировки.
-   * @param isFocused Статус режима фокусировки.
-   */
+  /** Иконка расширения */
   private updateExtensionIcon(isFocused: boolean): void {
-    const iconPath = isFocused
-      ? "icon-spa-colored.png"
-      : "icon-spa-transparent.png";
-
-    chrome.action.setIcon({
-      path: {
-        "16": iconPath,
-        "48": iconPath,
-        "128": iconPath
-      }
-    });
+    const iconPath = isFocused ? "icon-spa-colored.png" : "icon-spa-transparent.png";
+    chrome.action.setIcon({ path: { "16": iconPath, "48": iconPath, "128": iconPath } });
   }
 }
 
-new BackgroundService();
+new BackgroundServiceMV3();
+
