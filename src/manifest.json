@@ -2,17 +2,12 @@
   "manifest_version": 3,
   "name": "Digital Zen",
   "version": "1.0",
-  "description": "An extension to improve focus and manage distracting websites.",
+  "description": "Improve your focus by blocking distracting websites and managing focus sessions.",
   "permissions": [
     "alarms",
     "declarativeNetRequest",
     "storage",
-    "tabs",
-    "history",
     "unlimitedStorage"
-  ],
-  "host_permissions": [
-    "<all_urls>"
   ],
   "action": {
     "default_popup": "index.html",
@@ -23,10 +18,9 @@
   "background": {
     "service_worker": "background.js"
   },
-  "web_accessible_resources": [
-    {
-      "resources": ["blocked-page.html"],
-      "matches": ["<all_urls>"]
-    }
-  ]
+  "icons": {
+    "16": "icon-spa-colored.png",
+    "48": "icon-spa-colored.png",
+    "128": "icon-spa-colored.png"
+  }
 }

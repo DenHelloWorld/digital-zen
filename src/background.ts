@@ -46,29 +46,31 @@ interface StoredFocusedTime extends Omit<IFocus.FocusedTime, 'startFrom' | 'endT
 class StorageAdapter {
   private static writeQueue: Promise<unknown> = Promise.resolve();
 
-  private static async enqueue<T>(task: () => Promise<T>): Promise<T> {
-    const nextTask = this.writeQueue.then(() => task());
-    this.writeQueue = nextTask;
-    return nextTask;
-  }
-
   // === Public API ===
 
   static async savePeriod(period: IFocus.Period): Promise<void> {
-    const stored = this.toStorageFormat(period);
+    return this.enqueue(async () => {
+      const stored = this.toStorageFormat(period);
+      const result = await chrome.storage.local.get('periods');
+      const periods: StoredPeriod[] = Array.isArray(result['periods']) ? result['periods'] : [];
 
-    const result = await chrome.storage.local.get('periods');
-    const periods: StoredPeriod[] = Array.isArray(result['periods']) ? result['periods'] : [];
+      const index = periods.findIndex(p => p.id === period.id);
+      if (index !== -1) {
+        periods[index] = stored;
+      } else {
+        periods.push(stored);
+      }
 
-    const index = periods.findIndex(p => p.id === period.id);
-    if (index !== -1) periods[index] = stored;
-    else periods.push(stored);
-
-    await chrome.storage.local.set({ periods });
+      await chrome.storage.local.set({ periods });
+    });
   }
 
   static async saveCurrentPeriod(period: IFocus.Period): Promise<void> {
-    await chrome.storage.local.set({ currentPeriod: this.toStorageFormat(period) });
+    return this.enqueue(async () => {
+      await chrome.storage.local.set({
+        currentPeriod: this.toStorageFormat(period)
+      });
+    });
   }
 
   static async getPeriods(): Promise<IFocus.Period[]> {
@@ -91,6 +93,12 @@ class StorageAdapter {
   }
 
   // === Private helpers ===
+
+  private static async enqueue<T>(task: () => Promise<T>): Promise<T> {
+    const nextTask = this.writeQueue.then(() => task());
+    this.writeQueue = nextTask;
+    return nextTask;
+  }
 
   private static toStorageFormat(period: IFocus.Period): StoredPeriod {
     const toISOStringSafe = (d: Date | string | null) => {
@@ -139,45 +147,55 @@ class BackgroundServiceMV3 {
     this.restoreCurrentPeriod();
   }
 
-  /** Инициализация сообщений и событий */
+  /**
+   *  Initialization of messages and events
+   *  */
   private initializeListeners(): void {
-    chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
-      switch (message.command) {
-        case 'addPeriod':
-          await this.addPeriod(message.period);
-          sendResponse({ success: true });
-          return;
-        case 'removePeriod':
-          await this.removePeriod(message.id);
-          sendResponse({ success: true });
-          return;
-        case 'updatePeriod':
-          await this.updatePeriod(message.period);
-          sendResponse({ success: true });
-          return;
-        case 'toggleBlockedWebsite':
-          await this.toggleWebSiteBlocking(message.site);
-          sendResponse({ success: true });
-          return;
-        case 'startFocus': {
-          const periods = await StorageAdapter.getPeriods();
-          const periodToStart = periods.find(p => p.id === message.periodId);
-          if (periodToStart) await this.startFocus(periodToStart);
-          sendResponse({ success: true });
-          return;
+    chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+      (async () => {
+        try {
+          switch (message.command) {
+            case 'addPeriod':
+              await this.addPeriod(message.period);
+              sendResponse({ success: true });
+              break;
+            case 'removePeriod':
+              await this.removePeriod(message.id);
+              sendResponse({ success: true });
+              break;
+            case 'updatePeriod':
+              await this.updatePeriod(message.period);
+              sendResponse({ success: true });
+              break;
+            case 'toggleBlockedWebsite':
+              await this.toggleWebSiteBlocking(message.site);
+              sendResponse({ success: true });
+              break;
+            case 'startFocus': {
+              const periods = await StorageAdapter.getPeriods();
+              const periodToStart = periods.find(p => p.id === message.periodId);
+              if (periodToStart) await this.startFocus(periodToStart);
+              sendResponse({ success: true });
+              break;
+            }
+            case 'stopFocus':
+              await this.stopFocus();
+              sendResponse({ success: true });
+              break;
+            case 'toggleFocus':
+              await this.toggleFocus();
+              sendResponse({ success: true });
+              break;
+            default:
+              sendResponse({ success: false, error: 'Unknown command' });
+          }
+        } catch (error) {
+          console.error('Background error:', error);
+          sendResponse({ success: false, error: String(error) });
         }
-        case 'stopFocus':
-          await this.stopFocus();
-          sendResponse({ success: true });
-          return;
-        case 'toggleFocus':
-          console.log('toggleFocus');
-          await this.toggleFocus();
-          sendResponse({ success: true });
-          return;
-        default:
-          sendResponse({ success: false, error: 'Unknown command' });
-      }
+      })();
+
+      return true;
     });
 
     chrome.tabs.onActivated.addListener(activeInfo => {
@@ -191,7 +209,9 @@ class BackgroundServiceMV3 {
     });
   }
 
-  /** Инициализация alarms для контроля фокуса */
+  /**
+   * Initializing alarms for focus control
+   */
   private initializeAlarms(): void {
     chrome.alarms.onAlarm.addListener(async alarm => {
       if (alarm.name === 'checkFocusEnd') {
@@ -203,7 +223,9 @@ class BackgroundServiceMV3 {
     });
   }
 
-  /** Восстановление текущего периода при старте extension */
+  /**
+   * Restoring the current period when starting the extension
+   */
   private async restoreCurrentPeriod(): Promise<void> {
     const current = await StorageAdapter.getCurrentPeriod();
     const periods = await StorageAdapter.getPeriods();
@@ -215,6 +237,8 @@ class BackgroundServiceMV3 {
       this.#currentPeriod = current;
     }
 
+    this.updateExtensionIcon(!!this.#currentPeriod?.isFocused);
+
     if (this.#currentPeriod?.isFocused) {
       this.updateBlockRules(this.#currentPeriod.webSites.filter(s => s.isBlocked).map(s => s.url));
       this.scheduleAlarm();
@@ -223,13 +247,13 @@ class BackgroundServiceMV3 {
     }
   }
 
-  /** Таймер теперь заменен на alarm */
+  /**
+   * Check every minute
+   * */
   private scheduleAlarm(): void {
-    // Проверка каждую минуту
     chrome.alarms.create('checkFocusEnd', { periodInMinutes: 1 });
   }
 
-  /** Добавление периода */
   private async addPeriod(period: IFocus.Period): Promise<void> {
     const periods = await StorageAdapter.getPeriods();
     if (!periods.some(p => p.id === period.id)) {
@@ -238,7 +262,6 @@ class BackgroundServiceMV3 {
     }
   }
 
-  /** Удаление периода */
   private async removePeriod(periodId: string): Promise<void> {
     const periods = await StorageAdapter.getPeriods();
     const current = await StorageAdapter.getCurrentPeriod();
@@ -250,7 +273,6 @@ class BackgroundServiceMV3 {
     await this.restoreCurrentPeriod();
   }
 
-  /** Обновление периода */
   private async updatePeriod(period: IFocus.Period): Promise<void> {
     await StorageAdapter.savePeriod(period);
 
@@ -261,7 +283,6 @@ class BackgroundServiceMV3 {
     }
   }
 
-  /** Переключение блокировки сайта */
   private async toggleWebSiteBlocking(toggledSite: IFocus.WebSite): Promise<void> {
     const current = await StorageAdapter.getCurrentPeriod();
     if (!current) return;
@@ -280,7 +301,6 @@ class BackgroundServiceMV3 {
     }
   }
 
-  /** Старт фокуса */
   private async startFocus(period: IFocus.Period): Promise<void> {
     const today = new Date().getDay();
     if (period.daysOfWeek && !period.daysOfWeek.includes(today)) return;
@@ -297,7 +317,6 @@ class BackgroundServiceMV3 {
     this.scheduleAlarm();
   }
 
-  /** Стоп фокуса */
   private async stopFocus(): Promise<void> {
     if (!this.#currentPeriod) return;
 
@@ -322,7 +341,6 @@ class BackgroundServiceMV3 {
     this.updateExtensionIcon(false);
   }
 
-  /** Переключение фокуса */
   private async toggleFocus(): Promise<void> {
     const current = await StorageAdapter.getCurrentPeriod();
     if (!current) return;
@@ -331,7 +349,6 @@ class BackgroundServiceMV3 {
     else await this.startFocus(current);
   }
 
-  /** Обновление правил блокировки */
   private updateBlockRules(domainList: string[]): void {
     chrome.declarativeNetRequest.getDynamicRules(dynamicRules => {
       const currentRuleIds = dynamicRules.map(r => r.id);
@@ -344,18 +361,18 @@ class BackgroundServiceMV3 {
     });
   }
 
-  /** Создание правила блокировки */
   private createRedirectRule(domain: string, ruleId: number): chrome.declarativeNetRequest.Rule {
     const cleanDomain = domain.replace(/^https?:\/\//, '').replace(/^www\./, '');
     return {
       id: ruleId,
       priority: 1,
-      action: { type: "redirect", redirect: { url: chrome.runtime.getURL("blocked-page.html") } },
+      action: {
+        type: chrome.declarativeNetRequest.RuleActionType.BLOCK
+      },
       condition: { urlFilter: `||${cleanDomain}^`, resourceTypes: ["main_frame"] },
     };
   }
 
-  /** Иконка расширения */
   private updateExtensionIcon(isFocused: boolean): void {
     const iconPath = isFocused ? "icon-spa-colored.png" : "icon-spa-transparent.png";
     chrome.action.setIcon({ path: { "16": iconPath, "48": iconPath, "128": iconPath } });
