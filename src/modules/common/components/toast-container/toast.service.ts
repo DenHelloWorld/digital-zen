@@ -2,7 +2,9 @@ import { Injectable, signal, computed } from '@angular/core';
 import {IToast} from '../../models';
 import {MESSAGE_TYPE_ENUM, POSITIONS_ENUM} from '../../enums';
 
-@Injectable({ providedIn: 'root' })
+@Injectable({
+  providedIn: 'root'
+})
 export class DzToastService {
   readonly #toasts = signal<IToast[]>([]);
 

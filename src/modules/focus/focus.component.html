@@ -3,18 +3,32 @@
     (click)="addCurrentTabToPeriod()"
     class="dz-button dz-button--sm shadow"
   >
-    @if (activeTab()?.favIconUrl) {
+    @if (isSvgIcon(activeTab()?.favIconUrl)) {
+      <svg
+        class="dz-icon dz-icon--shadow"
+        aria-hidden="true"
+        focusable="false"
+      >
+        <use
+          width="20"
+          height="20"
+          [attr.href]="activeTab()?.favIconUrl"
+        />
+      </svg>
+
+      <span>+</span>
+    } @else if (isImageIcon(activeTab()?.favIconUrl)) {
       <img
-        class="dz-icon"
+        class="dz-icon dz-icon--shadow"
         [src]="activeTab()?.favIconUrl"
-        [alt]="activeTab()?.title"
+        width="20"
+        height="20"
+        alt=""
       />
 
-      <span>
-        +
-      </span>
+      <span>+</span>
     } @else if (activeTab()?.title) {
-      {{activeTab()?.title}}
+      {{ activeTab()?.title }}
     }
   </button>
 

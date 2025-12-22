@@ -10,6 +10,7 @@ import {
   LoaderComponent,
 } from '../common';
 import {PeriodComponent} from './components/period/period.component';
+import {isImageIcon, isSvgIcon} from '../common/helpers';
 
 @Component({
   selector: 'dz-focus',
@@ -28,6 +29,9 @@ export class FocusComponent {
   protected readonly activeTab: Signal<chrome.tabs.Tab | undefined> = this.#focusService.activeTab;
   protected readonly currentPeriod: Signal<IFocus.Period | null> = this.#focusService.currentPeriod;
   protected readonly periods: Signal<IFocus.Period[] | null> = this.#focusService.periods;
+
+  protected readonly isSvgIcon = isSvgIcon;
+  protected readonly isImageIcon = isImageIcon;
 
   protected toggleFocus(): void {
     this.#focusService.toggleFocus();
