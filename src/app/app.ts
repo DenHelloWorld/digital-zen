@@ -10,6 +10,7 @@ import {
 } from '../modules/common';
 import {FocusComponent} from '../modules/focus/focus.component';
 import {MenuComponent} from '../modules/menu/menu.component';
+import {DzToastContainerComponent} from '../modules/common/components/toast-container/toast-container';
 
 
 @Component({
@@ -23,7 +24,8 @@ import {MenuComponent} from '../modules/menu/menu.component';
     // components
     ThemeSwitcherComponent,
     FocusComponent,
-    MenuComponent
+    MenuComponent,
+    DzToastContainerComponent
   ],
 })
 export class App {

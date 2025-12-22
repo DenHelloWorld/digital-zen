@@ -82,3 +82,22 @@ export type DayOfWeekShortNameType =
   DAY_OF_WEEK_SHORT_NAME_ENUM.FRIDAY |
   DAY_OF_WEEK_SHORT_NAME_ENUM.SATURDAY;
 
+export enum POSITIONS_ENUM {
+  TOP_RIGHT = 'top-right',
+  TOP_LEFT = 'top-left',
+  BOTTOM_RIGHT = 'bottom-right',
+  BOTTOM_LEFT = 'bottom-left',
+  TOP_CENTER = 'top-center',
+  BOTTOM_CENTER = 'bottom-center',
+}
+
+export enum MESSAGE_TYPE_ENUM {
+  INFO = 'info',
+  ERROR = 'error' ,
+  ACCENT = 'accent',
+}
+
+export enum MESSAGES_ENUM {
+  ADDED = 'Added',
+  ALREADY_ADDED = 'Already added.',
+}

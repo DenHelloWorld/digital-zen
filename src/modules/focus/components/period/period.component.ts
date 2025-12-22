@@ -18,8 +18,9 @@ import {WeekdaysSelectorComponent} from '../../../common/components/weekdays-sel
   styleUrls: ["./period.component.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
+    // components
     TimeLineComponent,
-    WeekdaysSelectorComponent
+    WeekdaysSelectorComponent,
   ]
 })
 export class PeriodComponent {
@@ -28,7 +29,6 @@ export class PeriodComponent {
     const selected = this.period().daysOfWeek;
     return this.allDays.filter(day => selected.includes(day.day));
   });
-
 
   public readonly period: InputSignal<IFocus.Period> = input.required<IFocus.Period>();
 

@@ -1,12 +1,31 @@
 <div class="dz-actions">
   <button
-    (click)="toggleFocus()"
-    class="dz-button dz-button--xxl dz-button--round shadow"
-    [class.shadow--activated]="currentPeriod()?.isFocused"
+    (click)="addCurrentTabToPeriod()"
+    class="dz-button dz-button--sm shadow"
   >
-    <svg class="dz-icon" [class.pulse]="currentPeriod()?.isFocused" aria-hidden="true" focusable="false">
-      <use href="#icon-person-zen"></use>
-    </svg>
+    @if (activeTab()?.favIconUrl) {
+      <img
+        class="dz-icon"
+        [src]="activeTab()?.favIconUrl"
+        [alt]="activeTab()?.title"
+      />
+
+      <span>
+        +
+      </span>
+    } @else if (activeTab()?.title) {
+      {{activeTab()?.title}}
+    }
+  </button>
+
+  <button
+    (click)="toggleFocus()"
+    class="dz-button dz-button--xl dz-button--round shadow"
+    [class.dz-button--activated]="currentPeriod()?.isFocused"
+  >
+      <svg class="dz-icon" [class.pulse]="currentPeriod()?.isFocused" aria-hidden="true" focusable="false">
+        <use href="#icon-person-zen"></use>
+      </svg>
   </button>
 </div>
 

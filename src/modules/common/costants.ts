@@ -100,6 +100,17 @@ export const WEBSITE_PINTEREST: Readonly<IFocus.WebSite> = {
   isBlocked: false
 };
 
+export const WEBSITE_YOUTUBE: Readonly<IFocus.WebSite> = {
+  id: 'youtube',
+  name: 'Youtube',
+  description: 'Youtube',
+  url: 'https://www.youtube.com',
+  imageUrl: '',
+  iconUrl: '#icon-youtube',
+  type: IFocus.EWebSiteType.SOCIAL_MEDIA,
+  isBlocked: false
+};
+
 export const WEBSITES_SOCIAL_MEDIA: Readonly<readonly IFocus.WebSite[]> =
   Object.freeze([
     WEBSITE_X,
@@ -110,7 +121,8 @@ export const WEBSITES_SOCIAL_MEDIA: Readonly<readonly IFocus.WebSite[]> =
     WEBSITE_LINKEDIN,
     WEBSITE_SNAPCHAT,
     WEBSITE_VK,
-    WEBSITE_TIKTOK
+    WEBSITE_TIKTOK,
+    WEBSITE_YOUTUBE
   ]);
 
 export const DAY_SUNDAY: Readonly<IFocus.DayOfWeek> = {
@@ -180,3 +192,18 @@ export const ALL_DAYS_OF_WEEK: readonly Readonly<IFocus.DayOfWeek>[] =
     DAY_FRIDAY,
     DAY_SATURDAY
   ])
+
+
+export const QUICK_FOCUS_ID = 'quick-focus' as const;
+
+export const DEFAULT_PERIOD: Readonly<IFocus.Period> = Object.freeze({
+  id: 'work-social-block',
+  name: 'Work Hours Social Media Block',
+  description: 'Disables access to social media 24/7.',
+  startFrom: new Date(new Date().setHours(0, 0, 0, 0)),
+  endTo: new Date(new Date().setHours(23, 59, 59, 999)),
+  webSites: [...WEBSITES_SOCIAL_MEDIA],
+  daysOfWeek: [...ALL_DAYS_OF_WEEK_DAYS],
+  focusedTimes: [],
+  isFocused: false,
+});

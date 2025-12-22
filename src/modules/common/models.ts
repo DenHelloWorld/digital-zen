@@ -1,5 +1,5 @@
 import {FormControl} from '@angular/forms';
-import {DayOfWeekShortNameType, DayOfWeekType} from './enums';
+import {DayOfWeekShortNameType, DayOfWeekType, MESSAGE_TYPE_ENUM, POSITIONS_ENUM} from './enums';
 
 export namespace IFocus {
   export namespace Form {
@@ -56,4 +56,13 @@ export namespace IFocus {
     startFrom: Date;
     endTo: Date;
   }
+}
+
+export interface IToast {
+  id: number;
+  message: string;
+  type?: MESSAGE_TYPE_ENUM;
+  position?: POSITIONS_ENUM;
+  duration?: number;
+  leaving?: boolean;
 }

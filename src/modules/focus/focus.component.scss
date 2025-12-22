@@ -18,6 +18,10 @@
   }
 
   .dz-actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing);
     padding: var(--spacing);
   }
 }

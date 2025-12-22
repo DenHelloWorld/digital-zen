@@ -1,4 +1,6 @@
 /// <reference types="chrome"/>
+const QUICK_FOCUS_ID = 'quick-focus' as const;
+
 namespace IFocus {
   export interface Period {
     id: string;
@@ -83,10 +85,8 @@ class StorageAdapter {
     const result = await chrome.storage.local.get('currentPeriod');
     const rawObj = result['currentPeriod'];
 
-    // Если rawObj пустой объект или null, возвращаем null
     if (!rawObj || typeof rawObj !== 'object') return null;
 
-    // Теперь приводим к StoredPeriod
     const raw = rawObj as StoredPeriod;
 
     return this.fromStorageFormat(raw);
@@ -174,7 +174,9 @@ class BackgroundServiceMV3 {
             case 'startFocus': {
               const periods = await StorageAdapter.getPeriods();
               const periodToStart = periods.find(p => p.id === message.periodId);
-              if (periodToStart) await this.startFocus(periodToStart);
+              if (periodToStart){
+                await this.startFocus(periodToStart);
+              }
               sendResponse({ success: true });
               break;
             }
@@ -186,6 +188,27 @@ class BackgroundServiceMV3 {
               await this.toggleFocus();
               sendResponse({ success: true });
               break;
+            case 'toggleQuickFocus': {
+              await this.toggleQuickFocus(message.siteUrl);
+              sendResponse({ success: true });
+              break;
+            }
+            case 'getActiveTab': {
+              const tab = await this.getActiveTab();
+
+              sendResponse({
+                success: true,
+                tab: tab
+                  ? {
+                    id: tab.id,
+                    url: tab.url,
+                    title: tab.title,
+                    favIconUrl: tab.favIconUrl,
+                  }
+                  : null,
+              });
+              break;
+            }
             default:
               sendResponse({ success: false, error: 'Unknown command' });
           }
@@ -275,11 +298,16 @@ class BackgroundServiceMV3 {
 
   private async updatePeriod(period: IFocus.Period): Promise<void> {
     await StorageAdapter.savePeriod(period);
+    const current = await StorageAdapter.getCurrentPeriod();
 
-    if (this.#currentPeriod?.id === period.id && period.isFocused) {
-      this.updateBlockRules(period.webSites.filter(s => s.isBlocked).map(s => s.url));
+    if (current && current.id === period.id) {
+      await StorageAdapter.saveCurrentPeriod(period);
       this.#currentPeriod = period;
-      this.scheduleAlarm();
+
+      if (period.isFocused) {
+        this.updateBlockRules(period.webSites.filter(s => s.isBlocked).map(s => s.url));
+        this.scheduleAlarm();
+      }
     }
   }
 
@@ -303,7 +331,10 @@ class BackgroundServiceMV3 {
 
   private async startFocus(period: IFocus.Period): Promise<void> {
     const today = new Date().getDay();
-    if (period.daysOfWeek && !period.daysOfWeek.includes(today)) return;
+
+    if (period.daysOfWeek && !period.daysOfWeek.includes(today)) {
+      return;
+    }
 
     this.#currentPeriod = period;
     this.#sessionStartTime = new Date();
@@ -343,10 +374,27 @@ class BackgroundServiceMV3 {
 
   private async toggleFocus(): Promise<void> {
     const current = await StorageAdapter.getCurrentPeriod();
-    if (!current) return;
 
-    if (current.isFocused) await this.stopFocus();
-    else await this.startFocus(current);
+    if (!current) {
+      return;
+    }
+
+    if (current.isFocused) {
+      await this.stopFocus();
+    }
+    else {
+      await this.startFocus(current);
+    }
+  }
+
+  private async toggleQuickFocus(url: string): Promise<void> {
+    const current = await StorageAdapter.getCurrentPeriod();
+
+    if (current && current.id === QUICK_FOCUS_ID && current.isFocused) {
+      await this.stopFocus();
+    } else {
+      await this.startQuickFocus(url);
+    }
   }
 
   private updateBlockRules(domainList: string[]): void {
@@ -362,20 +410,67 @@ class BackgroundServiceMV3 {
   }
 
   private createRedirectRule(domain: string, ruleId: number): chrome.declarativeNetRequest.Rule {
-    const cleanDomain = domain.replace(/^https?:\/\//, '').replace(/^www\./, '');
+    const cleanDomain = domain
+      .replace(/^https?:\/\//, '')
+      .split('/')[0]
+      .replace(/^www\./, '');
+    console.log('createRedirectRule', cleanDomain);
     return {
       id: ruleId,
       priority: 1,
       action: {
-        type: chrome.declarativeNetRequest.RuleActionType.BLOCK
+        type: "redirect",
+        redirect: { url: chrome.runtime.getURL("blocked-page.html")
+        }
       },
-      condition: { urlFilter: `||${cleanDomain}^`, resourceTypes: ["main_frame"] },
+      condition: {
+        requestDomains: [cleanDomain],
+        resourceTypes: ["main_frame"],
+      },
     };
   }
 
   private updateExtensionIcon(isFocused: boolean): void {
     const iconPath = isFocused ? "icon-spa-colored.png" : "icon-spa-transparent.png";
     chrome.action.setIcon({ path: { "16": iconPath, "48": iconPath, "128": iconPath } });
+  }
+
+  private async getActiveTab(): Promise<chrome.tabs.Tab | null> {
+    const tabs = await chrome.tabs.query({
+      active: true,
+      currentWindow: true,
+    });
+
+    return tabs.length ? tabs[0] : null;
+  }
+
+  private async startQuickFocus(url: string): Promise<void> {
+    const domain = url.replace(/^https?:\/\//, '').split('/')[0];
+
+    console.log('domain', domain);
+    console.log('url', url);
+    const quickPeriod: IFocus.Period = {
+      id: QUICK_FOCUS_ID,
+      name: `Focus: ${domain}`,
+      description: 'Quick focus session',
+      startFrom: new Date(),
+      endTo: null,
+      isFocused: true,
+      focusedTimes: [],
+      daysOfWeek: [0, 1, 2, 3, 4, 5, 6],
+      webSites: [
+        {
+          id: 'ws-' + Date.now(),
+          name: domain,
+          description: '',
+          url: url,
+          imageUrl: '',
+          isBlocked: true
+        }
+      ]
+    };
+
+    await this.startFocus(quickPeriod);
   }
 }
 

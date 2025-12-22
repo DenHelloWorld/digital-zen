@@ -7,7 +7,17 @@
     "alarms",
     "declarativeNetRequest",
     "storage",
-    "unlimitedStorage"
+    "unlimitedStorage",
+    "activeTab"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["blocked-page.html"],
+      "matches": ["<all_urls>"]
+    }
   ],
   "action": {
     "default_popup": "index.html",

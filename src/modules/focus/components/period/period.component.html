@@ -1,7 +1,7 @@
 <details
+  open
   class="dz-accordion dz-accordion--accent"
   [class.dz-accordion--accent]="period().isFocused"
-  [open]="period().isFocused"
 >
   <summary class="dz-accordion__header">
     <span>
@@ -34,61 +34,24 @@
             [title]="site.name"
             (click)="onToggleBlockedWebsite(site)"
           >
-            @if (site.iconUrl) {
-              <svg class="dz-icon" aria-hidden="true" focusable="false">
-                <use [attr.href]="site.iconUrl"></use>
-              </svg>
-            } @else if (site.imageUrl) {
+            @if (site.imageUrl) {
               <img
+                class="dz-icon"
                 [src]="site.imageUrl"
                 [alt]="site.name"
               />
+            } @else if (site.iconUrl) {
+              <svg
+                class="dz-icon"
+                aria-hidden="true"
+                focusable="false"
+              >
+                <use [attr.href]="site.iconUrl"></use>
+              </svg>
             }
-
           </button>
         </li>
       }
     </ul>
   </div>
 </details>
-
-
-<!--<h2 class="title">-->
-<!--  {{period().name}}-->
-<!--</h2>-->
-
-<!--<dz-time-line [startFrom]="period().startFrom" [endTo]="period().endTo" />-->
-
-<!--<p class="description">-->
-<!--  {{period().description}}-->
-<!--</p>-->
-
-<!--<div class="weekdays">-->
-<!--  <dz-weekdays-selector [selectedDays]="selectedDays()" [isSelectable]="false" />-->
-<!--</div>-->
-
-<!--<ul class="dz-list dz-list&#45;&#45;horizontal dz-list&#45;&#45;full" aria-labelledby="social-title">-->
-<!--  @for (site of period().webSites; track site) {-->
-<!--      <li>-->
-<!--        <button-->
-<!--          class="dz-button dz-button&#45;&#45;md dz-button&#45;&#45;square shadow"-->
-<!--          [class.dz-button&#45;&#45;error]="site.isBlocked"-->
-<!--          [class.shadow&#45;&#45;activated]="site.isBlocked"-->
-<!--          [title]="site.name"-->
-<!--          (click)="onToggleBlockedWebsite(site)"-->
-<!--        >-->
-<!--          @if (site.iconUrl) {-->
-<!--            <svg class="dz-icon" aria-hidden="true" focusable="false">-->
-<!--              <use [attr.href]="site.iconUrl"></use>-->
-<!--            </svg>-->
-<!--          } @else if (site.imageUrl) {-->
-<!--            <img-->
-<!--              [src]="site.imageUrl"-->
-<!--              [alt]="site.name"-->
-<!--            />-->
-<!--          }-->
-
-<!--        </button>-->
-<!--      </li>-->
-<!--  }-->
-<!--</ul>-->

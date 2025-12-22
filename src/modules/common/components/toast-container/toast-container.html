@@ -1,0 +1,33 @@
+@for (pos of positions; track $index) {
+  @if (getToastsByPosition(pos).length > 0) {
+    <ul
+      [class]="'dz-notification-area dz-notification-area--' + pos"
+    >
+      @for (toast of getToastsByPosition(pos); track $index) {
+        <li
+          class="dz-notification dz-box dz-box--colored shadow"
+          [class.dz-placeholder--error]="toast.type === 'error'"
+          [class.dz-placeholder--accent]="toast.type === 'accent'"
+          [class.dz-notification--hidden]="toast.leaving"
+        >
+          <div class="dz-notification__body">
+            <span>{{ toast.message }}</span>
+
+            <button
+              class="dz-button dz-button--xs dz-button--round dz-button--ghost"
+              (click)="toastService.hide(toast.id)"
+            >
+              ✕
+            </button>
+          </div>
+
+          @if (toast.duration && !toast.leaving) {
+            <div class="dz-notification__progress"
+                 [style.animation-duration.ms]="toast.duration">
+            </div>
+          }
+        </li>
+      }
+    </ul>
+  }
+}
