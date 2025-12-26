@@ -6,14 +6,14 @@
       </svg>
     </button>
 
-    <button (click)="setViewType(viewTypes.MENU)"  class="dz-button dz-button--round dz-button--md">
+    <button (click)="setViewType(viewTypes.MENU)" class="dz-button dz-button--round dz-button--md">
       <svg class="dz-icon" aria-hidden="true" focusable="false">
         <use href="#icon-menu"></use>
       </svg>
     </button>
   </nav>
 
-    <dz-theme-switcher />
+  <dz-theme-switcher />
 </header>
 
 <main class="dz-main" [class.dark-theme]="theme() === colorSchemes.DARK">
@@ -30,4 +30,4 @@
   }
 </main>
 
-<dz-toast-container/>
+<dz-toast-container />

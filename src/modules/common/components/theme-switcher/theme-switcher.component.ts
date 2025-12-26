@@ -1,6 +1,6 @@
-import {ChangeDetectionStrategy, Component, inject, Signal} from '@angular/core';
-import {ThemeService} from '../../services';
-import {COLOR_SCHEMA_ENUM, ColorSchemaType} from '../../enums';
+import { ChangeDetectionStrategy, Component, inject, Signal } from '@angular/core';
+import { ThemeService } from '../../services';
+import { COLOR_SCHEMA_ENUM, ColorSchemaType } from '../../enums';
 
 @Component({
   selector: 'dz-theme-switcher',
@@ -15,6 +15,6 @@ export class ThemeSwitcherComponent {
   protected readonly colorSchemes: typeof COLOR_SCHEMA_ENUM = COLOR_SCHEMA_ENUM;
 
   protected toggleTheme(): void {
-    this.#themeService.toggle()
+    this.#themeService.toggle();
   }
 }

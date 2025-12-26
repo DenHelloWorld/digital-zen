@@ -1,5 +1,5 @@
-import {IFocus} from './models';
-import {DAY_OF_WEEK_ENUM, DAY_OF_WEEK_SHORT_NAME_ENUM, DayOfWeekType} from './enums';
+import { IFocus } from './models';
+import { DAY_OF_WEEK_ENUM, DAY_OF_WEEK_SHORT_NAME_ENUM, DayOfWeekType } from './enums';
 
 export const WEBSITE_X: Readonly<IFocus.WebSite> = {
   id: 'x',
@@ -9,8 +9,8 @@ export const WEBSITE_X: Readonly<IFocus.WebSite> = {
   imageUrl: '',
   iconUrl: '#icon-x',
   type: IFocus.EWebSiteType.SOCIAL_MEDIA,
-  isBlocked: false
-}
+  isBlocked: false,
+};
 
 export const WEBSITE_INST: Readonly<IFocus.WebSite> = {
   id: 'instagram',
@@ -20,8 +20,8 @@ export const WEBSITE_INST: Readonly<IFocus.WebSite> = {
   imageUrl: '',
   iconUrl: '#icon-instagram',
   type: IFocus.EWebSiteType.SOCIAL_MEDIA,
-  isBlocked: false
-}
+  isBlocked: false,
+};
 
 export const WEBSITE_FACEBOOK: Readonly<IFocus.WebSite> = {
   id: 'facebook',
@@ -31,8 +31,8 @@ export const WEBSITE_FACEBOOK: Readonly<IFocus.WebSite> = {
   imageUrl: '',
   iconUrl: '#icon-facebook',
   type: IFocus.EWebSiteType.SOCIAL_MEDIA,
-  isBlocked: false
-}
+  isBlocked: false,
+};
 
 export const WEBSITE_TIKTOK: Readonly<IFocus.WebSite> = {
   id: 'tiktok',
@@ -42,7 +42,7 @@ export const WEBSITE_TIKTOK: Readonly<IFocus.WebSite> = {
   imageUrl: '',
   iconUrl: '#icon-tiktok',
   type: IFocus.EWebSiteType.SOCIAL_MEDIA,
-  isBlocked: false
+  isBlocked: false,
 };
 
 export const WEBSITE_VK: Readonly<IFocus.WebSite> = {
@@ -53,7 +53,7 @@ export const WEBSITE_VK: Readonly<IFocus.WebSite> = {
   imageUrl: '',
   iconUrl: '#icon-vk',
   type: IFocus.EWebSiteType.SOCIAL_MEDIA,
-  isBlocked: false
+  isBlocked: false,
 };
 
 export const WEBSITE_TELEGRAM: Readonly<IFocus.WebSite> = {
@@ -64,7 +64,7 @@ export const WEBSITE_TELEGRAM: Readonly<IFocus.WebSite> = {
   imageUrl: '',
   iconUrl: '#icon-telegram',
   type: IFocus.EWebSiteType.SOCIAL_MEDIA,
-  isBlocked: false
+  isBlocked: false,
 };
 
 export const WEBSITE_SNAPCHAT: Readonly<IFocus.WebSite> = {
@@ -75,7 +75,7 @@ export const WEBSITE_SNAPCHAT: Readonly<IFocus.WebSite> = {
   imageUrl: '',
   iconUrl: '#icon-snapchat',
   type: IFocus.EWebSiteType.SOCIAL_MEDIA,
-  isBlocked: false
+  isBlocked: false,
 };
 
 export const WEBSITE_LINKEDIN: Readonly<IFocus.WebSite> = {
@@ -86,7 +86,7 @@ export const WEBSITE_LINKEDIN: Readonly<IFocus.WebSite> = {
   imageUrl: '',
   iconUrl: '#icon-linkedin',
   type: IFocus.EWebSiteType.SOCIAL_MEDIA,
-  isBlocked: false
+  isBlocked: false,
 };
 
 export const WEBSITE_PINTEREST: Readonly<IFocus.WebSite> = {
@@ -97,7 +97,7 @@ export const WEBSITE_PINTEREST: Readonly<IFocus.WebSite> = {
   imageUrl: '',
   iconUrl: '#icon-pinterest',
   type: IFocus.EWebSiteType.SOCIAL_MEDIA,
-  isBlocked: false
+  isBlocked: false,
 };
 
 export const WEBSITE_YOUTUBE: Readonly<IFocus.WebSite> = {
@@ -108,91 +108,86 @@ export const WEBSITE_YOUTUBE: Readonly<IFocus.WebSite> = {
   imageUrl: '',
   iconUrl: '#icon-youtube',
   type: IFocus.EWebSiteType.SOCIAL_MEDIA,
-  isBlocked: false
+  isBlocked: false,
 };
 
-export const WEBSITES_SOCIAL_MEDIA: Readonly<readonly IFocus.WebSite[]> =
-  Object.freeze([
-    WEBSITE_X,
-    WEBSITE_INST,
-    WEBSITE_FACEBOOK,
-    WEBSITE_TELEGRAM,
-    WEBSITE_PINTEREST,
-    WEBSITE_LINKEDIN,
-    WEBSITE_SNAPCHAT,
-    WEBSITE_VK,
-    WEBSITE_TIKTOK,
-    WEBSITE_YOUTUBE
-  ]);
+export const WEBSITES_SOCIAL_MEDIA: Readonly<readonly IFocus.WebSite[]> = Object.freeze([
+  WEBSITE_X,
+  WEBSITE_INST,
+  WEBSITE_FACEBOOK,
+  WEBSITE_TELEGRAM,
+  WEBSITE_PINTEREST,
+  WEBSITE_LINKEDIN,
+  WEBSITE_SNAPCHAT,
+  WEBSITE_VK,
+  WEBSITE_TIKTOK,
+  WEBSITE_YOUTUBE,
+]);
 
 export const DAY_SUNDAY: Readonly<IFocus.DayOfWeek> = {
   day: DAY_OF_WEEK_ENUM.SUNDAY,
   name: DAY_OF_WEEK_SHORT_NAME_ENUM.SUNDAY,
-}
+};
 
 export const DAY_MONDAY: Readonly<IFocus.DayOfWeek> = {
   day: DAY_OF_WEEK_ENUM.MONDAY,
   name: DAY_OF_WEEK_SHORT_NAME_ENUM.MONDAY,
-}
+};
 
 export const DAY_TUESDAY: Readonly<IFocus.DayOfWeek> = {
   day: DAY_OF_WEEK_ENUM.TUESDAY,
   name: DAY_OF_WEEK_SHORT_NAME_ENUM.TUESDAY,
-}
+};
 
 export const DAY_WEDNESDAY: Readonly<IFocus.DayOfWeek> = {
   day: DAY_OF_WEEK_ENUM.WEDNESDAY,
   name: DAY_OF_WEEK_SHORT_NAME_ENUM.WEDNESDAY,
-}
+};
 
 export const DAY_THURSDAY: Readonly<IFocus.DayOfWeek> = {
   day: DAY_OF_WEEK_ENUM.THURSDAY,
   name: DAY_OF_WEEK_SHORT_NAME_ENUM.THURSDAY,
-}
+};
 
 export const DAY_FRIDAY: Readonly<IFocus.DayOfWeek> = {
   day: DAY_OF_WEEK_ENUM.FRIDAY,
   name: DAY_OF_WEEK_SHORT_NAME_ENUM.FRIDAY,
-}
+};
 
 export const DAY_SATURDAY: Readonly<IFocus.DayOfWeek> = {
   day: DAY_OF_WEEK_ENUM.SATURDAY,
   name: DAY_OF_WEEK_SHORT_NAME_ENUM.SATURDAY,
-}
+};
 
-export const WORK_DAYS_OF_WEEK_DAYS: Readonly<readonly DayOfWeekType[]> =
-  Object.freeze([
-    // DAY_SUNDAY.day,
-    DAY_MONDAY.day,
-    DAY_TUESDAY.day,
-    DAY_WEDNESDAY.day,
-    DAY_THURSDAY.day,
-    DAY_FRIDAY.day,
-    // DAY_SATURDAY.day
-  ]);
+export const WORK_DAYS_OF_WEEK_DAYS: Readonly<readonly DayOfWeekType[]> = Object.freeze([
+  // DAY_SUNDAY.day,
+  DAY_MONDAY.day,
+  DAY_TUESDAY.day,
+  DAY_WEDNESDAY.day,
+  DAY_THURSDAY.day,
+  DAY_FRIDAY.day,
+  // DAY_SATURDAY.day
+]);
 
-export const ALL_DAYS_OF_WEEK_DAYS: Readonly<readonly DayOfWeekType[]> =
-  Object.freeze([
-    DAY_SUNDAY.day,
-    DAY_MONDAY.day,
-    DAY_TUESDAY.day,
-    DAY_WEDNESDAY.day,
-    DAY_THURSDAY.day,
-    DAY_FRIDAY.day,
-    DAY_SATURDAY.day
-  ]);
+export const ALL_DAYS_OF_WEEK_DAYS: Readonly<readonly DayOfWeekType[]> = Object.freeze([
+  DAY_SUNDAY.day,
+  DAY_MONDAY.day,
+  DAY_TUESDAY.day,
+  DAY_WEDNESDAY.day,
+  DAY_THURSDAY.day,
+  DAY_FRIDAY.day,
+  DAY_SATURDAY.day,
+]);
 
-export const ALL_DAYS_OF_WEEK: readonly Readonly<IFocus.DayOfWeek>[] =
-  Object.freeze([
-    DAY_SUNDAY,
-    DAY_MONDAY,
-    DAY_TUESDAY,
-    DAY_WEDNESDAY,
-    DAY_THURSDAY,
-    DAY_FRIDAY,
-    DAY_SATURDAY
-  ])
-
+export const ALL_DAYS_OF_WEEK: readonly Readonly<IFocus.DayOfWeek>[] = Object.freeze([
+  DAY_SUNDAY,
+  DAY_MONDAY,
+  DAY_TUESDAY,
+  DAY_WEDNESDAY,
+  DAY_THURSDAY,
+  DAY_FRIDAY,
+  DAY_SATURDAY,
+]);
 
 export const QUICK_FOCUS_ID = 'quick-focus' as const;
 

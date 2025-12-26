@@ -1,6 +1,8 @@
 .shadow {
   box-shadow: 0 4px 6px var(--shadow-color);
-  transition: transform .3s, box-shadow .3s;
+  transition:
+    transform 0.3s,
+    box-shadow 0.3s;
 
   &:hover {
     box-shadow: 0 6px 8px var(--shadow-color);

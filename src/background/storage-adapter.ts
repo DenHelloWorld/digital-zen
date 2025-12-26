@@ -53,7 +53,7 @@ export class StorageAdapter {
       const result = await chrome.storage.local.get('periods');
       const periods: StoredPeriod[] = Array.isArray(result['periods']) ? result['periods'] : [];
 
-      const index = periods.findIndex((p) => p.id === period.id);
+      const index = periods.findIndex(p => p.id === period.id);
       if (index !== -1) {
         periods[index] = stored;
       } else {
@@ -107,7 +107,7 @@ export class StorageAdapter {
       ...period,
       startFrom: toISOStringSafe(period.startFrom),
       endTo: toISOStringSafe(period.endTo),
-      focusedTimes: (period.focusedTimes || []).map((ft) => ({
+      focusedTimes: (period.focusedTimes || []).map(ft => ({
         ...ft,
         startFrom: toISOStringSafe(ft.startFrom),
         endTo: toISOStringSafe(ft.endTo),
@@ -120,7 +120,7 @@ export class StorageAdapter {
       ...stored,
       startFrom: stored.startFrom ? new Date(stored.startFrom) : null,
       endTo: stored.endTo ? new Date(stored.endTo) : null,
-      focusedTimes: (stored.focusedTimes || []).map((ft) => ({
+      focusedTimes: (stored.focusedTimes || []).map(ft => ({
         ...ft,
         startFrom: ft.startFrom ? new Date(ft.startFrom) : null,
         endTo: ft.endTo ? new Date(ft.endTo) : null,

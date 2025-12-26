@@ -44,7 +44,7 @@ export class BackgroundServiceMV3 {
               break;
             case 'startFocus': {
               const periods = await StorageAdapter.getPeriods();
-              const periodToStart = periods.find((p) => p.id === message.periodId);
+              const periodToStart = periods.find(p => p.id === message.periodId);
               if (periodToStart) {
                 await this.startFocus(periodToStart);
               }
@@ -92,7 +92,7 @@ export class BackgroundServiceMV3 {
       return true;
     });
 
-    chrome.tabs.onActivated.addListener((activeInfo) => {
+    chrome.tabs.onActivated.addListener(activeInfo => {
       chrome.storage.local.set({ tab_id: activeInfo.tabId });
     });
 
@@ -107,7 +107,7 @@ export class BackgroundServiceMV3 {
    * Initializing alarms for focus control
    */
   private initializeAlarms(): void {
-    chrome.alarms.onAlarm.addListener(async (alarm) => {
+    chrome.alarms.onAlarm.addListener(async alarm => {
       if (alarm.name === 'checkFocusEnd') {
         const current = await StorageAdapter.getCurrentPeriod();
         if (current?.isFocused && current.endTo && new Date() > current.endTo) {
@@ -134,9 +134,7 @@ export class BackgroundServiceMV3 {
     this.updateExtensionIcon(!!this.#currentPeriod?.isFocused);
 
     if (this.#currentPeriod?.isFocused) {
-      this.updateBlockRules(
-        this.#currentPeriod.webSites.filter((s) => s.isBlocked).map((s) => s.url)
-      );
+      this.updateBlockRules(this.#currentPeriod.webSites.filter(s => s.isBlocked).map(s => s.url));
       this.scheduleAlarm();
     } else {
       this.updateBlockRules([]);
@@ -152,7 +150,7 @@ export class BackgroundServiceMV3 {
 
   private async addPeriod(period: IFocus.Period): Promise<void> {
     const periods = await StorageAdapter.getPeriods();
-    if (!periods.some((p) => p.id === period.id)) {
+    if (!periods.some(p => p.id === period.id)) {
       await StorageAdapter.savePeriod(period);
       await this.restoreCurrentPeriod();
     }
@@ -162,7 +160,7 @@ export class BackgroundServiceMV3 {
     const periods = await StorageAdapter.getPeriods();
     const current = await StorageAdapter.getCurrentPeriod();
 
-    const newPeriods = periods.filter((p) => p.id !== periodId);
+    const newPeriods = periods.filter(p => p.id !== periodId);
     await chrome.storage.local.set({ periods: newPeriods });
 
     if (current?.id === periodId) await this.stopFocus();
@@ -178,7 +176,7 @@ export class BackgroundServiceMV3 {
       this.#currentPeriod = period;
 
       if (period.isFocused) {
-        this.updateBlockRules(period.webSites.filter((s) => s.isBlocked).map((s) => s.url));
+        this.updateBlockRules(period.webSites.filter(s => s.isBlocked).map(s => s.url));
         this.scheduleAlarm();
       }
     }
@@ -188,7 +186,7 @@ export class BackgroundServiceMV3 {
     const current = await StorageAdapter.getCurrentPeriod();
     if (!current) return;
 
-    const updatedWebSites = current.webSites.map((site) =>
+    const updatedWebSites = current.webSites.map(site =>
       site.id === toggledSite.id ? { ...site, isBlocked: !site.isBlocked } : site
     );
 
@@ -197,7 +195,7 @@ export class BackgroundServiceMV3 {
     await StorageAdapter.saveCurrentPeriod(updatedPeriod);
 
     if (updatedPeriod.isFocused) {
-      this.updateBlockRules(updatedWebSites.filter((s) => s.isBlocked).map((s) => s.url));
+      this.updateBlockRules(updatedWebSites.filter(s => s.isBlocked).map(s => s.url));
       this.#currentPeriod = updatedPeriod;
     }
   }
@@ -216,7 +214,7 @@ export class BackgroundServiceMV3 {
     await StorageAdapter.saveCurrentPeriod(this.#currentPeriod);
     await StorageAdapter.savePeriod(this.#currentPeriod);
 
-    this.updateBlockRules(period.webSites.filter((site) => site.isBlocked).map((site) => site.url));
+    this.updateBlockRules(period.webSites.filter(site => site.isBlocked).map(site => site.url));
     this.updateExtensionIcon(true);
     this.scheduleAlarm();
   }
@@ -273,8 +271,8 @@ export class BackgroundServiceMV3 {
   }
 
   private updateBlockRules(domainList: string[]): void {
-    chrome.declarativeNetRequest.getDynamicRules((dynamicRules) => {
-      const currentRuleIds = dynamicRules.map((r) => r.id);
+    chrome.declarativeNetRequest.getDynamicRules(dynamicRules => {
+      const currentRuleIds = dynamicRules.map(r => r.id);
       const rulesToAdd = domainList.map((domain, index) =>
         this.createRedirectRule(domain, index + 1)
       );

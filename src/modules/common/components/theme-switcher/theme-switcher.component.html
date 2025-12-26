@@ -1,7 +1,4 @@
-<button
-  (click)="toggleTheme()"
-  class="dz-button dz-button--round dz-button--md"
-  >
+<button (click)="toggleTheme()" class="dz-button dz-button--round dz-button--md">
   <svg class="dz-icon" aria-hidden="true" focusable="false">
     <use [attr.href]="theme() === colorSchemes.LIGHT ? '#icon-moon' : '#icon-sun'" />
   </svg>

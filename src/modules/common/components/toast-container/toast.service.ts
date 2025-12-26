@@ -1,9 +1,9 @@
 import { Injectable, signal, computed } from '@angular/core';
-import {IToast} from '../../models';
-import {MESSAGE_TYPE_ENUM, POSITIONS_ENUM} from '../../enums';
+import { IToast } from '../../models';
+import { MESSAGE_TYPE_ENUM, POSITIONS_ENUM } from '../../enums';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class DzToastService {
   readonly #toasts = signal<IToast[]>([]);
@@ -17,7 +17,7 @@ export class DzToastService {
       message: toast.message || '',
       type: toast.type || MESSAGE_TYPE_ENUM.INFO,
       position: toast.position || POSITIONS_ENUM.BOTTOM_CENTER,
-      duration: toast.duration || 3000
+      duration: toast.duration || 3000,
     };
 
     this.#toasts.update(current => [...current, newToast]);
@@ -28,9 +28,7 @@ export class DzToastService {
   }
 
   public hide(id: number) {
-    this.#toasts.update(current =>
-      current.map(t => t.id === id ? { ...t, leaving: true } : t)
-    );
+    this.#toasts.update(current => current.map(t => (t.id === id ? { ...t, leaving: true } : t)));
 
     setTimeout(() => {
       this.#toasts.update(current => current.filter(t => t.id !== id));

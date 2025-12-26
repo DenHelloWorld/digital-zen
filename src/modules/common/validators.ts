@@ -1,4 +1,4 @@
-import {AbstractControl, ValidationErrors} from '@angular/forms';
+import { AbstractControl, ValidationErrors } from '@angular/forms';
 
 export function requiredTrimmedValidator(control: AbstractControl): ValidationErrors | null {
   const value: typeof control.value = control.value;

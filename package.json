@@ -7,19 +7,10 @@
     "build": "ng build && tsc -p tsconfig.background.json && tsc-alias -p tsconfig.background.json",
     "watch": "concurrently \"ng build --watch --delete-output-path=false\" \"tsc -p tsconfig.background.json -w\" \"tsc-alias -w -p tsconfig.background.json\"",
     "test": "ng test",
-    "lint": "ng lint"
-  },
-  "prettier": {
-    "printWidth": 100,
-    "singleQuote": true,
-    "overrides": [
-      {
-        "files": "*.html",
-        "options": {
-          "parser": "angular"
-        }
-      }
-    ]
+    "lint": "ng lint",
+    "format": "npx prettier --write .",
+    "format:check": "npx prettier --check .",
+    "lint:fix": "ng lint --fix"
   },
   "private": true,
   "dependencies": {
@@ -40,7 +31,10 @@
     "angular-eslint": "21.1.0",
     "concurrently": "^9.2.1",
     "eslint": "^9.39.1",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.2.1",
     "globals": "^16.5.0",
+    "prettier": "^3.7.4",
     "tsc-alias": "^1.8.16",
     "typescript": "~5.9.2",
     "typescript-eslint": "8.40.0"
