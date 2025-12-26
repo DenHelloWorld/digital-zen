@@ -4,8 +4,8 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build && tsc -p tsconfig.background.json",
-    "watch": "concurrently \"ng build --watch --delete-output-path=false\" \"tsc -p tsconfig.background.json -w\"",
+    "build": "ng build && tsc -p tsconfig.background.json && tsc-alias -p tsconfig.background.json",
+    "watch": "concurrently \"ng build --watch --delete-output-path=false\" \"tsc -p tsconfig.background.json -w\" \"tsc-alias -w -p tsconfig.background.json\"",
     "test": "ng test",
     "lint": "ng lint"
   },
@@ -41,6 +41,7 @@
     "concurrently": "^9.2.1",
     "eslint": "^9.39.1",
     "globals": "^16.5.0",
+    "tsc-alias": "^1.8.16",
     "typescript": "~5.9.2",
     "typescript-eslint": "8.40.0"
   }
