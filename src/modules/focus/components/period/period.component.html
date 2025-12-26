@@ -28,26 +28,29 @@
       @for (site of period().webSites; track site) {
         <li>
           <button
-            class="dz-button dz-button--md dz-button--square shadow"
+            class="dz-button dz-button--md  shadow"
+            [class.dz-button--square]="site.iconUrl || site.imageUrl"
             [class.dz-button--error]="site.isBlocked"
             [class.shadow--activated]="site.isBlocked"
             [title]="site.name"
             (click)="onToggleBlockedWebsite(site)"
           >
-            @if (site.imageUrl) {
-              <img
-                class="dz-icon"
-                [src]="site.imageUrl"
-                [alt]="site.name"
-              />
-            } @else if (site.iconUrl) {
+            @if (site.iconUrl) {
               <svg
-                class="dz-icon"
+                class="dz-icon dz-icon--shadow"
                 aria-hidden="true"
                 focusable="false"
               >
-                <use [attr.href]="site.iconUrl"></use>
+                <use width="24" height="24" [attr.href]="site.iconUrl"></use>
               </svg>
+            } @else if (site.imageUrl) {
+              <img
+                class="dz-icon dz-icon--shadow"
+                [src]="site.imageUrl"
+                [alt]="site.name"
+              />
+            } @else {
+              {{ site.name }}
             }
           </button>
         </li>

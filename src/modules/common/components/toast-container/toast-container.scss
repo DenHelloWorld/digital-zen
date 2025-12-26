@@ -63,7 +63,6 @@
     animation: dz-toast-in 0.3s ease-out forwards;
   }
 
-  /* 5. PROGRESS BAR (Опционально: полоска времени) */
   .dz-notification__progress {
     position: absolute;
     bottom: 0;
@@ -81,7 +80,6 @@
     to { transform: scaleX(0); }
   }
 
-  /* 6. ЦВЕТОВЫЕ СХЕМЫ (Твои переменные) */
   .dz-notification.dz-placeholder--error {
     background-color: var(--color-zen-error);
     color: var(--color-on-accent);

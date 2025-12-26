@@ -1,8 +1,8 @@
 import {computed, inject, Injectable, Signal, signal, WritableSignal} from '@angular/core';
 import {IFocus} from '../../common/models';
 import {DEFAULT_PERIOD, MESSAGE_TYPE_ENUM, MESSAGES_ENUM, QUICK_FOCUS_ID} from '../../common'
-import {cleanUrlHelper} from '../../common/pipes';
 import {DzToastService} from '../../common/components/toast-container/toast.service';
+import {cleanUrlHelper, isImageIcon, isSvgIcon} from '../../common/helpers';
 
 @Injectable({
   providedIn: 'root'
@@ -153,9 +153,9 @@ export class FocusService {
         id: clearedUrl,
         url: clearedUrl,
         name: tab.title || clearedUrl,
-        iconUrl,
+        iconUrl: isSvgIcon(iconUrl) ? iconUrl : '',
         description: tab.title || clearedUrl,
-        imageUrl: iconUrl,
+        imageUrl:  isImageIcon(iconUrl) ? iconUrl : '',
         type: IFocus.EWebSiteType.SOCIAL_MEDIA,
         isBlocked: false
       };
