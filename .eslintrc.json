@@ -1,0 +1,9 @@
+{
+  "root": true,
+  "ignorePatterns": ["projects/**/*"],
+  "plugins": ["prettier"],
+  "extends": ["prettier"],
+  "rules": {
+    "prettier/prettier": "error"
+  }
+}
