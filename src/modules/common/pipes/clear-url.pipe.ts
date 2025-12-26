@@ -3,7 +3,7 @@ import { cleanUrlHelper } from '../helpers';
 
 @Pipe({
   name: 'cleanUrl',
-  standalone: true
+  standalone: true,
 })
 export class CleanUrlPipe implements PipeTransform {
   transform(value: string | null | undefined): string {

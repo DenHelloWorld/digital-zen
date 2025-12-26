@@ -1,13 +1,14 @@
 import {
   ChangeDetectionStrategy,
-  Component, computed,
+  Component,
+  computed,
   input,
   InputSignal,
   model,
   ModelSignal,
   OnInit,
   signal,
-  WritableSignal
+  WritableSignal,
 } from '@angular/core';
 
 @Component({
@@ -15,7 +16,7 @@ import {
   templateUrl: 'dynamic-input.component.html',
   styleUrls: ['dynamic-input.component.scss'],
 
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DynamicInputComponent<T> implements OnInit {
   readonly #initEntities: WritableSignal<T[]> = signal<T[]>([]);
@@ -34,9 +35,7 @@ export class DynamicInputComponent<T> implements OnInit {
     const idKey = this.idKey();
     const excludeKeys = this.excludeKeys() as string[];
 
-    return allKeys.filter((key: string) =>
-      key !== idKey && !excludeKeys.includes(key)
-    );
+    return allKeys.filter((key: string) => key !== idKey && !excludeKeys.includes(key));
   });
   protected readonly isNewEntityValid = computed(() => {
     const obj = this.newEntity() as Record<string, unknown>;
@@ -50,8 +49,8 @@ export class DynamicInputComponent<T> implements OnInit {
       });
   });
   protected isPlaceholderShown = computed(() => {
-    return !this.entities()?.length && !this.isAdding()
-  })
+    return !this.entities()?.length && !this.isAdding();
+  });
 
   public readonly labelKey: InputSignal<keyof T> = input.required<keyof T>();
   public readonly idKey: InputSignal<keyof T> = input.required<keyof T>();
@@ -87,7 +86,7 @@ export class DynamicInputComponent<T> implements OnInit {
   }
 
   protected updateField(key: string, value: T): void {
-    this.newEntity.update((current) => ({ ...current, [key]: value } as T));
+    this.newEntity.update(current => ({ ...current, [key]: value }) as T);
   }
 
   protected resetEntities(): void {
@@ -106,9 +105,8 @@ export class DynamicInputComponent<T> implements OnInit {
 
   protected updateEntity(updatedItem: T): void {
     const idKey: keyof T = this.idKey();
-    const updated: T[] = this.entities() ?? [].map(e =>
-      e[idKey] === updatedItem[idKey] ? updatedItem : e
-    );
+    const updated: T[] =
+      this.entities() ?? [].map(e => (e[idKey] === updatedItem[idKey] ? updatedItem : e));
     this.entities.set(updated);
   }
 

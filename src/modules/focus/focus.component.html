@@ -1,19 +1,8 @@
 <div class="dz-actions">
-  <button
-    (click)="addCurrentTabToPeriod()"
-    class="dz-button dz-button--sm shadow"
-  >
+  <button (click)="addCurrentTabToPeriod()" class="dz-button dz-button--sm shadow">
     @if (isSvgIcon(activeTab()?.favIconUrl)) {
-      <svg
-        class="dz-icon dz-icon--shadow"
-        aria-hidden="true"
-        focusable="false"
-      >
-        <use
-          width="20"
-          height="20"
-          [attr.href]="activeTab()?.favIconUrl"
-        />
+      <svg class="dz-icon dz-icon--shadow" aria-hidden="true" focusable="false">
+        <use width="20" height="20" [attr.href]="activeTab()?.favIconUrl" />
       </svg>
 
       <span>+</span>
@@ -37,21 +26,23 @@
     class="dz-button dz-button--xl dz-button--round shadow"
     [class.dz-button--activated]="currentPeriod()?.isFocused"
   >
-      <svg class="dz-icon" [class.pulse]="currentPeriod()?.isFocused" aria-hidden="true" focusable="false">
-        <use href="#icon-person-zen"></use>
-      </svg>
+    <svg
+      class="dz-icon"
+      [class.pulse]="currentPeriod()?.isFocused"
+      aria-hidden="true"
+      focusable="false"
+    >
+      <use href="#icon-person-zen"></use>
+    </svg>
   </button>
 </div>
 
 <div class="dz-group">
   @if (periods()?.length) {
     <ul class="dz-list">
-      @for(period of periods(); track period.id) {
+      @for (period of periods(); track period.id) {
         <li>
-          <dz-period
-            [period]="period"
-            (toggleBlockedWebsite)="onToggleBlockedWebsite($event)"
-          />
+          <dz-period [period]="period" (toggleBlockedWebsite)="onToggleBlockedWebsite($event)" />
         </li>
       }
     </ul>
@@ -59,5 +50,3 @@
     <dz-loader />
   }
 </div>
-
-

@@ -9,10 +9,9 @@ import { ChromeStorageKeyType } from '../enums';
  * This class is designed to be injected into other Angular services or components.
  */
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ChromeStorageService {
-
   /**
    * Writes data to chrome.storage.local.
    *
@@ -22,7 +21,7 @@ export class ChromeStorageService {
    */
   public set<T>(key: ChromeStorageKeyType, value: T, callback?: () => void): void {
     if (this.#isChromeStorageAvailable()) {
-      chrome.storage.local.set({[key]: value}, () => {
+      chrome.storage.local.set({ [key]: value }, () => {
         if (chrome.runtime.lastError) {
           console.error('Error saving data:', chrome.runtime.lastError);
         }
@@ -41,12 +40,12 @@ export class ChromeStorageService {
    */
   public get<T>(key: ChromeStorageKeyType, callback: (value: T | null) => void): void {
     if (this.#isChromeStorageAvailable()) {
-      chrome.storage.local.get(key, (result) => {
+      chrome.storage.local.get(key, result => {
         if (chrome.runtime.lastError) {
           console.error('Error reading data:', chrome.runtime.lastError);
           callback(null);
         } else {
-          callback(result[key] as T || null);
+          callback((result[key] as T) || null);
         }
       });
     }

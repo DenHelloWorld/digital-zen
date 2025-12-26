@@ -4,15 +4,15 @@
   --header-height: 60px;
 
   /* Цветовые токены */
-  --color-background: #F9FAFC;
+  --color-background: #f9fafc;
   --color-text: #334155;
-  --color-zen-accent: #34D399;
+  --color-zen-accent: #34d399;
   --color-zen-error: #d33434;
-  --color-on-accent: #F1F5F9;
-  --color-component-bg-light: #F1F5F9;
+  --color-on-accent: #f1f5f9;
+  --color-component-bg-light: #f1f5f9;
   --color-component-text-light: #475569;
   --color-component-bg-dark: #334155;
-  --color-component-text-dark: #F1F5F9;
+  --color-component-text-dark: #f1f5f9;
   --color-glass-text: rgba(71, 85, 105, 0.5);
 
   /* Размеры кнопок */
@@ -48,17 +48,17 @@
   --shadow-translate-width: 2px;
   --list-gap: 0.5rem;
   --loader-size: 24px;
-  --button-text-icon-gap: .5rem;
+  --button-text-icon-gap: 0.5rem;
   --placeholder-height: 5rem;
 }
 
 /* Для тёмной темы переопределяем только цвета */
 .dark-theme {
-  --color-background: #1E293B;
-  --color-text: #E2E8F0;
+  --color-background: #1e293b;
+  --color-text: #e2e8f0;
   --color-component-bg-light: #475569;
-  --color-component-text-light: #F1F5F9;
-  --color-component-bg-dark: #F1F5F9;
+  --color-component-text-light: #f1f5f9;
+  --color-component-bg-dark: #f1f5f9;
   --color-component-text-dark: #475569;
   --color-glass-text: rgba(241, 245, 249, 0.5);
   --shadow-color: rgba(0, 0, 0, 0.8);

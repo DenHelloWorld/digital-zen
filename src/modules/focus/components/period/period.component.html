@@ -6,7 +6,7 @@
   <summary class="dz-accordion__header">
     <span>
       <h2 class="title">
-        {{period().name}}
+        {{ period().name }}
       </h2>
     </span>
 
@@ -17,7 +17,7 @@
     <dz-time-line [startFrom]="period().startFrom" [endTo]="period().endTo" />
 
     <p class="description">
-      {{period().description}}
+      {{ period().description }}
     </p>
 
     <div class="weekdays">
@@ -28,7 +28,7 @@
       @for (site of period().webSites; track site) {
         <li>
           <button
-            class="dz-button dz-button--md  shadow"
+            class="dz-button dz-button--md shadow"
             [class.dz-button--square]="site.iconUrl || site.imageUrl"
             [class.dz-button--error]="site.isBlocked"
             [class.shadow--activated]="site.isBlocked"
@@ -36,19 +36,11 @@
             (click)="onToggleBlockedWebsite(site)"
           >
             @if (site.iconUrl) {
-              <svg
-                class="dz-icon dz-icon--shadow"
-                aria-hidden="true"
-                focusable="false"
-              >
+              <svg class="dz-icon dz-icon--shadow" aria-hidden="true" focusable="false">
                 <use width="24" height="24" [attr.href]="site.iconUrl"></use>
               </svg>
             } @else if (site.imageUrl) {
-              <img
-                class="dz-icon dz-icon--shadow"
-                [src]="site.imageUrl"
-                [alt]="site.name"
-              />
+              <img class="dz-icon dz-icon--shadow" [src]="site.imageUrl" [alt]="site.name" />
             } @else {
               {{ site.name }}
             }

@@ -7,7 +7,9 @@
   justify-content: center;
   position: relative;
 
-  transition: background-color 0.3s, color 0.3s;
+  transition:
+    background-color 0.3s,
+    color 0.3s;
 
   .dz-header {
     width: 100%;
@@ -19,7 +21,9 @@
     padding: var(--spacing) var(--spacing) 0 var(--spacing);
     background-color: var(--color-background);
 
-    transition: color 0.3s, background-color 0.3s;
+    transition:
+      color 0.3s,
+      background-color 0.3s;
 
     &__navigation {
       display: flex;
@@ -38,7 +42,9 @@
     background-color: var(--color-background);
     color: var(--color-text);
 
-    transition: color 0.3s, background-color 0.3s;
+    transition:
+      color 0.3s,
+      background-color 0.3s;
   }
 
   .dz-main.dark-theme {
@@ -51,5 +57,3 @@
     color: var(--color-text);
   }
 }
-
-

@@ -3,22 +3,21 @@ import {
   Component,
   computed,
   input,
-  InputSignal, OnDestroy,
+  InputSignal,
+  OnDestroy,
   OnInit,
   signal,
   Signal,
-  WritableSignal
+  WritableSignal,
 } from '@angular/core';
-import {DatePipe} from '@angular/common';
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'dz-time-line',
   templateUrl: 'time-line.component.html',
   styleUrls: ['time-line.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [
-    DatePipe
-  ]
+  imports: [DatePipe],
 })
 export class TimeLineComponent implements OnInit, OnDestroy {
   // TODO: mark focused time in line

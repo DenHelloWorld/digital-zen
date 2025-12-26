@@ -1,8 +1,6 @@
 <ul class="dz-list dz-list--full">
   @for (entity of entities(); track entity[idKey()]) {
-    <li
-      class="item"
-    >
+    <li class="item">
       <input
         disabled
         type="text"
@@ -26,16 +24,10 @@
     </li>
   }
 
-  @if(isAdding()) {
-    <li
-      class="item dz-box shadow"
-    >
-      <ul
-        class="dz-list dz-list--full"
-      >
-      <span class="dz-form__hint">
-        Fill to add...
-      </span>
+  @if (isAdding()) {
+    <li class="item dz-box shadow">
+      <ul class="dz-list dz-list--full">
+        <span class="dz-form__hint"> Fill to add... </span>
 
         @for (key of entityKeys(); track key) {
           @if (key !== idKey()) {
@@ -49,9 +41,7 @@
           }
         }
 
-        <div
-          class="actions"
-        >
+        <div class="actions">
           <button
             [disabled]="!isNewEntityValid()"
             type="button"
@@ -80,9 +70,7 @@
   }
 
   @if (isPlaceholderShown()) {
-    <li
-      class="dz-placeholder"
-    >
+    <li class="dz-placeholder">
       <div class="dz-placeholder__icon">
         <svg class="dz-icon" aria-hidden="true" focusable="false">
           <use href="#icon-folder-off"></use>
@@ -107,9 +95,7 @@
 </ul>
 
 @if (!isAdding()) {
-  <div
-    class="actions"
-  >
+  <div class="actions">
     @if (entities()?.length) {
       <button
         type="button"
@@ -148,4 +134,3 @@
     }
   </div>
 }
-

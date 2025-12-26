@@ -1,11 +1,6 @@
-<form
-  [formGroup]="form"
-  class="dz-form"
->
+<form [formGroup]="form" class="dz-form">
   <div class="dz-form__field">
-    <span class="dz-form__hint">
-      <span class="dz-form__required">*</span> Name
-    </span>
+    <span class="dz-form__hint"> <span class="dz-form__required">*</span> Name </span>
 
     <input
       class="dz-input"
@@ -16,9 +11,7 @@
   </div>
 
   <div class="dz-form__field">
-    <span class="dz-form__hint">
-      <span class="dz-form__required">*</span> Description
-    </span>
+    <span class="dz-form__hint"> <span class="dz-form__required">*</span> Description </span>
 
     <textarea
       class="dz-input dz-input--textarea"
@@ -29,21 +22,14 @@
   </div>
 
   <div class="dz-form__field">
-    <span class="dz-form__hint">
-      <span class="dz-form__required">*</span> Days of week
-    </span>
+    <span class="dz-form__hint"> <span class="dz-form__required">*</span> Days of week </span>
 
-    <dz-weekdays-selector
-      [(selectedDays)]="selectedDays"
-      [isTodayShow]="false"
-    />
+    <dz-weekdays-selector [(selectedDays)]="selectedDays" [isTodayShow]="false" />
   </div>
 
   <ul class="dz-list dz-list--horizontal dz-list--full">
     <li class="dz-form__field--fit">
-      <span class="dz-form__hint">
-        <span class="dz-form__required">*</span> Start from
-      </span>
+      <span class="dz-form__hint"> <span class="dz-form__required">*</span> Start from </span>
 
       <input
         type="time"
@@ -55,9 +41,7 @@
     </li>
 
     <li class="dz-form__field--fit">
-      <span class="dz-form__hint">
-        <span class="dz-form__required">*</span> End to
-      </span>
+      <span class="dz-form__hint"> <span class="dz-form__required">*</span> End to </span>
 
       <input
         type="time"
@@ -69,16 +53,14 @@
     </li>
   </ul>
 
-  @if(form.errors?.['invalidTimeRange']) {
+  @if (form.errors?.['invalidTimeRange']) {
     <span class="dz-form__hint">
       <span class="dz-form__required">Invalid time range</span>
     </span>
   }
 
   <div class="dz-form__field">
-    <span class="dz-form__hint">
-      <span class="dz-form__required">*</span> Blocked Url's
-    </span>
+    <span class="dz-form__hint"> <span class="dz-form__required">*</span> Blocked Url's </span>
 
     <dz-dynamic-input
       [(entities)]="selectedWebSites"

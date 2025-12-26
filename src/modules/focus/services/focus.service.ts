@@ -1,33 +1,34 @@
-import {computed, inject, Injectable, Signal, signal, WritableSignal} from '@angular/core';
-import {IFocus} from '../../common/models';
-import {DEFAULT_PERIOD, MESSAGE_TYPE_ENUM, MESSAGES_ENUM, QUICK_FOCUS_ID} from '../../common'
-import {DzToastService} from '../../common/components/toast-container/toast.service';
-import {cleanUrlHelper, isImageIcon, isSvgIcon} from '../../common/helpers';
+import { computed, inject, Injectable, Signal, signal, WritableSignal } from '@angular/core';
+import { IFocus } from '../../common/models';
+import { DEFAULT_PERIOD, MESSAGE_TYPE_ENUM, MESSAGES_ENUM, QUICK_FOCUS_ID } from '../../common';
+import { DzToastService } from '../../common/components/toast-container/toast.service';
+import { cleanUrlHelper, isImageIcon, isSvgIcon } from '../../common/helpers';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class FocusService {
   readonly #isChromeRuntime: boolean = !!chrome.runtime;
   readonly #toastService: DzToastService = inject(DzToastService);
 
-  readonly #currentPeriod: WritableSignal<IFocus.Period | null> = signal<IFocus.Period | null>(null);
+  readonly #currentPeriod: WritableSignal<IFocus.Period | null> = signal<IFocus.Period | null>(
+    null
+  );
   readonly #periods: WritableSignal<IFocus.Period[] | null> = signal(null);
   readonly #activeTab: WritableSignal<chrome.tabs.Tab | undefined> = signal(undefined);
 
   public readonly currentPeriod: Signal<IFocus.Period | null> = computed(() => {
     return this.#currentPeriod();
   });
-  public readonly periods: Signal<IFocus.Period[] | null> = computed(() =>
-    this.#periods()?.filter(p => p.id !== QUICK_FOCUS_ID) ?? null
+  public readonly periods: Signal<IFocus.Period[] | null> = computed(
+    () => this.#periods()?.filter(p => p.id !== QUICK_FOCUS_ID) ?? null
   );
-  public readonly quickPeriod: Signal<IFocus.Period[] | null> = computed(() =>
-    this.#periods()?.filter(p => p.id === QUICK_FOCUS_ID) ?? null
+  public readonly quickPeriod: Signal<IFocus.Period[] | null> = computed(
+    () => this.#periods()?.filter(p => p.id === QUICK_FOCUS_ID) ?? null
   );
   public readonly activeTab: Signal<chrome.tabs.Tab | undefined> = computed(() => {
     return this.#activeTab();
-  })
-
+  });
 
   public constructor() {
     this.syncInitialState();
@@ -37,14 +38,14 @@ export class FocusService {
 
   private async syncInitialState(): Promise<void> {
     if (!this.#isChromeRuntime) {
-      this.#periods.set([DEFAULT_PERIOD])
-      console.warn("Chrome API is not available. Running in development mode.");
+      this.#periods.set([DEFAULT_PERIOD]);
+      console.warn('Chrome API is not available. Running in development mode.');
       return;
     }
 
     const result = await chrome.storage.local.get(['currentPeriod', 'periods', 'allBlockedSites']);
-    const currentPeriod: IFocus.Period | null = result['currentPeriod'] as IFocus.Period || null;
-    const periods: IFocus.Period[] = result['periods'] as IFocus.Period[] || [];
+    const currentPeriod: IFocus.Period | null = (result['currentPeriod'] as IFocus.Period) || null;
+    const periods: IFocus.Period[] = (result['periods'] as IFocus.Period[]) || [];
 
     if (!currentPeriod) {
       this.addPeriod(DEFAULT_PERIOD);
@@ -61,9 +62,8 @@ export class FocusService {
 
     chrome.storage.onChanged.addListener((changes, areaName) => {
       if (areaName === 'local') {
-
         if (changes['periods']) {
-          const newPeriods = changes['periods'].newValue as IFocus.Period[] || [];
+          const newPeriods = (changes['periods'].newValue as IFocus.Period[]) || [];
           this.#periods.set(newPeriods);
         }
 
@@ -108,7 +108,7 @@ export class FocusService {
 
   public toggleQuickFocus(): void {
     if (this.#isChromeRuntime && this.activeTab()?.url) {
-      chrome.runtime.sendMessage({ command: 'toggleQuickFocus', siteUrl: this.activeTab()?.url});
+      chrome.runtime.sendMessage({ command: 'toggleQuickFocus', siteUrl: this.activeTab()?.url });
     }
   }
 
@@ -126,14 +126,11 @@ export class FocusService {
 
   public getActiveTab(): void {
     if (this.#isChromeRuntime) {
-      chrome.runtime.sendMessage(
-        { command: 'getActiveTab' },
-        (response) => {
-          if (response?.success) {
-            this.#activeTab.set(response.tab);
-          }
+      chrome.runtime.sendMessage({ command: 'getActiveTab' }, response => {
+        if (response?.success) {
+          this.#activeTab.set(response.tab);
         }
-      );
+      });
     }
   }
 
@@ -146,8 +143,8 @@ export class FocusService {
     const period = this.currentPeriod();
 
     if (tab?.url && period) {
-      const clearedUrl = cleanUrlHelper(tab.url)
-      const iconUrl = tab.favIconUrl ?? this.getGoogleFaviconUrl(clearedUrl)
+      const clearedUrl = cleanUrlHelper(tab.url);
+      const iconUrl = tab.favIconUrl ?? this.getGoogleFaviconUrl(clearedUrl);
 
       const newSite: IFocus.WebSite = {
         id: clearedUrl,
@@ -155,9 +152,9 @@ export class FocusService {
         name: tab.title || clearedUrl,
         iconUrl: isSvgIcon(iconUrl) ? iconUrl : '',
         description: tab.title || clearedUrl,
-        imageUrl:  isImageIcon(iconUrl) ? iconUrl : '',
+        imageUrl: isImageIcon(iconUrl) ? iconUrl : '',
         type: IFocus.EWebSiteType.SOCIAL_MEDIA,
-        isBlocked: false
+        isBlocked: false,
       };
 
       const siteExists = period.webSites.some(s => s.url === newSite.url);
@@ -165,13 +162,16 @@ export class FocusService {
       if (!siteExists) {
         const updatedPeriod = {
           ...period,
-          webSites: [...period.webSites, newSite]
+          webSites: [...period.webSites, newSite],
         };
 
         this.updatePeriod(updatedPeriod);
         this.#toastService.show({ message: MESSAGES_ENUM.ADDED, type: MESSAGE_TYPE_ENUM.ACCENT });
       } else {
-        this.#toastService.show({ message: MESSAGES_ENUM.ALREADY_ADDED, type: MESSAGE_TYPE_ENUM.ERROR });
+        this.#toastService.show({
+          message: MESSAGES_ENUM.ALREADY_ADDED,
+          type: MESSAGE_TYPE_ENUM.ERROR,
+        });
       }
     }
   }
@@ -194,7 +194,7 @@ export class FocusService {
 
       return `https://s2.googleusercontent.com/s2/favicons?domain=${domain}&size=${size}`;
     } catch (e) {
-      console.error("Invalid URL provided:", siteUrl, e);
+      console.error('Invalid URL provided:', siteUrl, e);
       return 'favicon.ico';
     }
   }

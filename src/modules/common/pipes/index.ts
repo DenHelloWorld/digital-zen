@@ -1,1 +1,1 @@
-export * from "./clear-url.pipe";
+export * from './clear-url.pipe';

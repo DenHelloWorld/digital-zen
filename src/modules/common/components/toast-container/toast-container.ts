@@ -1,6 +1,6 @@
-import {DzToastService} from './toast.service';
-import {ChangeDetectionStrategy, Component, inject} from '@angular/core';
-import {POSITIONS_ENUM} from '../../enums';
+import { DzToastService } from './toast.service';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { POSITIONS_ENUM } from '../../enums';
 
 @Component({
   selector: 'dz-toast-container',

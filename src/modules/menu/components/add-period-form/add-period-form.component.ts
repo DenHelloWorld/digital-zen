@@ -6,17 +6,12 @@ import {
   Injector,
   OnInit,
   signal,
-  WritableSignal
+  WritableSignal,
 } from '@angular/core';
-import {
-  FormBuilder,
-  FormGroup,
-  ReactiveFormsModule,
-
-} from '@angular/forms';
-import {IFocus} from '../../../common/models';
-import {distinctUntilChanged, map} from 'rxjs';
-import {takeUntilDestroyed, toObservable} from '@angular/core/rxjs-interop';
+import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { IFocus } from '../../../common/models';
+import { distinctUntilChanged, map } from 'rxjs';
+import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import {
   arrayMinLengthValidator,
   requiredTrimmedValidator,
@@ -24,20 +19,16 @@ import {
   WEBSITE_FACEBOOK,
   WEBSITE_TIKTOK,
 } from '../../../common';
-import {WeekdaysSelectorComponent} from '../../../common/components/weekdays-selector/weekdays-selector.component';
-import {FocusService} from '../../../focus/services';
-import {DynamicInputComponent} from '../../../common/components/dynamic-input/dynamic-input.component';
+import { WeekdaysSelectorComponent } from '../../../common/components/weekdays-selector/weekdays-selector.component';
+import { FocusService } from '../../../focus/services';
+import { DynamicInputComponent } from '../../../common/components/dynamic-input/dynamic-input.component';
 
 @Component({
-  selector: "dz-add-period-form",
-  templateUrl: "add-period-form.component.html",
-  styleUrls: ["add-period-form.component.scss"],
+  selector: 'dz-add-period-form',
+  templateUrl: 'add-period-form.component.html',
+  styleUrls: ['add-period-form.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [
-    ReactiveFormsModule,
-    WeekdaysSelectorComponent,
-    DynamicInputComponent
-  ]
+  imports: [ReactiveFormsModule, WeekdaysSelectorComponent, DynamicInputComponent],
 })
 export class AddPeriodFormComponent implements OnInit {
   readonly #fb: FormBuilder = inject(FormBuilder);
@@ -47,10 +38,19 @@ export class AddPeriodFormComponent implements OnInit {
 
   protected form: FormGroup<IFocus.Form.UpsertPeriod>;
 
-  protected excludedSiteKeysArray: (keyof IFocus.WebSite)[] = ['imageUrl', 'iconUrl', 'isBlocked', 'description', 'type'];
+  protected excludedSiteKeysArray: (keyof IFocus.WebSite)[] = [
+    'imageUrl',
+    'iconUrl',
+    'isBlocked',
+    'description',
+    'type',
+  ];
 
   protected selectedDays: WritableSignal<IFocus.DayOfWeek[]> = signal<IFocus.DayOfWeek[]>([]);
-  protected selectedWebSites: WritableSignal<IFocus.WebSite[]> = signal<IFocus.WebSite[]>([WEBSITE_TIKTOK, WEBSITE_FACEBOOK]);
+  protected selectedWebSites: WritableSignal<IFocus.WebSite[]> = signal<IFocus.WebSite[]>([
+    WEBSITE_TIKTOK,
+    WEBSITE_FACEBOOK,
+  ]);
 
   public ngOnInit(): void {
     this.#initForm();
@@ -58,29 +58,27 @@ export class AddPeriodFormComponent implements OnInit {
     this.form.valueChanges
       .pipe(
         map(() => this.form.getRawValue()),
-        distinctUntilChanged((prev: IFocus.Period, next: IFocus.Period) => JSON.stringify(prev) === JSON.stringify(next)),
+        distinctUntilChanged(
+          (prev: IFocus.Period, next: IFocus.Period) =>
+            JSON.stringify(prev) === JSON.stringify(next)
+        ),
         takeUntilDestroyed(this.#destroyRef)
       )
       .subscribe((value: IFocus.Period) => {
         console.log(value);
       });
 
-    toObservable(this.selectedDays, {injector: this.#injector })
-      .pipe(
-        takeUntilDestroyed(this.#destroyRef),
-      )
+    toObservable(this.selectedDays, { injector: this.#injector })
+      .pipe(takeUntilDestroyed(this.#destroyRef))
       .subscribe((value: IFocus.DayOfWeek[]) => {
-        this.form.controls.daysOfWeek.setValue(value.map((value: IFocus.DayOfWeek) => value.day)
-        )
-      })
+        this.form.controls.daysOfWeek.setValue(value.map((value: IFocus.DayOfWeek) => value.day));
+      });
 
-    toObservable(this.selectedWebSites, {injector: this.#injector })
-      .pipe(
-        takeUntilDestroyed(this.#destroyRef),
-      )
+    toObservable(this.selectedWebSites, { injector: this.#injector })
+      .pipe(takeUntilDestroyed(this.#destroyRef))
       .subscribe((value: IFocus.WebSite[]) => {
         this.form.controls.webSites.setValue(value);
-      })
+      });
   }
 
   protected addPeriod() {
@@ -93,7 +91,6 @@ export class AddPeriodFormComponent implements OnInit {
         return {
           ...site,
           imageUrl,
-
         };
       });
 
@@ -101,12 +98,12 @@ export class AddPeriodFormComponent implements OnInit {
         id: rawValue.id,
         name: rawValue.name,
         description: rawValue.description,
-        startFrom:  this.#timeStringToDate(rawValue.startFrom as unknown as string),
-        endTo:  this.#timeStringToDate(rawValue.endTo as unknown as string),
+        startFrom: this.#timeStringToDate(rawValue.startFrom as unknown as string),
+        endTo: this.#timeStringToDate(rawValue.endTo as unknown as string),
         webSites: webSitesWithFavicons,
         daysOfWeek: rawValue.daysOfWeek,
         focusedTimes: [],
-        isFocused: false
+        isFocused: false,
       });
     }
   }
@@ -126,18 +123,21 @@ export class AddPeriodFormComponent implements OnInit {
   }
 
   #initForm(): void {
-    this.form = this.#fb.group<IFocus.Form.UpsertPeriod>({
-      id: this.#fb.nonNullable.control<string>(
-        `${Date.now()}-${Math.floor(Math.random() * 10000)}`
-      ),
-      name: this.#fb.nonNullable.control('', requiredTrimmedValidator),
-      description: this.#fb.nonNullable.control('', requiredTrimmedValidator),
-      startFrom: this.#fb.nonNullable.control(new Date(0)),
-      endTo: this.#fb.nonNullable.control(new Date(0)),
-      webSites: this.#fb.nonNullable.control([], arrayMinLengthValidator()),
-      daysOfWeek: this.#fb.nonNullable.control([], arrayMinLengthValidator()),
-      focusedTimes: this.#fb.nonNullable.control([]),
-      isFocused: this.#fb.nonNullable.control(false),
-    }, { validators: timeRangeValidator('startFrom', 'endTo') });
+    this.form = this.#fb.group<IFocus.Form.UpsertPeriod>(
+      {
+        id: this.#fb.nonNullable.control<string>(
+          `${Date.now()}-${Math.floor(Math.random() * 10000)}`
+        ),
+        name: this.#fb.nonNullable.control('', requiredTrimmedValidator),
+        description: this.#fb.nonNullable.control('', requiredTrimmedValidator),
+        startFrom: this.#fb.nonNullable.control(new Date(0)),
+        endTo: this.#fb.nonNullable.control(new Date(0)),
+        webSites: this.#fb.nonNullable.control([], arrayMinLengthValidator()),
+        daysOfWeek: this.#fb.nonNullable.control([], arrayMinLengthValidator()),
+        focusedTimes: this.#fb.nonNullable.control([]),
+        isFocused: this.#fb.nonNullable.control(false),
+      },
+      { validators: timeRangeValidator('startFrom', 'endTo') }
+    );
   }
 }

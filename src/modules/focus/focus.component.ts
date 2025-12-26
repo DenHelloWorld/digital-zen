@@ -1,16 +1,9 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  inject,
-  Signal
-} from '@angular/core';
-import {FocusService} from './services';
-import {IFocus} from '../common/models';
-import {
-  LoaderComponent,
-} from '../common';
-import {PeriodComponent} from './components/period/period.component';
-import {isImageIcon, isSvgIcon} from '../common/helpers';
+import { ChangeDetectionStrategy, Component, inject, Signal } from '@angular/core';
+import { FocusService } from './services';
+import { IFocus } from '../common/models';
+import { LoaderComponent } from '../common';
+import { PeriodComponent } from './components/period/period.component';
+import { isImageIcon, isSvgIcon } from '../common/helpers';
 
 @Component({
   selector: 'dz-focus',
@@ -21,7 +14,7 @@ import {isImageIcon, isSvgIcon} from '../common/helpers';
     PeriodComponent,
     LoaderComponent,
   ],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FocusComponent {
   readonly #focusService: FocusService = inject(FocusService);
