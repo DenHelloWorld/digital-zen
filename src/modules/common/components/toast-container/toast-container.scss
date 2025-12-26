@@ -9,43 +9,30 @@
     pointer-events: none;
     width: 100%;
     max-width: 420px;
-  }
 
-  .dz-notification-area--top-right {
-    top: 0;
-    right: 0;
-    align-items: flex-end;
-  }
-  .dz-notification-area--top-left {
-    top: 0;
-    left: 0;
-    align-items: flex-start;
-  }
-  .dz-notification-area--bottom-right {
-    bottom: 0;
-    right: 0;
-    align-items: flex-end;
-    flex-direction: column-reverse;
-  }
-  .dz-notification-area--bottom-left {
-    bottom: 0;
-    left: 0;
-    align-items: flex-start;
-    flex-direction: column-reverse;
-  }
+    &--top-right {
+      top: 0; right: 0; align-items: flex-end;
+    }
 
-  .dz-notification-area--top-center {
-    top: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    align-items: center;
-  }
-  .dz-notification-area--bottom-center {
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    align-items: center;
-    flex-direction: column-reverse;
+    &--top-left {
+      top: 0; left: 0; align-items: flex-start;
+    }
+
+    &--bottom-right {
+      bottom: 0; right: 0; align-items: flex-end; flex-direction: column-reverse;
+    }
+
+    &--bottom-left  {
+      bottom: 0; left: 0; align-items: flex-start; flex-direction: column-reverse;
+    }
+
+    &--top-center {
+      top: 0; left: 50%; transform: translateX(-50%); align-items: center;
+    }
+
+    &--bottom-center {
+      bottom: 0; left: 50%; transform: translateX(-50%); align-items: center; flex-direction: column-reverse;
+    }
   }
 
   .dz-notification {
@@ -60,17 +47,46 @@
       max-height 0.3s ease,
       margin 0.3s ease,
       padding 0.3s ease;
-    max-height: 500px; /* Достаточно для любого текста */
+    max-height: 500px;
     overflow: hidden;
     box-shadow: 0 4px 12px var(--shadow-color);
-  }
 
-  .dz-notification__body {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--button-text-icon-gap);
-    padding: var(--spacing-sm);
+    &__body {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--button-text-icon-gap);
+      padding: var(--spacing-sm);
+    }
+
+    &__progress {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      height: 3px;
+      width: 100%;
+      background: currentColor;
+      opacity: 0.8;
+      transform-origin: left;
+      animation: dz-toast-progress linear forwards;
+    }
+
+    &.dz-placeholder {
+      &--error,
+      &--accent {
+        &.dz-button {
+          &--ghost {
+            border: none;
+            color: white;
+            background: rgba(255, 255, 255, 0.1);
+          }
+        }
+      }
+    }
+
+    &:not(.dz-notification--hidden) {
+      animation: dz-toast-in 0.3s ease-out forwards;
+    }
   }
 
   @keyframes dz-toast-in {
@@ -84,51 +100,8 @@
     }
   }
 
-  .dz-notification:not(.dz-notification--hidden) {
-    animation: dz-toast-in 0.3s ease-out forwards;
-  }
-
-  .dz-notification__progress {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    height: 3px;
-    width: 100%;
-    background: currentColor;
-    opacity: 0.8;
-    transform-origin: left;
-    animation: dz-toast-progress linear forwards;
-  }
-
   @keyframes dz-toast-progress {
-    from {
-      transform: scaleX(1);
-    }
-    to {
-      transform: scaleX(0);
-    }
-  }
-
-  .dz-notification.dz-placeholder--error {
-    background-color: var(--color-zen-error);
-    color: var(--color-on-accent);
-  }
-
-  .dz-notification.dz-placeholder--accent {
-    background-color: var(--color-zen-accent);
-    color: var(--color-on-accent);
-  }
-
-  /* Фикс для кнопки закрытия внутри цветного уведомления */
-  .dz-notification.dz-placeholder--error .dz-button--ghost,
-  .dz-notification.dz-placeholder--accent .dz-button--ghost {
-    border: none;
-    color: white;
-    background: rgba(255, 255, 255, 0.1);
-  }
-
-  .dz-notification.dz-placeholder--error .dz-button--ghost:hover,
-  .dz-notification.dz-placeholder--accent .dz-button--ghost:hover {
-    background: rgba(255, 255, 255, 0.25);
+    from { transform: scaleX(1); }
+    to { transform: scaleX(0); }
   }
 }

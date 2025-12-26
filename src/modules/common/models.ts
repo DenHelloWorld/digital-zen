@@ -63,6 +63,6 @@ export interface IToast {
   message: string;
   type?: MESSAGE_TYPE_ENUM;
   position?: POSITIONS_ENUM;
-  duration?: number;
+  durationInMs?: number;
   leaving?: boolean;
 }
