@@ -1,5 +1,5 @@
-import {FormControl} from '@angular/forms';
-import {DayOfWeekShortNameType, DayOfWeekType, MESSAGE_TYPE_ENUM, POSITIONS_ENUM} from './enums';
+import { FormControl } from '@angular/forms';
+import { DayOfWeekShortNameType, DayOfWeekType, MESSAGE_TYPE_ENUM, POSITIONS_ENUM } from './enums';
 
 export namespace IFocus {
   export namespace Form {
@@ -35,7 +35,7 @@ export namespace IFocus {
     url: string;
     imageUrl: string;
     iconUrl: string;
-    type: IWebSiteType
+    type: IWebSiteType;
     isBlocked: boolean;
   }
 
