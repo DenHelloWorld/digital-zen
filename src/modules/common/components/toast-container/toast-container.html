@@ -1,15 +1,18 @@
-@for (pos of positions; track $index) {
+@for (pos of positions; track pos) {
   @if (getToastsByPosition(pos).length > 0) {
     <ul [class]="'dz-notification-area dz-notification-area--' + pos">
-      @for (toast of getToastsByPosition(pos); track $index) {
+      @for (toast of getToastsByPosition(pos); track toast.id) {
         <li
           class="dz-notification dz-box dz-box--colored shadow"
-          [class.dz-placeholder--error]="toast.type === 'error'"
-          [class.dz-placeholder--accent]="toast.type === 'accent'"
+          [class.dz-placeholder--error]="toast.type === messageTypes.ERROR"
+          [class.dz-placeholder--accent]="toast.type === messageTypes.ACCENT"
+          [class.dz-placeholder--warn]="toast.type === messageTypes.WARN"
           [class.dz-notification--hidden]="toast.leaving"
         >
           <div class="dz-notification__body">
-            <span>{{ toast.message }}</span>
+            <span class="dz-notification__message">
+              {{ toast.message }}
+            </span>
 
             <button
               class="dz-button dz-button--xs dz-button--round dz-button--ghost"
@@ -19,10 +22,10 @@
             </button>
           </div>
 
-          @if (toast.duration && !toast.leaving) {
+          @if (toast.durationInMs && !toast.leaving) {
             <div
               class="dz-notification__progress"
-              [style.animation-duration.ms]="toast.duration"
+              [style.animation-duration.ms]="toast.durationInMs"
             ></div>
           }
         </li>

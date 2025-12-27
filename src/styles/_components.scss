@@ -265,6 +265,11 @@
     color: var(--color-on-accent);
   }
 
+  &--warn {
+    background-color: var(--color-zen-warn);
+    color: var(--color-on-warn);
+  }
+
   .dz-placeholder__icon {
     width: var(--btn-size-md);
   }

@@ -1,6 +1,12 @@
 import { computed, inject, Injectable, Signal, signal, WritableSignal } from '@angular/core';
 import { IFocus } from '../../common/models';
-import { DEFAULT_PERIOD, MESSAGE_TYPE_ENUM, MESSAGES_ENUM, QUICK_FOCUS_ID } from '../../common';
+import {
+  DEFAULT_PERIOD,
+  MESSAGE_TYPE_ENUM,
+  MESSAGES_ENUM,
+  POSITIONS_ENUM,
+  QUICK_FOCUS_ID,
+} from '../../common';
 import { DzToastService } from '../../common/components/toast-container/toast.service';
 import { cleanUrlHelper, isImageIcon, isSvgIcon } from '../../common/helpers';
 
@@ -94,18 +100,6 @@ export class FocusService {
     }
   }
 
-  public startFocus(): void {
-    if (this.#isChromeRuntime) {
-      chrome.runtime.sendMessage({ command: 'startFocus', periodId: this.#currentPeriod()?.id });
-    }
-  }
-
-  public stopFocus(): void {
-    if (this.#isChromeRuntime) {
-      chrome.runtime.sendMessage({ command: 'stopFocus' });
-    }
-  }
-
   public toggleQuickFocus(): void {
     if (this.#isChromeRuntime && this.activeTab()?.url) {
       chrome.runtime.sendMessage({ command: 'toggleQuickFocus', siteUrl: this.activeTab()?.url });
@@ -114,6 +108,8 @@ export class FocusService {
 
   public toggleFocus(): void {
     if (this.#isChromeRuntime) {
+      this.#notifyIfNoSitesBlocked(this.#currentPeriod());
+
       chrome.runtime.sendMessage({ command: 'toggleFocus' });
     }
   }
@@ -196,6 +192,18 @@ export class FocusService {
     } catch (e) {
       console.error('Invalid URL provided:', siteUrl, e);
       return 'favicon.ico';
+    }
+  }
+
+  #notifyIfNoSitesBlocked(period: IFocus.Period | null): void {
+    const hasBlockedSites: boolean = period?.webSites.some(site => site.isBlocked) ?? false;
+
+    if (!period?.isFocused && !hasBlockedSites) {
+      this.#toastService.show({
+        message: `${MESSAGES_ENUM.FOCUS_ACTIVE} ${MESSAGES_ENUM.NO_SITES_BLOCKED}`,
+        type: MESSAGE_TYPE_ENUM.WARN,
+        position: POSITIONS_ENUM.BOTTOM_RIGHT,
+      });
     }
   }
 }

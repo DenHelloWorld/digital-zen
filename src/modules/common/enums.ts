@@ -95,9 +95,12 @@ export enum MESSAGE_TYPE_ENUM {
   INFO = 'info',
   ERROR = 'error',
   ACCENT = 'accent',
+  WARN = 'warn',
 }
 
 export enum MESSAGES_ENUM {
-  ADDED = 'Added',
+  ADDED = 'Added.',
   ALREADY_ADDED = 'Already added.',
+  FOCUS_ACTIVE = 'Focus active.',
+  NO_SITES_BLOCKED = 'No websites are in your block list.',
 }
