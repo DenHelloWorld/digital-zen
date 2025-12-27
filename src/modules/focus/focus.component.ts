@@ -23,9 +23,8 @@ export class FocusComponent {
   protected readonly currentPeriod: Signal<IFocus.Period | null> = this.#focusService.currentPeriod;
   protected readonly periods: Signal<IFocus.Period[] | null> = this.#focusService.periods;
 
-  protected readonly isSvgIcon: (url?: (string | null)) => boolean = isSvgIcon;
-  protected readonly isImageIcon: (url?: (string | null)) => boolean
-    = isImageIcon;
+  protected readonly isSvgIcon: (url?: string | null) => boolean = isSvgIcon;
+  protected readonly isImageIcon: (url?: string | null) => boolean = isImageIcon;
 
   protected toggleFocus(): void {
     this.#focusService.toggleFocus();

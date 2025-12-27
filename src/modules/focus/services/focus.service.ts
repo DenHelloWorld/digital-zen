@@ -1,6 +1,12 @@
 import { computed, inject, Injectable, Signal, signal, WritableSignal } from '@angular/core';
 import { IFocus } from '../../common/models';
-import { DEFAULT_PERIOD, MESSAGE_TYPE_ENUM, MESSAGES_ENUM, QUICK_FOCUS_ID } from '../../common';
+import {
+  DEFAULT_PERIOD,
+  MESSAGE_TYPE_ENUM,
+  MESSAGES_ENUM,
+  POSITIONS_ENUM,
+  QUICK_FOCUS_ID,
+} from '../../common';
 import { DzToastService } from '../../common/components/toast-container/toast.service';
 import { cleanUrlHelper, isImageIcon, isSvgIcon } from '../../common/helpers';
 
@@ -102,7 +108,6 @@ export class FocusService {
 
   public toggleFocus(): void {
     if (this.#isChromeRuntime) {
-
       this.#notifyIfNoSitesBlocked(this.#currentPeriod());
 
       chrome.runtime.sendMessage({ command: 'toggleFocus' });
