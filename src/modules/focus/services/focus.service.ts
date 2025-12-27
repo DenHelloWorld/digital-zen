@@ -1,11 +1,11 @@
 import { computed, inject, Injectable, Signal, signal, WritableSignal } from '@angular/core';
-import { IFocus } from '../../common/models';
 import {
-  DEFAULT_PERIOD,
+  IFocus,
+  QUICK_FOCUS_ID,
   MESSAGE_TYPE_ENUM,
   MESSAGES_ENUM,
   POSITIONS_ENUM,
-  QUICK_FOCUS_ID,
+  DEFAULT_PERIOD,
 } from '../../common';
 import { DzToastService } from '../../common/components/toast-container/toast.service';
 import { cleanUrlHelper, isImageIcon, isSvgIcon } from '../../common/helpers';

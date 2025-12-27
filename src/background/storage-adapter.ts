@@ -1,35 +1,7 @@
-export namespace IFocus {
-  export interface Period {
-    id: string;
-    name: string;
-    description: string;
-    startFrom: Date | null;
-    endTo: Date | null;
-    webSites: WebSite[];
-    daysOfWeek?: number[];
-    focusedTimes: IFocus.FocusedTime[];
-    isFocused: boolean;
-  }
-
-  export interface WebSite {
-    id: string;
-    name: string;
-    description: string;
-    url: string;
-    imageUrl: string;
-    isBlocked: boolean;
-  }
-
-  export interface FocusedTime {
-    id: string;
-    periodId: string;
-    startFrom: Date | null;
-    endTo: Date | null;
-  }
-}
+import { IFocus } from '../modules/common/models/focus.model';
 
 /**
- * Тип данных, который реально хранится в storage (ISO строки вместо Date)
+ * The type of data that is actually stored in storage (ISO strings instead of Date)
  */
 interface StoredPeriod extends Omit<IFocus.Period, 'startFrom' | 'endTo' | 'focusedTimes'> {
   startFrom: string | null;

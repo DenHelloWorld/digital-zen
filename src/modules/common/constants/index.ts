@@ -1,5 +1,7 @@
-import { IFocus } from './models';
-import { DAY_OF_WEEK_ENUM, DAY_OF_WEEK_SHORT_NAME_ENUM, DayOfWeekType } from './enums';
+export * from './quick-focus-id.const';
+
+import { DAY_OF_WEEK_ENUM, DAY_OF_WEEK_SHORT_NAME_ENUM, DayOfWeekType } from '../enums';
+import { IFocus } from '../models';
 
 export const WEBSITE_X: Readonly<IFocus.WebSite> = {
   id: 'x',
@@ -188,8 +190,6 @@ export const ALL_DAYS_OF_WEEK: readonly Readonly<IFocus.DayOfWeek>[] = Object.fr
   DAY_FRIDAY,
   DAY_SATURDAY,
 ]);
-
-export const QUICK_FOCUS_ID = 'quick-focus' as const;
 
 export const DEFAULT_PERIOD: Readonly<IFocus.Period> = Object.freeze({
   id: 'work-social-block',

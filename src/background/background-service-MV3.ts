@@ -1,13 +1,12 @@
+/// <reference types="chrome"/>
+import { StorageAdapter } from './storage-adapter';
+import { IFocus } from '../modules/common/models/focus.model';
+import { QUICK_FOCUS_ID } from '../modules/common/constants/quick-focus-id.const';
+
 /**
  * @class BackgroundService
  * @description The main service class that manages the extension's background tasks and data persistence.
  */
-/// <reference types="chrome"/>
-
-import { IFocus, StorageAdapter } from './storage-adapter';
-
-const QUICK_FOCUS_ID = 'quick-focus' as const;
-
 export class BackgroundServiceMV3 {
   #currentPeriod: IFocus.Period | null = null;
   #sessionStartTime: Date | null = null;
@@ -320,9 +319,6 @@ export class BackgroundServiceMV3 {
 
   private async startQuickFocus(url: string): Promise<void> {
     const domain = url.replace(/^https?:\/\//, '').split('/')[0];
-
-    console.log('domain', domain);
-    console.log('url', url);
     const quickPeriod: IFocus.Period = {
       id: QUICK_FOCUS_ID,
       name: `Focus: ${domain}`,
@@ -335,10 +331,12 @@ export class BackgroundServiceMV3 {
       webSites: [
         {
           id: 'ws-' + Date.now(),
+          type: IFocus.EWebSiteType.DEFAULT,
           name: domain,
           description: '',
           url: url,
           imageUrl: '',
+          iconUrl: '',
           isBlocked: true,
         },
       ],
