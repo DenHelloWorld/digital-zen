@@ -1,12 +1,10 @@
-<details
-  open
-  class="dz-accordion dz-accordion--accent"
-  [class.dz-accordion--accent]="period().isFocused"
->
+@let p = period();
+
+<details open class="dz-accordion dz-accordion--accent" [class.dz-accordion--accent]="p.isFocused">
   <summary class="dz-accordion__header">
     <span>
       <h2 class="title">
-        {{ period().name }}
+        {{ p.name }}
       </h2>
     </span>
 
@@ -14,10 +12,12 @@
   </summary>
 
   <div class="dz-accordion__content">
-    <dz-time-line [startFrom]="period().startFrom" [endTo]="period().endTo" />
+    @if (p.startFrom && p.endTo) {
+      <dz-time-line [startFrom]="p.startFrom" [endTo]="p.endTo" />
+    }
 
     <p class="description">
-      {{ period().description }}
+      {{ p.description }}
     </p>
 
     <div class="weekdays">
@@ -25,7 +25,7 @@
     </div>
 
     <ul class="dz-list dz-list--horizontal dz-list--full" aria-labelledby="social-title">
-      @for (site of period().webSites; track site) {
+      @for (site of p.webSites; track site) {
         <li>
           <button
             class="dz-button dz-button--md shadow"

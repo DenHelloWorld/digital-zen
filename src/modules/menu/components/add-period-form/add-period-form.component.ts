@@ -9,11 +9,13 @@ import {
   WritableSignal,
 } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { IFocus } from '../../../common/models';
+
 import { distinctUntilChanged, map } from 'rxjs';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import {
   arrayMinLengthValidator,
+  IFocus,
+  IFocusForm,
   requiredTrimmedValidator,
   timeRangeValidator,
   WEBSITE_FACEBOOK,
@@ -36,7 +38,7 @@ export class AddPeriodFormComponent implements OnInit {
   readonly #injector: Injector = inject(Injector);
   readonly #focusService: FocusService = inject(FocusService);
 
-  protected form: FormGroup<IFocus.Form.UpsertPeriod>;
+  protected form: FormGroup<IFocusForm.UpsertPeriod>;
 
   protected excludedSiteKeysArray: (keyof IFocus.WebSite)[] = [
     'imageUrl',
@@ -123,7 +125,7 @@ export class AddPeriodFormComponent implements OnInit {
   }
 
   #initForm(): void {
-    this.form = this.#fb.group<IFocus.Form.UpsertPeriod>(
+    this.form = this.#fb.group<IFocusForm.UpsertPeriod>(
       {
         id: this.#fb.nonNullable.control<string>(
           `${Date.now()}-${Math.floor(Math.random() * 10000)}`

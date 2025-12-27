@@ -1,7 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject, Signal } from '@angular/core';
 import { FocusService } from './services';
-import { IFocus } from '../common/models';
-import { LoaderComponent } from '../common';
+import { LoaderComponent, IFocus } from '../common';
 import { PeriodComponent } from './components/period/period.component';
 import { isImageIcon, isSvgIcon } from '../common/helpers';
 

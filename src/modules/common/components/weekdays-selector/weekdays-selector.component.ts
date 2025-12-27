@@ -7,8 +7,8 @@ import {
   ModelSignal,
 } from '@angular/core';
 import { IFocus } from '../../models';
-import { ALL_DAYS_OF_WEEK } from '../../costants';
 import { MultiSelectorComponent } from '../multi-selector/multi-selector.component';
+import { ALL_DAYS_OF_WEEK } from '../../constants';
 
 @Component({
   selector: 'dz-weekdays-selector',
