@@ -10,6 +10,7 @@ import { CommonModule } from '@angular/common';
 import {
   COLOR_SCHEMA_ENUM,
   ColorSchemaType,
+  LoaderComponent,
   ThemeService,
   ThemeSwitcherComponent,
   VIEW_ENUM,
@@ -18,6 +19,7 @@ import {
 import { FocusComponent } from '../modules/focus/focus.component';
 import { MenuComponent } from '../modules/menu/menu.component';
 import { DzToastContainerComponent } from '../modules/common/components/toast-container/toast-container';
+import { AuthService } from '../modules/auth';
 
 @Component({
   selector: 'dz-app',
@@ -32,14 +34,18 @@ import { DzToastContainerComponent } from '../modules/common/components/toast-co
     FocusComponent,
     MenuComponent,
     DzToastContainerComponent,
+    LoaderComponent,
   ],
 })
 export class App {
   readonly #themeService: ThemeService = inject(ThemeService);
+  readonly #authService: AuthService = inject(AuthService);
 
   protected readonly theme: Signal<ColorSchemaType> = this.#themeService.theme;
-
   protected readonly currentViewType: WritableSignal<ViewType> = signal(VIEW_ENUM.FOCUS);
+  protected readonly isGoogleAuthenticated: Signal<boolean> =
+    this.#authService.isGoogleAuthenticated;
+  protected readonly isGoogleAuthPending: Signal<boolean> = this.#authService.isGoogleAuthPending;
 
   protected readonly colorSchemes: typeof COLOR_SCHEMA_ENUM = COLOR_SCHEMA_ENUM;
   protected readonly viewTypes: typeof VIEW_ENUM = VIEW_ENUM;
@@ -48,43 +54,11 @@ export class App {
     this.currentViewType.set(viewType);
   }
 
-  // logout(): void {
-  //   chrome.identity.getAuthToken({ interactive: false }, (result) => {
-  //     if (result?.token) {
-  //       chrome.identity.removeCachedAuthToken({ token: result.token }, () => {
-  //         console.log('Токен удален из кеша. Теперь можно войти заново.');
-  //       });
-  //     }
-  //   });
-  // }
-  //
-  // loginWithGoogle(): void {
-  //   if (!chrome?.identity) {
-  //     console.warn('Chrome identity API is not available.');
-  //     return;
-  //   }
-  //
-  //   chrome.identity.getAuthToken(
-  //     { interactive: true },
-  //     /**
-  //      * Не совпадает типизация из установленіх @types/chrome с реальной в документации
-  //      * https://developer.chrome.com/docs/extensions/how-to/integrate/oauth?hl=ru
-  //      * */
-  //     (token) => {
-  //       console.log('Результат вызова identity API:', token);
-  //       // TODO: Обработка полученного токена
-  //       /**
-  //        * Для дебага можно в постмане сделать запрос к Google API с этим токеном
-  //        * GET https://www.googleapis.com/oauth2/v3/userinfo
-  //        * Headers:
-  //        * Authorization: Bearer <token>
-  //        */
-  //
-  //       if (chrome.runtime.lastError) {
-  //         console.warn('Ошибка Chrome Runtime:', chrome.runtime.lastError.message);
-  //         return;
-  //       }
-  //     }
-  //   );
-  // }
+  protected loginWithGoogle(): void {
+    this.#authService.loginWithGoogle();
+  }
+
+  protected logoutFromGoogle(): void {
+    this.#authService.logoutFromGoogle();
+  }
 }
