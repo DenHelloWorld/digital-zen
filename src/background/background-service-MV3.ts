@@ -2,6 +2,11 @@
 import { StorageAdapter } from './storage-adapter';
 import { IFocus } from '../modules/common/models/focus.model';
 import { QUICK_FOCUS_ID } from '../modules/common/constants/quick-focus-id.const';
+import {
+  CHROME_COMMAND_ENUM,
+  ChromeCommandType,
+} from '../modules/common/enums/chrome-command.enum';
+import { CHROME_ALARM_ENUM } from '../modules/common/enums/chrome-alarm-name.enum';
 
 /**
  * @class BackgroundService
@@ -24,24 +29,24 @@ export class BackgroundServiceMV3 {
     chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       (async () => {
         try {
-          switch (message.command) {
-            case 'addPeriod':
+          switch (message.command as ChromeCommandType) {
+            case CHROME_COMMAND_ENUM.ADD_PERIOD:
               await this.addPeriod(message.period);
               sendResponse({ success: true });
               break;
-            case 'removePeriod':
+            case CHROME_COMMAND_ENUM.REMOVE_PERIOD:
               await this.removePeriod(message.id);
               sendResponse({ success: true });
               break;
-            case 'updatePeriod':
+            case CHROME_COMMAND_ENUM.UPDATE_PERIOD:
               await this.updatePeriod(message.period);
               sendResponse({ success: true });
               break;
-            case 'toggleBlockedWebsite':
+            case CHROME_COMMAND_ENUM.TOGGLE_BLOCKED_WEBSITE:
               await this.toggleWebSiteBlocking(message.site);
               sendResponse({ success: true });
               break;
-            case 'startFocus': {
+            case CHROME_COMMAND_ENUM.START_FOCUS: {
               const periods = await StorageAdapter.getPeriods();
               const periodToStart = periods.find(p => p.id === message.periodId);
               if (periodToStart) {
@@ -50,20 +55,20 @@ export class BackgroundServiceMV3 {
               sendResponse({ success: true });
               break;
             }
-            case 'stopFocus':
+            case CHROME_COMMAND_ENUM.STOP_FOCUS:
               await this.stopFocus();
               sendResponse({ success: true });
               break;
-            case 'toggleFocus':
+            case CHROME_COMMAND_ENUM.TOGGLE_FOCUS:
               await this.toggleFocus();
               sendResponse({ success: true });
               break;
-            case 'toggleQuickFocus': {
+            case CHROME_COMMAND_ENUM.TOGGLE_QUICK_FOCUS: {
               await this.toggleQuickFocus(message.siteUrl);
               sendResponse({ success: true });
               break;
             }
-            case 'getActiveTab': {
+            case CHROME_COMMAND_ENUM.GET_ACTIVE_TAB: {
               const tab = await this.getActiveTab();
 
               sendResponse({
@@ -107,7 +112,7 @@ export class BackgroundServiceMV3 {
    */
   private initializeAlarms(): void {
     chrome.alarms.onAlarm.addListener(async alarm => {
-      if (alarm.name === 'checkFocusEnd') {
+      if (alarm.name === CHROME_ALARM_ENUM.CHECK_FOCUS_END) {
         const current = await StorageAdapter.getCurrentPeriod();
         if (current?.isFocused && current.endTo && new Date() > current.endTo) {
           await this.stopFocus();
@@ -144,7 +149,7 @@ export class BackgroundServiceMV3 {
    * Check every minute
    * */
   private scheduleAlarm(): void {
-    chrome.alarms.create('checkFocusEnd', { periodInMinutes: 1 });
+    chrome.alarms.create(CHROME_ALARM_ENUM.CHECK_FOCUS_END, { periodInMinutes: 1 });
   }
 
   private async addPeriod(period: IFocus.Period): Promise<void> {
@@ -288,7 +293,7 @@ export class BackgroundServiceMV3 {
       .replace(/^https?:\/\//, '')
       .split('/')[0]
       .replace(/^www\./, '');
-    console.log('createRedirectRule', cleanDomain);
+
     return {
       id: ruleId,
       priority: 1,

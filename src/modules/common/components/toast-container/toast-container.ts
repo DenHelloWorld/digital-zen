@@ -1,6 +1,6 @@
 import { DzToastService } from './toast.service';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { MESSAGE_TYPE_ENUM, POSITIONS_ENUM } from '../../enums';
+import { TOAST_TYPE_ENUM, POSITIONS_ENUM } from '../../enums';
 
 @Component({
   selector: 'dz-toast-container',
@@ -20,7 +20,7 @@ export class DzToastContainerComponent {
     POSITIONS_ENUM.TOP_LEFT,
   ];
 
-  protected messageTypes: typeof MESSAGE_TYPE_ENUM = MESSAGE_TYPE_ENUM;
+  protected messageTypes: typeof TOAST_TYPE_ENUM = TOAST_TYPE_ENUM;
 
   protected getToastsByPosition(pos: POSITIONS_ENUM) {
     return this.toastService.toasts().filter(t => t.position === pos);

@@ -4,18 +4,6 @@ export enum COLOR_SCHEMA_ENUM {
 }
 export type ColorSchemaType = COLOR_SCHEMA_ENUM.DARK | COLOR_SCHEMA_ENUM.LIGHT;
 
-export enum CHROME_STORAGE_KEY_ENUM {
-  THEME = 'theme',
-  TAB_ID = 'tab_id',
-  TAB_URL = 'tab_url',
-  HISTORY_URL = 'history_url',
-}
-export type ChromeStorageKeyType =
-  | CHROME_STORAGE_KEY_ENUM.THEME
-  | CHROME_STORAGE_KEY_ENUM.TAB_ID
-  | CHROME_STORAGE_KEY_ENUM.TAB_URL
-  | CHROME_STORAGE_KEY_ENUM.HISTORY_URL;
-
 export enum VIEW_ENUM {
   FOCUS = 0,
   MENU = 1,
@@ -91,14 +79,14 @@ export enum POSITIONS_ENUM {
   BOTTOM_CENTER = 'bottom-center',
 }
 
-export enum MESSAGE_TYPE_ENUM {
+export enum TOAST_TYPE_ENUM {
   INFO = 'info',
   ERROR = 'error',
   ACCENT = 'accent',
   WARN = 'warn',
 }
 
-export enum MESSAGES_ENUM {
+export enum TOAST_MESSAGES_ENUM {
   ADDED = 'Added.',
   ALREADY_ADDED = 'Already added.',
   FOCUS_ACTIVE = 'Focus active.',

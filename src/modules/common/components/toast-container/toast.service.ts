@@ -1,6 +1,6 @@
 import { Injectable, signal, computed, WritableSignal, Signal } from '@angular/core';
 import { IToast } from '../../models';
-import { MESSAGE_TYPE_ENUM, POSITIONS_ENUM } from '../../enums';
+import { TOAST_TYPE_ENUM, POSITIONS_ENUM } from '../../enums';
 
 @Injectable({
   providedIn: 'root',
@@ -15,7 +15,7 @@ export class DzToastService {
     const newToast: IToast = {
       id,
       message: toast.message || '',
-      type: toast.type || MESSAGE_TYPE_ENUM.INFO,
+      type: toast.type || TOAST_TYPE_ENUM.INFO,
       position: toast.position || POSITIONS_ENUM.BOTTOM_CENTER,
       durationInMs: toast.durationInMs || 3000,
     };

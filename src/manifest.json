@@ -3,7 +3,21 @@
   "name": "Digital Zen",
   "version": "1.0",
   "description": "Improve your focus by blocking distracting websites and managing focus sessions.",
-  "permissions": ["alarms", "declarativeNetRequest", "storage", "unlimitedStorage", "activeTab"],
+  "permissions": [
+    "alarms",
+    "declarativeNetRequest",
+    "storage",
+    "unlimitedStorage",
+    "activeTab",
+    "identity"
+  ],
+  "oauth2": {
+    "client_id": "__OAUTH_CLIENT_ID__",
+    "scopes": [
+      "https://www.googleapis.com/auth/userinfo.email",
+      "https://www.googleapis.com/auth/userinfo.profile"
+    ]
+  },
   "host_permissions": ["<all_urls>"],
   "web_accessible_resources": [
     {
@@ -25,5 +39,6 @@
     "16": "icon-spa-colored.png",
     "48": "icon-spa-colored.png",
     "128": "icon-spa-colored.png"
-  }
+  },
+  "key": "__PUBLIC_KEY__"
 }

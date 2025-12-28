@@ -1,6 +1,7 @@
 import { inject, Injectable, Signal, signal, WritableSignal } from '@angular/core';
-import { CHROME_STORAGE_KEY_ENUM, COLOR_SCHEMA_ENUM, ColorSchemaType } from '../enums';
+import { COLOR_SCHEMA_ENUM, ColorSchemaType } from '../enums';
 import { ChromeStorageService } from './chrome-storage.service';
+import { CHROME_STORAGE_KEY_ENUM } from '../enums/chrome-storage-key.enum';
 
 @Injectable({
   providedIn: 'root',
