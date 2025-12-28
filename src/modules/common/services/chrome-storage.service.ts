@@ -1,7 +1,5 @@
-/// <reference types="chrome"/>
-
 import { Injectable } from '@angular/core';
-import { ChromeStorageKeyType } from '../enums';
+import { ChromeStorageKeyType } from '../enums/chrome-storage-key.enum';
 
 /**
  * @class ChromeStorageService
@@ -46,6 +44,28 @@ export class ChromeStorageService {
           callback(null);
         } else {
           callback((result[key] as T) || null);
+        }
+      });
+    }
+  }
+
+  /**
+   * Reads multiple data entries from chrome.storage.local.
+   *
+   * @param keys The keys from which to retrieve the data.
+   * @param callback Function to be called with the retrieved data.
+   */
+  public getMany<T extends object>(
+    keys: ChromeStorageKeyType[],
+    callback: (value: T | null) => void
+  ): void {
+    if (this.#isChromeStorageAvailable()) {
+      chrome.storage.local.get(keys, result => {
+        if (chrome.runtime.lastError) {
+          console.error('Error reading multiple keys:', chrome.runtime.lastError);
+          callback(null);
+        } else {
+          callback(result as T);
         }
       });
     }

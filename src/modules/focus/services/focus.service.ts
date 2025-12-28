@@ -2,13 +2,22 @@ import { computed, inject, Injectable, Signal, signal, WritableSignal } from '@a
 import {
   IFocus,
   QUICK_FOCUS_ID,
-  MESSAGE_TYPE_ENUM,
-  MESSAGES_ENUM,
+  TOAST_TYPE_ENUM,
+  TOAST_MESSAGES_ENUM,
   POSITIONS_ENUM,
   DEFAULT_PERIOD,
+  ChromeStorageService,
 } from '../../common';
 import { DzToastService } from '../../common/components/toast-container/toast.service';
 import { cleanUrlHelper, isImageIcon, isSvgIcon } from '../../common/helpers';
+import { CHROME_COMMAND_ENUM } from '../../common/enums/chrome-command.enum';
+import { CHROME_STORAGE_KEY_ENUM } from '../../common/enums/chrome-storage-key.enum';
+
+interface InitialStorageSchema {
+  [CHROME_STORAGE_KEY_ENUM.CURRENT_PERIOD]: IFocus.Period;
+  [CHROME_STORAGE_KEY_ENUM.PERIODS]: IFocus.Period[];
+  [CHROME_STORAGE_KEY_ENUM.ALL_BLOCKED_WEBSITES]: IFocus.WebSite[];
+}
 
 @Injectable({
   providedIn: 'root',
@@ -16,6 +25,7 @@ import { cleanUrlHelper, isImageIcon, isSvgIcon } from '../../common/helpers';
 export class FocusService {
   readonly #isChromeRuntime: boolean = !!chrome.runtime;
   readonly #toastService: DzToastService = inject(DzToastService);
+  readonly #chromeStorageService: ChromeStorageService = inject(ChromeStorageService);
 
   readonly #currentPeriod: WritableSignal<IFocus.Period | null> = signal<IFocus.Period | null>(
     null
@@ -37,44 +47,57 @@ export class FocusService {
   });
 
   public constructor() {
-    this.syncInitialState();
-    this.listenToStorageChanges();
-    this.getActiveTab();
+    this.#syncInitialState();
+    this.#listenToStorageChanges();
+    this.#getActiveTab();
   }
 
-  private async syncInitialState(): Promise<void> {
+  #syncInitialState(): void {
     if (!this.#isChromeRuntime) {
       this.#periods.set([DEFAULT_PERIOD]);
-      console.warn('Chrome API is not available. Running in development mode.');
       return;
     }
 
-    const result = await chrome.storage.local.get(['currentPeriod', 'periods', 'allBlockedSites']);
-    const currentPeriod: IFocus.Period | null = (result['currentPeriod'] as IFocus.Period) || null;
-    const periods: IFocus.Period[] = (result['periods'] as IFocus.Period[]) || [];
+    this.#chromeStorageService.getMany<InitialStorageSchema>(
+      [
+        CHROME_STORAGE_KEY_ENUM.CURRENT_PERIOD,
+        CHROME_STORAGE_KEY_ENUM.PERIODS,
+        CHROME_STORAGE_KEY_ENUM.ALL_BLOCKED_WEBSITES,
+      ],
+      result => {
+        if (!result) {
+          return;
+        }
 
-    if (!currentPeriod) {
-      this.addPeriod(DEFAULT_PERIOD);
-    }
+        const currentPeriod = result[CHROME_STORAGE_KEY_ENUM.CURRENT_PERIOD] || null;
+        const periods = result[CHROME_STORAGE_KEY_ENUM.PERIODS] || [];
 
-    this.#periods.set(periods);
-    this.#currentPeriod.set(currentPeriod);
+        if (!currentPeriod) {
+          this.addPeriod(DEFAULT_PERIOD);
+        }
+
+        this.#periods.set(periods);
+        this.#currentPeriod.set(currentPeriod);
+      }
+    );
   }
 
-  private listenToStorageChanges(): void {
+  #listenToStorageChanges(): void {
     if (!this.#isChromeRuntime) {
       return;
     }
 
     chrome.storage.onChanged.addListener((changes, areaName) => {
       if (areaName === 'local') {
-        if (changes['periods']) {
-          const newPeriods = (changes['periods'].newValue as IFocus.Period[]) || [];
+        if (changes[CHROME_STORAGE_KEY_ENUM.PERIODS]) {
+          const newPeriods =
+            (changes[CHROME_STORAGE_KEY_ENUM.PERIODS].newValue as IFocus.Period[]) || [];
           this.#periods.set(newPeriods);
         }
 
-        if (changes['currentPeriod']) {
-          const newCurrentPeriod = changes['currentPeriod'].newValue as IFocus.Period | null;
+        if (changes[CHROME_STORAGE_KEY_ENUM.CURRENT_PERIOD]) {
+          const newCurrentPeriod = changes[CHROME_STORAGE_KEY_ENUM.CURRENT_PERIOD]
+            .newValue as IFocus.Period | null;
 
           this.#currentPeriod.set(newCurrentPeriod);
         }
@@ -84,25 +107,28 @@ export class FocusService {
 
   public addPeriod(period: IFocus.Period): void {
     if (this.#isChromeRuntime) {
-      chrome.runtime.sendMessage({ command: 'addPeriod', period });
+      chrome.runtime.sendMessage({ command: CHROME_COMMAND_ENUM.ADD_PERIOD, period });
     }
   }
 
   public removePeriod(id: string): void {
     if (this.#isChromeRuntime) {
-      chrome.runtime.sendMessage({ command: 'removePeriod', id });
+      chrome.runtime.sendMessage({ command: CHROME_COMMAND_ENUM.REMOVE_PERIOD, id });
     }
   }
 
   public updatePeriod(period: IFocus.Period): void {
     if (this.#isChromeRuntime) {
-      chrome.runtime.sendMessage({ command: 'updatePeriod', period });
+      chrome.runtime.sendMessage({ command: CHROME_COMMAND_ENUM.UPDATE_PERIOD, period });
     }
   }
 
   public toggleQuickFocus(): void {
     if (this.#isChromeRuntime && this.activeTab()?.url) {
-      chrome.runtime.sendMessage({ command: 'toggleQuickFocus', siteUrl: this.activeTab()?.url });
+      chrome.runtime.sendMessage({
+        command: CHROME_COMMAND_ENUM.TOGGLE_QUICK_FOCUS,
+        siteUrl: this.activeTab()?.url,
+      });
     }
   }
 
@@ -110,19 +136,13 @@ export class FocusService {
     if (this.#isChromeRuntime) {
       this.#notifyIfNoSitesBlocked(this.#currentPeriod());
 
-      chrome.runtime.sendMessage({ command: 'toggleFocus' });
+      chrome.runtime.sendMessage({ command: CHROME_COMMAND_ENUM.TOGGLE_FOCUS });
     }
   }
 
-  public setCurrentPeriod(currentPeriod: IFocus.Period): void {
+  #getActiveTab(): void {
     if (this.#isChromeRuntime) {
-      chrome.runtime.sendMessage({ command: 'setCurrentPeriod', currentPeriod });
-    }
-  }
-
-  public getActiveTab(): void {
-    if (this.#isChromeRuntime) {
-      chrome.runtime.sendMessage({ command: 'getActiveTab' }, response => {
+      chrome.runtime.sendMessage({ command: CHROME_COMMAND_ENUM.GET_ACTIVE_TAB }, response => {
         if (response?.success) {
           this.#activeTab.set(response.tab);
         }
@@ -162,11 +182,14 @@ export class FocusService {
         };
 
         this.updatePeriod(updatedPeriod);
-        this.#toastService.show({ message: MESSAGES_ENUM.ADDED, type: MESSAGE_TYPE_ENUM.ACCENT });
+        this.#toastService.show({
+          message: TOAST_MESSAGES_ENUM.ADDED,
+          type: TOAST_TYPE_ENUM.ACCENT,
+        });
       } else {
         this.#toastService.show({
-          message: MESSAGES_ENUM.ALREADY_ADDED,
-          type: MESSAGE_TYPE_ENUM.ERROR,
+          message: `${TOAST_MESSAGES_ENUM.ALREADY_ADDED}: ${clearedUrl}`,
+          type: TOAST_TYPE_ENUM.WARN,
         });
       }
     }
@@ -174,7 +197,7 @@ export class FocusService {
 
   public toggleBlockedWebsite(site: IFocus.WebSite): void {
     if (this.#isChromeRuntime) {
-      chrome.runtime.sendMessage({ command: 'toggleBlockedWebsite', site });
+      chrome.runtime.sendMessage({ command: CHROME_COMMAND_ENUM.TOGGLE_BLOCKED_WEBSITE, site });
     }
   }
 
@@ -200,8 +223,8 @@ export class FocusService {
 
     if (!period?.isFocused && !hasBlockedSites) {
       this.#toastService.show({
-        message: `${MESSAGES_ENUM.FOCUS_ACTIVE} ${MESSAGES_ENUM.NO_SITES_BLOCKED}`,
-        type: MESSAGE_TYPE_ENUM.WARN,
+        message: `${TOAST_MESSAGES_ENUM.FOCUS_ACTIVE} ${TOAST_MESSAGES_ENUM.NO_SITES_BLOCKED}`,
+        type: TOAST_TYPE_ENUM.WARN,
         position: POSITIONS_ENUM.BOTTOM_RIGHT,
       });
     }
