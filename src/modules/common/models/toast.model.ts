@@ -1,9 +1,9 @@
-import { MESSAGE_TYPE_ENUM, POSITIONS_ENUM } from '../enums';
+import { TOAST_TYPE_ENUM, POSITIONS_ENUM } from '../enums';
 
 export interface IToast {
   id: number;
   message: string;
-  type?: MESSAGE_TYPE_ENUM;
+  type?: TOAST_TYPE_ENUM;
   position?: POSITIONS_ENUM;
   durationInMs?: number;
   leaving?: boolean;

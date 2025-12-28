@@ -1,4 +1,5 @@
 import { IFocus } from '../modules/common/models/focus.model';
+import { CHROME_STORAGE_KEY_ENUM } from '../modules/common/enums/chrome-storage-key.enum';
 
 /**
  * The type of data that is actually stored in storage (ISO strings instead of Date)
@@ -22,8 +23,10 @@ export class StorageAdapter {
   static async savePeriod(period: IFocus.Period): Promise<void> {
     return this.enqueue(async () => {
       const stored = this.toStorageFormat(period);
-      const result = await chrome.storage.local.get('periods');
-      const periods: StoredPeriod[] = Array.isArray(result['periods']) ? result['periods'] : [];
+      const result = await chrome.storage.local.get(CHROME_STORAGE_KEY_ENUM.PERIODS);
+      const periods: StoredPeriod[] = Array.isArray(result[CHROME_STORAGE_KEY_ENUM.PERIODS])
+        ? result[CHROME_STORAGE_KEY_ENUM.PERIODS]
+        : [];
 
       const index = periods.findIndex(p => p.id === period.id);
       if (index !== -1) {
@@ -45,14 +48,16 @@ export class StorageAdapter {
   }
 
   static async getPeriods(): Promise<IFocus.Period[]> {
-    const result = await chrome.storage.local.get('periods');
-    const raw: StoredPeriod[] = Array.isArray(result['periods']) ? result['periods'] : [];
+    const result = await chrome.storage.local.get(CHROME_STORAGE_KEY_ENUM.PERIODS);
+    const raw: StoredPeriod[] = Array.isArray(result[CHROME_STORAGE_KEY_ENUM.PERIODS])
+      ? result[CHROME_STORAGE_KEY_ENUM.PERIODS]
+      : [];
     return raw.map(this.fromStorageFormat);
   }
 
   static async getCurrentPeriod(): Promise<IFocus.Period | null> {
-    const result = await chrome.storage.local.get('currentPeriod');
-    const rawObj = result['currentPeriod'];
+    const result = await chrome.storage.local.get(CHROME_STORAGE_KEY_ENUM.CURRENT_PERIOD);
+    const rawObj = result[CHROME_STORAGE_KEY_ENUM.CURRENT_PERIOD];
 
     if (!rawObj || typeof rawObj !== 'object') return null;
 
