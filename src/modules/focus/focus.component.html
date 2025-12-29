@@ -1,5 +1,9 @@
 <div class="dz-actions">
-  <button (click)="addCurrentTabToPeriod()" class="dz-button dz-button--sm shadow">
+  <button
+    (click)="addCurrentTabToPeriod()"
+    class="dz-button dz-button--sm shadow"
+    [class.hidden]="!isHttpUrl(activeTab()?.url)"
+  >
     @if (isSvgIcon(activeTab()?.favIconUrl)) {
       <svg class="dz-icon dz-icon--shadow" aria-hidden="true" focusable="false">
         <use width="20" height="20" [attr.href]="activeTab()?.favIconUrl" />

@@ -17,7 +17,7 @@
  * isImageIcon(null); // false
  * isImageIcon("https://example.com/file.txt"); // false
  */
-export const isImageIcon = (url?: string | null): boolean => {
+export const isImageIcon = (url: string | null | undefined): boolean => {
   const cleanUrl = (url || '').trim().split('?')[0].toLowerCase();
 
   return /\.(png|jpe?g|webp|ico)$/.test(cleanUrl);

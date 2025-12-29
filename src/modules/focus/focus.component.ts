@@ -1,8 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject, Signal } from '@angular/core';
 import { FocusService } from './services';
-import { LoaderComponent, IFocus } from '../common';
+import { LoaderComponent, IFocus, isImageIcon, isHttpUrl, isSvgIcon } from '../common';
 import { PeriodComponent } from './components/period/period.component';
-import { isImageIcon, isSvgIcon } from '../common/helpers';
 
 @Component({
   selector: 'dz-focus',
@@ -22,8 +21,9 @@ export class FocusComponent {
   protected readonly currentPeriod: Signal<IFocus.Period | null> = this.#focusService.currentPeriod;
   protected readonly periods: Signal<IFocus.Period[] | null> = this.#focusService.periods;
 
-  protected readonly isSvgIcon: (url?: string | null) => boolean = isSvgIcon;
-  protected readonly isImageIcon: (url?: string | null) => boolean = isImageIcon;
+  protected readonly isSvgIcon: (url: string | null | undefined) => boolean = isSvgIcon;
+  protected readonly isImageIcon: (url: string | null | undefined) => boolean = isImageIcon;
+  protected readonly isHttpUrl: (url: string | null | undefined) => boolean = isHttpUrl;
 
   protected toggleFocus(): void {
     this.#focusService.toggleFocus();
