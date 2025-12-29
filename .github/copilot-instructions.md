@@ -114,7 +114,7 @@ export class ExampleComponent {
 - Avoid using `any` type - prefer `unknown` if type is truly unknown
 
 ```typescript
-form = new FormGroup({
+form = new FormGroup<{ name: FormControl<string>; email: FormControl<string> }>({
   name: new FormControl<string>('', { nonNullable: true }),
   email: new FormControl<string>('', { nonNullable: true }),
 });
