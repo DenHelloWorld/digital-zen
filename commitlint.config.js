@@ -1,12 +1,12 @@
+const TYPES = ['feat', 'fix', 'chore', 'refactor', 'style', 'docs', 'perf', 'test'];
+const SCOPES = ['core', 'common', 'focus', 'auth', 'menu'];
+
 module.exports = {
   extends: ['@commitlint/config-conventional'],
   rules: {
-    'type-enum': [
-      2,
-      'always',
-      ['feat', 'fix', 'chore', 'refactor', 'style', 'docs', 'perf', 'test'],
-    ],
-    'scope-enum': [2, 'always', ['core', 'common', 'focus', 'auth', 'menu']],
+    'type-enum': [2, 'always', TYPES],
+    'scope-enum': [2, 'always', SCOPES],
     'scope-empty': [2, 'never'],
   },
+  helpUrl: 'https://www.conventionalcommits.org/',
 };
