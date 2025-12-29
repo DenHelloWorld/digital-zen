@@ -125,7 +125,7 @@ The following npm scripts are available in this project:
 |--------|---------|-------------|
 | `start` | `ng serve` | Starts the Angular development server for local development |
 | `build` | `ng build && tsc -p tsconfig.background.json && tsc-alias -p tsconfig.background.json` | Builds the project for development |
-| `build:prod` | `npm run build && npm run patch-manifest` | Builds the project for production and patches manifest with OAuth credentials |
+| `build:prod` | `ng build && tsc -p tsconfig.background.json && tsc-alias -p tsconfig.background.json && npm run patch-manifest` | Builds the project for production and patches manifest with OAuth credentials |
 | `patch-manifest` | `dotenv -- node -e "..."` | Patches the manifest.json with environment variables |
 | `test` | `ng test` | Runs unit tests using Karma test runner |
 | `lint` | `ng lint` | Runs ESLint to check code quality and style issues |
