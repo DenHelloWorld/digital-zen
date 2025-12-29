@@ -47,7 +47,7 @@ export class TimeLineComponent implements OnInit, OnDestroy {
 
   public ngOnInit(): void {
     this.#intervalId = setInterval(() => {
-      const newNow = Date.now();
+      const currentTime = Date.now();
       const todayDateString = this.#getTodayDateString();
 
       // Check if day has changed
@@ -57,7 +57,7 @@ export class TimeLineComponent implements OnInit, OnDestroy {
       }
 
       // Update current time
-      this.#now.set(newNow);
+      this.#now.set(currentTime);
     }, 60_000);
   }
 
