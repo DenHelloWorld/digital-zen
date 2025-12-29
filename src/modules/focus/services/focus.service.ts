@@ -1,4 +1,12 @@
-import { computed, inject, Injectable, Signal, signal, WritableSignal } from '@angular/core';
+import {
+  computed,
+  DestroyRef,
+  inject,
+  Injectable,
+  Signal,
+  signal,
+  WritableSignal,
+} from '@angular/core';
 import {
   IFocus,
   QUICK_FOCUS_ID,
@@ -26,6 +34,7 @@ export class FocusService {
   readonly #isChromeRuntime: boolean = !!chrome.runtime;
   readonly #toastService: DzToastService = inject(DzToastService);
   readonly #chromeStorageService: ChromeStorageService = inject(ChromeStorageService);
+  readonly #destroyRef: DestroyRef = inject(DestroyRef);
 
   readonly #currentPeriod: WritableSignal<IFocus.Period | null> = signal<IFocus.Period | null>(
     null
@@ -33,6 +42,7 @@ export class FocusService {
   readonly #periods: WritableSignal<IFocus.Period[] | null> = signal(null);
   readonly #activeTab: WritableSignal<chrome.tabs.Tab | undefined> = signal(undefined);
   readonly #currentTime: WritableSignal<number> = signal(Date.now());
+  #timerIntervalId: ReturnType<typeof setInterval> | null = null;
 
   public readonly currentPeriod: Signal<IFocus.Period | null> = computed(() => {
     return this.#currentPeriod();
@@ -149,9 +159,16 @@ export class FocusService {
    * This is used to automatically update the focus elapsed time.
    */
   #startTimer(): void {
-    setInterval(() => {
+    this.#timerIntervalId = setInterval(() => {
       this.#currentTime.set(Date.now());
     }, 1000);
+
+    this.#destroyRef.onDestroy(() => {
+      if (this.#timerIntervalId) {
+        clearInterval(this.#timerIntervalId);
+        this.#timerIntervalId = null;
+      }
+    });
   }
 
   public addPeriod(period: IFocus.Period): void {
