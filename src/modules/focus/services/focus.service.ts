@@ -78,7 +78,7 @@ export class FocusService {
   public readonly focusElapsedTimeFormatted: Signal<string> = computed(() => {
     const elapsed = this.focusElapsedTime();
 
-    if (elapsed === 0) {
+    if (elapsed <= 0) {
       return '00:00';
     }
 
