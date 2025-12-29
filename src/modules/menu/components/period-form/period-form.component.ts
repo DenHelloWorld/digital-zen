@@ -45,7 +45,7 @@ export class PeriodFormComponent implements OnInit {
 
   public readonly mode: InputSignal<'create' | 'edit'> = input<'create' | 'edit'>('create');
   public readonly period: InputSignal<IFocus.Period | null> = input<IFocus.Period | null>(null);
-  public readonly canceled: OutputEmitterRef<void> = output<void>();
+  public readonly completed: OutputEmitterRef<void> = output<void>();
 
   protected form: FormGroup<IFocusForm.UpsertPeriod>;
 
@@ -125,12 +125,12 @@ export class PeriodFormComponent implements OnInit {
         this.#focusService.addPeriod(periodData);
       }
 
-      this.canceled.emit();
+      this.completed.emit();
     }
   }
 
   protected cancelForm(): void {
-    this.canceled.emit();
+    this.completed.emit();
   }
 
   /**

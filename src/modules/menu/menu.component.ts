@@ -15,7 +15,7 @@ export class MenuComponent {
     this.isAddPeriodFormShow.set(true);
   }
 
-  protected onFormCancel(): void {
+  protected onFormCompleted(): void {
     this.isAddPeriodFormShow.set(false);
   }
 }

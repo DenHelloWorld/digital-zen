@@ -2,7 +2,7 @@
 
 @if (isEditing()) {
   <div class="dz-period-edit">
-    <dz-period-form mode="edit" [period]="p" (canceled)="onCancelEdit()" />
+    <dz-period-form mode="edit" [period]="p" (completed)="onFormCompleted()" />
   </div>
 } @else {
   <details
@@ -65,20 +65,31 @@
             <button
               type="button"
               class="dz-button dz-button--sm dz-button--error shadow"
+              aria-label="Confirm delete period"
               (click)="onConfirmDelete()"
             >
               <svg class="dz-icon" aria-hidden="true" focusable="false">
-                <use href="#icon-check"></use>
+                <use href="#icon-delete"></use>
               </svg>
             </button>
-            <button type="button" class="dz-button dz-button--sm shadow" (click)="onCancelDelete()">
+            <button
+              type="button"
+              class="dz-button dz-button--sm shadow"
+              aria-label="Cancel delete"
+              (click)="onCancelDelete()"
+            >
               <svg class="dz-icon" aria-hidden="true" focusable="false">
                 <use href="#icon-close"></use>
               </svg>
             </button>
           </div>
         } @else {
-          <button type="button" class="dz-button dz-button--sm shadow" (click)="onEdit()">
+          <button
+            type="button"
+            class="dz-button dz-button--sm shadow"
+            aria-label="Edit period"
+            (click)="onEdit()"
+          >
             <svg class="dz-icon" aria-hidden="true" focusable="false">
               <use href="#icon-edit"></use>
             </svg>
@@ -87,6 +98,7 @@
           <button
             type="button"
             class="dz-button dz-button--sm dz-button--error shadow"
+            aria-label="Delete period"
             (click)="onDelete()"
           >
             <svg class="dz-icon" aria-hidden="true" focusable="false">

@@ -1,6 +1,6 @@
 <div class="dz-box">
   @if (isAddPeriodFormShow()) {
-    <dz-period-form mode="create" (canceled)="onFormCancel()" />
+    <dz-period-form mode="create" (completed)="onFormCompleted()" />
   } @else {
     <button
       class="dz-button dz-button--md dz-button--fit shadow dz-button--mb"

@@ -54,7 +54,7 @@ export class PeriodComponent {
     this.isEditing.set(true);
   }
 
-  protected onCancelEdit(): void {
+  protected onFormCompleted(): void {
     this.isEditing.set(false);
   }
 
