@@ -40,6 +40,7 @@ export class PeriodComponent {
   });
 
   protected readonly isEditing: WritableSignal<boolean> = signal(false);
+  protected readonly isConfirmingDelete: WritableSignal<boolean> = signal(false);
 
   public readonly period: InputSignal<IFocus.Period> = input.required<IFocus.Period>();
 
@@ -58,8 +59,15 @@ export class PeriodComponent {
   }
 
   protected onDelete(): void {
-    if (confirm(`Are you sure you want to delete "${this.period().name}"?`)) {
-      this.#focusService.removePeriod(this.period().id);
-    }
+    this.isConfirmingDelete.set(true);
+  }
+
+  protected onConfirmDelete(): void {
+    this.#focusService.removePeriod(this.period().id);
+    this.isConfirmingDelete.set(false);
+  }
+
+  protected onCancelDelete(): void {
+    this.isConfirmingDelete.set(false);
   }
 }
