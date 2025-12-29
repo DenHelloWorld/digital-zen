@@ -7,6 +7,7 @@ Digital Zen is a productivity browser extension built with Angular that helps yo
 ## Authors
 
 - **Denis Saveliev (DenHelloWorld)** - Project Creator & Lead Developer - [GitHub Profile](https://github.com/DenHelloWorld)
+- **dan (self-destructed)** - Collaborator - [GitHub Profile](https://github.com/self-destructed)
 
 ## Technology Stack
 
