@@ -1,0 +1,91 @@
+# Digital Zen - LLM Context
+
+## Project Overview
+Modern Angular project (v21+) - Chrome Extension for productivity and focus management.
+
+## Tech Stack
+- **Angular:** v21 (latest stable)
+- **TypeScript:** v5.9 (strict mode)
+- **Styling:** SCSS with BEM naming convention
+- **State Management:** Angular Signals (primary), RxJS (for async streams)
+- **Build:** Angular CLI with custom Chrome extension build pipeline
+
+## Key Angular Patterns
+
+### Component Architecture
+- **Standalone Components** (no NgModules)
+- `ChangeDetectionStrategy.OnPush` by default
+- Dependency injection via `inject()` function (not constructor)
+
+### Reactivity
+- **Signals** for local and shared state (`signal()`, `computed()`)
+- **RxJS** only for HTTP requests and complex async operations
+
+### Template Syntax
+- New control flow: `@if`, `@for`, `@switch`, `@defer`
+- No legacy directives: `*ngIf`, `*ngFor`, `*ngSwitch`
+
+### Functional Patterns
+- Functional interceptors (`HttpInterceptorFn`)
+- Functional guards (`CanActivateFn`)
+
+## Project Structure
+```
+src/
+├── app/              # Main app component
+├── modules/          # Feature modules
+│   ├── common/       # Shared components, services, utilities
+│   ├── focus/        # Focus mode feature
+│   ├── menu/         # Menu feature
+│   └── auth/         # Authentication
+├── background/       # Chrome extension background scripts
+└── styles/           # Global styles
+```
+
+## Coding Standards
+- Use strict TypeScript (no `any` types)
+- Prefer functional patterns over class-based
+- Follow BEM naming: `dz-block__element--modifier`
+- Private fields with `#` prefix
+- Readonly for injected services
+
+## Chrome Extension Specifics
+- Manifest v3
+- Background service workers
+- OAuth integration for Google authentication
+- Content security policies apply
+
+## Quick Reference
+
+**Create a component:**
+```typescript
+@Component({
+  selector: 'dz-example',
+  templateUrl: './example.html',
+  styleUrls: ['./example.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [CommonModule],
+})
+export class ExampleComponent {
+  readonly #service = inject(SomeService);
+  protected readonly data = signal<Data[]>([]);
+}
+```
+
+**Template example:**
+```html
+@if (data().length > 0) {
+  @for (item of data(); track item.id) {
+    <div>{{ item.name }}</div>
+  }
+} @else {
+  <p>No data available</p>
+}
+```
+
+## Commands
+- `npm start` - Development server
+- `npm run build` - Production build
+- `npm test` - Run tests
+- `npm run lint` - Lint code
+- `npm run format` - Format with Prettier
