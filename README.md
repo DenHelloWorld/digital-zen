@@ -217,10 +217,6 @@ digital-zen/
 └── package.json          # Project dependencies and scripts
 ```
 
-## Contributing
-
-Contributions are welcome! Please feel free to submit issues or pull requests.
-
 ## License
 
 This project is currently in development. License information will be provided upon release.
