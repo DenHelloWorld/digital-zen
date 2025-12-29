@@ -18,7 +18,10 @@ import { AbstractControl, ValidationErrors } from '@angular/forms';
  * // Returns null if start time < end time
  * ```
  */
-export function timeRangeValidator(startKey: string, endKey: string) {
+export function timeRangeValidator(
+  startKey: string,
+  endKey: string
+): (group: AbstractControl) => ValidationErrors | null {
   return (group: AbstractControl): ValidationErrors | null => {
     const start: string = group.get(startKey)?.value;
     const end: string = group.get(endKey)?.value;
