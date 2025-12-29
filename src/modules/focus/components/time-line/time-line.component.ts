@@ -24,6 +24,7 @@ export class TimeLineComponent implements OnInit, OnDestroy {
   #intervalId!: number;
 
   readonly #now: WritableSignal<number> = signal(Date.now());
+  readonly #currentDay: WritableSignal<string> = signal(this.#getTodayDateString());
 
   protected readonly nowPercent: Signal<number> = computed(() => {
     const now: number = this.#now();
@@ -46,11 +47,26 @@ export class TimeLineComponent implements OnInit, OnDestroy {
 
   public ngOnInit(): void {
     this.#intervalId = setInterval(() => {
-      this.#now.set(Date.now());
+      const newNow = Date.now();
+      const todayDateString = this.#getTodayDateString();
+
+      // Check if day has changed
+      if (this.#currentDay() !== todayDateString) {
+        // Day changed - reset to beginning of new day
+        this.#currentDay.set(todayDateString);
+      }
+
+      // Update current time
+      this.#now.set(newNow);
     }, 60_000);
   }
 
   public ngOnDestroy(): void {
     clearInterval(this.#intervalId);
+  }
+
+  #getTodayDateString(): string {
+    const now = new Date();
+    return `${now.getFullYear()}-${now.getMonth()}-${now.getDate()}`;
   }
 }
