@@ -55,7 +55,7 @@ export class TimeLineComponent implements OnInit, OnDestroy {
 
       // Check if day has changed
       if (this.#currentDay() !== todayDateString) {
-        // Day changed - reset to beginning of new day
+        // Day changed - update currentDay to trigger recalculation
         this.#currentDay.set(todayDateString);
       }
 
