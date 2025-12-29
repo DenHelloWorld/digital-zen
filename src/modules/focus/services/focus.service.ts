@@ -32,6 +32,7 @@ export class FocusService {
   );
   readonly #periods: WritableSignal<IFocus.Period[] | null> = signal(null);
   readonly #activeTab: WritableSignal<chrome.tabs.Tab | undefined> = signal(undefined);
+  readonly #currentTime: WritableSignal<number> = signal(Date.now());
 
   public readonly currentPeriod: Signal<IFocus.Period | null> = computed(() => {
     return this.#currentPeriod();
@@ -46,10 +47,48 @@ export class FocusService {
     return this.#activeTab();
   });
 
+  /**
+   * Computed signal that returns the elapsed focus time in milliseconds.
+   * Returns 0 if focus is not active or sessionStartTime is not set.
+   */
+  public readonly focusElapsedTime: Signal<number> = computed(() => {
+    const period = this.#currentPeriod();
+    const currentTime = this.#currentTime();
+
+    if (!period?.isFocused || !period?.sessionStartTime) {
+      return 0;
+    }
+
+    return currentTime - period.sessionStartTime.getTime();
+  });
+
+  /**
+   * Formatted focus time as a string (MM:SS or HH:MM:SS).
+   */
+  public readonly focusElapsedTimeFormatted: Signal<string> = computed(() => {
+    const elapsed = this.focusElapsedTime();
+
+    if (elapsed === 0) {
+      return '00:00';
+    }
+
+    const totalSeconds = Math.floor(elapsed / 1000);
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+
+    if (hours > 0) {
+      return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    }
+
+    return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+  });
+
   public constructor() {
     this.#syncInitialState();
     this.#listenToStorageChanges();
     this.#getActiveTab();
+    this.#startTimer();
   }
 
   #syncInitialState(): void {
@@ -103,6 +142,16 @@ export class FocusService {
         }
       }
     });
+  }
+
+  /**
+   * Start a timer that updates the current time signal every second.
+   * This is used to automatically update the focus elapsed time.
+   */
+  #startTimer(): void {
+    setInterval(() => {
+      this.#currentTime.set(Date.now());
+    }, 1000);
   }
 
   public addPeriod(period: IFocus.Period): void {

@@ -13,5 +13,6 @@ export namespace IFocusForm {
     daysOfWeek: FormControl<DayOfWeekType[]>;
     focusedTimes: FormControl<IFocus.FocusedTime[]>;
     isFocused: FormControl<boolean>;
+    sessionStartTime: FormControl<Date | null>;
   }
 }

@@ -11,6 +11,7 @@ export namespace IFocus {
     daysOfWeek: DayOfWeekType[];
     focusedTimes: IFocus.FocusedTime[];
     isFocused: boolean;
+    sessionStartTime: Date | null;
   }
 
   export interface WebSite {

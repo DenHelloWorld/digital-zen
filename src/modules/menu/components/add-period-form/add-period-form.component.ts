@@ -106,6 +106,7 @@ export class AddPeriodFormComponent implements OnInit {
         daysOfWeek: rawValue.daysOfWeek,
         focusedTimes: [],
         isFocused: false,
+        sessionStartTime: null,
       });
     }
   }
@@ -138,6 +139,7 @@ export class AddPeriodFormComponent implements OnInit {
         daysOfWeek: this.#fb.nonNullable.control([], arrayMinLengthValidator()),
         focusedTimes: this.#fb.nonNullable.control([]),
         isFocused: this.#fb.nonNullable.control(false),
+        sessionStartTime: this.#fb.control<Date | null>(null),
       },
       { validators: timeRangeValidator('startFrom', 'endTo') }
     );

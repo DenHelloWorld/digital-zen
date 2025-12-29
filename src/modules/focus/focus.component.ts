@@ -20,6 +20,8 @@ export class FocusComponent {
   protected readonly activeTab: Signal<chrome.tabs.Tab | undefined> = this.#focusService.activeTab;
   protected readonly currentPeriod: Signal<IFocus.Period | null> = this.#focusService.currentPeriod;
   protected readonly periods: Signal<IFocus.Period[] | null> = this.#focusService.periods;
+  protected readonly focusElapsedTimeFormatted: Signal<string> =
+    this.#focusService.focusElapsedTimeFormatted;
 
   protected readonly isSvgIcon: (url: string | null | undefined) => boolean = isSvgIcon;
   protected readonly isImageIcon: (url: string | null | undefined) => boolean = isImageIcon;

@@ -14,18 +14,21 @@ Digital Zen is a productivity browser extension built with Angular that helps yo
 This project is built with modern web technologies and follows best practices for code quality:
 
 ### Core Technologies
+
 - **Framework:** [Angular](https://angular.dev/)
 - **Language:** [TypeScript](https://www.typescriptlang.org/)
 - **State Management:** Angular Signals + [RxJS](https://rxjs.dev/)
 - **Extension API:** Chrome Extension Manifest V3
 
 ### Development Tools
+
 - **Build Tool:** Angular CLI
 - **Linting:** [ESLint](https://eslint.org/) with Angular ESLint
 - **Code Formatting:** [Prettier](https://prettier.io/)
 - **Code Quality:** ESLint + Prettier integration
 
 ### Additional Libraries
+
 - **Chrome Types:** @types/chrome
 - **Environment Variables:** dotenv-cli
 - **TypeScript Path Aliases:** tsc-alias
@@ -35,6 +38,7 @@ This project is built with modern web technologies and follows best practices fo
 ### Prerequisites
 
 Ensure you have the following installed on your machine:
+
 - [Node.js](https://nodejs.org/) (version 18 or higher recommended)
 - npm (comes with Node.js) or [pnpm](https://pnpm.io/)
 
@@ -81,6 +85,7 @@ This will compile the Angular application and background scripts into the `dist/
 5. **Load the extension in Chrome**
 
 Since this is a Chrome extension, you'll need to load it in Chrome:
+
 - Open Chrome and navigate to `chrome://extensions/`
 - Enable "Developer mode" (toggle in the top-right corner)
 - Click "Load unpacked" and select the `dist/browser` folder from your project directory
@@ -106,6 +111,7 @@ npm run build:prod
 ```
 
 This command will:
+
 1. Compile the Angular application
 2. Compile the background service worker with TypeScript
 3. Resolve TypeScript path aliases
@@ -136,18 +142,18 @@ After building the extension, you can test it locally in Chrome:
 
 The following npm scripts are available in this project:
 
-| Script | Command | Description |
-|--------|---------|-------------|
-| `start` | `ng serve` | Starts the Angular development server for local development |
-| `build` | `ng build && tsc -p tsconfig.background.json && tsc-alias -p tsconfig.background.json` | Builds the project for development |
-| `build:prod` | `ng build && tsc -p tsconfig.background.json && tsc-alias -p tsconfig.background.json && npm run patch-manifest` | Builds the project for production and patches manifest with OAuth credentials |
-| `patch-manifest` | `dotenv -- node -e "..."` | Patches the manifest.json with environment variables |
-| `test` | `ng test` | Runs unit tests using Karma test runner |
-| `lint` | `ng lint` | Runs ESLint to check code quality and style issues |
-| `lint:fix` | `ng lint --fix` | Runs ESLint and automatically fixes fixable issues |
-| `format` | `npx prettier --write .` | Formats all code files using Prettier |
-| `format:check` | `npx prettier --check .` | Checks if all files are formatted according to Prettier rules |
-| `ng` | `ng` | Access to Angular CLI commands |
+| Script           | Command                                                                                                          | Description                                                                   |
+| ---------------- | ---------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| `start`          | `ng serve`                                                                                                       | Starts the Angular development server for local development                   |
+| `build`          | `ng build && tsc -p tsconfig.background.json && tsc-alias -p tsconfig.background.json`                           | Builds the project for development                                            |
+| `build:prod`     | `ng build && tsc -p tsconfig.background.json && tsc-alias -p tsconfig.background.json && npm run patch-manifest` | Builds the project for production and patches manifest with OAuth credentials |
+| `patch-manifest` | `dotenv -- node -e "..."`                                                                                        | Patches the manifest.json with environment variables                          |
+| `test`           | `ng test`                                                                                                        | Runs unit tests using Karma test runner                                       |
+| `lint`           | `ng lint`                                                                                                        | Runs ESLint to check code quality and style issues                            |
+| `lint:fix`       | `ng lint --fix`                                                                                                  | Runs ESLint and automatically fixes fixable issues                            |
+| `format`         | `npx prettier --write .`                                                                                         | Formats all code files using Prettier                                         |
+| `format:check`   | `npx prettier --check .`                                                                                         | Checks if all files are formatted according to Prettier rules                 |
+| `ng`             | `ng`                                                                                                             | Access to Angular CLI commands                                                |
 
 ## Development Workflow
 
@@ -185,7 +191,8 @@ If you encounter errors related to missing environment variables during producti
 
 **Problem:** `OAUTH_CLIENT_ID` or `PUBLIC_KEY` not found
 
-**Solution:** 
+**Solution:**
+
 1. Create a `.env` file in the project root
 2. Add your Google OAuth Client ID and Chrome Extension Public Key:
    ```env
@@ -203,6 +210,7 @@ If you encounter errors related to missing environment variables during producti
 **Problem:** Chrome shows "Manifest file is missing or unreadable"
 
 **Solution:**
+
 1. Make sure you've run the build command first
 2. Verify that `dist/browser` folder contains `manifest.json`
 3. Check that the manifest.json is valid JSON (build process should validate this)
@@ -212,6 +220,7 @@ If you encounter errors related to missing environment variables during producti
 **Problem:** `ng serve` fails or port is already in use
 
 **Solution:**
+
 1. Ensure all dependencies are installed: `npm install`
 2. If port 4200 is in use, specify a different port: `ng serve --port 4201`
 3. Clear Angular cache: `rm -rf .angular/cache`

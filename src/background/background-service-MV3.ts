@@ -214,6 +214,7 @@ export class BackgroundServiceMV3 {
     this.#currentPeriod = period;
     this.#sessionStartTime = new Date();
     this.#currentPeriod.isFocused = true;
+    this.#currentPeriod.sessionStartTime = this.#sessionStartTime;
 
     await StorageAdapter.saveCurrentPeriod(this.#currentPeriod);
     await StorageAdapter.savePeriod(this.#currentPeriod);
@@ -243,6 +244,7 @@ export class BackgroundServiceMV3 {
     }
 
     this.#currentPeriod.isFocused = false;
+    this.#currentPeriod.sessionStartTime = null;
     await StorageAdapter.savePeriod(this.#currentPeriod);
     await StorageAdapter.saveCurrentPeriod(this.#currentPeriod);
 
@@ -333,6 +335,7 @@ export class BackgroundServiceMV3 {
       isFocused: true,
       focusedTimes: [],
       daysOfWeek: [0, 1, 2, 3, 4, 5, 6],
+      sessionStartTime: null,
       webSites: [
         {
           id: 'ws-' + Date.now(),
