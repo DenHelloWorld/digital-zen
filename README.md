@@ -70,16 +70,30 @@ PUBLIC_KEY=your_chrome_extension_public_key
 
 > **Note:** These environment variables are only required for production builds. You can run the development server without them.
 
-4. **Start the development server**
+4. **Build the extension for development**
+
+```bash
+npm run build
+```
+
+This will compile the Angular application and background scripts into the `dist/browser` folder.
+
+5. **Load the extension in Chrome**
+
+Since this is a Chrome extension, you'll need to load it in Chrome:
+- Open Chrome and navigate to `chrome://extensions/`
+- Enable "Developer mode" (toggle in the top-right corner)
+- Click "Load unpacked" and select the `dist/browser` folder from your project directory
+
+6. **(Optional) Run development server for live reload**
+
+If you want to develop with live reload, you can run:
 
 ```bash
 npm start
 ```
 
-The application will be compiled and ready for development. Since this is a Chrome extension, you'll need to load it in Chrome:
-- Open Chrome and navigate to `chrome://extensions/`
-- Enable "Developer mode" (toggle in the top-right corner)
-- Click "Load unpacked" and select the `dist/browser` folder
+This starts the Angular development server at `http://localhost:4200/`. While this is useful for rapid development with hot reload, remember that for testing the actual Chrome extension functionality, you'll need to rebuild using `npm run build` and reload the extension in Chrome.
 
 ## Build and Deployment
 
