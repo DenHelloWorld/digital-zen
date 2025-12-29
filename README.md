@@ -1,59 +1,244 @@
-# DigitalZenExtension
+# Digital Zen
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.2.0.
+> A Chrome extension to improve your focus by blocking distracting websites and managing focus sessions.
 
-## Development server
+Digital Zen is a productivity browser extension built with Angular that helps you maintain concentration by blocking distracting websites during focus sessions. It provides an intuitive interface for managing blocked sites, tracking focus time, and staying productive throughout your workday.
 
-To start a local development server, run:
+## Authors
 
-```bash
-ng serve
-```
+- **Denis Saveliev (DenHelloWorld)** - Project Creator & Lead Developer - [GitHub Profile](https://github.com/DenHelloWorld)
+- **dan (self-destructed)** - Collaborator - [GitHub Profile](https://github.com/self-destructed)
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+## Technology Stack
 
-## Code scaffolding
+This project is built with modern web technologies and follows best practices for code quality:
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+### Core Technologies
+- **Framework:** [Angular](https://angular.dev/)
+- **Language:** [TypeScript](https://www.typescriptlang.org/)
+- **State Management:** Angular Signals + [RxJS](https://rxjs.dev/)
+- **Extension API:** Chrome Extension Manifest V3
 
-```bash
-ng generate component component-name
-```
+### Development Tools
+- **Build Tool:** Angular CLI
+- **Linting:** [ESLint](https://eslint.org/) with Angular ESLint
+- **Code Formatting:** [Prettier](https://prettier.io/)
+- **Code Quality:** ESLint + Prettier integration
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+### Additional Libraries
+- **Chrome Types:** @types/chrome
+- **Environment Variables:** dotenv-cli
+- **TypeScript Path Aliases:** tsc-alias
 
-```bash
-ng generate --help
-```
+## Getting Started
 
-## Building
+### Prerequisites
 
-To build the project run:
+Ensure you have the following installed on your machine:
+- [Node.js](https://nodejs.org/) (version 18 or higher recommended)
+- npm (comes with Node.js) or [pnpm](https://pnpm.io/)
 
-```bash
-ng build
-```
+### Installation
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
+1. **Clone the repository**
 
 ```bash
-ng e2e
+git clone https://github.com/DenHelloWorld/digital-zen.git
+cd digital-zen
 ```
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+2. **Install dependencies**
+
+```bash
+npm install
+```
+
+or if you prefer pnpm:
+
+```bash
+pnpm install
+```
+
+3. **Set up environment variables** (Optional for development)
+
+Create a `.env` file in the root directory with the following variables:
+
+```env
+OAUTH_CLIENT_ID=your_google_oauth_client_id
+PUBLIC_KEY=your_chrome_extension_public_key
+```
+
+> **Note:** These environment variables are only required for production builds. You can run the development server without them.
+
+4. **Build the extension for development**
+
+```bash
+npm run build
+```
+
+This will compile the Angular application and background scripts into the `dist/browser` folder.
+
+5. **Load the extension in Chrome**
+
+Since this is a Chrome extension, you'll need to load it in Chrome:
+- Open Chrome and navigate to `chrome://extensions/`
+- Enable "Developer mode" (toggle in the top-right corner)
+- Click "Load unpacked" and select the `dist/browser` folder from your project directory
+
+6. **(Optional) Run development server for live reload**
+
+If you want to develop with live reload, you can run:
+
+```bash
+npm start
+```
+
+This starts the Angular development server at `http://localhost:4200/`. While this is useful for rapid development with hot reload, remember that for testing the actual Chrome extension functionality, you'll need to rebuild using `npm run build` and reload the extension in Chrome.
+
+## Build and Deployment
+
+### Building for Production
+
+To create a production build of the extension:
+
+```bash
+npm run build:prod
+```
+
+This command will:
+1. Compile the Angular application
+2. Compile the background service worker with TypeScript
+3. Resolve TypeScript path aliases
+4. Patch the manifest.json with OAuth credentials from environment variables
+
+The compiled extension will be available in the `dist/browser` directory.
+
+### Building for Development
+
+For a development build without environment variable patching:
+
+```bash
+npm run build
+```
+
+### Testing the Build Locally
+
+After building the extension, you can test it locally in Chrome:
+
+1. Build the extension using one of the commands above
+2. Open Chrome and navigate to `chrome://extensions/`
+3. Enable "Developer mode"
+4. Click "Load unpacked"
+5. Select the `dist/browser` folder from your project directory
+6. The extension icon should appear in your Chrome toolbar
+
+## Available Scripts
+
+The following npm scripts are available in this project:
+
+| Script | Command | Description |
+|--------|---------|-------------|
+| `start` | `ng serve` | Starts the Angular development server for local development |
+| `build` | `ng build && tsc -p tsconfig.background.json && tsc-alias -p tsconfig.background.json` | Builds the project for development |
+| `build:prod` | `ng build && tsc -p tsconfig.background.json && tsc-alias -p tsconfig.background.json && npm run patch-manifest` | Builds the project for production and patches manifest with OAuth credentials |
+| `patch-manifest` | `dotenv -- node -e "..."` | Patches the manifest.json with environment variables |
+| `test` | `ng test` | Runs unit tests using Karma test runner |
+| `lint` | `ng lint` | Runs ESLint to check code quality and style issues |
+| `lint:fix` | `ng lint --fix` | Runs ESLint and automatically fixes fixable issues |
+| `format` | `npx prettier --write .` | Formats all code files using Prettier |
+| `format:check` | `npx prettier --check .` | Checks if all files are formatted according to Prettier rules |
+| `ng` | `ng` | Access to Angular CLI commands |
+
+## Development Workflow
+
+### Code Quality
+
+This project uses ESLint and Prettier to maintain consistent code quality:
+
+```bash
+# Check for linting issues
+npm run lint
+
+# Auto-fix linting issues
+npm run lint:fix
+
+# Format code
+npm run format
+
+# Check code formatting
+npm run format:check
+```
+
+### Running Tests
+
+Execute the unit test suite:
+
+```bash
+npm test
+```
+
+## Troubleshooting
+
+### Environment Variables Not Found
+
+If you encounter errors related to missing environment variables during production build:
+
+**Problem:** `OAUTH_CLIENT_ID` or `PUBLIC_KEY` not found
+
+**Solution:** 
+1. Create a `.env` file in the project root
+2. Add your Google OAuth Client ID and Chrome Extension Public Key:
+   ```env
+   OAUTH_CLIENT_ID=your_actual_client_id_here
+   PUBLIC_KEY=your_actual_public_key_here
+   ```
+3. These values are obtained from:
+   - **OAUTH_CLIENT_ID:** [Google Cloud Console](https://console.cloud.google.com/) → APIs & Services → Credentials
+   - **PUBLIC_KEY:** Generated when you first publish your extension to Chrome Web Store
+
+> **Note:** The `.env` file should never be committed to version control. It's already included in `.gitignore`.
+
+### Extension Not Loading in Chrome
+
+**Problem:** Chrome shows "Manifest file is missing or unreadable"
+
+**Solution:**
+1. Make sure you've run the build command first
+2. Verify that `dist/browser` folder contains `manifest.json`
+3. Check that the manifest.json is valid JSON (build process should validate this)
+
+### Development Server Not Starting
+
+**Problem:** `ng serve` fails or port is already in use
+
+**Solution:**
+1. Ensure all dependencies are installed: `npm install`
+2. If port 4200 is in use, specify a different port: `ng serve --port 4201`
+3. Clear Angular cache: `rm -rf .angular/cache`
+
+## Project Structure
+
+```
+digital-zen/
+├── src/
+│   ├── app/              # Angular application components
+│   ├── background/       # Background service worker scripts
+│   ├── modules/          # Shared Angular modules
+│   ├── styles/           # Global styles
+│   ├── manifest.json     # Chrome extension manifest
+│   └── main.ts           # Application entry point
+├── public/               # Static assets
+├── dist/                 # Build output directory
+└── package.json          # Project dependencies and scripts
+```
+
+## License
+
+This project is currently in development. License information will be provided upon release.
 
 ## Additional Resources
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+- [Angular Documentation](https://angular.dev/)
+- [Chrome Extension Documentation](https://developer.chrome.com/docs/extensions/)
+- [Angular CLI Command Reference](https://angular.dev/tools/cli)
+- [TypeScript Documentation](https://www.typescriptlang.org/docs/)
