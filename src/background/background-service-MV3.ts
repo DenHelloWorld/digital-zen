@@ -161,11 +161,9 @@ export class BackgroundServiceMV3 {
   }
 
   private async removePeriod(periodId: string): Promise<void> {
-    const periods = await StorageAdapter.getPeriods();
     const current = await StorageAdapter.getCurrentPeriod();
 
-    const newPeriods = periods.filter(p => p.id !== periodId);
-    await chrome.storage.local.set({ periods: newPeriods });
+    await StorageAdapter.removePeriod(periodId);
 
     if (current?.id === periodId) await this.stopFocus();
     await this.restoreCurrentPeriod();

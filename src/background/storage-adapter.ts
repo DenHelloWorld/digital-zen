@@ -51,6 +51,18 @@ export class StorageAdapter {
     });
   }
 
+  static async removePeriod(periodId: string): Promise<void> {
+    return this.enqueue(async () => {
+      const result = await chrome.storage.local.get(CHROME_STORAGE_KEY_ENUM.PERIODS);
+      const periods: StoredPeriod[] = Array.isArray(result[CHROME_STORAGE_KEY_ENUM.PERIODS])
+        ? result[CHROME_STORAGE_KEY_ENUM.PERIODS]
+        : [];
+
+      const newPeriods = periods.filter(p => p.id !== periodId);
+      await chrome.storage.local.set({ periods: newPeriods });
+    });
+  }
+
   static async getPeriods(): Promise<IFocus.Period[]> {
     const result = await chrome.storage.local.get(CHROME_STORAGE_KEY_ENUM.PERIODS);
     const raw: StoredPeriod[] = Array.isArray(result[CHROME_STORAGE_KEY_ENUM.PERIODS])
