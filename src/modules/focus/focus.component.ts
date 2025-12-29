@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, Signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, Signal } from '@angular/core';
 import { FocusService } from './services';
 import { LoaderComponent, IFocus, isImageIcon, isHttpUrl, isSvgIcon } from '../common';
 import { PeriodComponent } from './components/period/period.component';
@@ -20,6 +20,7 @@ export class FocusComponent {
   protected readonly activeTab: Signal<chrome.tabs.Tab | undefined> = this.#focusService.activeTab;
   protected readonly currentPeriod: Signal<IFocus.Period | null> = this.#focusService.currentPeriod;
   protected readonly periods: Signal<IFocus.Period[] | null> = this.#focusService.periods;
+  protected readonly periodsCount: Signal<number> = computed(() => this.periods()?.length ?? 0);
   protected readonly focusElapsedTimeFormatted: Signal<string> =
     this.#focusService.focusElapsedTimeFormatted;
 
