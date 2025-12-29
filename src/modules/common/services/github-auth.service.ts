@@ -64,6 +64,11 @@ export class GitHubAuthService {
     // For Chrome extensions, the redirect URI is in the format:
     // https://<extension-id>.chromiumapp.org/
     const extensionId = chrome.runtime.id;
+
+    if (!extensionId) {
+      throw new Error('Extension ID is not available');
+    }
+
     return `https://${extensionId}.chromiumapp.org/`;
   }
 
