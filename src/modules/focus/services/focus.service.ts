@@ -1,4 +1,12 @@
-import { computed, inject, Injectable, Signal, signal, WritableSignal } from '@angular/core';
+import {
+  computed,
+  DestroyRef,
+  inject,
+  Injectable,
+  Signal,
+  signal,
+  WritableSignal,
+} from '@angular/core';
 import {
   IFocus,
   QUICK_FOCUS_ID,
@@ -26,12 +34,15 @@ export class FocusService {
   readonly #isChromeRuntime: boolean = !!chrome.runtime;
   readonly #toastService: DzToastService = inject(DzToastService);
   readonly #chromeStorageService: ChromeStorageService = inject(ChromeStorageService);
+  readonly #destroyRef: DestroyRef = inject(DestroyRef);
 
   readonly #currentPeriod: WritableSignal<IFocus.Period | null> = signal<IFocus.Period | null>(
     null
   );
   readonly #periods: WritableSignal<IFocus.Period[] | null> = signal(null);
   readonly #activeTab: WritableSignal<chrome.tabs.Tab | undefined> = signal(undefined);
+  readonly #currentTime: WritableSignal<number> = signal(Date.now());
+  #timerIntervalId: ReturnType<typeof setInterval> | null = null;
 
   public readonly currentPeriod: Signal<IFocus.Period | null> = computed(() => {
     return this.#currentPeriod();
@@ -46,10 +57,48 @@ export class FocusService {
     return this.#activeTab();
   });
 
+  /**
+   * Computed signal that returns the elapsed focus time in milliseconds.
+   * Returns 0 if focus is not active or sessionStartTime is not set.
+   */
+  public readonly focusElapsedTime: Signal<number> = computed(() => {
+    const period = this.#currentPeriod();
+    const currentTime = this.#currentTime();
+
+    if (!period?.isFocused || !period?.sessionStartTime) {
+      return 0;
+    }
+
+    return currentTime - period.sessionStartTime.getTime();
+  });
+
+  /**
+   * Formatted focus time as a string (MM:SS or HH:MM:SS).
+   */
+  public readonly focusElapsedTimeFormatted: Signal<string> = computed(() => {
+    const elapsed = this.focusElapsedTime();
+
+    if (elapsed <= 0) {
+      return '00:00';
+    }
+
+    const totalSeconds = Math.floor(elapsed / 1000);
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+
+    if (hours > 0) {
+      return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    }
+
+    return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+  });
+
   public constructor() {
     this.#syncInitialState();
     this.#listenToStorageChanges();
     this.#getActiveTab();
+    this.#startTimer();
   }
 
   #syncInitialState(): void {
@@ -69,8 +118,12 @@ export class FocusService {
           return;
         }
 
-        const currentPeriod = result[CHROME_STORAGE_KEY_ENUM.CURRENT_PERIOD] || null;
-        const periods = result[CHROME_STORAGE_KEY_ENUM.PERIODS] || [];
+        const currentPeriod = result[CHROME_STORAGE_KEY_ENUM.CURRENT_PERIOD]
+          ? this.#convertPeriodFromStorage(result[CHROME_STORAGE_KEY_ENUM.CURRENT_PERIOD])
+          : null;
+        const periods = (result[CHROME_STORAGE_KEY_ENUM.PERIODS] || []).map(p =>
+          this.#convertPeriodFromStorage(p)
+        );
 
         if (!currentPeriod) {
           this.addPeriod(DEFAULT_PERIOD);
@@ -92,17 +145,54 @@ export class FocusService {
         if (changes[CHROME_STORAGE_KEY_ENUM.PERIODS]) {
           const newPeriods =
             (changes[CHROME_STORAGE_KEY_ENUM.PERIODS].newValue as IFocus.Period[]) || [];
-          this.#periods.set(newPeriods);
+          this.#periods.set(newPeriods.map(p => this.#convertPeriodFromStorage(p)));
         }
 
         if (changes[CHROME_STORAGE_KEY_ENUM.CURRENT_PERIOD]) {
           const newCurrentPeriod = changes[CHROME_STORAGE_KEY_ENUM.CURRENT_PERIOD]
             .newValue as IFocus.Period | null;
 
-          this.#currentPeriod.set(newCurrentPeriod);
+          this.#currentPeriod.set(
+            newCurrentPeriod ? this.#convertPeriodFromStorage(newCurrentPeriod) : null
+          );
         }
       }
     });
+  }
+
+  /**
+   * Start a timer that updates the current time signal every second.
+   * This is used to automatically update the focus elapsed time.
+   */
+  #startTimer(): void {
+    this.#timerIntervalId = setInterval(() => {
+      this.#currentTime.set(Date.now());
+    }, 1000);
+
+    this.#destroyRef.onDestroy(() => {
+      if (this.#timerIntervalId) {
+        clearInterval(this.#timerIntervalId);
+        this.#timerIntervalId = null;
+      }
+    });
+  }
+
+  /**
+   * Converts a period from storage format (with ISO string dates) to runtime format (with Date objects).
+   * This is needed because Chrome storage serializes Date objects as ISO strings.
+   */
+  #convertPeriodFromStorage(period: IFocus.Period): IFocus.Period {
+    return {
+      ...period,
+      startFrom: period.startFrom ? new Date(period.startFrom) : null,
+      endTo: period.endTo ? new Date(period.endTo) : null,
+      sessionStartTime: period.sessionStartTime ? new Date(period.sessionStartTime) : null,
+      focusedTimes: (period.focusedTimes || []).map(ft => ({
+        ...ft,
+        startFrom: ft.startFrom ? new Date(ft.startFrom) : null,
+        endTo: ft.endTo ? new Date(ft.endTo) : null,
+      })),
+    };
   }
 
   public addPeriod(period: IFocus.Period): void {

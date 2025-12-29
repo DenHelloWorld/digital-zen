@@ -202,4 +202,5 @@ export const DEFAULT_PERIOD: Readonly<IFocus.Period> = Object.freeze({
   daysOfWeek: [...ALL_DAYS_OF_WEEK_DAYS],
   focusedTimes: [],
   isFocused: false,
+  sessionStartTime: null,
 });

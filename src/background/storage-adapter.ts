@@ -4,9 +4,13 @@ import { CHROME_STORAGE_KEY_ENUM } from '../modules/common/enums/chrome-storage-
 /**
  * The type of data that is actually stored in storage (ISO strings instead of Date)
  */
-interface StoredPeriod extends Omit<IFocus.Period, 'startFrom' | 'endTo' | 'focusedTimes'> {
+interface StoredPeriod extends Omit<
+  IFocus.Period,
+  'startFrom' | 'endTo' | 'focusedTimes' | 'sessionStartTime'
+> {
   startFrom: string | null;
   endTo: string | null;
+  sessionStartTime: string | null;
   focusedTimes: StoredFocusedTime[];
 }
 
@@ -84,6 +88,7 @@ export class StorageAdapter {
       ...period,
       startFrom: toISOStringSafe(period.startFrom),
       endTo: toISOStringSafe(period.endTo),
+      sessionStartTime: toISOStringSafe(period.sessionStartTime),
       focusedTimes: (period.focusedTimes || []).map(ft => ({
         ...ft,
         startFrom: toISOStringSafe(ft.startFrom),
@@ -97,6 +102,7 @@ export class StorageAdapter {
       ...stored,
       startFrom: stored.startFrom ? new Date(stored.startFrom) : null,
       endTo: stored.endTo ? new Date(stored.endTo) : null,
+      sessionStartTime: stored.sessionStartTime ? new Date(stored.sessionStartTime) : null,
       focusedTimes: (stored.focusedTimes || []).map(ft => ({
         ...ft,
         startFrom: ft.startFrom ? new Date(ft.startFrom) : null,
