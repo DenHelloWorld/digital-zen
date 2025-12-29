@@ -1,52 +1,82 @@
 @let p = period();
 
-<details open class="dz-accordion dz-accordion--accent" [class.dz-accordion--accent]="p.isFocused">
-  <summary class="dz-accordion__header">
-    <span>
-      <h2 class="title">
-        {{ p.name }}
-      </h2>
-    </span>
-
-    <span class="dz-accordion__icon">⯆</span>
-  </summary>
-
-  <div class="dz-accordion__content">
-    @if (p.startFrom && p.endTo) {
-      <dz-time-line [startFrom]="p.startFrom" [endTo]="p.endTo" />
-    }
-
-    <p class="description">
-      {{ p.description }}
-    </p>
-
-    <div class="weekdays">
-      <dz-weekdays-selector [selectedDays]="selectedDays()" [isSelectable]="false" />
-    </div>
-
-    <ul class="dz-list dz-list--horizontal dz-list--full" aria-labelledby="social-title">
-      @for (site of p.webSites; track site) {
-        <li>
-          <button
-            class="dz-button dz-button--md shadow"
-            [class.dz-button--square]="site.iconUrl || site.imageUrl"
-            [class.dz-button--error]="site.isBlocked"
-            [class.shadow--activated]="site.isBlocked"
-            [title]="site.name"
-            (click)="onToggleBlockedWebsite(site)"
-          >
-            @if (site.iconUrl) {
-              <svg class="dz-icon dz-icon--shadow" aria-hidden="true" focusable="false">
-                <use width="24" height="24" [attr.href]="site.iconUrl"></use>
-              </svg>
-            } @else if (site.imageUrl) {
-              <img class="dz-icon dz-icon--shadow" [src]="site.imageUrl" [alt]="site.name" />
-            } @else {
-              {{ site.name }}
-            }
-          </button>
-        </li>
-      }
-    </ul>
+@if (isEditing()) {
+  <div class="dz-period-edit">
+    <dz-period-form mode="edit" [period]="p" (canceled)="onCancelEdit()" />
   </div>
-</details>
+} @else {
+  <details
+    open
+    class="dz-accordion dz-accordion--accent"
+    [class.dz-accordion--accent]="p.isFocused"
+  >
+    <summary class="dz-accordion__header">
+      <span>
+        <h2 class="title">
+          {{ p.name }}
+        </h2>
+      </span>
+
+      <span class="dz-accordion__icon">⯆</span>
+    </summary>
+
+    <div class="dz-accordion__content">
+      @if (p.startFrom && p.endTo) {
+        <dz-time-line [startFrom]="p.startFrom" [endTo]="p.endTo" />
+      }
+
+      <p class="description">
+        {{ p.description }}
+      </p>
+
+      <div class="weekdays">
+        <dz-weekdays-selector [selectedDays]="selectedDays()" [isSelectable]="false" />
+      </div>
+
+      <ul class="dz-list dz-list--horizontal dz-list--full" aria-labelledby="social-title">
+        @for (site of p.webSites; track site) {
+          <li>
+            <button
+              class="dz-button dz-button--md shadow"
+              [class.dz-button--square]="site.iconUrl || site.imageUrl"
+              [class.dz-button--error]="site.isBlocked"
+              [class.shadow--activated]="site.isBlocked"
+              [title]="site.name"
+              (click)="onToggleBlockedWebsite(site)"
+            >
+              @if (site.iconUrl) {
+                <svg class="dz-icon dz-icon--shadow" aria-hidden="true" focusable="false">
+                  <use width="24" height="24" [attr.href]="site.iconUrl"></use>
+                </svg>
+              } @else if (site.imageUrl) {
+                <img class="dz-icon dz-icon--shadow" [src]="site.imageUrl" [alt]="site.name" />
+              } @else {
+                {{ site.name }}
+              }
+            </button>
+          </li>
+        }
+      </ul>
+
+      <div class="dz-period-actions">
+        <button type="button" class="dz-button dz-button--md shadow" (click)="onEdit()">
+          <svg class="dz-icon" aria-hidden="true" focusable="false">
+            <use href="#icon-edit"></use>
+          </svg>
+          Edit
+        </button>
+
+        <button
+          type="button"
+          class="dz-button dz-button--md dz-button--error shadow"
+          (click)="onDelete()"
+        >
+          <svg class="dz-icon" aria-hidden="true" focusable="false">
+            <use href="#icon-delete"></use>
+          </svg>
+          Delete
+        </button>
+      </div>
+    </div>
+  </details>
+}

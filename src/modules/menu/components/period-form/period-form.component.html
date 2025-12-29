@@ -75,9 +75,13 @@
       [disabled]="form.invalid"
       class="dz-button dz-button--activated shadow"
       [class.dz-button--error]="form.invalid"
-      (click)="addPeriod()"
+      (click)="savePeriod()"
     >
-      Create
+      {{ mode() === 'edit' ? 'Update' : 'Create' }}
+    </button>
+
+    <button type="button" class="dz-button dz-button--md shadow" (click)="cancelForm()">
+      Cancel
     </button>
   </div>
 </form>

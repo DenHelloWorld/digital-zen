@@ -1,0 +1,16 @@
+:host {
+  .dz-input {
+    &--mb {
+      margin-bottom: var(--spacing);
+    }
+  }
+
+  .dz-form__field {
+    display: flex;
+    gap: var(--spacing-sm);
+
+    button:not(:first-child) {
+      margin-left: auto;
+    }
+  }
+}

@@ -12,4 +12,16 @@
   .weekdays {
     width: 100%;
   }
+
+  .dz-period-actions {
+    display: flex;
+    gap: var(--spacing-sm);
+    width: 100%;
+    justify-content: flex-end;
+    margin-top: var(--spacing-sm);
+  }
+
+  .dz-period-edit {
+    width: 100%;
+  }
 }
