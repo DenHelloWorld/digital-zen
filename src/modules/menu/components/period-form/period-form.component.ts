@@ -136,13 +136,31 @@ export class PeriodFormComponent implements OnInit {
   /**
    * Converts a time string "HH:mm" to a Date object.
    * @param timeString The time string from the input (e.g., "14:30").
-   * @returns A Date object set to the specified time.
+   * @returns A Date object set to the specified time, or null if invalid.
    */
-  #timeStringToDate(timeString: string): Date {
-    const date = new Date();
-    const [hours, minutes] = timeString.split(':').map(Number);
+  #timeStringToDate(timeString: string): Date | null {
+    if (!timeString || typeof timeString !== 'string' || !timeString.includes(':')) {
+      console.warn('Invalid time string provided to timeStringToDate:', timeString);
+      return null;
+    }
 
+    const [hoursStr, minutesStr] = timeString.split(':');
+    const hours = Number(hoursStr);
+    const minutes = Number(minutesStr);
+
+    if (isNaN(hours) || isNaN(minutes)) {
+      console.warn('Invalid hours/minutes in time string:', timeString);
+      return null;
+    }
+
+    const date = new Date();
     date.setHours(hours, minutes, 0, 0);
+
+    // Verify the date is valid after setting
+    if (isNaN(date.getTime())) {
+      console.warn('Created invalid date from time string:', timeString);
+      return null;
+    }
 
     return date;
   }

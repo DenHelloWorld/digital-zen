@@ -182,15 +182,26 @@ export class FocusService {
    * This is needed because Chrome storage serializes Date objects as ISO strings.
    */
   #convertPeriodFromStorage(period: IFocus.Period): IFocus.Period {
+    const toDateSafe = (d: Date | string | null): Date | null => {
+      if (!d) return null;
+      const date = d instanceof Date ? d : new Date(d);
+      // Return null if the date is invalid
+      if (isNaN(date.getTime())) {
+        console.warn('Invalid date detected, skipping:', d);
+        return null;
+      }
+      return date;
+    };
+
     return {
       ...period,
-      startFrom: period.startFrom ? new Date(period.startFrom) : null,
-      endTo: period.endTo ? new Date(period.endTo) : null,
-      sessionStartTime: period.sessionStartTime ? new Date(period.sessionStartTime) : null,
+      startFrom: toDateSafe(period.startFrom),
+      endTo: toDateSafe(period.endTo),
+      sessionStartTime: toDateSafe(period.sessionStartTime),
       focusedTimes: (period.focusedTimes || []).map(ft => ({
         ...ft,
-        startFrom: ft.startFrom ? new Date(ft.startFrom) : null,
-        endTo: ft.endTo ? new Date(ft.endTo) : null,
+        startFrom: toDateSafe(ft.startFrom),
+        endTo: toDateSafe(ft.endTo),
       })),
     };
   }
