@@ -46,19 +46,21 @@
 </div>
 
 <div class="dz-group">
-  @if (periods()?.length) {
-    <ul class="dz-list">
-      @for (period of periods(); track period.id) {
-        <li>
-          <dz-period
-            [period]="period"
-            [totalPeriodsCount]="periods()!.length"
-            (toggleBlockedWebsite)="onToggleBlockedWebsite($event)"
-          />
-        </li>
-      }
-    </ul>
-  } @else {
-    <dz-loader />
+  @if (periods(); as periodsList) {
+    @if (periodsList.length) {
+      <ul class="dz-list">
+        @for (period of periodsList; track period.id) {
+          <li>
+            <dz-period
+              [period]="period"
+              [totalPeriodsCount]="periodsList.length"
+              (toggleBlockedWebsite)="onToggleBlockedWebsite($event)"
+            />
+          </li>
+        }
+      </ul>
+    } @else {
+      <dz-loader />
+    }
   }
 </div>
