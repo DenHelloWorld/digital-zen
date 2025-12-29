@@ -1,4 +1,5 @@
 export * from './quick-focus-id.const';
+export * from './api-urls.const';
 
 import { DAY_OF_WEEK_ENUM, DAY_OF_WEEK_SHORT_NAME_ENUM, DayOfWeekType } from '../enums';
 import { IFocus } from '../models';

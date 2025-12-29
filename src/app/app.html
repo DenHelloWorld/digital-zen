@@ -12,13 +12,20 @@
       </svg>
     </button>
 
-    <!--    <button (click)="loginWithGoogle()" class="dz-button dz-button&#45;&#45;round dz-button&#45;&#45;md" title="Login with Google">-->
-    <!--      <span style="font-weight: bold; font-size: 12px;">G</span>-->
-    <!--    </button>-->
-
-    <!--    <button (click)="logout()" class="dz-button dz-button&#45;&#45;md">-->
-    <!--      Logout-->
-    <!--    </button>-->
+    <button
+      [title]="isGoogleAuthenticated() ? 'Logout from Google' : 'Login with Google'"
+      (click)="isGoogleAuthenticated() ? logoutFromGoogle() : loginWithGoogle()"
+      [disabled]="isGoogleAuthPending()"
+      class="dz-button dz-button--round dz-button--md"
+    >
+      @if (isGoogleAuthPending()) {
+        <dz-loader />
+      } @else {
+        <svg class="dz-icon" aria-hidden="true">
+          <use [attr.href]="isGoogleAuthenticated() ? '#icon-logout' : '#icon-google-logo'"></use>
+        </svg>
+      }
+    </button>
   </nav>
 
   <dz-theme-switcher />
