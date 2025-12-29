@@ -20,10 +20,18 @@ export class ApiService {
    * @template T Expected response type.
    * @param {string} url Endpoint URL.
    * @param {Record<string, string | string[]>} [params={}] Query parameters (converted to HttpParams).
+   * @param {Record<string, string>} [headers={}] Optional headers to include in the request.
    * @returns {Observable<T>} Observable emitting the response typed as T.
    */
-  public get<T>(url: string, params: Record<string, string | string[]> = {}): Observable<T> {
-    return this.#http.get<T>(url, { params: new HttpParams({ fromObject: params }) });
+  public get<T>(
+    url: string,
+    params: Record<string, string | string[]> = {},
+    headers: Record<string, string> = {}
+  ): Observable<T> {
+    return this.#http.get<T>(url, {
+      params: new HttpParams({ fromObject: params }),
+      headers,
+    });
   }
 
   /**
