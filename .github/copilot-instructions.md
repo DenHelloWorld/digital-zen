@@ -33,8 +33,8 @@ export class ExampleComponent {
 
 ```typescript
 export class ExampleComponent {
-  readonly #authService: AuthService = inject(AuthService);
-  readonly #router: Router = inject(Router);
+  readonly #authService = inject(AuthService);
+  readonly #router = inject(Router);
 }
 ```
 
@@ -53,7 +53,7 @@ export class ExampleComponent {
   protected readonly doubleCount = computed(() => this.count() * 2);
   
   // RxJS for HTTP requests (one of the valid use cases)
-  readonly #http: HttpClient = inject(HttpClient);
+  readonly #http = inject(HttpClient);
   readonly #destroyRef = inject(DestroyRef);
   
   loadData(): void {
