@@ -4,7 +4,11 @@ import {
   DestroyRef,
   inject,
   Injector,
+  input,
+  InputSignal,
   OnInit,
+  output,
+  OutputEmitterRef,
   signal,
   WritableSignal,
 } from '@angular/core';
@@ -13,6 +17,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { distinctUntilChanged, map } from 'rxjs';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import {
+  ALL_DAYS_OF_WEEK,
   arrayMinLengthValidator,
   IFocus,
   IFocusForm,
@@ -26,17 +31,21 @@ import { FocusService } from '../../../focus/services';
 import { DynamicInputComponent } from '../../../common/components/dynamic-input/dynamic-input.component';
 
 @Component({
-  selector: 'dz-add-period-form',
-  templateUrl: 'add-period-form.component.html',
-  styleUrls: ['add-period-form.component.scss'],
+  selector: 'dz-period-form',
+  templateUrl: 'period-form.component.html',
+  styleUrls: ['period-form.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [ReactiveFormsModule, WeekdaysSelectorComponent, DynamicInputComponent],
 })
-export class AddPeriodFormComponent implements OnInit {
+export class PeriodFormComponent implements OnInit {
   readonly #fb: FormBuilder = inject(FormBuilder);
   readonly #destroyRef: DestroyRef = inject(DestroyRef);
   readonly #injector: Injector = inject(Injector);
   readonly #focusService: FocusService = inject(FocusService);
+
+  public readonly mode: InputSignal<'create' | 'edit'> = input<'create' | 'edit'>('create');
+  public readonly period: InputSignal<IFocus.Period | null> = input<IFocus.Period | null>(null);
+  public readonly completed: OutputEmitterRef<void> = output<void>();
 
   protected form: FormGroup<IFocusForm.UpsertPeriod>;
 
@@ -56,6 +65,7 @@ export class AddPeriodFormComponent implements OnInit {
 
   public ngOnInit(): void {
     this.#initForm();
+    this.#loadPeriodData();
 
     this.form.valueChanges
       .pipe(
@@ -83,7 +93,7 @@ export class AddPeriodFormComponent implements OnInit {
       });
   }
 
-  protected addPeriod() {
+  protected savePeriod() {
     if (this.form.valid) {
       const rawValue = this.form.getRawValue();
 
@@ -96,7 +106,7 @@ export class AddPeriodFormComponent implements OnInit {
         };
       });
 
-      this.#focusService.addPeriod({
+      const periodData: IFocus.Period = {
         id: rawValue.id,
         name: rawValue.name,
         description: rawValue.description,
@@ -104,11 +114,23 @@ export class AddPeriodFormComponent implements OnInit {
         endTo: this.#timeStringToDate(rawValue.endTo as unknown as string),
         webSites: webSitesWithFavicons,
         daysOfWeek: rawValue.daysOfWeek,
-        focusedTimes: [],
-        isFocused: false,
-        sessionStartTime: null,
-      });
+        focusedTimes: rawValue.focusedTimes,
+        isFocused: rawValue.isFocused,
+        sessionStartTime: rawValue.sessionStartTime,
+      };
+
+      if (this.mode() === 'edit') {
+        this.#focusService.updatePeriod(periodData);
+      } else {
+        this.#focusService.addPeriod(periodData);
+      }
+
+      this.completed.emit();
     }
+  }
+
+  protected cancelForm(): void {
+    this.completed.emit();
   }
 
   /**
@@ -143,5 +165,41 @@ export class AddPeriodFormComponent implements OnInit {
       },
       { validators: timeRangeValidator('startFrom', 'endTo') }
     );
+  }
+
+  #loadPeriodData(): void {
+    const periodData = this.period();
+
+    if (this.mode() === 'edit' && periodData) {
+      // Convert Date to time string for time inputs
+      const startFromTime = periodData.startFrom
+        ? this.#dateToTimeString(periodData.startFrom)
+        : '';
+      const endToTime = periodData.endTo ? this.#dateToTimeString(periodData.endTo) : '';
+
+      this.form.patchValue({
+        id: periodData.id,
+        name: periodData.name,
+        description: periodData.description,
+        startFrom: startFromTime as unknown as Date,
+        endTo: endToTime as unknown as Date,
+        focusedTimes: periodData.focusedTimes,
+        isFocused: periodData.isFocused,
+        sessionStartTime: periodData.sessionStartTime,
+      });
+
+      // Set selected days
+      const selectedDays = ALL_DAYS_OF_WEEK.filter(day => periodData.daysOfWeek.includes(day.day));
+      this.selectedDays.set(selectedDays);
+
+      // Set selected websites
+      this.selectedWebSites.set(periodData.webSites);
+    }
+  }
+
+  #dateToTimeString(date: Date): string {
+    const hours = date.getHours().toString().padStart(2, '0');
+    const minutes = date.getMinutes().toString().padStart(2, '0');
+    return `${hours}:${minutes}`;
   }
 }

@@ -12,4 +12,32 @@
   .weekdays {
     width: 100%;
   }
+
+  .dz-period-actions {
+    display: flex;
+    gap: var(--spacing-sm);
+    width: 100%;
+    justify-content: flex-end;
+    margin-top: var(--spacing-sm);
+  }
+
+  .dz-period-edit {
+    width: 100%;
+  }
+
+  .dz-confirm-delete {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    width: 100%;
+    padding: var(--spacing-sm);
+    background: var(--color-error-bg, rgba(255, 0, 0, 0.1));
+    border-radius: var(--border-radius, 4px);
+
+    .dz-confirm-message {
+      flex: 1;
+      font-weight: 500;
+      color: var(--color-error, #dc2626);
+    }
+  }
 }
