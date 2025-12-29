@@ -67,6 +67,6 @@ export class TimeLineComponent implements OnInit, OnDestroy {
 
   #getTodayDateString(): string {
     const now = new Date();
-    return `${now.getFullYear()}-${now.getMonth()}-${now.getDate()}`;
+    return now.toISOString().split('T')[0];
   }
 }
