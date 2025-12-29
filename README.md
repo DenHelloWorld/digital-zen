@@ -6,28 +6,28 @@ Digital Zen is a productivity browser extension built with Angular that helps yo
 
 ## Authors
 
-- **DenHelloWorld** - [GitHub Profile](https://github.com/DenHelloWorld)
+- **Denis Saveliev (DenHelloWorld)** - Project Creator & Lead Developer - [GitHub Profile](https://github.com/DenHelloWorld)
 
 ## Technology Stack
 
 This project is built with modern web technologies and follows best practices for code quality:
 
 ### Core Technologies
-- **Framework:** [Angular](https://angular.dev/) v21.0.6
-- **Language:** [TypeScript](https://www.typescriptlang.org/) v5.9.3
-- **State Management:** Angular Signals + [RxJS](https://rxjs.dev/) v7.8.0
+- **Framework:** [Angular](https://angular.dev/)
+- **Language:** [TypeScript](https://www.typescriptlang.org/)
+- **State Management:** Angular Signals + [RxJS](https://rxjs.dev/)
 - **Extension API:** Chrome Extension Manifest V3
 
 ### Development Tools
-- **Build Tool:** Angular CLI v21.0.4
-- **Linting:** [ESLint](https://eslint.org/) v9.39.2 with Angular ESLint v21.1.0
-- **Code Formatting:** [Prettier](https://prettier.io/) v3.7.4
+- **Build Tool:** Angular CLI
+- **Linting:** [ESLint](https://eslint.org/) with Angular ESLint
+- **Code Formatting:** [Prettier](https://prettier.io/)
 - **Code Quality:** ESLint + Prettier integration
 
 ### Additional Libraries
-- **Chrome Types:** @types/chrome v0.1.32
-- **Environment Variables:** dotenv-cli v11.0.0
-- **TypeScript Path Aliases:** tsc-alias v1.8.16
+- **Chrome Types:** @types/chrome
+- **Environment Variables:** dotenv-cli
+- **TypeScript Path Aliases:** tsc-alias
 
 ## Getting Started
 
@@ -223,7 +223,7 @@ Contributions are welcome! Please feel free to submit issues or pull requests.
 
 ## License
 
-This project is private and not currently licensed for public use.
+This project is currently in development. License information will be provided upon release.
 
 ## Additional Resources
 
