@@ -81,13 +81,13 @@ export class GitHubAuthService {
     const clientId = API_URLS.GITHUB.CLIENT_ID;
     const scope = 'read:user user:email';
 
-    // GitHub OAuth authorization URL
-    const authUrl =
-      `${API_URLS.GITHUB.AUTHORIZE}?` +
-      `client_id=${clientId}&` +
-      `redirect_uri=${encodeURIComponent(redirectUri)}&` +
-      `scope=${encodeURIComponent(scope)}&` +
-      `response_type=token`;
+    // Build GitHub OAuth authorization URL
+    const url = new URL(API_URLS.GITHUB.AUTHORIZE);
+    url.searchParams.set('client_id', clientId);
+    url.searchParams.set('redirect_uri', redirectUri);
+    url.searchParams.set('scope', scope);
+    url.searchParams.set('response_type', 'token');
+    const authUrl = url.toString();
 
     chrome.identity
       .launchWebAuthFlow({
@@ -120,7 +120,9 @@ export class GitHubAuthService {
   }
 
   /**
-   * Logout from GitHub by clearing stored credentials
+   * Logout from GitHub by clearing stored credentials.
+   * Note: For OAuth implicit flow in Chrome extensions, we clear the token locally.
+   * Users can revoke access through their GitHub account settings.
    */
   public logout(): void {
     if (this.#isPending()) {
@@ -129,28 +131,9 @@ export class GitHubAuthService {
 
     this.#isPending.set(true);
 
-    this.#getStoredToken()
-      .then(token => {
-        if (token) {
-          // Revoke the GitHub token
-          const url = `${API_URLS.GITHUB.REVOKE_TOKEN}/${token}`;
-
-          this.#apiService.delete(url).subscribe({
-            next: () => {
-              this.#completeLogout();
-            },
-            error: () => {
-              // Even if revocation fails, complete the logout locally
-              this.#completeLogout();
-            },
-          });
-        } else {
-          this.#completeLogout();
-        }
-      })
-      .catch(() => {
-        this.#completeLogout();
-      });
+    // For Chrome extension OAuth implicit flow, we simply clear local storage
+    // Users can revoke app access at https://github.com/settings/applications
+    this.#completeLogout();
   }
 
   /**

@@ -7,6 +7,5 @@ export const API_URLS = {
     CLIENT_ID: '__GITHUB_CLIENT_ID__',
     AUTHORIZE: 'https://github.com/login/oauth/authorize',
     USER_INFO: 'https://api.github.com/user',
-    REVOKE_TOKEN: 'https://api.github.com/applications/__GITHUB_CLIENT_ID__/token',
   },
 };
