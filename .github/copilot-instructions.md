@@ -137,7 +137,13 @@ Use functional interceptors instead of class-based interceptors:
 
 ```typescript
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
-  const token = inject(AuthService).getToken();
+  const authService = inject(AuthService);
+  const token = authService.getToken();
+  
+  if (!token) {
+    return next(req);
+  }
+  
   const authReq = req.clone({
     setHeaders: { Authorization: `Bearer ${token}` }
   });
