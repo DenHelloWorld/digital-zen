@@ -49,12 +49,17 @@ export class ExampleComponent {
 ```typescript
 export class ExampleComponent {
   // Signals for state
-  protected readonly count: WritableSignal<number> = signal(0);
-  protected readonly doubleCount: Signal<number> = computed(() => this.count() * 2);
+  protected readonly count = signal(0);
+  protected readonly doubleCount = computed(() => this.count() * 2);
   
-  // RxJS for HTTP
+  // RxJS for HTTP requests (one of the valid use cases)
   readonly #http: HttpClient = inject(HttpClient);
-  data$ = this.#http.get('/api/data');
+  
+  loadData(): void {
+    this.#http.get<Data[]>('/api/data').subscribe(data => {
+      this.count.set(data.length);
+    });
+  }
 }
 ```
 
