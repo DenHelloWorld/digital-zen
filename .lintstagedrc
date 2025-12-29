@@ -1,4 +1,4 @@
 {
   "*.{ts,html,scss}": ["eslint --max-warnings=0", "prettier --check"],
-  "*.ts": "tsc --noEmit"
+  "*.ts": "bash -c 'tsc -p tsconfig.app.json --noEmit'"
 }

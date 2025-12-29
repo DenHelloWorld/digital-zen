@@ -20,12 +20,14 @@ import { DatePipe } from '@angular/common';
   imports: [DatePipe],
 })
 export class TimeLineComponent implements OnInit, OnDestroy {
-  // TODO: mark focused time in line
   #intervalId!: number;
 
   readonly #now: WritableSignal<number> = signal(Date.now());
+  readonly #currentDay: WritableSignal<string> = signal(this.#getTodayDateString());
 
   protected readonly nowPercent: Signal<number> = computed(() => {
+    this.#currentDay();
+
     const now: number = this.#now();
     const start: number = new Date(this.startFrom()).getTime();
     const end: number = new Date(this.endTo()).getTime();
@@ -46,11 +48,26 @@ export class TimeLineComponent implements OnInit, OnDestroy {
 
   public ngOnInit(): void {
     this.#intervalId = setInterval(() => {
-      this.#now.set(Date.now());
+      const currentTime = Date.now();
+      const todayDateString = this.#getTodayDateString();
+
+      if (this.#currentDay() !== todayDateString) {
+        this.#currentDay.set(todayDateString);
+      }
+
+      this.#now.set(currentTime);
     }, 60_000);
   }
 
   public ngOnDestroy(): void {
     clearInterval(this.#intervalId);
+  }
+
+  #getTodayDateString(): string {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
   }
 }
