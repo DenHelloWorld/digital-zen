@@ -54,11 +54,14 @@ export class ExampleComponent {
   
   // RxJS for HTTP requests (one of the valid use cases)
   readonly #http: HttpClient = inject(HttpClient);
+  readonly #destroyRef = inject(DestroyRef);
   
   loadData(): void {
-    this.#http.get<Data[]>('/api/data').subscribe(data => {
-      this.count.set(data.length);
-    });
+    this.#http.get<Array<{ id: number; name: string }>>('/api/data')
+      .pipe(takeUntilDestroyed(this.#destroyRef))
+      .subscribe(data => {
+        this.count.set(data.length);
+      });
   }
 }
 ```
