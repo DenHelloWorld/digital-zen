@@ -208,6 +208,14 @@
   &--fit {
     width: max-content;
   }
+
+  &__actions {
+    display: flex;
+    gap: var(--spacing);
+    justify-content: flex-end;
+    width: 100%;
+    margin-top: var(--spacing);
+  }
 }
 
 .dz-box {

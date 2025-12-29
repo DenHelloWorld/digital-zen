@@ -70,32 +70,28 @@
               <svg class="dz-icon" aria-hidden="true" focusable="false">
                 <use href="#icon-check"></use>
               </svg>
-              Confirm
             </button>
             <button type="button" class="dz-button dz-button--sm shadow" (click)="onCancelDelete()">
               <svg class="dz-icon" aria-hidden="true" focusable="false">
                 <use href="#icon-close"></use>
               </svg>
-              Cancel
             </button>
           </div>
         } @else {
-          <button type="button" class="dz-button dz-button--md shadow" (click)="onEdit()">
+          <button type="button" class="dz-button dz-button--sm shadow" (click)="onEdit()">
             <svg class="dz-icon" aria-hidden="true" focusable="false">
               <use href="#icon-edit"></use>
             </svg>
-            Edit
           </button>
 
           <button
             type="button"
-            class="dz-button dz-button--md dz-button--error shadow"
+            class="dz-button dz-button--sm dz-button--error shadow"
             (click)="onDelete()"
           >
             <svg class="dz-icon" aria-hidden="true" focusable="false">
               <use href="#icon-delete"></use>
             </svg>
-            Delete
           </button>
         }
       </div>
