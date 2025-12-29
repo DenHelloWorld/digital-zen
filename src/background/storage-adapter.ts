@@ -81,7 +81,15 @@ export class StorageAdapter {
   private static toStorageFormat(period: IFocus.Period): StoredPeriod {
     const toISOStringSafe = (d: Date | string | null) => {
       if (!d) return null;
-      return d instanceof Date ? d.toISOString() : String(d);
+      if (d instanceof Date) {
+        // Check if the Date is valid before converting to ISO string
+        if (isNaN(d.getTime())) {
+          console.warn('Invalid Date detected in period, skipping:', d);
+          return null;
+        }
+        return d.toISOString();
+      }
+      return String(d);
     };
 
     return {
@@ -98,15 +106,26 @@ export class StorageAdapter {
   }
 
   private static fromStorageFormat(stored: StoredPeriod): IFocus.Period {
+    const toDateSafe = (s: string | null): Date | null => {
+      if (!s) return null;
+      const date = new Date(s);
+      // Return null if the date is invalid
+      if (isNaN(date.getTime())) {
+        console.warn('Invalid date string detected in storage, skipping:', s);
+        return null;
+      }
+      return date;
+    };
+
     return {
       ...stored,
-      startFrom: stored.startFrom ? new Date(stored.startFrom) : null,
-      endTo: stored.endTo ? new Date(stored.endTo) : null,
-      sessionStartTime: stored.sessionStartTime ? new Date(stored.sessionStartTime) : null,
+      startFrom: toDateSafe(stored.startFrom),
+      endTo: toDateSafe(stored.endTo),
+      sessionStartTime: toDateSafe(stored.sessionStartTime),
       focusedTimes: (stored.focusedTimes || []).map(ft => ({
         ...ft,
-        startFrom: ft.startFrom ? new Date(ft.startFrom) : null,
-        endTo: ft.endTo ? new Date(ft.endTo) : null,
+        startFrom: toDateSafe(ft.startFrom),
+        endTo: toDateSafe(ft.endTo),
       })),
     };
   }
