@@ -15,7 +15,7 @@
  * isSvgIcon(null); // false
  * isSvgIcon("https://example.com/file.png"); // false
  */
-export const isSvgIcon = (url?: string | null): boolean => {
+export const isSvgIcon = (url: string | null | undefined): boolean => {
   const cleanUrl = (url || '').trim().split('?')[0].toLowerCase();
 
   return cleanUrl.endsWith('.svg');
