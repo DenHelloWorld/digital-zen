@@ -43,6 +43,7 @@ export class PeriodComponent {
   protected readonly isConfirmingDelete: WritableSignal<boolean> = signal(false);
 
   public readonly period: InputSignal<IFocus.Period> = input.required<IFocus.Period>();
+  public readonly totalPeriodsCount: InputSignal<number> = input.required<number>();
 
   public readonly toggleBlockedWebsite: OutputEmitterRef<IFocus.WebSite> = output<IFocus.WebSite>();
 

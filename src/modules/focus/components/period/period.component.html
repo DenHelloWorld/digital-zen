@@ -95,16 +95,18 @@
             </svg>
           </button>
 
-          <button
-            type="button"
-            class="dz-button dz-button--sm dz-button--error shadow"
-            aria-label="Delete period"
-            (click)="onDelete()"
-          >
-            <svg class="dz-icon" aria-hidden="true" focusable="false">
-              <use href="#icon-delete"></use>
-            </svg>
-          </button>
+          @if (totalPeriodsCount() > 1) {
+            <button
+              type="button"
+              class="dz-button dz-button--sm dz-button--error shadow"
+              aria-label="Delete period"
+              (click)="onDelete()"
+            >
+              <svg class="dz-icon" aria-hidden="true" focusable="false">
+                <use href="#icon-delete"></use>
+              </svg>
+            </button>
+          }
         }
       </div>
     </div>

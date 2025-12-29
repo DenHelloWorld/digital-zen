@@ -50,7 +50,11 @@
     <ul class="dz-list">
       @for (period of periods(); track period.id) {
         <li>
-          <dz-period [period]="period" (toggleBlockedWebsite)="onToggleBlockedWebsite($event)" />
+          <dz-period
+            [period]="period"
+            [totalPeriodsCount]="periods()!.length"
+            (toggleBlockedWebsite)="onToggleBlockedWebsite($event)"
+          />
         </li>
       }
     </ul>
