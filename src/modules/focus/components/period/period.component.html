@@ -34,7 +34,7 @@
       </div>
 
       <ul class="dz-list dz-list--horizontal dz-list--full" aria-labelledby="social-title">
-        @for (site of p.webSites; track site) {
+        @for (site of p.webSites; track site.id) {
           <li>
             <button
               class="dz-button dz-button--md shadow"
