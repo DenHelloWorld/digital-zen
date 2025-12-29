@@ -1,0 +1,4 @@
+{
+  "*.{ts,html,scss}": ["eslint --max-warnings=0", "prettier --check"],
+  "*.ts": "bash -c 'tsc --noEmit'"
+}

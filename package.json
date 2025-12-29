@@ -11,7 +11,8 @@
     "lint": "ng lint",
     "format": "npx prettier --write .",
     "format:check": "npx prettier --check .",
-    "lint:fix": "ng lint --fix"
+    "lint:fix": "ng lint --fix",
+    "prepare": "husky"
   },
   "private": true,
   "dependencies": {
@@ -28,6 +29,8 @@
     "@angular/build": "^21.0.4",
     "@angular/cli": "^21.0.4",
     "@angular/compiler-cli": "^21.0.6",
+    "@commitlint/cli": "^20.2.0",
+    "@commitlint/config-conventional": "^20.2.0",
     "@types/chrome": "^0.1.32",
     "angular-eslint": "21.1.0",
     "concurrently": "^9.2.1",
@@ -36,6 +39,8 @@
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.2.1",
     "globals": "^16.5.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.2.7",
     "prettier": "^3.7.4",
     "tsc-alias": "^1.8.16",
     "typescript": "~5.9.3",
