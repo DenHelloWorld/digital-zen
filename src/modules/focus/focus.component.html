@@ -52,7 +52,7 @@
         <li>
           <dz-period
             [period]="period"
-            [totalPeriodsCount]="periods()!.length"
+            [totalPeriodsCount]="periods()?.length ?? 0"
             (toggleBlockedWebsite)="onToggleBlockedWebsite($event)"
           />
         </li>
