@@ -14,7 +14,9 @@ import { AbstractControl, ValidationErrors } from '@angular/forms';
  * // Returns null if array has 3 or more elements
  * ```
  */
-export function arrayMinLengthValidator(min = 1): ValidationErrors | null {
+export function arrayMinLengthValidator(
+  min = 1
+): (control: AbstractControl) => ValidationErrors | null {
   return (control: AbstractControl): ValidationErrors | null => {
     const value: typeof control.value = control.value;
     if (!Array.isArray(value) || value.length < min) {
