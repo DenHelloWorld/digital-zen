@@ -27,6 +27,9 @@ export class TimeLineComponent implements OnInit, OnDestroy {
   readonly #currentDay: WritableSignal<string> = signal(this.#getTodayDateString());
 
   protected readonly nowPercent: Signal<number> = computed(() => {
+    // Read currentDay to ensure recalculation on day change
+    this.#currentDay();
+
     const now: number = this.#now();
     const start: number = new Date(this.startFrom()).getTime();
     const end: number = new Date(this.endTo()).getTime();
