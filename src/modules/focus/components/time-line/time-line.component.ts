@@ -20,14 +20,12 @@ import { DatePipe } from '@angular/common';
   imports: [DatePipe],
 })
 export class TimeLineComponent implements OnInit, OnDestroy {
-  // TODO: mark focused time in line
   #intervalId!: number;
 
   readonly #now: WritableSignal<number> = signal(Date.now());
   readonly #currentDay: WritableSignal<string> = signal(this.#getTodayDateString());
 
   protected readonly nowPercent: Signal<number> = computed(() => {
-    // Read currentDay to ensure recalculation on day change
     this.#currentDay();
 
     const now: number = this.#now();
@@ -53,13 +51,10 @@ export class TimeLineComponent implements OnInit, OnDestroy {
       const currentTime = Date.now();
       const todayDateString = this.#getTodayDateString();
 
-      // Check if day has changed
       if (this.#currentDay() !== todayDateString) {
-        // Day changed - update currentDay to trigger recalculation
         this.#currentDay.set(todayDateString);
       }
 
-      // Update current time
       this.#now.set(currentTime);
     }, 60_000);
   }
