@@ -114,9 +114,14 @@ export class GitHubAuthService {
 
     const redirectUri = this.#generateRedirectUri();
     const clientId = API_URLS.GITHUB.CLIENT_ID;
-    // Request read access to user profile and email
-    // - read:user: Read access to public profile information
-    // - user:email: Read access to user email addresses (including private emails)
+    // OAuth scopes requested:
+    // - read:user: Grants read access to the authenticated user's GitHub profile
+    //   Used to display basic account information (avatar, username, name) in the UI
+    //   and to associate extension data with a specific GitHub account ID
+    // - user:email: Grants read access to the user's email addresses (including private emails)
+    //   Used to reliably identify the user even when no public email is configured
+    //   Many users don't expose a public email, so this scope ensures we can always
+    //   obtain a stable email identifier for account features
     const scope = 'read:user user:email';
 
     // Build GitHub OAuth authorization URL
@@ -149,9 +154,11 @@ export class GitHubAuthService {
           throw new Error('Invalid token format received');
         }
 
-        this.#storeToken(token);
-        this.#isGitHubAuthenticated.set(!!token);
-        this.#getUserInfo(token);
+        // Store token and only set authenticated state if storage succeeds
+        return this.#storeToken(token).then(() => {
+          this.#isGitHubAuthenticated.set(true);
+          this.#getUserInfo(token);
+        });
       })
       .catch((error: unknown) => {
         console.error('GitHub authentication failed:', error);
@@ -253,10 +260,18 @@ export class GitHubAuthService {
   /**
    * Store the GitHub access token in Chrome storage
    * @param {string} token - The access token to store
+   * @returns {Promise<void>} Resolves when token is stored successfully, rejects on error
    */
-  #storeToken(token: string): void {
-    this.#chromeStorageService.set(CHROME_STORAGE_KEY_ENUM.GITHUB_ACCESS_TOKEN, token, () => {
-      // Callback intentionally empty - ChromeStorageService logs errors internally
+  #storeToken(token: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+      this.#chromeStorageService.set(CHROME_STORAGE_KEY_ENUM.GITHUB_ACCESS_TOKEN, token, () => {
+        // ChromeStorageService logs errors internally, but we need to check for success
+        if (chrome.runtime.lastError) {
+          reject(chrome.runtime.lastError);
+        } else {
+          resolve();
+        }
+      });
     });
   }
 

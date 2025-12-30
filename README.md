@@ -151,7 +151,14 @@ This extension supports authentication with both Google and GitHub. To enable th
 
 #### Security note
 
-This extension uses the OAuth implicit flow (`response_type=token`) for GitHub authentication. The implicit flow is generally considered less secure than the authorization code flow because access tokens are returned directly to the client. However, for Chrome extensions, you cannot securely store a client secret, and the extension runs in a sandboxed environment, so using the implicit flow is the recommended and supported approach for GitHub OAuth in this context.
+This extension uses the OAuth **implicit flow** (`response_type=token`) for GitHub authentication. The implicit flow is generally considered less secure than the authorization code flow because access tokens are returned directly to the client.
+
+For Chrome extensions, the security considerations are:
+
+- **Authorization Code + PKCE is more secure:** Chrome extensions can technically use the authorization code flow with PKCE (Proof Key for Code Exchange), which is more secure because the access token is obtained via a code exchange and the code is bound to a one-time verifier.
+- **Why this project uses implicit flow:** This extension uses the implicit flow because it is simpler to implement in a pure front-end Chrome extension and does **not** require a separate backend or proxy service to perform the code exchange.
+- **Chrome's recommended pattern:** For GitHub OAuth specifically, Google's `chrome.identity.launchWebAuthFlow` API is designed to work seamlessly with the implicit flow for public clients like Chrome extensions.
+- **Security trade-offs:** While the extension runs in a sandboxed environment providing some isolation, tokens are stored in `chrome.storage.local` which could be accessed if the extension is compromised. For most use cases, this is an acceptable trade-off given the simplicity benefit.
 
 3. **Get your Client ID:**
    - After creating the app, you'll see your **Client ID** on the app details page
