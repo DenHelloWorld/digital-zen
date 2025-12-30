@@ -69,7 +69,9 @@ export class GitHubAuthService {
     const extensionId = chrome.runtime.id;
 
     if (!extensionId) {
-      throw new Error('Extension ID is not available');
+      throw new Error(
+        'Extension ID is not available. Ensure the extension is running in a Chrome extension context, the manifest.json is valid, and the extension is properly loaded.'
+      );
     }
 
     return `https://${extensionId}.chromiumapp.org/`;
@@ -163,6 +165,8 @@ export class GitHubAuthService {
       .catch((error: unknown) => {
         console.error('GitHub authentication failed:', error);
         this.#isGitHubAuthenticated.set(false);
+        // Ensure no stale GitHub token remains in storage after a failed login attempt
+        this.#removeStoredToken();
       })
       .finally(() => {
         this.#isPending.set(false);
@@ -258,19 +262,16 @@ export class GitHubAuthService {
   }
 
   /**
-   * Store the GitHub access token in Chrome storage
+   * Store the GitHub access token in Chrome storage.
    * @param {string} token - The access token to store
-   * @returns {Promise<void>} Resolves when token is stored successfully, rejects on error
+   * @returns {Promise<void>} Resolves after the storage callback is invoked.
+   * Note: ChromeStorageService logs storage errors internally; this method does not reject on error.
    */
   #storeToken(token: string): Promise<void> {
-    return new Promise((resolve, reject) => {
+    return new Promise(resolve => {
       this.#chromeStorageService.set(CHROME_STORAGE_KEY_ENUM.GITHUB_ACCESS_TOKEN, token, () => {
-        // ChromeStorageService logs errors internally, but we need to check for success
-        if (chrome.runtime.lastError) {
-          reject(chrome.runtime.lastError);
-        } else {
-          resolve();
-        }
+        // ChromeStorageService handles and logs any errors internally.
+        resolve();
       });
     });
   }

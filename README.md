@@ -157,7 +157,7 @@ For Chrome extensions, the security considerations are:
 
 - **Authorization Code + PKCE is more secure:** Chrome extensions can technically use the authorization code flow with PKCE (Proof Key for Code Exchange), which is more secure because the access token is obtained via a code exchange and the code is bound to a one-time verifier.
 - **Why this project uses implicit flow:** This extension uses the implicit flow because it is simpler to implement in a pure front-end Chrome extension and does **not** require a separate backend or proxy service to perform the code exchange.
-- **Chrome's recommended pattern:** For GitHub OAuth specifically, Google's `chrome.identity.launchWebAuthFlow` API is designed to work seamlessly with the implicit flow for public clients like Chrome extensions.
+- **About `chrome.identity.launchWebAuthFlow`:** Chrome's `chrome.identity.launchWebAuthFlow` API supports both implicit and authorization code flows (including PKCE). This project chooses the implicit flow for simplicity, not because Chrome specifically recommends it over the code flow with PKCE.
 - **Security trade-offs:** While the extension runs in a sandboxed environment providing some isolation, tokens are stored in `chrome.storage.local` which could be accessed if the extension is compromised. For most use cases, this is an acceptable trade-off given the simplicity benefit.
 
 3. **Get your Client ID:**
@@ -274,8 +274,9 @@ If you encounter errors related to missing environment variables during producti
      - Application name: Digital Zen (or your preferred name)
      - Homepage URL: Your extension's homepage or GitHub repository URL
      - Authorization callback URL: `https://<your-extension-id>.chromiumapp.org/`
-       - Note: You'll need to update this after building your extension, as the extension ID is generated
-       - Find your extension ID in `chrome://extensions/` after loading your unpacked extension
+       - Note: First load your unpacked extension in Chrome (`npm run build` then load in `chrome://extensions/`) to discover the extension ID, which is stable for that directory
+       - Find this extension ID in `chrome://extensions/` and use it in the callback URL
+       - The extension ID remains stable as long as the extension directory doesn't move (and becomes fixed once published to Chrome Web Store)
    - **PUBLIC_KEY:** Generated when you first publish your extension to Chrome Web Store
 
 > **Note:** The `.env` file should never be committed to version control. It's already included in `.gitignore`.

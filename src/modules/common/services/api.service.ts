@@ -26,11 +26,11 @@ export class ApiService {
   public get<T>(
     url: string,
     params: Record<string, string | string[]> = {},
-    headers: Record<string, string> = {}
+    headers?: Record<string, string>
   ): Observable<T> {
     return this.#http.get<T>(url, {
       params: new HttpParams({ fromObject: params }),
-      headers,
+      ...(headers && { headers }),
     });
   }
 
