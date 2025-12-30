@@ -162,12 +162,6 @@ export class GitHubAuthService {
         console.error('GitHub authentication failed:', error);
         this.#error.set(errorMessage);
 
-        // Don't clear authentication if user was already authenticated
-        // This prevents unintended logouts if OAuth flow fails (network issue, user cancels, etc.)
-        if (!this.#isGitHubAuthenticated()) {
-          this.#isGitHubAuthenticated.set(false);
-        }
-
         // Show user-friendly error notification
         this.#toastService.show({
           message: 'GitHub authentication failed. Please try again.',
