@@ -149,6 +149,10 @@ This extension supports authentication with both Google and GitHub. To enable th
      - Copy the Extension ID shown in Chrome
      - Go back to your GitHub OAuth App settings and update the **Authorization callback URL** with your actual extension ID (for example, `https://abcdefghijklmnop.chromiumapp.org/`)
 
+#### Security note
+
+This extension uses the OAuth implicit flow (`response_type=token`) for GitHub authentication. The implicit flow is generally considered less secure than the authorization code flow because access tokens are returned directly to the client. However, for Chrome extensions, you cannot securely store a client secret, and the extension runs in a sandboxed environment, so using the implicit flow is the recommended and supported approach for GitHub OAuth in this context.
+
 3. **Get your Client ID:**
    - After creating the app, you'll see your **Client ID** on the app details page
    - Copy this Client ID

@@ -81,8 +81,25 @@ export class GitHubAuthService {
    * @returns {boolean} True if the token appears valid
    */
   #isValidToken(token: string): boolean {
-    // GitHub tokens should be non-empty strings with meaningful content
-    return token.trim().length > 0;
+    const trimmedToken = token.trim();
+
+    // Basic sanity check: must not be empty after trimming
+    if (!trimmedToken) {
+      return false;
+    }
+
+    // GitHub personal access tokens (classic and fine-grained) typically:
+    // - start with one of: ghp_, gho_, ghu_, ghs_, ghr_
+    // - are at least 40 characters long
+    const MIN_TOKEN_LENGTH = 40;
+    if (trimmedToken.length < MIN_TOKEN_LENGTH) {
+      return false;
+    }
+
+    // Check if token starts with a known GitHub token prefix
+    const githubTokenPrefixPattern = /^gh[pousr]_/;
+
+    return githubTokenPrefixPattern.test(trimmedToken);
   }
 
   /**
@@ -97,6 +114,9 @@ export class GitHubAuthService {
 
     const redirectUri = this.#generateRedirectUri();
     const clientId = API_URLS.GITHUB.CLIENT_ID;
+    // Request read access to user profile and email
+    // - read:user: Read access to public profile information
+    // - user:email: Read access to user email addresses (including private emails)
     const scope = 'read:user user:email';
 
     // Build GitHub OAuth authorization URL
@@ -174,7 +194,10 @@ export class GitHubAuthService {
         this.#isGitHubAuthenticated.set(!!token);
         this.#getUserInfo(token);
       })
-      .catch(() => this.#isGitHubAuthenticated.set(false))
+      .catch(error => {
+        console.error('Failed to check existing GitHub auth:', error);
+        this.#isGitHubAuthenticated.set(false);
+      })
       .finally(() => this.#isPending.set(false));
   }
 
@@ -232,7 +255,9 @@ export class GitHubAuthService {
    * @param {string} token - The access token to store
    */
   #storeToken(token: string): void {
-    this.#chromeStorageService.set(CHROME_STORAGE_KEY_ENUM.GITHUB_ACCESS_TOKEN, token);
+    this.#chromeStorageService.set(CHROME_STORAGE_KEY_ENUM.GITHUB_ACCESS_TOKEN, token, () => {
+      // Callback intentionally empty - ChromeStorageService logs errors internally
+    });
   }
 
   /**
