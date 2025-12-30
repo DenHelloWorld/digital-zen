@@ -96,9 +96,8 @@ export class GitHubAuthService {
    * @returns {boolean} True if the token appears valid
    */
   #isValidToken(token: string): boolean {
-    // GitHub tokens should be non-empty strings
-    // Modern GitHub tokens typically start with 'gho_' (OAuth), 'ghp_' (Personal), etc.
-    return typeof token === 'string' && token.length > 0 && token.trim().length > 0;
+    // GitHub tokens should be non-empty strings with meaningful content
+    return token.trim().length > 0;
   }
 
   /**
@@ -289,11 +288,7 @@ export class GitHubAuthService {
       this.#chromeStorageService.get<string>(
         CHROME_STORAGE_KEY_ENUM.GITHUB_ACCESS_TOKEN,
         (token: string | null) => {
-          if (token !== null) {
-            resolve(token);
-          } else {
-            resolve(null);
-          }
+          resolve(token);
         }
       );
     });
@@ -317,13 +312,14 @@ export class GitHubAuthService {
   async #completeLogout(): Promise<void> {
     try {
       await this.#removeStoredToken();
+    } catch (error) {
+      // Log error but continue with logout for security
+      console.error('Failed to remove GitHub access token from storage during logout.', error);
+    } finally {
+      // Always clear in-memory state for security, even if storage removal fails
       this.#isGitHubAuthenticated.set(false);
       this.#userInfo.set(null);
       this.#error.set(null);
-    } catch (error) {
-      // If we fail to remove the stored token, keep the in-memory auth state unchanged
-      console.error('Failed to remove GitHub access token from storage during logout.', error);
-    } finally {
       this.#isPending.set(false);
     }
   }
