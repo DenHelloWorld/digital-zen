@@ -69,6 +69,7 @@ Create a `.env` file in the root directory with the following variables:
 
 ```env
 OAUTH_CLIENT_ID=your_google_oauth_client_id
+GITHUB_CLIENT_ID=your_github_oauth_client_id
 PUBLIC_KEY=your_chrome_extension_public_key
 ```
 
@@ -126,6 +127,61 @@ For a development build without environment variable patching:
 ```bash
 npm run build
 ```
+
+## OAuth Setup
+
+This extension supports authentication with both Google and GitHub. To enable these features in production, you'll need to set up OAuth applications.
+
+### Setting up GitHub OAuth
+
+1. **Create a GitHub OAuth App:**
+   - Go to [GitHub Developer Settings](https://github.com/settings/developers)
+   - Click "OAuth Apps" → "New OAuth App"
+2. **Configure the OAuth App:**
+   - **Application name:** Digital Zen (or your preferred name)
+   - **Homepage URL:** Your extension's homepage or GitHub repository URL
+   - **Application description:** (Optional) A Chrome extension for focus and productivity
+   - **Authorization callback URL:** `https://<your-extension-id>.chromiumapp.org/`
+
+     **Important:** You need your Chrome extension ID first:
+     - Build your extension: `npm run build`
+     - Load it in Chrome (`chrome://extensions/` → Load unpacked → select `dist/browser`)
+     - Copy the Extension ID shown in Chrome
+     - Update the callback URL with your actual extension ID
+3. **Get your Client ID:**
+   - After creating the app, you'll see your **Client ID** on the app details page
+   - Copy this Client ID
+4. **Add to .env file:**
+   ```env
+   GITHUB_CLIENT_ID=your_github_client_id_here
+   ```
+
+### Setting up Google OAuth
+
+1. **Create a Google OAuth Client:**
+   - Go to [Google Cloud Console](https://console.cloud.google.com/)
+   - Navigate to "APIs & Services" → "Credentials"
+   - Click "Create Credentials" → "OAuth client ID"
+   - Select "Chrome extension" as the application type
+2. **Add to .env file:**
+   ```env
+   OAUTH_CLIENT_ID=your_google_oauth_client_id_here
+   ```
+
+### Complete .env Example
+
+```env
+# Google OAuth
+OAUTH_CLIENT_ID=123456789-abcdefghijklmnop.apps.googleusercontent.com
+
+# GitHub OAuth
+GITHUB_CLIENT_ID=Iv1.1234567890abcdef
+
+# Chrome Web Store (for production releases)
+PUBLIC_KEY=your_chrome_extension_public_key_here
+```
+
+> **Security Note:** Never commit your `.env` file to version control. It's already included in `.gitignore`.
 
 ### Testing the Build Locally
 
@@ -189,18 +245,25 @@ npm test
 
 If you encounter errors related to missing environment variables during production build:
 
-**Problem:** `OAUTH_CLIENT_ID` or `PUBLIC_KEY` not found
+**Problem:** `OAUTH_CLIENT_ID`, `GITHUB_CLIENT_ID`, or `PUBLIC_KEY` not found
 
 **Solution:**
 
 1. Create a `.env` file in the project root
-2. Add your Google OAuth Client ID and Chrome Extension Public Key:
+2. Add your OAuth Client IDs and Chrome Extension Public Key:
    ```env
-   OAUTH_CLIENT_ID=your_actual_client_id_here
+   OAUTH_CLIENT_ID=your_google_oauth_client_id
+   GITHUB_CLIENT_ID=your_github_oauth_client_id
    PUBLIC_KEY=your_actual_public_key_here
    ```
 3. These values are obtained from:
-   - **OAUTH_CLIENT_ID:** [Google Cloud Console](https://console.cloud.google.com/) → APIs & Services → Credentials
+   - **OAUTH_CLIENT_ID (Google):** [Google Cloud Console](https://console.cloud.google.com/) → APIs & Services → Credentials
+   - **GITHUB_CLIENT_ID:** [GitHub Developer Settings](https://github.com/settings/developers) → OAuth Apps → New OAuth App
+     - Application name: Digital Zen (or your preferred name)
+     - Homepage URL: Your extension's homepage or GitHub repository URL
+     - Authorization callback URL: `https://<your-extension-id>.chromiumapp.org/`
+       - Note: You'll need to update this after building your extension, as the extension ID is generated
+       - Find your extension ID in `chrome://extensions/` after loading your unpacked extension
    - **PUBLIC_KEY:** Generated when you first publish your extension to Chrome Web Store
 
 > **Note:** The `.env` file should never be committed to version control. It's already included in `.gitignore`.
