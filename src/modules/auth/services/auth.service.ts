@@ -1,5 +1,6 @@
 import { inject, Injectable, Signal } from '@angular/core';
-import { GoogleAuthService, GitHubAuthService } from '../../common';
+import { GoogleAuthService, GitHubAuthService, IGitHubUserInfo } from '../../common';
+import { IGoogleUserInfo } from '../../common/services/google-auth.service';
 
 @Injectable({
   providedIn: 'root',
@@ -10,9 +11,11 @@ export class AuthService {
 
   public isGoogleAuthenticated: Signal<boolean> = this.#googleAuthService.isGoogleAuthenticated;
   public isGoogleAuthPending: Signal<boolean> = this.#googleAuthService.isPending;
+  public googleUserInfo: Signal<IGoogleUserInfo | null> = this.#googleAuthService.userInfo;
 
   public isGitHubAuthenticated: Signal<boolean> = this.#githubAuthService.isGitHubAuthenticated;
   public isGitHubAuthPending: Signal<boolean> = this.#githubAuthService.isPending;
+  public gitHubUserInfo: Signal<IGitHubUserInfo | null> = this.#githubAuthService.userInfo;
 
   public loginWithGoogle(): void {
     this.#googleAuthService.login();

@@ -147,7 +147,8 @@ This extension supports authentication with both Google and GitHub. To enable th
      - Build your extension: `npm run build`
      - Load it in Chrome (`chrome://extensions/` → Load unpacked → select `dist/browser`)
      - Copy the Extension ID shown in Chrome
-     - Update the callback URL with your actual extension ID
+     - Go back to your GitHub OAuth App settings and update the **Authorization callback URL** with your actual extension ID (for example, `https://abcdefghijklmnop.chromiumapp.org/`)
+
 3. **Get your Client ID:**
    - After creating the app, you'll see your **Client ID** on the app details page
    - Copy this Client ID
