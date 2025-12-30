@@ -3,8 +3,6 @@ import { ApiService } from './api.service';
 import { ChromeStorageService } from './chrome-storage.service';
 import { API_URLS } from '../constants';
 import { CHROME_STORAGE_KEY_ENUM } from '../enums/chrome-storage-key.enum';
-import { DzToastService } from '../components/toast-container/toast.service';
-import { TOAST_TYPE_ENUM } from '../enums';
 
 export interface IGitHubUserInfo {
   login: string;
@@ -47,17 +45,14 @@ export interface IGitHubUserInfo {
 export class GitHubAuthService {
   readonly #apiService: ApiService = inject(ApiService);
   readonly #chromeStorageService: ChromeStorageService = inject(ChromeStorageService);
-  readonly #toastService: DzToastService = inject(DzToastService);
 
   readonly #isGitHubAuthenticated: WritableSignal<boolean> = signal(false);
   readonly #isPending: WritableSignal<boolean> = signal(false);
   readonly #userInfo: WritableSignal<IGitHubUserInfo | null> = signal(null);
-  readonly #error: WritableSignal<string | null> = signal(null);
 
   public isGitHubAuthenticated: Signal<boolean> = computed(() => this.#isGitHubAuthenticated());
   public isPending: Signal<boolean> = computed(() => this.#isPending());
   public userInfo: Signal<IGitHubUserInfo | null> = computed(() => this.#userInfo());
-  public error: Signal<string | null> = computed(() => this.#error());
 
   constructor() {
     this.checkExistingGitHubAuth();
@@ -99,7 +94,6 @@ export class GitHubAuthService {
     }
 
     this.#isPending.set(true);
-    this.#error.set(null);
 
     const redirectUri = this.#generateRedirectUri();
     const clientId = API_URLS.GITHUB.CLIENT_ID;
@@ -135,39 +129,15 @@ export class GitHubAuthService {
           throw new Error('Invalid token format received');
         }
 
-        this.#error.set(null);
         this.#storeToken(token);
-
-        // Only mark as authenticated after successfully fetching user info
-        this.#getUserInfo(token)
-          .then(() => {
-            this.#isGitHubAuthenticated.set(true);
-          })
-          .catch((error: unknown) => {
-            // If getUserInfo fails, the token might be invalid
-            console.error('Failed to verify token with user info fetch:', error);
-            this.#error.set('Failed to verify GitHub token');
-            this.#toastService.show({
-              message: 'GitHub authentication failed. Please try again.',
-              type: TOAST_TYPE_ENUM.ERROR,
-            });
-          })
-          .finally(() => {
-            this.#isPending.set(false);
-          });
+        this.#isGitHubAuthenticated.set(!!token);
+        this.#getUserInfo(token);
       })
       .catch((error: unknown) => {
-        const errorMessage =
-          error instanceof Error ? error.message : 'GitHub authentication failed';
         console.error('GitHub authentication failed:', error);
-        this.#error.set(errorMessage);
-
-        // Show user-friendly error notification
-        this.#toastService.show({
-          message: 'GitHub authentication failed. Please try again.',
-          type: TOAST_TYPE_ENUM.ERROR,
-        });
-
+        this.#isGitHubAuthenticated.set(false);
+      })
+      .finally(() => {
         this.#isPending.set(false);
       });
   }
@@ -201,25 +171,11 @@ export class GitHubAuthService {
 
     this.#getStoredToken()
       .then(token => {
-        if (token && this.#isValidToken(token)) {
-          return this.#getUserInfo(token)
-            .then(() => {
-              this.#isGitHubAuthenticated.set(true);
-              // Clear any previous error when successfully validating stored token
-              this.#error.set(null);
-            })
-            .catch(() => {
-              // If getUserInfo fails, treat authentication as invalid
-              this.#isGitHubAuthenticated.set(false);
-            });
-        } else {
-          this.#isGitHubAuthenticated.set(false);
-          return Promise.resolve();
-        }
+        this.#isGitHubAuthenticated.set(!!token);
+        this.#getUserInfo(token);
       })
-      .finally(() => {
-        this.#isPending.set(false);
-      });
+      .catch(() => this.#isGitHubAuthenticated.set(false))
+      .finally(() => this.#isPending.set(false));
   }
 
   /**
@@ -247,46 +203,28 @@ export class GitHubAuthService {
   /**
    * Fetch GitHub user information using the access token
    * @param {string} token - The GitHub access token
-   * @returns {Promise<void>} Resolves when user info is fetched successfully
    */
-  #getUserInfo(token: string): Promise<void> {
+  #getUserInfo(token: string | undefined): void {
     if (!token) {
-      return Promise.resolve();
+      return;
     }
 
-    return new Promise((resolve, reject) => {
-      this.#apiService
-        .get<IGitHubUserInfo>(
-          API_URLS.GITHUB.USER_INFO,
-          {},
-          {
-            Authorization: `Bearer ${token}`,
-          }
-        )
-        .subscribe({
-          next: info => {
-            this.#userInfo.set(info);
-            resolve();
-          },
-          error: (err: unknown) => {
-            console.error('Failed to fetch GitHub user info', err);
-
-            // If we get a 401, the token is invalid - clear auth state
-            if (err && typeof err === 'object' && 'status' in err && err.status === 401) {
-              this.#isGitHubAuthenticated.set(false);
-              this.#userInfo.set(null);
-              // ChromeStorageService.remove() logs its own errors
-              this.#removeStoredToken();
-              this.#toastService.show({
-                message: 'GitHub session expired. Please log in again.',
-                type: TOAST_TYPE_ENUM.WARN,
-              });
-            }
-            // Match GoogleAuthService pattern: don't clear userInfo on non-401 errors
-            reject(err);
-          },
-        });
-    });
+    this.#apiService
+      .get<IGitHubUserInfo>(
+        API_URLS.GITHUB.USER_INFO,
+        {},
+        {
+          Authorization: `Bearer ${token}`,
+        }
+      )
+      .subscribe({
+        next: info => {
+          this.#userInfo.set(info);
+        },
+        error: (err: unknown) => {
+          console.error('Failed to fetch GitHub user info', err);
+        },
+      });
   }
 
   /**
@@ -314,28 +252,20 @@ export class GitHubAuthService {
 
   /**
    * Remove the stored GitHub access token from Chrome storage
-   * @returns {Promise<void>} Resolves when the token is removed
    */
-  #removeStoredToken(): Promise<void> {
-    return new Promise(resolve => {
-      this.#chromeStorageService.remove(CHROME_STORAGE_KEY_ENUM.GITHUB_ACCESS_TOKEN, () => {
-        resolve();
-      });
+  #removeStoredToken(): void {
+    this.#chromeStorageService.remove(CHROME_STORAGE_KEY_ENUM.GITHUB_ACCESS_TOKEN, () => {
+      // Callback intentionally empty - ChromeStorageService logs errors internally
     });
   }
 
   /**
    * Complete the logout process by clearing all authentication state
    */
-  async #completeLogout(): Promise<void> {
-    // ChromeStorageService.remove logs errors and always invokes its callback;
-    // storage failures here do not reject this Promise and do not block logout.
-    await this.#removeStoredToken();
-
-    // Always clear in-memory state for security, even if storage removal fails
+  #completeLogout(): void {
+    this.#removeStoredToken();
     this.#isGitHubAuthenticated.set(false);
-    this.#userInfo.set(null);
-    this.#error.set(null);
     this.#isPending.set(false);
+    this.#userInfo.set(null);
   }
 }
