@@ -211,11 +211,12 @@ export class GitHubAuthService {
           this.#isGitHubAuthenticated.set(true);
           // Clear any previous error when successfully validating stored token
           this.#error.set(null);
-          this.#getUserInfo(token).catch(() => {
+          return this.#getUserInfo(token).catch(() => {
             // If getUserInfo fails, authentication state was already handled in #getUserInfo
           });
         } else {
           this.#isGitHubAuthenticated.set(false);
+          return Promise.resolve();
         }
       })
       .catch(() => {
