@@ -136,6 +136,7 @@ export class GitHubAuthService {
         }
 
         this.#isGitHubAuthenticated.set(true);
+        this.#error.set(null);
         this.#storeToken(token);
         this.#getUserInfo(token);
       })
@@ -250,6 +251,7 @@ export class GitHubAuthService {
           // If we get a 401, the token is invalid - clear auth state
           if (err && typeof err === 'object' && 'status' in err && err.status === 401) {
             this.#isGitHubAuthenticated.set(false);
+            this.#userInfo.set(null);
             this.#removeStoredToken().catch(removeError => {
               console.error(
                 'Failed to remove GitHub access token from storage after 401.',
@@ -260,6 +262,10 @@ export class GitHubAuthService {
               message: 'GitHub session expired. Please log in again.',
               type: TOAST_TYPE_ENUM.WARN,
             });
+          } else {
+            // For other errors (network issues, API down, etc.), clear user info
+            // to avoid showing stale data
+            this.#userInfo.set(null);
           }
         },
       });
