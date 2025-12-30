@@ -202,19 +202,20 @@ export class GitHubAuthService {
     this.#getStoredToken()
       .then(token => {
         if (token && this.#isValidToken(token)) {
-          this.#isGitHubAuthenticated.set(true);
-          // Clear any previous error when successfully validating stored token
-          this.#error.set(null);
-          return this.#getUserInfo(token).catch(() => {
-            // If getUserInfo fails, authentication state was already handled in #getUserInfo
-          });
+          return this.#getUserInfo(token)
+            .then(() => {
+              this.#isGitHubAuthenticated.set(true);
+              // Clear any previous error when successfully validating stored token
+              this.#error.set(null);
+            })
+            .catch(() => {
+              // If getUserInfo fails, treat authentication as invalid
+              this.#isGitHubAuthenticated.set(false);
+            });
         } else {
           this.#isGitHubAuthenticated.set(false);
           return Promise.resolve();
         }
-      })
-      .catch(() => {
-        this.#isGitHubAuthenticated.set(false);
       })
       .finally(() => {
         this.#isPending.set(false);
@@ -274,8 +275,8 @@ export class GitHubAuthService {
             if (err && typeof err === 'object' && 'status' in err && err.status === 401) {
               this.#isGitHubAuthenticated.set(false);
               this.#userInfo.set(null);
-              // ChromeStorageService.remove() logs its own errors; this Promise never rejects.
-              void this.#removeStoredToken();
+              // ChromeStorageService.remove() logs its own errors
+              this.#removeStoredToken();
               this.#toastService.show({
                 message: 'GitHub session expired. Please log in again.',
                 type: TOAST_TYPE_ENUM.WARN,
