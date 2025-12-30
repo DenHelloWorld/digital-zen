@@ -1,6 +1,10 @@
 import { inject, Injectable, Signal } from '@angular/core';
-import { GoogleAuthService, GitHubAuthService, IGitHubUserInfo } from '../../common';
-import { IGoogleUserInfo } from '../../common/services/google-auth.service';
+import {
+  GoogleAuthService,
+  GitHubAuthService,
+  IGitHubUserInfo,
+  IGoogleUserInfo,
+} from '../../common';
 
 @Injectable({
   providedIn: 'root',

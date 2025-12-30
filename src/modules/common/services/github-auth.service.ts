@@ -1,13 +1,4 @@
-import {
-  computed,
-  DestroyRef,
-  inject,
-  Injectable,
-  Signal,
-  signal,
-  WritableSignal,
-} from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { computed, inject, Injectable, Signal, signal, WritableSignal } from '@angular/core';
 import { ApiService } from './api.service';
 import { ChromeStorageService } from './chrome-storage.service';
 import { API_URLS } from '../constants';
@@ -34,9 +25,9 @@ export interface IGitHubUserInfo {
   received_events_url: string;
   type: string;
   site_admin: boolean;
-  name: string;
+  name?: string;
   company?: string;
-  blog: string;
+  blog?: string;
   location?: string;
   email?: string;
   hireable?: boolean;
@@ -56,7 +47,6 @@ export interface IGitHubUserInfo {
 export class GitHubAuthService {
   readonly #apiService: ApiService = inject(ApiService);
   readonly #chromeStorageService: ChromeStorageService = inject(ChromeStorageService);
-  readonly #destroyRef: DestroyRef = inject(DestroyRef);
   readonly #toastService: DzToastService = inject(DzToastService);
 
   readonly #isGitHubAuthenticated: WritableSignal<boolean> = signal(false);
@@ -250,7 +240,6 @@ export class GitHubAuthService {
           Authorization: `Bearer ${token}`,
         }
       )
-      .pipe(takeUntilDestroyed(this.#destroyRef))
       .subscribe({
         next: info => {
           this.#userInfo.set(info);
@@ -261,7 +250,12 @@ export class GitHubAuthService {
           // If we get a 401, the token is invalid - clear auth state
           if (err && typeof err === 'object' && 'status' in err && err.status === 401) {
             this.#isGitHubAuthenticated.set(false);
-            this.#removeStoredToken();
+            this.#removeStoredToken().catch(removeError => {
+              console.error(
+                'Failed to remove GitHub access token from storage after 401.',
+                removeError
+              );
+            });
             this.#toastService.show({
               message: 'GitHub session expired. Please log in again.',
               type: TOAST_TYPE_ENUM.WARN,
@@ -310,17 +304,14 @@ export class GitHubAuthService {
    * Complete the logout process by clearing all authentication state
    */
   async #completeLogout(): Promise<void> {
-    try {
-      await this.#removeStoredToken();
-    } catch (error) {
-      // Log error but continue with logout for security
-      console.error('Failed to remove GitHub access token from storage during logout.', error);
-    } finally {
-      // Always clear in-memory state for security, even if storage removal fails
-      this.#isGitHubAuthenticated.set(false);
-      this.#userInfo.set(null);
-      this.#error.set(null);
-      this.#isPending.set(false);
-    }
+    // ChromeStorageService.remove logs errors and always invokes its callback;
+    // storage failures here do not reject this Promise and do not block logout.
+    await this.#removeStoredToken();
+
+    // Always clear in-memory state for security, even if storage removal fails
+    this.#isGitHubAuthenticated.set(false);
+    this.#userInfo.set(null);
+    this.#error.set(null);
+    this.#isPending.set(false);
   }
 }
