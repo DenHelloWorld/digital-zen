@@ -236,10 +236,17 @@ digital-zen/
 │   ├── styles/           # Global styles
 │   ├── manifest.json     # Chrome extension manifest
 │   └── main.ts           # Application entry point
+├── docs/                 # Documentation and research
+│   └── research/         # Research documents
 ├── public/               # Static assets
 ├── dist/                 # Build output directory
 └── package.json          # Project dependencies and scripts
 ```
+
+## Documentation
+
+- **[Authentication Research](./docs/research/authentication-options.md)** - Comprehensive analysis of authentication options for Chrome extensions without backend support
+- **[Исследование аутентификации (RU)](./docs/research/authentication-options-ru.md)** - Краткое резюме исследования на русском языке
 
 ## License
 
