@@ -21,14 +21,19 @@ export namespace IFocus {
 
   export interface PomodoroSettings {
     enabled: boolean;
-    workDuration: number; // minutes, default 25
-    shortBreakDuration: number; // minutes, default 5
-    longBreakDuration: number; // minutes, default 15
-    pomodorosUntilLongBreak: number; // default 4
+    /** Work session duration in minutes (min: 1, max: 120, default: 25) */
+    workDuration: number;
+    /** Short break duration in minutes (min: 1, max: 30, default: 5) */
+    shortBreakDuration: number;
+    /** Long break duration in minutes (min: 5, max: 60, default: 15) */
+    longBreakDuration: number;
+    /** Number of work sessions before long break (min: 2, max: 10, default: 4) */
+    pomodorosUntilLongBreak: number;
     autoStartBreaks: boolean;
     autoStartPomodoros: boolean;
     soundEnabled: boolean;
-    soundVolume: number; // 0-100
+    /** Volume level (min: 0, max: 100, default: 70) */
+    soundVolume: number;
   }
 
   export interface PomodoroSession {
@@ -95,24 +100,45 @@ export class PomodoroService {
     return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
   });
 
+  /**
+   * Starts a new Pomodoro work session
+   * Creates a new session with work duration from settings
+   * Schedules Chrome alarm for session end
+   */
   public startPomodoro(): void {
-    // Implementation
+    // Implementation: Create session, set timer, update signals
   }
 
+  /**
+   * Pauses the current Pomodoro session
+   * Preserves remaining time for resume
+   */
   public pausePomodoro(): void {
-    // Implementation
+    // Implementation: Update session state, clear alarm
   }
 
+  /**
+   * Resumes a paused Pomodoro session
+   * Restarts timer with remaining time
+   */
   public resumePomodoro(): void {
-    // Implementation
+    // Implementation: Update session state, reschedule alarm
   }
 
+  /**
+   * Skips current work session and starts break
+   * Useful for manual session management
+   */
   public skipToBreak(): void {
-    // Implementation
+    // Implementation: End current session, start break
   }
 
+  /**
+   * Resets the entire Pomodoro cycle
+   * Clears current session and counters
+   */
   public resetPomodoro(): void {
-    // Implementation
+    // Implementation: Clear all session data
   }
 
   #playSound(type: 'start' | 'end'): void {
@@ -422,15 +448,18 @@ export class KeyboardShortcutsComponent {
 export class SyncStorageService {
   /**
    * Chrome sync storage has limits:
-   * - Max 102,400 bytes total
-   * - Max 8,192 bytes per item
-   * - Max 512 items
+   * - Max 102,400 bytes total (CHROME_SYNC_QUOTA_BYTES)
+   * - Max 8,192 bytes per item (CHROME_SYNC_MAX_ITEM_SIZE)
+   * - Max 512 items (CHROME_SYNC_MAX_ITEMS)
    */
+  private readonly CHROME_SYNC_MAX_ITEM_SIZE = 8192;
+  private readonly CHROME_SYNC_QUOTA_BYTES = 102400;
+  private readonly CHROME_SYNC_MAX_ITEMS = 512;
   
   public async savePeriod(period: IFocus.Period): Promise<void> {
     // Save to chrome.storage.sync with size checks
     const size = this.#calculateSize(period);
-    if (size > 8192) {
+    if (size > this.CHROME_SYNC_MAX_ITEM_SIZE) {
       console.warn('Period too large for sync storage, using local storage');
       return this.#saveToLocalStorage(period);
     }
@@ -539,19 +568,31 @@ export class SyncConflictResolverService {
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule],
 })
-export class SyncStatusComponent {
+export class SyncStatusComponent implements OnInit, OnDestroy {
   readonly #syncService = inject(SyncStorageService);
+  readonly #destroyRef = inject(DestroyRef);
 
   protected readonly isSyncing = signal(false);
   protected readonly lastSyncTime = signal<Date | null>(null);
 
-  constructor() {
+  #storageListener = (changes: Record<string, chrome.storage.StorageChange>, namespace: string) => {
+    if (namespace === 'sync') {
+      this.lastSyncTime.set(new Date());
+    }
+  };
+
+  ngOnInit(): void {
     // Listen to sync events
-    chrome.storage.onChanged.addListener((changes, namespace) => {
-      if (namespace === 'sync') {
-        this.lastSyncTime.set(new Date());
-      }
+    chrome.storage.onChanged.addListener(this.#storageListener);
+    
+    // Cleanup on destroy
+    this.#destroyRef.onDestroy(() => {
+      chrome.storage.onChanged.removeListener(this.#storageListener);
     });
+  }
+
+  ngOnDestroy(): void {
+    // Additional cleanup if needed
   }
 }
 ```
@@ -680,17 +721,28 @@ describe('PomodoroService', () => {
 
 describe('SyncStorageService Integration', () => {
   let service: SyncStorageService;
+  let mockChrome: {
+    storage: {
+      sync: {
+        get: jest.Mock;
+        set: jest.Mock;
+      }
+    }
+  };
 
   beforeEach(() => {
-    // Mock Chrome storage APIs
-    global.chrome = {
+    // Mock Chrome storage APIs with proper typing
+    mockChrome = {
       storage: {
         sync: {
           get: jest.fn(),
           set: jest.fn(),
         }
       }
-    } as any;
+    };
+    
+    // Note: In actual tests, use @types/chrome testing utilities
+    (global as typeof globalThis & { chrome: typeof mockChrome }).chrome = mockChrome;
 
     service = TestBed.inject(SyncStorageService);
   });
@@ -699,7 +751,7 @@ describe('SyncStorageService Integration', () => {
     const period = { /* mock period */ };
     await service.savePeriod(period);
     
-    expect(chrome.storage.sync.set).toHaveBeenCalled();
+    expect(mockChrome.storage.sync.set).toHaveBeenCalled();
   });
 });
 ```

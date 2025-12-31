@@ -586,7 +586,7 @@ Based on impact, complexity, and alignment with the core product vision:
 ## 📊 Feature Prioritization Matrix
 
 | Feature | Impact | Complexity | Priority |
-|---------|--------|------------|----------|
+|:--------|:-------|:-----------|:---------|
 | Pomodoro Timer | High | Medium | HIGH |
 | Focus Statistics | High | Medium-High | HIGH |
 | Sync Across Devices | High | Medium | HIGH |
