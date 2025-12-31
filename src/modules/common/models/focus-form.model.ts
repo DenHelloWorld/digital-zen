@@ -14,5 +14,6 @@ export namespace IFocusForm {
     focusedTimes: FormControl<IFocus.FocusedTime[]>;
     isFocused: FormControl<boolean>;
     sessionStartTime: FormControl<Date | null>;
+    pomodoroSettings: FormControl<IFocus.PomodoroSettings | undefined>;
   }
 }

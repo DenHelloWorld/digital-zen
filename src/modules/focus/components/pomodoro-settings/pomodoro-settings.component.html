@@ -1,0 +1,142 @@
+<div class="dz-pomodoro-settings">
+  <div class="dz-pomodoro-settings__header">
+    <label class="dz-pomodoro-settings__toggle">
+      <input
+        type="checkbox"
+        [checked]="settings().enabled"
+        (change)="onToggleEnabled()"
+        class="dz-pomodoro-settings__checkbox"
+      />
+      <span class="dz-pomodoro-settings__label">Enable Pomodoro Timer</span>
+    </label>
+  </div>
+
+  @if (settings().enabled) {
+    <div class="dz-pomodoro-settings__content">
+      <div class="dz-pomodoro-settings__section">
+        <h4 class="dz-pomodoro-settings__section-title">Timer Durations</h4>
+
+        <div class="dz-pomodoro-settings__field">
+          <label class="dz-pomodoro-settings__field-label" for="pomodoro-work-duration">
+            Work Duration (minutes)
+            <span class="dz-pomodoro-settings__field-hint">1-120 min, default: 25</span>
+          </label>
+          <input
+            id="pomodoro-work-duration"
+            type="number"
+            min="1"
+            max="120"
+            [value]="settings().workDuration"
+            (change)="onWorkDurationChange($any($event.target).value)"
+            class="dz-pomodoro-settings__input"
+          />
+        </div>
+
+        <div class="dz-pomodoro-settings__field">
+          <label class="dz-pomodoro-settings__field-label" for="pomodoro-short-break">
+            Short Break (minutes)
+            <span class="dz-pomodoro-settings__field-hint">1-30 min, default: 5</span>
+          </label>
+          <input
+            id="pomodoro-short-break"
+            type="number"
+            min="1"
+            max="30"
+            [value]="settings().shortBreakDuration"
+            (change)="onShortBreakChange($any($event.target).value)"
+            class="dz-pomodoro-settings__input"
+          />
+        </div>
+
+        <div class="dz-pomodoro-settings__field">
+          <label class="dz-pomodoro-settings__field-label" for="pomodoro-long-break">
+            Long Break (minutes)
+            <span class="dz-pomodoro-settings__field-hint">5-60 min, default: 15</span>
+          </label>
+          <input
+            id="pomodoro-long-break"
+            type="number"
+            min="5"
+            max="60"
+            [value]="settings().longBreakDuration"
+            (change)="onLongBreakChange($any($event.target).value)"
+            class="dz-pomodoro-settings__input"
+          />
+        </div>
+
+        <div class="dz-pomodoro-settings__field">
+          <label class="dz-pomodoro-settings__field-label" for="pomodoro-cycles">
+            Pomodoros Until Long Break
+            <span class="dz-pomodoro-settings__field-hint">2-10, default: 4</span>
+          </label>
+          <input
+            id="pomodoro-cycles"
+            type="number"
+            min="2"
+            max="10"
+            [value]="settings().pomodorosUntilLongBreak"
+            (change)="onPomodorosUntilLongBreakChange($any($event.target).value)"
+            class="dz-pomodoro-settings__input"
+          />
+        </div>
+      </div>
+
+      <div class="dz-pomodoro-settings__section">
+        <h4 class="dz-pomodoro-settings__section-title">Auto-Start Options</h4>
+
+        <label class="dz-pomodoro-settings__toggle">
+          <input
+            type="checkbox"
+            [checked]="settings().autoStartBreaks"
+            (change)="onToggleAutoStartBreaks()"
+            class="dz-pomodoro-settings__checkbox"
+          />
+          <span class="dz-pomodoro-settings__label">Auto-start breaks</span>
+        </label>
+
+        <label class="dz-pomodoro-settings__toggle">
+          <input
+            type="checkbox"
+            [checked]="settings().autoStartPomodoros"
+            (change)="onToggleAutoStartPomodoros()"
+            class="dz-pomodoro-settings__checkbox"
+          />
+          <span class="dz-pomodoro-settings__label">Auto-start next Pomodoro</span>
+        </label>
+      </div>
+
+      <div class="dz-pomodoro-settings__section">
+        <h4 class="dz-pomodoro-settings__section-title">Sound Settings</h4>
+
+        <label class="dz-pomodoro-settings__toggle">
+          <input
+            type="checkbox"
+            [checked]="settings().soundEnabled"
+            (change)="onToggleSoundEnabled()"
+            class="dz-pomodoro-settings__checkbox"
+          />
+          <span class="dz-pomodoro-settings__label">Enable sound notifications</span>
+        </label>
+
+        @if (settings().soundEnabled) {
+          <div class="dz-pomodoro-settings__field">
+            <label class="dz-pomodoro-settings__field-label" for="pomodoro-volume">
+              Volume
+              <span class="dz-pomodoro-settings__field-hint">0-100, default: 70</span>
+            </label>
+            <input
+              id="pomodoro-volume"
+              type="range"
+              min="0"
+              max="100"
+              [value]="settings().soundVolume"
+              (input)="onVolumeChange($any($event.target).value)"
+              class="dz-pomodoro-settings__slider"
+            />
+            <span class="dz-pomodoro-settings__volume-value">{{ settings().soundVolume }}%</span>
+          </div>
+        }
+      </div>
+    </div>
+  }
+</div>

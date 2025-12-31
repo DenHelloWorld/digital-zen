@@ -29,13 +29,20 @@ import {
 import { WeekdaysSelectorComponent } from '../../../common/components/weekdays-selector/weekdays-selector.component';
 import { FocusService } from '../../../focus/services';
 import { DynamicInputComponent } from '../../../common/components/dynamic-input/dynamic-input.component';
+import { PomodoroSettingsComponent } from '../../../focus/components/pomodoro-settings';
+import { DEFAULT_POMODORO_SETTINGS } from '../../../focus/services/pomodoro.service';
 
 @Component({
   selector: 'dz-period-form',
   templateUrl: 'period-form.component.html',
   styleUrls: ['period-form.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ReactiveFormsModule, WeekdaysSelectorComponent, DynamicInputComponent],
+  imports: [
+    ReactiveFormsModule,
+    WeekdaysSelectorComponent,
+    DynamicInputComponent,
+    PomodoroSettingsComponent,
+  ],
 })
 export class PeriodFormComponent implements OnInit {
   readonly #fb: FormBuilder = inject(FormBuilder);
@@ -62,6 +69,8 @@ export class PeriodFormComponent implements OnInit {
     WEBSITE_TIKTOK,
     WEBSITE_FACEBOOK,
   ]);
+  protected pomodoroSettings: WritableSignal<IFocus.PomodoroSettings> =
+    signal<IFocus.PomodoroSettings>(DEFAULT_POMODORO_SETTINGS);
 
   public ngOnInit(): void {
     this.#initForm();
@@ -91,6 +100,12 @@ export class PeriodFormComponent implements OnInit {
       .subscribe((value: IFocus.WebSite[]) => {
         this.form.controls.webSites.setValue(value);
       });
+
+    toObservable(this.pomodoroSettings, { injector: this.#injector })
+      .pipe(takeUntilDestroyed(this.#destroyRef))
+      .subscribe((value: IFocus.PomodoroSettings) => {
+        this.form.controls.pomodoroSettings.setValue(value);
+      });
   }
 
   protected savePeriod() {
@@ -117,6 +132,7 @@ export class PeriodFormComponent implements OnInit {
         focusedTimes: rawValue.focusedTimes,
         isFocused: rawValue.isFocused,
         sessionStartTime: rawValue.sessionStartTime,
+        pomodoroSettings: rawValue.pomodoroSettings,
       };
 
       if (this.mode() === 'edit') {
@@ -180,6 +196,9 @@ export class PeriodFormComponent implements OnInit {
         focusedTimes: this.#fb.nonNullable.control([]),
         isFocused: this.#fb.nonNullable.control(false),
         sessionStartTime: this.#fb.control<Date | null>(null),
+        pomodoroSettings: this.#fb.nonNullable.control<IFocus.PomodoroSettings | undefined>(
+          undefined
+        ),
       },
       { validators: timeRangeValidator('startFrom', 'endTo') }
     );
@@ -204,6 +223,7 @@ export class PeriodFormComponent implements OnInit {
         focusedTimes: periodData.focusedTimes,
         isFocused: periodData.isFocused,
         sessionStartTime: periodData.sessionStartTime,
+        pomodoroSettings: periodData.pomodoroSettings,
       });
 
       // Set selected days
@@ -212,6 +232,11 @@ export class PeriodFormComponent implements OnInit {
 
       // Set selected websites
       this.selectedWebSites.set(periodData.webSites);
+
+      // Set Pomodoro settings
+      if (periodData.pomodoroSettings) {
+        this.pomodoroSettings.set(periodData.pomodoroSettings);
+      }
     }
   }
 
