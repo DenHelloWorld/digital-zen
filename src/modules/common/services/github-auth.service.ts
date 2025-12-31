@@ -219,17 +219,34 @@ export class GitHubAuthService {
    */
   #extractTokenFromUrl(url: string): string | null {
     try {
-      // GitHub returns token in fragment (after #)
-      // Format: https://extension-id.chromiumapp.org/#access_token=TOKEN&token_type=bearer
-      const fragment = url.split('#')[1];
-      if (!fragment) {
+      // GitHub returns token in URL fragment (after #)
+      // Example format: https://extension-id.chromiumapp.org/#access_token=TOKEN&token_type=bearer&scope=read:user%20user:email
+
+      // First try to parse as hash fragment
+      const hashIndex = url.indexOf('#');
+      if (hashIndex === -1) {
+        console.error('No fragment (#) found in response URL:', url);
         return null;
       }
 
+      const fragment = url.substring(hashIndex + 1);
+      if (!fragment) {
+        console.error('Fragment is empty in response URL:', url);
+        return null;
+      }
+
+      // Parse the fragment as query parameters
       const params = new URLSearchParams(fragment);
-      return params.get('access_token');
+      const token = params.get('access_token');
+
+      if (!token) {
+        console.error('No access_token parameter found in fragment:', fragment);
+        return null;
+      }
+
+      return token;
     } catch (error) {
-      console.error('Failed to extract token from URL:', error);
+      console.error('Failed to extract token from URL:', error, 'URL:', url);
       return null;
     }
   }
