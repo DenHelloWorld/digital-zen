@@ -26,6 +26,21 @@
         </svg>
       }
     </button>
+
+    <button
+      [title]="isGitHubAuthenticated() ? 'Logout from GitHub' : 'Login with GitHub'"
+      (click)="isGitHubAuthenticated() ? logoutFromGitHub() : loginWithGitHub()"
+      [disabled]="isGitHubAuthPending()"
+      class="dz-button dz-button--round dz-button--md"
+    >
+      @if (isGitHubAuthPending()) {
+        <dz-loader />
+      } @else {
+        <svg class="dz-icon" aria-hidden="true">
+          <use [attr.href]="isGitHubAuthenticated() ? '#icon-logout' : '#icon-login'"></use>
+        </svg>
+      }
+    </button>
   </nav>
 
   <dz-theme-switcher />
