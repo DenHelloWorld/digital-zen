@@ -6,17 +6,26 @@ import { CHROME_STORAGE_KEY_ENUM } from '../modules/common/enums/chrome-storage-
  */
 interface StoredPeriod extends Omit<
   IFocus.Period,
-  'startFrom' | 'endTo' | 'focusedTimes' | 'sessionStartTime'
+  'startFrom' | 'endTo' | 'focusedTimes' | 'sessionStartTime' | 'currentPomodoro'
 > {
   startFrom: string | null;
   endTo: string | null;
   sessionStartTime: string | null;
   focusedTimes: StoredFocusedTime[];
+  currentPomodoro?: StoredPomodoroSession;
 }
 
 interface StoredFocusedTime extends Omit<IFocus.FocusedTime, 'startFrom' | 'endTo'> {
   startFrom: string | null;
   endTo: string | null;
+}
+
+interface StoredPomodoroSession extends Omit<
+  IFocus.PomodoroSession,
+  'cycleStartTime' | 'cycleEndTime'
+> {
+  cycleStartTime: string | null;
+  cycleEndTime: string | null;
 }
 
 export class StorageAdapter {
@@ -104,6 +113,14 @@ export class StorageAdapter {
       return String(d);
     };
 
+    const currentPomodoro = period.currentPomodoro
+      ? {
+          ...period.currentPomodoro,
+          cycleStartTime: toISOStringSafe(period.currentPomodoro.cycleStartTime),
+          cycleEndTime: toISOStringSafe(period.currentPomodoro.cycleEndTime),
+        }
+      : undefined;
+
     return {
       ...period,
       startFrom: toISOStringSafe(period.startFrom),
@@ -114,6 +131,7 @@ export class StorageAdapter {
         startFrom: toISOStringSafe(ft.startFrom),
         endTo: toISOStringSafe(ft.endTo),
       })),
+      currentPomodoro,
     };
   }
 
@@ -129,6 +147,14 @@ export class StorageAdapter {
       return date;
     };
 
+    const currentPomodoro = stored.currentPomodoro
+      ? {
+          ...stored.currentPomodoro,
+          cycleStartTime: toDateSafe(stored.currentPomodoro.cycleStartTime),
+          cycleEndTime: toDateSafe(stored.currentPomodoro.cycleEndTime),
+        }
+      : undefined;
+
     return {
       ...stored,
       startFrom: toDateSafe(stored.startFrom),
@@ -139,6 +165,7 @@ export class StorageAdapter {
         startFrom: toDateSafe(ft.startFrom),
         endTo: toDateSafe(ft.endTo),
       })),
+      currentPomodoro,
     };
   }
 }

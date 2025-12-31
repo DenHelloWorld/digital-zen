@@ -1,0 +1,44 @@
+<div class="dz-pomodoro" [class.dz-pomodoro--break]="session()?.state !== 'work'">
+  @if (session(); as pomodoroSession) {
+    <div class="dz-pomodoro__header">
+      <h3 class="dz-pomodoro__title">{{ getStateLabel(pomodoroSession.state) }}</h3>
+      <div class="dz-pomodoro__cycle">
+        Session {{ pomodoroSession.currentCycle }} of {{ settings().pomodorosUntilLongBreak }}
+      </div>
+    </div>
+
+    <div class="dz-pomodoro__timer">
+      {{ timeRemaining() }}
+    </div>
+
+    <div class="dz-pomodoro__progress">
+      <div class="dz-pomodoro__progress-bar" [style.width.%]="progressPercentage()"></div>
+    </div>
+
+    <div class="dz-pomodoro__stats">
+      <span>Today: {{ pomodoroSession.totalCycles }} completed</span>
+    </div>
+
+    <div class="dz-pomodoro__controls">
+      @if (pomodoroSession.isPaused) {
+        <button class="dz-pomodoro__button dz-pomodoro__button--primary" (click)="onResume()">
+          Resume
+        </button>
+      } @else {
+        <button class="dz-pomodoro__button dz-pomodoro__button--primary" (click)="onPause()">
+          Pause
+        </button>
+      }
+      <button class="dz-pomodoro__button" (click)="onSkip()">Skip</button>
+      <button class="dz-pomodoro__button" (click)="onReset()">Reset</button>
+    </div>
+  } @else {
+    <div class="dz-pomodoro__empty">
+      <div class="dz-pomodoro__empty-icon">🍅</div>
+      <p class="dz-pomodoro__empty-text">Start a Pomodoro session to focus better</p>
+      <button class="dz-pomodoro__button dz-pomodoro__button--primary" (click)="onStart()">
+        Start Pomodoro
+      </button>
+    </div>
+  }
+</div>

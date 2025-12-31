@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, inject, Signal } from '@a
 import { FocusService } from './services';
 import { LoaderComponent, IFocus, isImageIcon, isHttpUrl, isSvgIcon } from '../common';
 import { PeriodComponent } from './components/period/period.component';
+import { PomodoroTimerComponent } from './components/pomodoro-timer';
 
 @Component({
   selector: 'dz-focus',
@@ -11,6 +12,7 @@ import { PeriodComponent } from './components/period/period.component';
     // components
     PeriodComponent,
     LoaderComponent,
+    PomodoroTimerComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -23,6 +25,9 @@ export class FocusComponent {
   protected readonly periodsCount: Signal<number> = computed(() => this.periods()?.length ?? 0);
   protected readonly focusElapsedTimeFormatted: Signal<string> =
     this.#focusService.focusElapsedTimeFormatted;
+  protected readonly isPomodoroEnabled: Signal<boolean> = computed(
+    () => this.currentPeriod()?.pomodoroSettings?.enabled ?? false
+  );
 
   protected readonly isSvgIcon: (url: string | null | undefined) => boolean = isSvgIcon;
   protected readonly isImageIcon: (url: string | null | undefined) => boolean = isImageIcon;

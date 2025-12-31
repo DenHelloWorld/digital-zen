@@ -84,6 +84,26 @@ export class BackgroundServiceMV3 {
               });
               break;
             }
+            case CHROME_COMMAND_ENUM.START_POMODORO:
+              await this.startPomodoro();
+              sendResponse({ success: true });
+              break;
+            case CHROME_COMMAND_ENUM.PAUSE_POMODORO:
+              await this.pausePomodoro();
+              sendResponse({ success: true });
+              break;
+            case CHROME_COMMAND_ENUM.RESUME_POMODORO:
+              await this.resumePomodoro();
+              sendResponse({ success: true });
+              break;
+            case CHROME_COMMAND_ENUM.SKIP_POMODORO:
+              await this.skipPomodoro();
+              sendResponse({ success: true });
+              break;
+            case CHROME_COMMAND_ENUM.RESET_POMODORO:
+              await this.resetPomodoro();
+              sendResponse({ success: true });
+              break;
             default:
               sendResponse({ success: false, error: 'Unknown command' });
           }
@@ -117,6 +137,10 @@ export class BackgroundServiceMV3 {
         if (current?.isFocused && current.endTo && new Date() > current.endTo) {
           await this.stopFocus();
         }
+      } else if (alarm.name === CHROME_ALARM_ENUM.POMODORO_WORK_END) {
+        await this.handlePomodoroWorkEnd();
+      } else if (alarm.name === CHROME_ALARM_ENUM.POMODORO_BREAK_END) {
+        await this.handlePomodoroBreakEnd();
       }
     });
   }
@@ -349,5 +373,198 @@ export class BackgroundServiceMV3 {
     };
 
     await this.startFocus(quickPeriod);
+  }
+
+  // ====== Pomodoro Methods ======
+
+  private async startPomodoro(): Promise<void> {
+    const current = await StorageAdapter.getCurrentPeriod();
+    if (!current || !current.pomodoroSettings?.enabled) {
+      return;
+    }
+
+    const settings = current.pomodoroSettings;
+    const now = new Date();
+    const endTime = new Date(now.getTime() + settings.workDuration * 60 * 1000);
+
+    const newSession: IFocus.PomodoroSession = {
+      currentCycle: (current.currentPomodoro?.currentCycle ?? 0) + 1,
+      totalCycles: current.currentPomodoro?.totalCycles ?? 0,
+      state: 'work',
+      cycleStartTime: now,
+      cycleEndTime: endTime,
+      isPaused: false,
+    };
+
+    const updatedPeriod = { ...current, currentPomodoro: newSession };
+    await StorageAdapter.saveCurrentPeriod(updatedPeriod);
+    await StorageAdapter.savePeriod(updatedPeriod);
+
+    // Schedule alarm for work session end
+    chrome.alarms.create(CHROME_ALARM_ENUM.POMODORO_WORK_END, {
+      when: endTime.getTime(),
+    });
+
+    this.playSound('start');
+  }
+
+  private async pausePomodoro(): Promise<void> {
+    const current = await StorageAdapter.getCurrentPeriod();
+    if (!current?.currentPomodoro || current.currentPomodoro.isPaused) {
+      return;
+    }
+
+    const session = current.currentPomodoro;
+    const now = new Date();
+    const remainingTime = session.cycleEndTime ? session.cycleEndTime.getTime() - now.getTime() : 0;
+
+    const pausedSession: IFocus.PomodoroSession = {
+      ...session,
+      isPaused: true,
+      remainingTime: Math.max(0, remainingTime),
+    };
+
+    const updatedPeriod = { ...current, currentPomodoro: pausedSession };
+    await StorageAdapter.saveCurrentPeriod(updatedPeriod);
+    await StorageAdapter.savePeriod(updatedPeriod);
+
+    // Clear the alarm
+    chrome.alarms.clear(CHROME_ALARM_ENUM.POMODORO_WORK_END);
+    chrome.alarms.clear(CHROME_ALARM_ENUM.POMODORO_BREAK_END);
+  }
+
+  private async resumePomodoro(): Promise<void> {
+    const current = await StorageAdapter.getCurrentPeriod();
+    if (!current?.currentPomodoro || !current.currentPomodoro.isPaused) {
+      return;
+    }
+
+    const session = current.currentPomodoro;
+    const now = new Date();
+    const remainingTime = session.remainingTime ?? 0;
+    const endTime = new Date(now.getTime() + remainingTime);
+
+    const resumedSession: IFocus.PomodoroSession = {
+      ...session,
+      isPaused: false,
+      cycleEndTime: endTime,
+      remainingTime: undefined,
+    };
+
+    const updatedPeriod = { ...current, currentPomodoro: resumedSession };
+    await StorageAdapter.saveCurrentPeriod(updatedPeriod);
+    await StorageAdapter.savePeriod(updatedPeriod);
+
+    // Reschedule alarm
+    const alarmName =
+      session.state === 'work'
+        ? CHROME_ALARM_ENUM.POMODORO_WORK_END
+        : CHROME_ALARM_ENUM.POMODORO_BREAK_END;
+    chrome.alarms.create(alarmName, { when: endTime.getTime() });
+  }
+
+  private async skipPomodoro(): Promise<void> {
+    const current = await StorageAdapter.getCurrentPeriod();
+    if (!current?.currentPomodoro) {
+      return;
+    }
+
+    // Clear existing alarms
+    chrome.alarms.clear(CHROME_ALARM_ENUM.POMODORO_WORK_END);
+    chrome.alarms.clear(CHROME_ALARM_ENUM.POMODORO_BREAK_END);
+
+    if (current.currentPomodoro.state === 'work') {
+      await this.handlePomodoroWorkEnd();
+    } else {
+      await this.handlePomodoroBreakEnd();
+    }
+  }
+
+  private async resetPomodoro(): Promise<void> {
+    const current = await StorageAdapter.getCurrentPeriod();
+    if (!current) {
+      return;
+    }
+
+    const updatedPeriod = { ...current, currentPomodoro: undefined };
+    await StorageAdapter.saveCurrentPeriod(updatedPeriod);
+    await StorageAdapter.savePeriod(updatedPeriod);
+
+    // Clear all Pomodoro alarms
+    chrome.alarms.clear(CHROME_ALARM_ENUM.POMODORO_WORK_END);
+    chrome.alarms.clear(CHROME_ALARM_ENUM.POMODORO_BREAK_END);
+  }
+
+  private async handlePomodoroWorkEnd(): Promise<void> {
+    const current = await StorageAdapter.getCurrentPeriod();
+    if (!current?.currentPomodoro || !current.pomodoroSettings) {
+      return;
+    }
+
+    const settings = current.pomodoroSettings;
+    const session = current.currentPomodoro;
+    const completedCycles = session.currentCycle;
+    const shouldTakeLongBreak = completedCycles % settings.pomodorosUntilLongBreak === 0;
+
+    const breakDuration = shouldTakeLongBreak
+      ? settings.longBreakDuration
+      : settings.shortBreakDuration;
+    const breakState = shouldTakeLongBreak ? 'long-break' : 'short-break';
+
+    const now = new Date();
+    const endTime = new Date(now.getTime() + breakDuration * 60 * 1000);
+
+    const newSession: IFocus.PomodoroSession = {
+      currentCycle: session.currentCycle,
+      totalCycles: session.totalCycles + 1,
+      state: breakState,
+      cycleStartTime: now,
+      cycleEndTime: endTime,
+      isPaused: false,
+    };
+
+    const updatedPeriod = { ...current, currentPomodoro: newSession };
+    await StorageAdapter.saveCurrentPeriod(updatedPeriod);
+    await StorageAdapter.savePeriod(updatedPeriod);
+
+    // Schedule alarm for break end
+    chrome.alarms.create(CHROME_ALARM_ENUM.POMODORO_BREAK_END, {
+      when: endTime.getTime(),
+    });
+
+    this.playSound('end');
+
+    // Auto-start break if enabled
+    if (!settings.autoStartBreaks) {
+      await this.pausePomodoro();
+    }
+  }
+
+  private async handlePomodoroBreakEnd(): Promise<void> {
+    const current = await StorageAdapter.getCurrentPeriod();
+    if (!current?.currentPomodoro || !current.pomodoroSettings) {
+      return;
+    }
+
+    const settings = current.pomodoroSettings;
+    this.playSound('end');
+
+    // Auto-start next Pomodoro if enabled
+    if (settings.autoStartPomodoros) {
+      await this.startPomodoro();
+    } else {
+      // Just end the session and wait for user to start next one
+      const updatedPeriod = { ...current, currentPomodoro: undefined };
+      await StorageAdapter.saveCurrentPeriod(updatedPeriod);
+      await StorageAdapter.savePeriod(updatedPeriod);
+    }
+  }
+
+  private playSound(type: 'start' | 'end'): void {
+    // Note: Sound playback in background script requires creating a notification
+    // or using chrome.offscreen API (Manifest V3)
+    // For simplicity, we'll skip actual sound playback in this implementation
+    // In a full implementation, you would use Web Audio API via offscreen document
+    console.log(`Pomodoro sound: ${type}`);
   }
 }

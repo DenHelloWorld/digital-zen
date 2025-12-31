@@ -1,5 +1,10 @@
 export enum CHROME_ALARM_ENUM {
   CHECK_FOCUS_END = 'checkFocusEnd',
+  POMODORO_WORK_END = 'pomodoroWorkEnd',
+  POMODORO_BREAK_END = 'pomodoroBreakEnd',
 }
 
-export type ChromeAlarmType = CHROME_ALARM_ENUM.CHECK_FOCUS_END;
+export type ChromeAlarmType =
+  | CHROME_ALARM_ENUM.CHECK_FOCUS_END
+  | CHROME_ALARM_ENUM.POMODORO_WORK_END
+  | CHROME_ALARM_ENUM.POMODORO_BREAK_END;

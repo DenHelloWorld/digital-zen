@@ -45,6 +45,12 @@
   }
 </div>
 
+@if (isPomodoroEnabled() && currentPeriod()?.isFocused) {
+  <div class="dz-pomodoro-section">
+    <dz-pomodoro-timer />
+  </div>
+}
+
 <div class="dz-group">
   @if (periods()?.length) {
     <ul class="dz-list">
