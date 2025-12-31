@@ -68,8 +68,8 @@ export class BackgroundServiceMV3 {
               break;
             }
             case CHROME_COMMAND_ENUM.TOGGLE_QUICK_FOCUS: {
-              await this.toggleQuickFocus(message.siteUrl);
-              sendResponse({ success: true });
+              const result = await this.toggleQuickFocus(message.siteUrl);
+              sendResponse(result);
               break;
             }
             case CHROME_COMMAND_ENUM.GET_ACTIVE_TAB: {
@@ -274,13 +274,13 @@ export class BackgroundServiceMV3 {
     }
   }
 
-  private async toggleQuickFocus(url: string): Promise<void> {
+  private async toggleQuickFocus(url: string): Promise<{ success: boolean; error?: string }> {
     const current = await StorageAdapter.getCurrentPeriod();
 
     if (current && current.id === QUICK_FOCUS_ID && current.isFocused) {
-      await this.stopFocus();
+      return await this.stopFocus();
     } else {
-      await this.startQuickFocus(url);
+      return await this.startQuickFocus(url);
     }
   }
 
@@ -332,7 +332,7 @@ export class BackgroundServiceMV3 {
     return tabs.length ? tabs[0] : null;
   }
 
-  private async startQuickFocus(url: string): Promise<void> {
+  private async startQuickFocus(url: string): Promise<{ success: boolean; error?: string }> {
     const domain = url.replace(/^https?:\/\//, '').split('/')[0];
     const quickPeriod: IFocus.Period = {
       id: QUICK_FOCUS_ID,
@@ -358,6 +358,6 @@ export class BackgroundServiceMV3 {
       ],
     };
 
-    await this.startFocus(quickPeriod);
+    return await this.startFocus(quickPeriod);
   }
 }
