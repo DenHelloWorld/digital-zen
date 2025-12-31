@@ -237,7 +237,15 @@ export class FocusService {
     if (this.#isChromeRuntime) {
       this.#notifyIfNoSitesBlocked(this.#currentPeriod());
 
-      chrome.runtime.sendMessage({ command: CHROME_COMMAND_ENUM.TOGGLE_FOCUS });
+      chrome.runtime.sendMessage({ command: CHROME_COMMAND_ENUM.TOGGLE_FOCUS }, response => {
+        if (response && !response.success && response.error === 'PERIOD_NOT_SCHEDULED_TODAY') {
+          this.#toastService.show({
+            message: TOAST_MESSAGES_ENUM.PERIOD_NOT_SCHEDULED_TODAY,
+            type: TOAST_TYPE_ENUM.WARN,
+            position: POSITIONS_ENUM.BOTTOM_RIGHT,
+          });
+        }
+      });
     }
   }
 

@@ -50,19 +50,22 @@ export class BackgroundServiceMV3 {
               const periods = await StorageAdapter.getPeriods();
               const periodToStart = periods.find(p => p.id === message.periodId);
               if (periodToStart) {
-                await this.startFocus(periodToStart);
+                const result = await this.startFocus(periodToStart);
+                sendResponse(result);
+              } else {
+                sendResponse({ success: false, error: 'PERIOD_NOT_FOUND' });
               }
-              sendResponse({ success: true });
               break;
             }
             case CHROME_COMMAND_ENUM.STOP_FOCUS:
               await this.stopFocus();
               sendResponse({ success: true });
               break;
-            case CHROME_COMMAND_ENUM.TOGGLE_FOCUS:
-              await this.toggleFocus();
-              sendResponse({ success: true });
+            case CHROME_COMMAND_ENUM.TOGGLE_FOCUS: {
+              const result = await this.toggleFocus();
+              sendResponse(result || { success: true });
               break;
+            }
             case CHROME_COMMAND_ENUM.TOGGLE_QUICK_FOCUS: {
               await this.toggleQuickFocus(message.siteUrl);
               sendResponse({ success: true });
@@ -202,11 +205,11 @@ export class BackgroundServiceMV3 {
     }
   }
 
-  private async startFocus(period: IFocus.Period): Promise<void> {
+  private async startFocus(period: IFocus.Period): Promise<{ success: boolean; error?: string }> {
     const today = new Date().getDay();
 
     if (period.daysOfWeek && !period.daysOfWeek.includes(today)) {
-      return;
+      return { success: false, error: 'PERIOD_NOT_SCHEDULED_TODAY' };
     }
 
     this.#currentPeriod = period;
@@ -220,6 +223,8 @@ export class BackgroundServiceMV3 {
     this.updateBlockRules(period.webSites.filter(site => site.isBlocked).map(site => site.url));
     this.updateExtensionIcon(true);
     this.scheduleAlarm();
+
+    return { success: true };
   }
 
   private async stopFocus(): Promise<void> {
@@ -250,7 +255,7 @@ export class BackgroundServiceMV3 {
     this.updateExtensionIcon(false);
   }
 
-  private async toggleFocus(): Promise<void> {
+  private async toggleFocus(): Promise<{ success: boolean; error?: string } | void> {
     const current = await StorageAdapter.getCurrentPeriod();
 
     if (!current) {
@@ -260,7 +265,7 @@ export class BackgroundServiceMV3 {
     if (current.isFocused) {
       await this.stopFocus();
     } else {
-      await this.startFocus(current);
+      return await this.startFocus(current);
     }
   }
 
