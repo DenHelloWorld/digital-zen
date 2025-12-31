@@ -57,13 +57,14 @@ export class BackgroundServiceMV3 {
               }
               break;
             }
-            case CHROME_COMMAND_ENUM.STOP_FOCUS:
-              await this.stopFocus();
-              sendResponse({ success: true });
+            case CHROME_COMMAND_ENUM.STOP_FOCUS: {
+              const result = await this.stopFocus();
+              sendResponse(result);
               break;
+            }
             case CHROME_COMMAND_ENUM.TOGGLE_FOCUS: {
               const result = await this.toggleFocus();
-              sendResponse(result || { success: true });
+              sendResponse(result);
               break;
             }
             case CHROME_COMMAND_ENUM.TOGGLE_QUICK_FOCUS: {
@@ -227,8 +228,10 @@ export class BackgroundServiceMV3 {
     return { success: true };
   }
 
-  private async stopFocus(): Promise<void> {
-    if (!this.#currentPeriod) return;
+  private async stopFocus(): Promise<{ success: boolean }> {
+    if (!this.#currentPeriod) {
+      return { success: true };
+    }
 
     const endTime = new Date();
     if (this.#sessionStartTime) {
@@ -253,17 +256,19 @@ export class BackgroundServiceMV3 {
 
     this.updateBlockRules([]);
     this.updateExtensionIcon(false);
+
+    return { success: true };
   }
 
-  private async toggleFocus(): Promise<{ success: boolean; error?: string } | void> {
+  private async toggleFocus(): Promise<{ success: boolean; error?: string }> {
     const current = await StorageAdapter.getCurrentPeriod();
 
     if (!current) {
-      return;
+      return { success: true };
     }
 
     if (current.isFocused) {
-      await this.stopFocus();
+      return await this.stopFocus();
     } else {
       return await this.startFocus(current);
     }
