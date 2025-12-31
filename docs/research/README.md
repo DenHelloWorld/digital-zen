@@ -7,9 +7,11 @@ This directory contains research and analysis documents for the Digital Zen Chro
 ### Authentication Research
 
 #### 📄 [authentication-options.md](./authentication-options.md) (English)
+
 **Comprehensive authentication research for Chrome extensions without backend**
 
 Complete analysis of authentication options including:
+
 - Current Google OAuth implementation review
 - GitHub Device Flow (highly recommended)
 - OAuth2 PKCE for multiple providers (Microsoft, GitLab, Bitbucket)
@@ -27,9 +29,11 @@ Complete analysis of authentication options including:
 **Last Updated:** 2025-12-31
 
 #### 📄 [authentication-options-ru.md](./authentication-options-ru.md) (Русский)
+
 **Краткое резюме исследования аутентификации (на русском языке)**
 
 Сводка исследования с ответами на ключевые вопросы:
+
 - Нужен ли бэкенд?
 - Поддержка PKCE/Device Flow?
 - Требуемые OAuth scopes
@@ -46,13 +50,13 @@ Complete analysis of authentication options including:
 
 ### Top Recommendations (No Backend Required)
 
-| Provider | Rating | Use Case |
-|----------|--------|----------|
-| **GitHub Device Flow** | ⭐⭐⭐⭐⭐ | Developers, immediate implementation |
-| **Auth0** | ⭐⭐⭐⭐⭐ | Multi-provider support, professional identity management |
-| **Microsoft/Azure AD** | ⭐⭐⭐⭐ | Business users, Office 365 integration |
-| **GitLab** | ⭐⭐⭐⭐ | Developer tools, self-hosted options |
-| **Google OAuth** | ✅ Current | Keep existing implementation |
+| Provider               | Rating     | Use Case                                                 |
+| ---------------------- | ---------- | -------------------------------------------------------- |
+| **GitHub Device Flow** | ⭐⭐⭐⭐⭐ | Developers, immediate implementation                     |
+| **Auth0**              | ⭐⭐⭐⭐⭐ | Multi-provider support, professional identity management |
+| **Microsoft/Azure AD** | ⭐⭐⭐⭐   | Business users, Office 365 integration                   |
+| **GitLab**             | ⭐⭐⭐⭐   | Developer tools, self-hosted options                     |
+| **Google OAuth**       | ✅ Current | Keep existing implementation                             |
 
 ### Not Recommended
 
@@ -84,12 +88,14 @@ When adding new research documents:
 ## Document Standards
 
 ### Format
+
 - Use Markdown (.md)
 - Include table of contents for long documents
 - Use code blocks with language specification
 - Add emojis for visual navigation (✅ ❌ ⚠️ ⭐)
 
 ### Structure
+
 - Overview/Summary
 - Detailed sections
 - Code examples
@@ -98,6 +104,7 @@ When adding new research documents:
 - References
 
 ### Languages
+
 - **Primary:** English
 - **Summary:** Russian (for Russian-speaking team members)
 
@@ -106,6 +113,7 @@ When adding new research documents:
 ## Feedback
 
 If you have questions or suggestions about these research documents, please:
+
 - Open an issue on GitHub
 - Contact the research author
 - Submit a pull request with improvements
