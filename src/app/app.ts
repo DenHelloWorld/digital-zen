@@ -46,6 +46,9 @@ export class App {
   protected readonly isGoogleAuthenticated: Signal<boolean> =
     this.#authService.isGoogleAuthenticated;
   protected readonly isGoogleAuthPending: Signal<boolean> = this.#authService.isGoogleAuthPending;
+  protected readonly isGitHubAuthenticated: Signal<boolean> =
+    this.#authService.isGitHubAuthenticated;
+  protected readonly isGitHubAuthPending: Signal<boolean> = this.#authService.isGitHubAuthPending;
 
   protected readonly colorSchemes: typeof COLOR_SCHEMA_ENUM = COLOR_SCHEMA_ENUM;
   protected readonly viewTypes: typeof VIEW_ENUM = VIEW_ENUM;
@@ -60,5 +63,13 @@ export class App {
 
   protected logoutFromGoogle(): void {
     this.#authService.logoutFromGoogle();
+  }
+
+  protected loginWithGitHub(): void {
+    this.#authService.loginWithGitHub();
+  }
+
+  protected logoutFromGitHub(): void {
+    this.#authService.logoutFromGitHub();
   }
 }

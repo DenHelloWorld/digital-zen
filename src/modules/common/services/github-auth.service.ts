@@ -238,7 +238,7 @@ export class GitHubAuthService {
    * Fetch GitHub user information using the access token
    * @param {string} token - The GitHub access token
    */
-  #getUserInfo(token: string | undefined): void {
+  #getUserInfo(token: string | undefined | null): void {
     if (!token) {
       return;
     }
