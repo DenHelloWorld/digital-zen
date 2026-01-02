@@ -43,10 +43,10 @@ To make the privacy policy publicly accessible, follow these steps:
 If you want to keep your code private, host only the privacy policy on a free static hosting service:
 
 - **Netlify Drop** - Drag and drop `privacy-policy.html` to [app.netlify.com/drop](https://app.netlify.com/drop)
-- **GitHub Gist** - Create a public gist with your privacy policy: [gist.github.com](https://gist.github.com)
 - **Vercel** - Deploy just the `docs/` folder to [vercel.com](https://vercel.com)
-- **Cloudflare Pages** - Free static hosting at [pages.cloudflare.com](https://pages.cloudflare.com)
 - **GitLab Pages** - Works with private repositories on free tier: [docs.gitlab.com/ee/user/project/pages](https://docs.gitlab.com/ee/user/project/pages)
+- **Cloudflare Pages** - Free static hosting at [pages.cloudflare.com](https://pages.cloudflare.com)
+- **GitHub Gist** - Create a public gist with your privacy policy: [gist.github.com](https://gist.github.com)
 
 **Pros:** Keep your source code private, free hosting, simple setup  
 **Cons:** Privacy policy hosted separately from main repo

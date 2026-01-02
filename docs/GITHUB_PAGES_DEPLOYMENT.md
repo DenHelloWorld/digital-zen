@@ -180,11 +180,17 @@ If you want to keep your source code private but need a publicly accessible priv
 **Free tier:** Unlimited sites, unlimited bandwidth
 
 1. Create account at [pages.cloudflare.com](https://pages.cloudflare.com)
-2. Create new project
-3. Upload docs folder or connect Git repo
-4. Get URL like: `https://digital-zen.pages.dev/privacy-policy.html`
+2. Click "Create a project"
+3. Choose deployment method:
+   - **Direct Upload:** Upload your `docs/` folder as a ZIP file
+   - **Git Integration:** Connect your GitHub/GitLab repo (can be private)
+4. Configure build settings:
+   - Build output directory: `/` (if uploading just docs folder)
+   - No build command needed for static HTML
+5. Deploy and get URL like: `https://digital-zen.pages.dev/privacy-policy.html`
+6. Optional: Add custom domain in project settings
 
-**Pros:** Free, unlimited bandwidth, fast global CDN  
+**Pros:** Free, unlimited bandwidth, fast global CDN, auto-deploys with Git  
 **Cons:** Requires account
 
 ### Option 5: GitHub Gist (Quick & Simple)
@@ -222,7 +228,9 @@ This way, your source code remains private while meeting Chrome Web Store requir
 
 ---
 
-## Enabling GitHub Pages
+## Enabling GitHub Pages (For Public Repositories Only)
+
+**Note:** This section is only applicable if you've made your repository public or have GitHub Enterprise. If you're keeping your repository private, skip to the "Alternative Hosting Options" section above.
 
 After deploying content to the `gh-pages` branch, you need to enable GitHub Pages in the repository settings:
 
