@@ -360,8 +360,18 @@ Planning to publish Digital Zen to the Chrome Web Store? Check out our comprehen
 - **[Chrome Web Store Readiness Report](./docs/chrome-web-store-readiness.md)** - Complete analysis and requirements
 - **[Publication Checklist](./docs/publication-checklist.md)** - Actionable task list
 - **[Отчёт о готовности (Russian)](./docs/chrome-web-store-readiness-ru.md)** - Краткое резюме на русском
+- **[Privacy Policy Setup](./docs/PRIVACY_POLICY_SETUP.md)** - Quick reference for hosting the privacy policy
+- **[Privacy Policy Hosting Guide](./docs/PRIVACY_POLICY_HOSTING.md)** - Complete guide for hosting options
 
 These documents provide detailed guidance on assets, legal requirements, testing, and the complete publication process.
+
+### Privacy Policy
+
+The privacy policy is available in English and Russian versions in the `docs/` folder:
+- `docs/privacy-policy.html` - English version
+- `docs/privacy-policy-ru.html` - Russian version
+
+To host the privacy policy publicly (required for Chrome Web Store), see the [Privacy Policy Hosting Guide](./docs/PRIVACY_POLICY_HOSTING.md) for free hosting options that keep your source code private.
 
 ## License
 
