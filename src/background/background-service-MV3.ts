@@ -91,6 +91,11 @@ export class BackgroundServiceMV3 {
               });
               break;
             }
+            case CHROME_COMMAND_ENUM.SET_CURRENT_PERIOD: {
+              const result = await this.setCurrentPeriod(message.periodId);
+              sendResponse(result);
+              break;
+            }
             default:
               sendResponse({ success: false, error: FOCUS_ERROR_ENUM.UNKNOWN_COMMAND });
           }
@@ -364,5 +369,36 @@ export class BackgroundServiceMV3 {
     };
 
     return await this.startFocus(quickPeriod);
+  }
+
+  private async setCurrentPeriod(periodId: string): Promise<FocusOperationResult> {
+    const periods = await StorageAdapter.getPeriods();
+    const periodToSet = periods.find(p => p.id === periodId);
+
+    if (!periodToSet) {
+      return { success: false, error: FOCUS_ERROR_ENUM.PERIOD_NOT_FOUND };
+    }
+
+    // Stop focus if currently active
+    if (this.#currentPeriod?.isFocused) {
+      await this.stopFocus();
+      // Refetch periods after stopping focus to get the latest state
+      const updatedPeriods = await StorageAdapter.getPeriods();
+      const freshPeriod = updatedPeriods.find(p => p.id === periodId);
+
+      if (!freshPeriod) {
+        return { success: false, error: FOCUS_ERROR_ENUM.PERIOD_NOT_FOUND };
+      }
+
+      // Set the new current period with fresh data
+      this.#currentPeriod = freshPeriod;
+      await StorageAdapter.saveCurrentPeriod(freshPeriod);
+    } else {
+      // Set the new current period
+      this.#currentPeriod = periodToSet;
+      await StorageAdapter.saveCurrentPeriod(periodToSet);
+    }
+
+    return { success: true };
   }
 }

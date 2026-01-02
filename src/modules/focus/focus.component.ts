@@ -23,6 +23,30 @@ export class FocusComponent {
   protected readonly periodsCount: Signal<number> = computed(() => this.periods()?.length ?? 0);
   protected readonly focusElapsedTimeFormatted: Signal<string> =
     this.#focusService.focusElapsedTimeFormatted;
+  protected readonly isFocusActive: Signal<boolean> = computed(
+    () => this.currentPeriod()?.isFocused ?? false
+  );
+  protected readonly displayedPeriods: Signal<IFocus.Period[]> = computed(() => {
+    const current = this.currentPeriod();
+    const all = this.periods();
+
+    if (!all || all.length === 0) {
+      return [];
+    }
+
+    // When focus is active, show only the current period
+    if (current?.isFocused) {
+      return [current];
+    }
+
+    // When focus is inactive, show current period first, then others
+    if (current) {
+      const others = all.filter(p => p.id !== current.id);
+      return [current, ...others];
+    }
+
+    return all;
+  });
 
   protected readonly isSvgIcon: (url: string | null | undefined) => boolean = isSvgIcon;
   protected readonly isImageIcon: (url: string | null | undefined) => boolean = isImageIcon;
@@ -39,5 +63,9 @@ export class FocusComponent {
 
   protected onToggleBlockedWebsite(site: IFocus.WebSite): void {
     this.#focusService.toggleBlockedWebsite(site);
+  }
+
+  protected isPeriodCurrent(period: IFocus.Period): boolean {
+    return this.currentPeriod()?.id === period.id;
   }
 }

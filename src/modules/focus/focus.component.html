@@ -46,13 +46,15 @@
 </div>
 
 <div class="dz-group">
-  @if (periods()?.length) {
+  @if (displayedPeriods().length) {
     <ul class="dz-list">
-      @for (period of periods(); track period.id) {
+      @for (period of displayedPeriods(); track period.id) {
         <li>
           <dz-period
             [period]="period"
             [totalPeriodsCount]="periodsCount()"
+            [isCurrent]="isPeriodCurrent(period)"
+            [isFocusActive]="isFocusActive()"
             (toggleBlockedWebsite)="onToggleBlockedWebsite($event)"
           />
         </li>

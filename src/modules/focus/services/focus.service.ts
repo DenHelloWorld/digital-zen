@@ -353,4 +353,41 @@ export class FocusService {
       });
     }
   }
+
+  public setCurrentPeriod(periodId: string): void {
+    if (this.#isChromeRuntime) {
+      chrome.runtime.sendMessage(
+        { command: CHROME_COMMAND_ENUM.SET_CURRENT_PERIOD, periodId },
+        response => {
+          if (chrome.runtime.lastError) {
+            console.error('Error switching period:', chrome.runtime.lastError);
+            this.#toastService.show({
+              message: TOAST_MESSAGES_ENUM.FAILED_TO_SWITCH_PERIOD,
+              type: TOAST_TYPE_ENUM.ERROR,
+              position: POSITIONS_ENUM.BOTTOM_RIGHT,
+            });
+            return;
+          }
+
+          if (response && !response.success) {
+            const message =
+              response.error === FOCUS_ERROR_ENUM.PERIOD_NOT_FOUND
+                ? TOAST_MESSAGES_ENUM.PERIOD_NOT_FOUND
+                : TOAST_MESSAGES_ENUM.FAILED_TO_ACTIVATE_PERIOD;
+
+            this.#toastService.show({
+              message,
+              type: TOAST_TYPE_ENUM.ERROR,
+              position: POSITIONS_ENUM.BOTTOM_RIGHT,
+            });
+          } else if (response && response.success) {
+            this.#toastService.show({
+              message: TOAST_MESSAGES_ENUM.PERIOD_ACTIVATED,
+              type: TOAST_TYPE_ENUM.ACCENT,
+            });
+          }
+        }
+      );
+    }
+  }
 }

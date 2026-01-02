@@ -62,7 +62,10 @@ export const UI_TEXT = Object.freeze({
       DELETE_PERIOD: 'Delete period',
       CONFIRM_DELETE: 'Confirm delete period',
       CANCEL_DELETE: 'Cancel delete',
+      ACTIVATE_PERIOD: 'Activate period',
     },
+    ACTIVATE_BUTTON: 'Activate',
+    ACTIVATE_DISABLED_TOOLTIP: 'Stop focus to activate this period',
   },
 
   // Dynamic Input Component
