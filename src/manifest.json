@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "Digital Zen",
-  "version": "1.0",
-  "description": "Improve your focus by blocking distracting websites and managing focus sessions.",
+  "version": "1.0.0",
+  "description": "A productivity Chrome extension that helps you maintain concentration by blocking distracting websites during focus sessions.",
   "permissions": [
     "alarms",
     "declarativeNetRequest",

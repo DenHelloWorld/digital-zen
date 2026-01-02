@@ -33,7 +33,7 @@
 
   .dz-main {
     width: 100%;
-    height: calc(var(--app-height) - var(--header-height));
+    height: calc(var(--app-height) - var(--header-height) - var(--footer-height));
     overflow: auto;
     background-color: var(--color-background);
     color: var(--color-text);
@@ -46,10 +46,13 @@
   }
 
   .dz-footer {
-    margin-top: auto;
+    width: 100%;
+    height: var(--footer-height);
     padding: var(--spacing);
     text-align: center;
     font-size: 0.75rem;
+    background-color: var(--color-background);
+    color: var(--color-text);
 
     &__link {
       color: var(--color-text);
@@ -63,15 +66,5 @@
         text-decoration: underline;
       }
     }
-  }
-
-  .dz-main.dark-theme {
-    background-color: var(--color-background);
-    color: var(--color-text);
-  }
-
-  .dz-header.dark-theme {
-    background-color: var(--color-background);
-    color: var(--color-text);
   }
 }

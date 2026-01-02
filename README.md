@@ -376,7 +376,7 @@ To host the privacy policy publicly (required for Chrome Web Store), see the [Pr
 
 ## License
 
-This project is currently in development. License information will be provided upon release.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## Additional Resources
 
