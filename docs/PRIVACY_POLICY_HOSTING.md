@@ -65,14 +65,14 @@ This is unique among free hosting providers - you can keep your repository priva
 #### Steps:
 
 1. Create GitLab account at [gitlab.com](https://gitlab.com)
-2. Create new **private** project: `digital-zen-docs`
-3. Add your privacy policy files to the repo
+2. Create new **private** project (e.g., `digital-zen-docs`)
+3. Add your privacy policy files (`privacy-policy.html` and `privacy-policy-ru.html`) to the repository root
 4. Create `.gitlab-ci.yml` in the repository root:
    ```yaml
    pages:
      stage: deploy
      script:
-       # Copy all files to public directory
+       # Copy HTML files to public directory for GitLab Pages
        - mkdir public
        - cp *.html public/
      artifacts:
@@ -82,14 +82,14 @@ This is unique among free hosting providers - you can keep your repository priva
        - if: $CI_COMMIT_BRANCH == "main"
    ```
 5. Push to GitLab - CI/CD will automatically deploy
-6. Privacy policy will be at: `https://username.gitlab.io/digital-zen-docs/privacy-policy.html`
+6. Privacy policy will be at: `https://username.gitlab.io/project-name/privacy-policy.html`
 
 **Pros:** Free with private repos, Git-based, automatic deployment, similar to GitHub  
 **Cons:** Need to use GitLab instead of GitHub
 
 **Privacy Policy URL for Chrome Web Store:**
-- English: `https://username.gitlab.io/digital-zen-docs/privacy-policy.html`
-- Russian: `https://username.gitlab.io/digital-zen-docs/privacy-policy-ru.html`
+- English: `https://username.gitlab.io/project-name/privacy-policy.html`
+- Russian: `https://username.gitlab.io/project-name/privacy-policy-ru.html`
 
 ---
 

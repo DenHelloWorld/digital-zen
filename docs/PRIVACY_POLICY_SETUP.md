@@ -23,9 +23,9 @@ Both versions include:
 
 Once you've chosen a hosting service and deployed, the privacy policy will be accessible at URLs like:
 
-- **Vercel:** `https://your-project.vercel.app/privacy-policy.html`
+- **Vercel:** `https://project-name.vercel.app/privacy-policy.html`
 - **GitLab Pages:** `https://username.gitlab.io/project-name/privacy-policy.html`
-- **Cloudflare Pages:** `https://your-project.pages.dev/privacy-policy.html`
+- **Cloudflare Pages:** `https://project-name.pages.dev/privacy-policy.html`
 
 ## Hosting Strategy
 
