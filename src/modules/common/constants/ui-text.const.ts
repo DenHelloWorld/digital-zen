@@ -65,6 +65,7 @@ export const UI_TEXT = Object.freeze({
       ACTIVATE_PERIOD: 'Activate period',
     },
     ACTIVATE_BUTTON: 'Activate',
+    ACTIVATE_DISABLED_TOOLTIP: 'Stop focus to activate this period',
   },
 
   // Dynamic Input Component

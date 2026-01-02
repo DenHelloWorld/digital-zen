@@ -362,7 +362,7 @@ export class FocusService {
           if (chrome.runtime.lastError) {
             console.error('Error switching period:', chrome.runtime.lastError);
             this.#toastService.show({
-              message: 'Failed to switch period.',
+              message: TOAST_MESSAGES_ENUM.FAILED_TO_SWITCH_PERIOD,
               type: TOAST_TYPE_ENUM.ERROR,
               position: POSITIONS_ENUM.BOTTOM_RIGHT,
             });
@@ -370,10 +370,20 @@ export class FocusService {
           }
 
           if (response && !response.success) {
+            const message =
+              response.error === FOCUS_ERROR_ENUM.PERIOD_NOT_FOUND
+                ? TOAST_MESSAGES_ENUM.PERIOD_NOT_FOUND
+                : TOAST_MESSAGES_ENUM.FAILED_TO_ACTIVATE_PERIOD;
+
             this.#toastService.show({
-              message: 'Failed to activate period.',
+              message,
               type: TOAST_TYPE_ENUM.ERROR,
               position: POSITIONS_ENUM.BOTTOM_RIGHT,
+            });
+          } else if (response && response.success) {
+            this.#toastService.show({
+              message: TOAST_MESSAGES_ENUM.PERIOD_ACTIVATED,
+              type: TOAST_TYPE_ENUM.ACCENT,
             });
           }
         }

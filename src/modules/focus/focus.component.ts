@@ -36,7 +36,7 @@ export class FocusComponent {
 
     // When focus is active, show only the current period
     if (current?.isFocused) {
-      return current ? [current] : [];
+      return [current];
     }
 
     // When focus is inactive, show current period first, then others

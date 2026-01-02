@@ -382,11 +382,22 @@ export class BackgroundServiceMV3 {
     // Stop focus if currently active
     if (this.#currentPeriod?.isFocused) {
       await this.stopFocus();
-    }
+      // Refetch periods after stopping focus to get the latest state
+      const updatedPeriods = await StorageAdapter.getPeriods();
+      const freshPeriod = updatedPeriods.find(p => p.id === periodId);
 
-    // Set the new current period
-    this.#currentPeriod = periodToSet;
-    await StorageAdapter.saveCurrentPeriod(periodToSet);
+      if (!freshPeriod) {
+        return { success: false, error: FOCUS_ERROR_ENUM.PERIOD_NOT_FOUND };
+      }
+
+      // Set the new current period with fresh data
+      this.#currentPeriod = freshPeriod;
+      await StorageAdapter.saveCurrentPeriod(freshPeriod);
+    } else {
+      // Set the new current period
+      this.#currentPeriod = periodToSet;
+      await StorageAdapter.saveCurrentPeriod(periodToSet);
+    }
 
     return { success: true };
   }
