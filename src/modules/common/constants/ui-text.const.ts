@@ -111,4 +111,9 @@ export const UI_TEXT = Object.freeze({
   THEME_SWITCHER: {
     TOGGLE_THEME_TITLE: 'Toggle theme',
   },
+
+  // Footer
+  FOOTER: {
+    PRIVACY_POLICY_LINK: 'Privacy Policy',
+  },
 });
