@@ -147,7 +147,7 @@ The following npm scripts are available in this project:
 | `start`          | `ng serve`                                                                                                       | Starts the Angular development server for local development                   |
 | `build`          | `ng build && tsc -p tsconfig.background.json && tsc-alias -p tsconfig.background.json`                           | Builds the project for development                                            |
 | `build:prod`     | `ng build && tsc -p tsconfig.background.json && tsc-alias -p tsconfig.background.json && npm run patch-manifest` | Builds the project for production and patches manifest with OAuth credentials |
-| `patch-manifest` | `dotenv -- node -e "..."`                                                                                        | Patches the manifest.json with environment variables                          |
+| `patch-manifest` | `dotenv -- node scripts/patch-manifest.js`                                                                       | Patches the manifest.json with environment variables                          |
 | `test`           | `ng test`                                                                                                        | Runs unit tests using Karma test runner                                       |
 | `lint`           | `ng lint`                                                                                                        | Runs ESLint to check code quality and style issues                            |
 | `lint:fix`       | `ng lint --fix`                                                                                                  | Runs ESLint and automatically fixes fixable issues                            |
@@ -245,6 +245,8 @@ digital-zen/
 │   ├── styles/           # Global styles
 │   ├── manifest.json     # Chrome extension manifest
 │   └── main.ts           # Application entry point
+├── scripts/              # Build and utility scripts
+│   └── patch-manifest.js # Script to patch manifest.json with env variables
 ├── public/               # Static assets
 ├── dist/                 # Build output directory
 └── package.json          # Project dependencies and scripts
