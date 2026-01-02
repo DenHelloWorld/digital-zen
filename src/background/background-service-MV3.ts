@@ -232,8 +232,9 @@ export class BackgroundServiceMV3 {
   }
 
   private async stopFocus(): Promise<FocusOperationResult> {
-    if (!this.#currentPeriod) {
-      return { success: false, error: FOCUS_ERROR_ENUM.FOCUS_ALREADY_INACTIVE };
+    if (!this.#currentPeriod || !this.#currentPeriod.isFocused) {
+      // Already inactive - this is the desired state, so return success
+      return { success: true };
     }
 
     const endTime = new Date();
@@ -267,7 +268,8 @@ export class BackgroundServiceMV3 {
     const current = await StorageAdapter.getCurrentPeriod();
 
     if (!current) {
-      return { success: false, error: FOCUS_ERROR_ENUM.NO_CURRENT_PERIOD_TO_TOGGLE };
+      // No period to toggle - this is a no-op, return success
+      return { success: true };
     }
 
     if (current.isFocused) {
