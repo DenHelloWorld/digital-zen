@@ -34,12 +34,12 @@ GitHub Pages allows us to host static documentation and the privacy policy direc
 
 Before deploying to GitHub Pages, ensure you have:
 
-1. **Public repository:** The repository must be public to use GitHub Pages (or have a GitHub Enterprise account for private repository hosting)
+1. **Hosting decision:** Choose how to host your privacy policy (see "Alternative Hosting Options" section below if you want to keep your repository private)
 2. **Repository access:** Write permissions to the `DenHelloWorld/digital-zen` repository
 3. **Git installed:** For manual deployment method
 4. **GitHub Actions enabled:** For automated deployment (should be enabled by default)
 
-> **Important:** GitHub Pages is only available for public repositories on free GitHub accounts. To use GitHub Pages with a private repository, you need a GitHub Enterprise account. [Learn more about GitHub Pages visibility](https://docs.github.com/pages/getting-started-with-github-pages/changing-the-visibility-of-your-github-pages-site).
+> **Important for Private Repositories:** GitHub Pages requires public repositories on free GitHub accounts. If you want to keep your source code private, see the "Alternative Hosting Options for Private Repositories" section below for other ways to host your privacy policy.
 
 ---
 
@@ -117,6 +117,108 @@ git push origin gh-pages --force
 # Switch back to main branch
 git checkout main
 ```
+
+---
+
+## Alternative Hosting Options for Private Repositories
+
+If you want to keep your source code private but need a publicly accessible privacy policy, consider these alternatives to GitHub Pages:
+
+### Option 1: Netlify Drop (Easiest)
+
+**Free tier:** Unlimited static sites, 100GB bandwidth/month
+
+1. Go to [app.netlify.com/drop](https://app.netlify.com/drop)
+2. Drag and drop your `docs/privacy-policy.html` file
+3. Get instant URL like: `https://unique-name.netlify.app/privacy-policy.html`
+4. Optional: Configure custom domain
+
+**Pros:** No account needed for basic hosting, instant deployment, free SSL  
+**Cons:** Need to manually update by re-uploading file
+
+### Option 2: Vercel (Free, Git-based)
+
+**Free tier:** Unlimited projects, 100GB bandwidth/month
+
+1. Create account at [vercel.com](https://vercel.com)
+2. Create a new project
+3. Upload only your `docs/` folder (or connect a separate public repo)
+4. Get URL like: `https://digital-zen-docs.vercel.app/privacy-policy.html`
+5. Auto-deploys on changes if connected to Git
+
+**Pros:** Free, automatic deployments, fast CDN  
+**Cons:** Requires account
+
+### Option 3: GitLab Pages (Free with Private Repos)
+
+**GitLab Pages works with private repositories on free tier!**
+
+1. Create GitLab account at [gitlab.com](https://gitlab.com)
+2. Create new private project
+3. Add your privacy policy files
+4. Create `.gitlab-ci.yml`:
+   ```yaml
+   pages:
+     stage: deploy
+     script:
+       - mkdir .public
+       - cp -r docs/* .public
+       - mv .public public
+     artifacts:
+       paths:
+         - public
+     only:
+       - main
+   ```
+5. Privacy policy will be at: `https://username.gitlab.io/project-name/privacy-policy.html`
+
+**Pros:** Free with private repos, Git-based, similar to GitHub  
+**Cons:** Need to use GitLab instead of GitHub
+
+### Option 4: Cloudflare Pages (Free)
+
+**Free tier:** Unlimited sites, unlimited bandwidth
+
+1. Create account at [pages.cloudflare.com](https://pages.cloudflare.com)
+2. Create new project
+3. Upload docs folder or connect Git repo
+4. Get URL like: `https://digital-zen.pages.dev/privacy-policy.html`
+
+**Pros:** Free, unlimited bandwidth, fast global CDN  
+**Cons:** Requires account
+
+### Option 5: GitHub Gist (Quick & Simple)
+
+1. Go to [gist.github.com](https://gist.github.com)
+2. Create new **public** gist
+3. Paste privacy policy HTML content
+4. Name file `privacy-policy.html`
+5. Get URL like: `https://gist.githubusercontent.com/username/gist-id/raw/privacy-policy.html`
+
+**Pros:** Very simple, uses GitHub, public gists don't affect repo visibility  
+**Cons:** Not ideal for styled HTML, URL is long
+
+### Option 6: Separate Public Documentation Repository
+
+1. Create new public repo: `digital-zen-docs`
+2. Copy only `docs/` folder contents to this repo
+3. Enable GitHub Pages on the public docs repo
+4. Main source code stays in private repo
+
+**Pros:** Keep code private, use GitHub Pages, free  
+**Cons:** Two repos to maintain, need to sync privacy policy updates
+
+### Recommended Approach for Private Repositories
+
+**Best option:** Use **Netlify** or **Vercel** for quick, free hosting without making your code public.
+
+**Steps:**
+1. Export your `docs/privacy-policy.html` file
+2. Upload to Netlify Drop or Vercel
+3. Use the provided URL in Chrome Web Store submission
+4. Update by re-uploading when privacy policy changes
+
+This way, your source code remains private while meeting Chrome Web Store requirements.
 
 ---
 
@@ -206,19 +308,24 @@ When you need to update the privacy policy:
 
 **Solutions:**
 
-1. **Make repository public (Recommended for open-source projects):**
+1. **Use alternative hosting to keep code private (Recommended):**
+   - See "Alternative Hosting Options for Private Repositories" section above
+   - Netlify, Vercel, GitLab Pages, or Cloudflare Pages all work with private source code
+   - These options are free and don't require making your repository public
+
+2. **Make repository public (for open-source projects):**
    - Go to Settings → General
    - Scroll to "Danger Zone"
    - Click "Change visibility" → "Make public"
    - Confirm the change
    - Return to Settings → Pages to enable GitHub Pages
 
-2. **Upgrade to GitHub Enterprise:**
+3. **Upgrade to GitHub Enterprise (paid option):**
    - GitHub Enterprise allows private GitHub Pages sites
    - [Learn more about GitHub Enterprise](https://docs.github.com/enterprise-cloud@latest/pages/getting-started-with-github-pages/changing-the-visibility-of-your-github-pages-site)
-   - This option requires a paid subscription
+   - Costs approximately $21/user/month
 
-> **Note:** For Chrome Web Store publication, the privacy policy must be publicly accessible anyway, so making the repository public is the recommended approach.
+> **Recommendation:** If you want to keep your source code private, use alternative hosting (Option 1) instead of making the repository public.
 
 ### Issue: GitHub Pages not showing updated content
 

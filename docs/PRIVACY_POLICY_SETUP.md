@@ -34,18 +34,50 @@ Once GitHub Pages is enabled, the privacy policy will be accessible at:
 
 To make the privacy policy publicly accessible, follow these steps:
 
-### 0. Ensure Repository is Public
+### 0. Choose Privacy Policy Hosting Strategy
 
-**Important:** GitHub Pages requires a public repository on free GitHub accounts. If your repository is private:
+**Important:** The privacy policy must be publicly accessible for Chrome Web Store submission, but you have several options that don't require making your entire repository public:
 
-- **Option 1 (Recommended):** Make the repository public
-  1. Go to Settings → General
-  2. Scroll to "Danger Zone"
-  3. Click "Change visibility" → "Make public"
-  
-- **Option 2:** Upgrade to GitHub Enterprise for private repository hosting
-  - GitHub Enterprise allows private GitHub Pages sites
-  - [Learn more about GitHub Enterprise](https://docs.github.com/pages/getting-started-with-github-pages/changing-the-visibility-of-your-github-pages-site)
+#### Option 1: Host Privacy Policy on External Service (Recommended for Private Repos)
+
+If you want to keep your code private, host only the privacy policy on a free static hosting service:
+
+- **Netlify Drop** - Drag and drop `privacy-policy.html` to [app.netlify.com/drop](https://app.netlify.com/drop)
+- **GitHub Gist** - Create a public gist with your privacy policy: [gist.github.com](https://gist.github.com)
+- **Vercel** - Deploy just the `docs/` folder to [vercel.com](https://vercel.com)
+- **Cloudflare Pages** - Free static hosting at [pages.cloudflare.com](https://pages.cloudflare.com)
+- **GitLab Pages** - Works with private repositories on free tier: [docs.gitlab.com/ee/user/project/pages](https://docs.gitlab.com/ee/user/project/pages)
+
+**Pros:** Keep your source code private, free hosting, simple setup  
+**Cons:** Privacy policy hosted separately from main repo
+
+#### Option 2: Create Separate Public Documentation Repository
+
+Create a new public repository (e.g., `digital-zen-docs`) containing only:
+- Privacy policy HTML files
+- Public documentation
+- No source code
+
+Then use GitHub Pages on this separate public repo.
+
+**Pros:** Source code stays private, privacy policy on GitHub Pages, free  
+**Cons:** Need to maintain two repositories
+
+#### Option 3: Make Repository Public
+
+Make the entire `digital-zen` repository public to use GitHub Pages.
+
+**Pros:** Everything in one place, automated deployment works  
+**Cons:** Source code becomes public
+
+#### Option 4: GitHub Enterprise (Paid)
+
+Upgrade to GitHub Enterprise to use GitHub Pages with private repositories.
+
+**Pros:** Keep code private, use GitHub Pages  
+**Cons:** Costs money (~$21/user/month)
+
+> **Recommendation:** If you want to keep your code private, use **Option 1** (external hosting) or **Option 2** (separate public docs repo). Both are free and keep your source code private.
 
 ### 1. Merge this PR to main branch
 ```bash
@@ -99,8 +131,9 @@ To update the privacy policy in the future:
 ### Cannot enable GitHub Pages (Private repository)
 - **Problem:** Message says "Upgrade or make this repository public to enable Pages"
 - **Cause:** GitHub Pages requires public repositories on free accounts
-- **Solution:** Make repository public (Settings → General → Danger Zone → Change visibility) or upgrade to GitHub Enterprise
-- **Note:** Privacy policy must be publicly accessible for Chrome Web Store anyway
+- **Solution:** Use alternative hosting (Netlify, Vercel, GitLab Pages) to keep code private - see deployment guide for details
+- **Alternative:** Make repository public or upgrade to GitHub Enterprise
+- **Note:** Privacy policy must be publicly accessible for Chrome Web Store, but source code can stay private using alternative hosts
 
 ### Privacy policy not accessible
 - **Check:** GitHub Pages is enabled in repository settings
