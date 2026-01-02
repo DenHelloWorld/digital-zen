@@ -137,7 +137,7 @@ Quick and simple option using GitHub's Gist service. Gists are separate from rep
    - The hash is stable for this version, bookmark this URL for Chrome Web Store
    - If you update the gist, the hash changes (get new raw URL after updates)
 
-**Pros:** Very simple, uses GitHub, public gists don't affect repo visibility  
+**Pros:** Very simple, uses GitHub, public gists don't affect repo visibility
 **Cons:** Need to update URL in Chrome Web Store when gist is updated, raw HTML only (no preview)
 
 **Note:** You'll need to create separate gists for English and Russian versions.
@@ -157,7 +157,7 @@ Create a separate public repository for documentation only, keeping your main so
 3. Use one of the hosting options above (Vercel, Cloudflare Pages, etc.) with this public repo
 4. Main source code stays in your private `digital-zen` repository
 
-**Pros:** Source code stays private, documentation is public and easily accessible  
+**Pros:** Source code stays private, documentation is public and easily accessible
 **Cons:** Two repos to maintain, need to sync privacy policy updates manually
 
 ---
