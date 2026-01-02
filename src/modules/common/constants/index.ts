@@ -1,9 +1,11 @@
 export * from './quick-focus-id.const';
 export * from './api-urls.const';
 export * from './ui-text.const';
+export * from './icons.const';
 
 import { DAY_OF_WEEK_ENUM, DAY_OF_WEEK_SHORT_NAME_ENUM, DayOfWeekType } from '../enums';
 import { IFocus } from '../models';
+import { ICONS } from './icons.const';
 
 export const WEBSITE_X: Readonly<IFocus.WebSite> = {
   id: 'x',
@@ -11,7 +13,7 @@ export const WEBSITE_X: Readonly<IFocus.WebSite> = {
   description: 'X',
   url: 'https://x.com',
   imageUrl: '',
-  iconUrl: '#icon-x',
+  iconUrl: ICONS.X,
   type: IFocus.EWebSiteType.SOCIAL_MEDIA,
   isBlocked: false,
 };
@@ -22,7 +24,7 @@ export const WEBSITE_INST: Readonly<IFocus.WebSite> = {
   description: 'Instagram',
   url: 'https://www.instagram.com',
   imageUrl: '',
-  iconUrl: '#icon-instagram',
+  iconUrl: ICONS.INSTAGRAM,
   type: IFocus.EWebSiteType.SOCIAL_MEDIA,
   isBlocked: false,
 };
@@ -33,7 +35,7 @@ export const WEBSITE_FACEBOOK: Readonly<IFocus.WebSite> = {
   description: 'Facebook',
   url: 'https://www.facebook.com',
   imageUrl: '',
-  iconUrl: '#icon-facebook',
+  iconUrl: ICONS.FACEBOOK,
   type: IFocus.EWebSiteType.SOCIAL_MEDIA,
   isBlocked: false,
 };
@@ -44,7 +46,7 @@ export const WEBSITE_TIKTOK: Readonly<IFocus.WebSite> = {
   description: 'TikTok',
   url: 'https://www.tiktok.com',
   imageUrl: '',
-  iconUrl: '#icon-tiktok',
+  iconUrl: ICONS.TIKTOK,
   type: IFocus.EWebSiteType.SOCIAL_MEDIA,
   isBlocked: false,
 };
@@ -55,7 +57,7 @@ export const WEBSITE_VK: Readonly<IFocus.WebSite> = {
   description: 'ВКонтакте',
   url: 'https://vk.com',
   imageUrl: '',
-  iconUrl: '#icon-vk',
+  iconUrl: ICONS.VK,
   type: IFocus.EWebSiteType.SOCIAL_MEDIA,
   isBlocked: false,
 };
@@ -66,7 +68,7 @@ export const WEBSITE_TELEGRAM: Readonly<IFocus.WebSite> = {
   description: 'Telegram Web',
   url: 'https://web.telegram.org',
   imageUrl: '',
-  iconUrl: '#icon-telegram',
+  iconUrl: ICONS.TELEGRAM,
   type: IFocus.EWebSiteType.SOCIAL_MEDIA,
   isBlocked: false,
 };
@@ -77,7 +79,7 @@ export const WEBSITE_SNAPCHAT: Readonly<IFocus.WebSite> = {
   description: 'Snapchat',
   url: 'https://www.snapchat.com',
   imageUrl: '',
-  iconUrl: '#icon-snapchat',
+  iconUrl: ICONS.SNAPCHAT,
   type: IFocus.EWebSiteType.SOCIAL_MEDIA,
   isBlocked: false,
 };
@@ -88,7 +90,7 @@ export const WEBSITE_LINKEDIN: Readonly<IFocus.WebSite> = {
   description: 'LinkedIn',
   url: 'https://www.linkedin.com',
   imageUrl: '',
-  iconUrl: '#icon-linkedin',
+  iconUrl: ICONS.LINKEDIN,
   type: IFocus.EWebSiteType.SOCIAL_MEDIA,
   isBlocked: false,
 };
@@ -99,7 +101,7 @@ export const WEBSITE_PINTEREST: Readonly<IFocus.WebSite> = {
   description: 'Pinterest',
   url: 'https://www.pinterest.com',
   imageUrl: '',
-  iconUrl: '#icon-pinterest',
+  iconUrl: ICONS.PINTEREST,
   type: IFocus.EWebSiteType.SOCIAL_MEDIA,
   isBlocked: false,
 };
@@ -110,7 +112,7 @@ export const WEBSITE_YOUTUBE: Readonly<IFocus.WebSite> = {
   description: 'Youtube',
   url: 'https://www.youtube.com',
   imageUrl: '',
-  iconUrl: '#icon-youtube',
+  iconUrl: ICONS.YOUTUBE,
   type: IFocus.EWebSiteType.SOCIAL_MEDIA,
   isBlocked: false,
 };

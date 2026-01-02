@@ -298,6 +298,50 @@ export class App {
 - **Type Safety:** Frozen object prevents accidental modifications
 - **Consistency:** Ensures consistent messaging across the application
 
+### Icon Management
+
+All icon identifiers are centralized in `src/modules/common/constants/icons.const.ts` to prevent hardcoded strings and ensure type safety:
+
+```typescript
+// Centralized icon constants
+export const ICONS = Object.freeze({
+  PLUS: '#icon-plus',
+  DELETE: '#icon-delete',
+  EDIT: '#icon-edit',
+  // ... all other icons
+} as const);
+
+export type IconType = (typeof ICONS)[keyof typeof ICONS];
+```
+
+**Usage in Components:**
+
+```typescript
+@Component({
+  selector: 'dz-example',
+  templateUrl: './example.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+})
+export class ExampleComponent {
+  protected readonly icons = ICONS;
+}
+```
+
+**Usage in Templates:**
+
+```html
+<svg class="dz-icon" aria-hidden="true" focusable="false">
+  <use [attr.href]="icons.PLUS"></use>
+</svg>
+```
+
+**Benefits:**
+
+- **Type Safety:** Icons are strongly typed and autocomplete-friendly
+- **Refactoring:** Easy to rename or reorganize icons across the entire codebase
+- **Consistency:** Prevents typos and ensures all icons reference valid SVG symbols
+- **Discoverability:** All available icons are visible in one location
+
 ### Angular 21 Best Practices
 
 This project follows modern Angular patterns:
