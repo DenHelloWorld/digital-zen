@@ -353,6 +353,16 @@ This project follows modern Angular patterns:
 - **Control Flow Syntax:** New template syntax (`@if`, `@for`, `@switch`)
 - **Functional Interceptors/Guards:** Modern HTTP and routing patterns
 
+## Chrome Web Store Publication
+
+Planning to publish Digital Zen to the Chrome Web Store? Check out our comprehensive deployment readiness documentation:
+
+- **[Chrome Web Store Readiness Report](./docs/chrome-web-store-readiness.md)** - Complete analysis and requirements
+- **[Publication Checklist](./docs/publication-checklist.md)** - Actionable task list
+- **[Отчёт о готовности (Russian)](./docs/chrome-web-store-readiness-ru.md)** - Краткое резюме на русском
+
+These documents provide detailed guidance on assets, legal requirements, testing, and the complete publication process.
+
 ## License
 
 This project is currently in development. License information will be provided upon release.
