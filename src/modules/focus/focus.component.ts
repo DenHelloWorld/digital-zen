@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, inject, Signal } from '@angular/core';
 import { FocusService } from './services';
-import { LoaderComponent, IFocus, isImageIcon, isHttpUrl, isSvgIcon } from '../common';
+import { LoaderComponent, IFocus, isImageIcon, isHttpUrl, isSvgIcon, UI_TEXT } from '../common';
 import { PeriodComponent } from './components/period/period.component';
 
 @Component({
@@ -27,6 +27,7 @@ export class FocusComponent {
   protected readonly isSvgIcon: (url: string | null | undefined) => boolean = isSvgIcon;
   protected readonly isImageIcon: (url: string | null | undefined) => boolean = isImageIcon;
   protected readonly isHttpUrl: (url: string | null | undefined) => boolean = isHttpUrl;
+  protected readonly uiText = UI_TEXT;
 
   protected toggleFocus(): void {
     this.#focusService.toggleFocus();

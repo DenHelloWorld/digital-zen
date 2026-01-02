@@ -233,6 +233,15 @@ digital-zen/
 │   ├── app/              # Angular application components
 │   ├── background/       # Background service worker scripts
 │   ├── modules/          # Shared Angular modules
+│   │   ├── common/       # Shared utilities, components, services
+│   │   │   ├── components/   # Reusable UI components
+│   │   │   ├── constants/    # Application constants (including UI_TEXT)
+│   │   │   ├── enums/        # Enumerations
+│   │   │   ├── services/     # Shared services
+│   │   │   └── models/       # TypeScript interfaces and types
+│   │   ├── focus/        # Focus mode feature
+│   │   ├── menu/         # Menu feature
+│   │   └── auth/         # Authentication feature
 │   ├── styles/           # Global styles
 │   ├── manifest.json     # Chrome extension manifest
 │   └── main.ts           # Application entry point
@@ -240,6 +249,63 @@ digital-zen/
 ├── dist/                 # Build output directory
 └── package.json          # Project dependencies and scripts
 ```
+
+## Architecture Patterns
+
+### UI Text Management
+
+All user-facing text strings are centralized in `src/modules/common/constants/ui-text.const.ts` for maintainability and i18n readiness:
+
+```typescript
+// Centralized UI text constant
+export const UI_TEXT = Object.freeze({
+  HEADER: {
+    FOCUS_MENU_TITLE: 'Focus menu',
+    ADD_NEW_PERIOD_TITLE: 'Add new period',
+    // ...
+  },
+  // Organized by feature/component
+});
+```
+
+**Usage in Components:**
+
+```typescript
+@Component({
+  selector: 'dz-app',
+  templateUrl: './app.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+})
+export class App {
+  protected readonly uiText = UI_TEXT;
+}
+```
+
+**Usage in Templates:**
+
+```html
+<button [title]="uiText.HEADER.FOCUS_MENU_TITLE">
+  <svg>...</svg>
+</button>
+```
+
+**Benefits:**
+
+- **Maintainability:** Single source of truth for all UI text
+- **i18n Ready:** Structure designed for easy replacement with translation providers
+- **Type Safety:** Frozen object prevents accidental modifications
+- **Consistency:** Ensures consistent messaging across the application
+
+### Angular 21 Best Practices
+
+This project follows modern Angular patterns:
+
+- **Standalone Components:** No NgModules required
+- **Signals:** Reactive state management with `signal()` and `computed()`
+- **`inject()` Function:** Dependency injection without constructor
+- **OnPush Strategy:** Optimized change detection
+- **Control Flow Syntax:** New template syntax (`@if`, `@for`, `@switch`)
+- **Functional Interceptors/Guards:** Modern HTTP and routing patterns
 
 ## License
 

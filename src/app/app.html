@@ -1,7 +1,7 @@
 <header class="dz-header" [class.dark-theme]="theme() === colorSchemes.DARK">
   <nav class="dz-header__navigation">
     <button
-      title="Focus menu"
+      [title]="uiText.HEADER.FOCUS_MENU_TITLE"
       (click)="setViewType(viewTypes.FOCUS)"
       class="dz-button dz-button--round dz-button--md"
     >
@@ -11,7 +11,7 @@
     </button>
 
     <button
-      title="Add new period"
+      [title]="uiText.HEADER.ADD_NEW_PERIOD_TITLE"
       (click)="setViewType(viewTypes.ADD_PERIOD)"
       class="dz-button dz-button--round dz-button--md"
     >
@@ -21,7 +21,11 @@
     </button>
 
     <button
-      [title]="isGoogleAuthenticated() ? 'Logout from Google' : 'Login with Google'"
+      [title]="
+        isGoogleAuthenticated()
+          ? uiText.HEADER.LOGOUT_GOOGLE_TITLE
+          : uiText.HEADER.LOGIN_GOOGLE_TITLE
+      "
       (click)="isGoogleAuthenticated() ? logoutFromGoogle() : loginWithGoogle()"
       [disabled]="isGoogleAuthPending()"
       class="dz-button dz-button--round dz-button--md"

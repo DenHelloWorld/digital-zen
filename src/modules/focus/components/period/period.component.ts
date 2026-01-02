@@ -11,7 +11,7 @@ import {
   signal,
   WritableSignal,
 } from '@angular/core';
-import { ALL_DAYS_OF_WEEK, IFocus } from '../../../common';
+import { ALL_DAYS_OF_WEEK, IFocus, UI_TEXT } from '../../../common';
 import { TimeLineComponent } from '../time-line/time-line.component';
 import { WeekdaysSelectorComponent } from '../../../common/components/weekdays-selector/weekdays-selector.component';
 import { PeriodFormComponent } from '../../../menu/components/period-form';
@@ -40,6 +40,7 @@ export class PeriodComponent {
 
   protected readonly isEditing: WritableSignal<boolean> = signal(false);
   protected readonly isConfirmingDelete: WritableSignal<boolean> = signal(false);
+  protected readonly uiText = UI_TEXT;
 
   public readonly period: InputSignal<IFocus.Period> = input.required<IFocus.Period>();
   public readonly totalPeriodsCount: InputSignal<number> = input.required<number>();

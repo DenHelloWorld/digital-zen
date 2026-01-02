@@ -1,5 +1,6 @@
 <div class="dz-actions">
   <button
+    [title]="uiText.FOCUS.ADD_CURRENT_TAB_TITLE"
     (click)="addCurrentTabToPeriod()"
     class="dz-button dz-button--sm shadow"
     [class.hidden]="!isHttpUrl(activeTab()?.url)"
@@ -26,6 +27,7 @@
   </button>
 
   <button
+    [title]="uiText.FOCUS.TOGGLE_FOCUS_TITLE"
     (click)="toggleFocus()"
     class="dz-button dz-button--xl dz-button--round shadow"
     [class.dz-button--activated]="currentPeriod()?.isFocused"

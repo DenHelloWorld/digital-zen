@@ -23,6 +23,7 @@ import {
   IFocusForm,
   requiredTrimmedValidator,
   timeRangeValidator,
+  UI_TEXT,
   WEBSITE_FACEBOOK,
   WEBSITE_TIKTOK,
 } from '../../../common';
@@ -48,6 +49,7 @@ export class PeriodFormComponent implements OnInit {
   public readonly completed: OutputEmitterRef<void> = output<void>();
 
   protected form: FormGroup<IFocusForm.UpsertPeriod>;
+  protected readonly uiText = UI_TEXT;
 
   protected excludedSiteKeysArray: (keyof IFocus.WebSite)[] = [
     'imageUrl',

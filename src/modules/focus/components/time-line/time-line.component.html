@@ -4,7 +4,7 @@
   <div class="now" [style.left.%]="nowPercent()">
     <div class="now__indicator">●</div>
 
-    <div class="now__label">now: {{ nowTime() | date: 'HH:mm' }}</div>
+    <div class="now__label">{{ uiText.TIME_LINE.NOW_LABEL }} {{ nowTime() | date: 'HH:mm' }}</div>
   </div>
 </div>
 
