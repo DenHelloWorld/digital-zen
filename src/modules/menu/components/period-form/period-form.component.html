@@ -11,6 +11,12 @@
       formControlName="name"
       [placeholder]="uiText.PERIOD_FORM.PLACEHOLDERS.NAME"
     />
+
+    @if (form.controls.name.hasError('duplicatePeriodName') && form.controls.name.touched) {
+      <span class="dz-form__hint">
+        <span class="dz-form__required">{{ uiText.PERIOD_FORM.ERRORS.DUPLICATE_NAME }}</span>
+      </span>
+    }
   </div>
 
   <div class="dz-form__field">

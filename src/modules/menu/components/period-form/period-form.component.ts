@@ -2,6 +2,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   DestroyRef,
+  effect,
   inject,
   Injector,
   input,
@@ -26,6 +27,7 @@ import {
   UI_TEXT,
   WEBSITE_FACEBOOK,
   WEBSITE_TIKTOK,
+  uniquePeriodNameValidator,
 } from '../../../common';
 import { WeekdaysSelectorComponent } from '../../../common/components/weekdays-selector/weekdays-selector.component';
 import { FocusService } from '../../../focus/services';
@@ -68,6 +70,7 @@ export class PeriodFormComponent implements OnInit {
   public ngOnInit(): void {
     this.#initForm();
     this.#loadPeriodData();
+    this.#setupValidatorUpdates();
 
     this.form.valueChanges
       .pipe(
@@ -164,13 +167,48 @@ export class PeriodFormComponent implements OnInit {
     return date;
   }
 
+  /**
+   * Updates the validators for the name field.
+   * Extracted to avoid code duplication between #setupValidatorUpdates effect and #initForm.
+   */
+  #updateNameValidators(periods: IFocus.Period[] | null, currentPeriodId?: string): void {
+    this.form.controls.name.clearValidators();
+    this.form.controls.name.setValidators([
+      requiredTrimmedValidator,
+      uniquePeriodNameValidator(periods, currentPeriodId),
+    ]);
+    this.form.controls.name.updateValueAndValidity();
+  }
+
+  /**
+   * Sets up reactive validator updates whenever the periods list changes.
+   * Uses effect to automatically update validators when periods or current period changes.
+   */
+  #setupValidatorUpdates(): void {
+    effect(
+      () => {
+        const periods = this.#focusService.periods();
+        const currentPeriodId = this.period()?.id;
+
+        this.#updateNameValidators(periods, currentPeriodId);
+      },
+      { injector: this.#injector }
+    );
+  }
+
   #initForm(): void {
+    const periods = this.#focusService.periods();
+    const currentPeriodId = this.period()?.id;
+
     this.form = this.#fb.group<IFocusForm.UpsertPeriod>(
       {
         id: this.#fb.nonNullable.control<string>(
           `${Date.now()}-${Math.floor(Math.random() * 10000)}`
         ),
-        name: this.#fb.nonNullable.control('', requiredTrimmedValidator),
+        name: this.#fb.nonNullable.control('', [
+          requiredTrimmedValidator,
+          uniquePeriodNameValidator(periods, currentPeriodId),
+        ]),
         description: this.#fb.nonNullable.control('', requiredTrimmedValidator),
         startFrom: this.#fb.control<string | null>(null),
         endTo: this.#fb.control<string | null>(null),
