@@ -1,6 +1,6 @@
-# Privacy Policy and GitHub Pages Setup - Quick Reference
+# Privacy Policy Setup - Quick Reference
 
-This document provides a quick reference for the privacy policy and GitHub Pages deployment setup.
+This document provides a quick reference for the privacy policy setup and hosting.
 
 ## Files Created
 
@@ -17,97 +17,78 @@ Both versions include:
 - Language switcher between English and Russian versions
 
 ### Documentation
-- **`docs/GITHUB_PAGES_DEPLOYMENT.md`** - Complete guide for deploying documentation to GitHub Pages
-- **`.github/workflows/deploy-gh-pages.yml`** - GitHub Actions workflow for automated deployment
-
-### Updated Files
-- **`README.md`** - Added links to privacy policy and deployment guide
+- **`docs/PRIVACY_POLICY_HOSTING.md`** - Complete guide for hosting the privacy policy
 
 ## Privacy Policy URLs
 
-Once GitHub Pages is enabled, the privacy policy will be accessible at:
+Once you've chosen a hosting service and deployed, the privacy policy will be accessible at URLs like:
 
-- **English:** https://denhelloworld.github.io/digital-zen/privacy-policy.html
-- **Russian:** https://denhelloworld.github.io/digital-zen/privacy-policy-ru.html
+- **Vercel:** `https://your-project.vercel.app/privacy-policy.html`
+- **GitLab Pages:** `https://username.gitlab.io/project-name/privacy-policy.html`
+- **Cloudflare Pages:** `https://your-project.pages.dev/privacy-policy.html`
 
-## Next Steps to Enable GitHub Pages
+## Hosting Strategy
 
-To make the privacy policy publicly accessible, follow these steps:
+### Choose Your Hosting Service
 
-### 0. Choose Privacy Policy Hosting Strategy
+The privacy policy must be publicly accessible for Chrome Web Store submission. You have several free options that keep your source code private:
 
-**Important:** The privacy policy must be publicly accessible for Chrome Web Store submission, but you have several options that don't require making your entire repository public:
+#### Option 1: Vercel (Recommended)
 
-#### Option 1: Host Privacy Policy on External Service (Recommended for Private Repos)
+Best for automatic Git deployments with private repositories.
 
-If you want to keep your code private, host only the privacy policy on a free static hosting service:
+- **Free tier:** Unlimited projects, 100GB bandwidth/month
+- **Pros:** Git integration, automatic deployments, fast CDN, works with private repos
+- **Cons:** Requires account
+- **Setup time:** ~5 minutes
 
-- **Netlify Drop** - Drag and drop `privacy-policy.html` to [app.netlify.com/drop](https://app.netlify.com/drop)
-- **Vercel** - Deploy just the `docs/` folder to [vercel.com](https://vercel.com)
-- **GitLab Pages** - Works with private repositories on free tier: [docs.gitlab.com/ee/user/project/pages](https://docs.gitlab.com/ee/user/project/pages)
-- **Cloudflare Pages** - Free static hosting at [pages.cloudflare.com](https://pages.cloudflare.com)
-- **GitHub Gist** - Create a public gist with your privacy policy: [gist.github.com](https://gist.github.com)
+#### Option 2: GitLab Pages
 
-**Pros:** Keep your source code private, free hosting, simple setup  
-**Cons:** Privacy policy hosted separately from main repo
+Unique feature: Works with **private repositories** on free tier.
 
-#### Option 2: Create Separate Public Documentation Repository
+- **Free tier:** Unlimited projects
+- **Pros:** Keep repo completely private, Git-based, automatic deployment
+- **Cons:** Need to use GitLab instead of GitHub
+- **Setup time:** ~10 minutes
 
-Create a new public repository (e.g., `digital-zen-docs`) containing only:
-- Privacy policy HTML files
-- Public documentation
-- No source code
+#### Option 3: Cloudflare Pages
 
-Then use GitHub Pages on this separate public repo.
+Best for unlimited bandwidth and global CDN.
 
-**Pros:** Source code stays private, privacy policy on GitHub Pages, free  
-**Cons:** Need to maintain two repositories
+- **Free tier:** Unlimited sites, unlimited bandwidth
+- **Pros:** Unlimited bandwidth, fast global CDN, Git integration
+- **Cons:** Requires account
+- **Setup time:** ~5 minutes
 
-#### Option 3: Make Repository Public
+#### Option 4: GitHub Gist
 
-Make the entire `digital-zen` repository public to use GitHub Pages.
+Quick and simple, no additional platforms needed.
 
-**Pros:** Everything in one place, automated deployment works  
-**Cons:** Source code becomes public
+- **Free tier:** Unlimited gists
+- **Pros:** Very simple, uses GitHub, doesn't affect repo visibility
+- **Cons:** Need to update URL when gist changes, raw HTML only
+- **Setup time:** ~2 minutes
 
-#### Option 4: GitHub Enterprise (Paid)
+#### Option 5: Separate Public Docs Repository
 
-Upgrade to GitHub Enterprise to use GitHub Pages with private repositories.
+Keep main code private, create public docs repo.
 
-**Pros:** Keep code private, use GitHub Pages  
-**Cons:** Requires paid subscription (see [GitHub Enterprise pricing](https://github.com/pricing))
+- **Free tier:** Unlimited public repos
+- **Pros:** Source code stays private, full control
+- **Cons:** Two repos to maintain
+- **Setup time:** ~10 minutes (+ choosing a hosting service from above)
 
-> **Recommendation:** If you want to keep your code private, use **Option 1** (external hosting) or **Option 2** (separate public docs repo). Both are free and keep your source code private.
+> **Recommendation:** Use **Vercel** or **GitLab Pages** for the best balance of features and ease of use. Both support automatic deployments and work with private repositories.
 
-### 1. Merge this PR to main branch
-```bash
-# After PR review and approval, merge to main
-```
+## Quick Setup Steps
 
-### 2. Enable GitHub Pages in repository settings
+1. **Choose a hosting service** from the options above
+2. **Upload or connect** your `docs/` folder containing the privacy policy files
+3. **Get the URL** for your privacy policy (e.g., `https://your-project.vercel.app/privacy-policy.html`)
+4. **Test the URL** in an incognito browser to ensure it's publicly accessible
+5. **Use this URL** in Chrome Web Store submission
 
-1. Go to https://github.com/DenHelloWorld/digital-zen/settings/pages
-2. Under **Source**, select:
-   - **Deploy from a branch**
-   - Branch: `gh-pages`
-   - Folder: `/ (root)`
-3. Click **Save**
-
-### 3. Trigger the workflow
-
-The workflow will automatically run when:
-- Changes are pushed to `docs/**` in the `main` branch
-- You can also manually trigger it from the Actions tab
-
-To manually trigger:
-1. Go to https://github.com/DenHelloWorld/digital-zen/actions
-2. Click on "Deploy to GitHub Pages" workflow
-3. Click "Run workflow"
-
-### 4. Verify deployment
-
-After a few minutes, visit:
-- https://denhelloworld.github.io/digital-zen/privacy-policy.html
+Your source code remains private ✅
 
 ## Using the Privacy Policy URL
 
@@ -115,46 +96,52 @@ When submitting Digital Zen to the Chrome Web Store:
 
 1. **Navigate to:** Chrome Web Store Developer Dashboard
 2. **Find:** Privacy practices section
-3. **Enter URL:** https://denhelloworld.github.io/digital-zen/privacy-policy.html
+3. **Enter URL:** Use the privacy policy URL from your chosen hosting service
+   - English: `https://your-hosting-url/privacy-policy.html`
+   - Russian (optional): `https://your-hosting-url/privacy-policy-ru.html`
 
 ## Updating the Privacy Policy
 
 To update the privacy policy in the future:
 
+### For Git-based hosting (Vercel, GitLab Pages, Cloudflare Pages):
+
 1. Edit `docs/privacy-policy.html` (or `docs/privacy-policy-ru.html` for Russian)
 2. Update the "Last Updated" date
-3. Commit and push to `main` branch
-4. GitHub Actions will automatically deploy the changes
+3. Commit and push changes
+4. Hosting service automatically redeploys within 1-2 minutes
+
+### For GitHub Gist:
+
+1. Edit the gist on GitHub
+2. Update the "Last Updated" date
+3. Save changes
+4. Get the new raw URL (hash changes) and update in Chrome Web Store
 
 ## Troubleshooting
 
-### Cannot enable GitHub Pages (Private repository)
-- **Problem:** Message says "Upgrade or make this repository public to enable Pages"
-- **Cause:** GitHub Pages requires public repositories on free accounts
-- **Solution:** Use alternative hosting (Netlify, Vercel, GitLab Pages) to keep code private - see deployment guide for details
-- **Alternative:** Make repository public or upgrade to GitHub Enterprise
-- **Note:** Privacy policy must be publicly accessible for Chrome Web Store, but source code can stay private using alternative hosts
-
 ### Privacy policy not accessible
-- **Check:** GitHub Pages is enabled in repository settings
-- **Check:** The workflow completed successfully in Actions tab
-- **Wait:** Initial deployment may take 1-2 minutes
+- **Wait:** Deployment may take 1-2 minutes
+- **Check:** Deployment logs in hosting service dashboard
+- **Verify:** URL is correct (case-sensitive)
+- **Clear:** Browser cache
 
 ### 404 Not Found
-- **Verify:** File exists in `docs/` folder
-- **Verify:** URL is correct (case-sensitive)
-- **Check:** `gh-pages` branch exists and contains the files
+- **Verify:** File exists in deployed folder
+- **Check:** File name matches exactly (`privacy-policy.html`)
+- **Ensure:** Deployment completed successfully
+- **Test:** URL in incognito browser
 
-### Workflow not running
-- **Check:** Workflow file exists in `.github/workflows/`
-- **Check:** Changes were pushed to `main` branch
-- **Check:** Changes affected files in `docs/**`
-- **Manually trigger:** Use workflow_dispatch from Actions tab
+### Changes not showing
+- **Confirm:** Changes were pushed to repository
+- **Check:** Deployment logs show successful build
+- **Clear:** Browser cache
+- **Wait:** Hosting service may cache for a few minutes
 
 ## Additional Resources
 
 For detailed information, see:
-- [GitHub Pages Deployment Guide](./GITHUB_PAGES_DEPLOYMENT.md) - Complete deployment instructions
+- [Privacy Policy Hosting Guide](./PRIVACY_POLICY_HOSTING.md) - Complete hosting instructions
 - [Chrome Web Store Readiness Report](./chrome-web-store-readiness.md) - Publication requirements
 
 ---
