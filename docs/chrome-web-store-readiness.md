@@ -105,7 +105,7 @@ The extension has a solid technical foundation but requires several critical add
 | `name` | ✅ Good | "Digital Zen" |
 | `version` | ⚠️ Needs update | "1.0" should be "1.0.0" |
 | `description` | ⚠️ Too short | 62 chars (recommended: 100-132) |
-| `icons` | ⚠️ Incomplete | Missing 16x16, only has 16/48/128 references |
+| `icons` | ⚠️ Incomplete | Missing 16x16 icon file, though referenced in manifest |
 | `oauth2.client_id` | ⚠️ Placeholder | Needs real value |
 | `key` | ⚠️ Placeholder | Needs real value |
 
