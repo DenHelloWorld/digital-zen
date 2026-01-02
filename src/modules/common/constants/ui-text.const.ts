@@ -96,4 +96,15 @@ export const UI_TEXT = Object.freeze({
   TOAST: {
     CLOSE_ICON: '✕',
   },
+
+  // Focus Component
+  FOCUS: {
+    ADD_CURRENT_TAB_TITLE: 'Add current tab to period',
+    TOGGLE_FOCUS_TITLE: 'Toggle focus session',
+  },
+
+  // Theme Switcher Component
+  THEME_SWITCHER: {
+    TOGGLE_THEME_TITLE: 'Toggle theme',
+  },
 });
