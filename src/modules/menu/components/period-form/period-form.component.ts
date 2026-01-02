@@ -70,13 +70,10 @@ export class PeriodFormComponent implements OnInit {
     this.form.valueChanges
       .pipe(
         map(() => this.form.getRawValue()),
-        distinctUntilChanged(
-          (prev: IFocus.Period, next: IFocus.Period) =>
-            JSON.stringify(prev) === JSON.stringify(next)
-        ),
+        distinctUntilChanged((prev, next) => JSON.stringify(prev) === JSON.stringify(next)),
         takeUntilDestroyed(this.#destroyRef)
       )
-      .subscribe((value: IFocus.Period) => {
+      .subscribe(value => {
         console.log(value);
       });
 
@@ -110,8 +107,8 @@ export class PeriodFormComponent implements OnInit {
         id: rawValue.id,
         name: rawValue.name,
         description: rawValue.description,
-        startFrom: this.#timeStringToDate(rawValue.startFrom as unknown as string),
-        endTo: this.#timeStringToDate(rawValue.endTo as unknown as string),
+        startFrom: this.#timeStringToDate(rawValue.startFrom),
+        endTo: this.#timeStringToDate(rawValue.endTo),
         webSites: webSitesWithFavicons,
         daysOfWeek: rawValue.daysOfWeek,
         focusedTimes: rawValue.focusedTimes,
@@ -138,7 +135,7 @@ export class PeriodFormComponent implements OnInit {
    * @param timeString The time string from the input (e.g., "14:30").
    * @returns A Date object set to the specified time, or null if invalid.
    */
-  #timeStringToDate(timeString: string): Date | null {
+  #timeStringToDate(timeString: string | null): Date | null {
     if (!timeString || typeof timeString !== 'string' || !timeString.includes(':')) {
       console.warn('Invalid time string provided to timeStringToDate:', timeString);
       return null;
@@ -199,8 +196,8 @@ export class PeriodFormComponent implements OnInit {
         id: periodData.id,
         name: periodData.name,
         description: periodData.description,
-        startFrom: startFromTime as unknown as Date,
-        endTo: endToTime as unknown as Date,
+        startFrom: startFromTime,
+        endTo: endToTime,
         focusedTimes: periodData.focusedTimes,
         isFocused: periodData.isFocused,
         sessionStartTime: periodData.sessionStartTime,

@@ -26,6 +26,13 @@ export function timeRangeValidator(
     const start: string = group.get(startKey)?.value;
     const end: string = group.get(endKey)?.value;
 
+    // If both are empty/null, treat as valid (no error)
+    // Individual required validation should be handled separately
+    if (!start && !end) {
+      return null;
+    }
+
+    // If only one is provided, it's invalid
     if (!start || !end) {
       return { invalidTimeRange: true };
     }
