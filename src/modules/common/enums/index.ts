@@ -9,3 +9,4 @@ export * from './day-of-week-short-name.enum';
 export * from './positions.enum';
 export * from './toast-type.enum';
 export * from './toast-messages.enum';
+export * from './focus-error.enum';

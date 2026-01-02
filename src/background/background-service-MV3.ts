@@ -7,6 +7,9 @@ import {
   ChromeCommandType,
 } from '../modules/common/enums/chrome-command.enum';
 import { CHROME_ALARM_ENUM } from '../modules/common/enums/chrome-alarm-name.enum';
+import { FOCUS_ERROR_ENUM } from '../modules/common/enums/focus-error.enum';
+
+type FocusOperationResult = { success: true } | { success: false; error: FOCUS_ERROR_ENUM };
 
 /**
  * @class BackgroundService
@@ -50,22 +53,26 @@ export class BackgroundServiceMV3 {
               const periods = await StorageAdapter.getPeriods();
               const periodToStart = periods.find(p => p.id === message.periodId);
               if (periodToStart) {
-                await this.startFocus(periodToStart);
+                const result = await this.startFocus(periodToStart);
+                sendResponse(result);
+              } else {
+                sendResponse({ success: false, error: FOCUS_ERROR_ENUM.PERIOD_NOT_FOUND });
               }
-              sendResponse({ success: true });
               break;
             }
-            case CHROME_COMMAND_ENUM.STOP_FOCUS:
-              await this.stopFocus();
-              sendResponse({ success: true });
+            case CHROME_COMMAND_ENUM.STOP_FOCUS: {
+              const result = await this.stopFocus();
+              sendResponse(result);
               break;
-            case CHROME_COMMAND_ENUM.TOGGLE_FOCUS:
-              await this.toggleFocus();
-              sendResponse({ success: true });
+            }
+            case CHROME_COMMAND_ENUM.TOGGLE_FOCUS: {
+              const result = await this.toggleFocus();
+              sendResponse(result);
               break;
+            }
             case CHROME_COMMAND_ENUM.TOGGLE_QUICK_FOCUS: {
-              await this.toggleQuickFocus(message.siteUrl);
-              sendResponse({ success: true });
+              const result = await this.toggleQuickFocus(message.siteUrl);
+              sendResponse(result);
               break;
             }
             case CHROME_COMMAND_ENUM.GET_ACTIVE_TAB: {
@@ -85,11 +92,11 @@ export class BackgroundServiceMV3 {
               break;
             }
             default:
-              sendResponse({ success: false, error: 'Unknown command' });
+              sendResponse({ success: false, error: FOCUS_ERROR_ENUM.UNKNOWN_COMMAND });
           }
         } catch (error) {
           console.error('Background error:', error);
-          sendResponse({ success: false, error: String(error) });
+          sendResponse({ success: false, error: FOCUS_ERROR_ENUM.GENERIC_ERROR });
         }
       })();
 
@@ -202,11 +209,11 @@ export class BackgroundServiceMV3 {
     }
   }
 
-  private async startFocus(period: IFocus.Period): Promise<void> {
+  private async startFocus(period: IFocus.Period): Promise<FocusOperationResult> {
     const today = new Date().getDay();
 
     if (period.daysOfWeek && !period.daysOfWeek.includes(today)) {
-      return;
+      return { success: false, error: FOCUS_ERROR_ENUM.PERIOD_NOT_SCHEDULED_TODAY };
     }
 
     this.#currentPeriod = period;
@@ -220,10 +227,15 @@ export class BackgroundServiceMV3 {
     this.updateBlockRules(period.webSites.filter(site => site.isBlocked).map(site => site.url));
     this.updateExtensionIcon(true);
     this.scheduleAlarm();
+
+    return { success: true };
   }
 
-  private async stopFocus(): Promise<void> {
-    if (!this.#currentPeriod) return;
+  private async stopFocus(): Promise<FocusOperationResult> {
+    if (!this.#currentPeriod || !this.#currentPeriod.isFocused) {
+      // Already inactive - this is the desired state, so return success
+      return { success: true };
+    }
 
     const endTime = new Date();
     if (this.#sessionStartTime) {
@@ -248,29 +260,32 @@ export class BackgroundServiceMV3 {
 
     this.updateBlockRules([]);
     this.updateExtensionIcon(false);
+
+    return { success: true };
   }
 
-  private async toggleFocus(): Promise<void> {
+  private async toggleFocus(): Promise<FocusOperationResult> {
     const current = await StorageAdapter.getCurrentPeriod();
 
     if (!current) {
-      return;
+      // No period to toggle - this is a no-op, return success
+      return { success: true };
     }
 
     if (current.isFocused) {
-      await this.stopFocus();
+      return await this.stopFocus();
     } else {
-      await this.startFocus(current);
+      return await this.startFocus(current);
     }
   }
 
-  private async toggleQuickFocus(url: string): Promise<void> {
+  private async toggleQuickFocus(url: string): Promise<FocusOperationResult> {
     const current = await StorageAdapter.getCurrentPeriod();
 
     if (current && current.id === QUICK_FOCUS_ID && current.isFocused) {
-      await this.stopFocus();
+      return await this.stopFocus();
     } else {
-      await this.startQuickFocus(url);
+      return await this.startQuickFocus(url);
     }
   }
 
@@ -322,7 +337,7 @@ export class BackgroundServiceMV3 {
     return tabs.length ? tabs[0] : null;
   }
 
-  private async startQuickFocus(url: string): Promise<void> {
+  private async startQuickFocus(url: string): Promise<FocusOperationResult> {
     const domain = url.replace(/^https?:\/\//, '').split('/')[0];
     const quickPeriod: IFocus.Period = {
       id: QUICK_FOCUS_ID,
@@ -348,6 +363,6 @@ export class BackgroundServiceMV3 {
       ],
     };
 
-    await this.startFocus(quickPeriod);
+    return await this.startFocus(quickPeriod);
   }
 }

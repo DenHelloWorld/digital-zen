@@ -15,6 +15,7 @@ import {
   POSITIONS_ENUM,
   DEFAULT_PERIOD,
   ChromeStorageService,
+  FOCUS_ERROR_ENUM,
 } from '../../common';
 import { DzToastService } from '../../common/components/toast-container/toast.service';
 import { cleanUrlHelper, isImageIcon, isSvgIcon } from '../../common/helpers';
@@ -237,7 +238,29 @@ export class FocusService {
     if (this.#isChromeRuntime) {
       this.#notifyIfNoSitesBlocked(this.#currentPeriod());
 
-      chrome.runtime.sendMessage({ command: CHROME_COMMAND_ENUM.TOGGLE_FOCUS });
+      chrome.runtime.sendMessage({ command: CHROME_COMMAND_ENUM.TOGGLE_FOCUS }, response => {
+        if (chrome.runtime.lastError) {
+          console.error('Error sending message to background:', chrome.runtime.lastError);
+          this.#toastService.show({
+            message: 'Failed to communicate with background service.',
+            type: TOAST_TYPE_ENUM.ERROR,
+            position: POSITIONS_ENUM.BOTTOM_RIGHT,
+          });
+          return;
+        }
+
+        if (
+          response &&
+          !response.success &&
+          response.error === FOCUS_ERROR_ENUM.PERIOD_NOT_SCHEDULED_TODAY
+        ) {
+          this.#toastService.show({
+            message: TOAST_MESSAGES_ENUM.PERIOD_NOT_SCHEDULED_TODAY,
+            type: TOAST_TYPE_ENUM.WARN,
+            position: POSITIONS_ENUM.BOTTOM_RIGHT,
+          });
+        }
+      });
     }
   }
 
