@@ -161,6 +161,7 @@ If you want to keep your source code private but need a publicly accessible priv
    pages:
      stage: deploy
      script:
+       # Copy all docs contents (including hidden files) to .public
        - mkdir .public
        - cp -r docs/. .public
        - mv .public public
@@ -200,12 +201,13 @@ If you want to keep your source code private but need a publicly accessible priv
 3. Paste privacy policy HTML content
 4. Name file `privacy-policy.html`
 5. Click "Create public gist"
-6. Get raw URL (click "Raw" button and copy URL)
-   - Pattern: `https://gist.githubusercontent.com/username/gist-id/raw/[hash]/privacy-policy.html`
-   - For latest version, use: `https://gist.github.com/username/gist-id` (redirects to gist page)
+6. Click "Raw" button to get the raw URL
+   - URL pattern: `https://gist.githubusercontent.com/username/gist-id/raw/[hash]/privacy-policy.html`
+   - The hash is stable for this version, bookmark this URL for Chrome Web Store
+   - If you update the gist, the hash changes (get new raw URL after updates)
 
 **Pros:** Very simple, uses GitHub, public gists don't affect repo visibility  
-**Cons:** Raw URL includes commit hash (changes on updates), gist page view doesn't render HTML properly
+**Cons:** Need to update URL in Chrome Web Store when gist is updated, raw HTML only (no preview)
 
 ### Option 6: Separate Public Documentation Repository
 
@@ -334,7 +336,7 @@ When you need to update the privacy policy:
 3. **Upgrade to GitHub Enterprise (paid option):**
    - GitHub Enterprise allows private GitHub Pages sites
    - [Learn more about GitHub Enterprise](https://docs.github.com/enterprise-cloud@latest/pages/getting-started-with-github-pages/changing-the-visibility-of-your-github-pages-site)
-   - Requires paid subscription (see [GitHub Enterprise pricing](https://docs.github.com/en/enterprise-cloud@latest/billing/managing-billing-for-github-enterprise/about-billing-for-github-enterprise))
+   - Requires paid subscription (see [GitHub Enterprise pricing](https://github.com/pricing))
 
 > **Recommendation:** If you want to keep your source code private, use alternative hosting (Option 1) instead of making the repository public.
 

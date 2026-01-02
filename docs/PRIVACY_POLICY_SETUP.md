@@ -75,7 +75,7 @@ Make the entire `digital-zen` repository public to use GitHub Pages.
 Upgrade to GitHub Enterprise to use GitHub Pages with private repositories.
 
 **Pros:** Keep code private, use GitHub Pages  
-**Cons:** Requires paid subscription (see [GitHub Enterprise pricing](https://docs.github.com/en/enterprise-cloud@latest/billing/managing-billing-for-github-enterprise/about-billing-for-github-enterprise))
+**Cons:** Requires paid subscription (see [GitHub Enterprise pricing](https://github.com/pricing))
 
 > **Recommendation:** If you want to keep your code private, use **Option 1** (external hosting) or **Option 2** (separate public docs repo). Both are free and keep your source code private.
 
