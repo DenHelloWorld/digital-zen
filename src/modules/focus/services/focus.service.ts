@@ -356,7 +356,28 @@ export class FocusService {
 
   public setCurrentPeriod(periodId: string): void {
     if (this.#isChromeRuntime) {
-      chrome.runtime.sendMessage({ command: CHROME_COMMAND_ENUM.SET_CURRENT_PERIOD, periodId });
+      chrome.runtime.sendMessage(
+        { command: CHROME_COMMAND_ENUM.SET_CURRENT_PERIOD, periodId },
+        response => {
+          if (chrome.runtime.lastError) {
+            console.error('Error switching period:', chrome.runtime.lastError);
+            this.#toastService.show({
+              message: 'Failed to switch period.',
+              type: TOAST_TYPE_ENUM.ERROR,
+              position: POSITIONS_ENUM.BOTTOM_RIGHT,
+            });
+            return;
+          }
+
+          if (response && !response.success) {
+            this.#toastService.show({
+              message: 'Failed to activate period.',
+              type: TOAST_TYPE_ENUM.ERROR,
+              position: POSITIONS_ENUM.BOTTOM_RIGHT,
+            });
+          }
+        }
+      );
     }
   }
 }
