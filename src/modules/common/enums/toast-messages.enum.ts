@@ -8,6 +8,7 @@ export enum TOAST_MESSAGES_ENUM {
   PERIOD_NOT_FOUND = 'Period not found.',
   FAILED_TO_SWITCH_PERIOD = 'Failed to switch period.',
   FAILED_TO_ACTIVATE_PERIOD = 'Failed to activate period.',
+  DUPLICATE_PERIOD_NAME = 'A period with this name already exists.',
 }
 
 export type ToastMessagesType =
@@ -19,4 +20,5 @@ export type ToastMessagesType =
   | TOAST_MESSAGES_ENUM.PERIOD_ACTIVATED
   | TOAST_MESSAGES_ENUM.PERIOD_NOT_FOUND
   | TOAST_MESSAGES_ENUM.FAILED_TO_SWITCH_PERIOD
-  | TOAST_MESSAGES_ENUM.FAILED_TO_ACTIVATE_PERIOD;
+  | TOAST_MESSAGES_ENUM.FAILED_TO_ACTIVATE_PERIOD
+  | TOAST_MESSAGES_ENUM.DUPLICATE_PERIOD_NAME;

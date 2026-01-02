@@ -2,6 +2,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   DestroyRef,
+  effect,
   inject,
   Injector,
   input,
@@ -26,6 +27,7 @@ import {
   UI_TEXT,
   WEBSITE_FACEBOOK,
   WEBSITE_TIKTOK,
+  uniquePeriodNameValidator,
 } from '../../../common';
 import { WeekdaysSelectorComponent } from '../../../common/components/weekdays-selector/weekdays-selector.component';
 import { FocusService } from '../../../focus/services';
@@ -64,6 +66,23 @@ export class PeriodFormComponent implements OnInit {
     WEBSITE_TIKTOK,
     WEBSITE_FACEBOOK,
   ]);
+
+  constructor() {
+    // Update the name field validator whenever the periods list changes
+    effect(() => {
+      const periods = this.#focusService.periods();
+      const currentPeriodId = this.period()?.id;
+
+      if (this.form) {
+        this.form.controls.name.clearValidators();
+        this.form.controls.name.setValidators([
+          requiredTrimmedValidator,
+          uniquePeriodNameValidator(periods, currentPeriodId),
+        ]);
+        this.form.controls.name.updateValueAndValidity();
+      }
+    });
+  }
 
   public ngOnInit(): void {
     this.#initForm();
@@ -165,12 +184,18 @@ export class PeriodFormComponent implements OnInit {
   }
 
   #initForm(): void {
+    const periods = this.#focusService.periods();
+    const currentPeriodId = this.period()?.id;
+
     this.form = this.#fb.group<IFocusForm.UpsertPeriod>(
       {
         id: this.#fb.nonNullable.control<string>(
           `${Date.now()}-${Math.floor(Math.random() * 10000)}`
         ),
-        name: this.#fb.nonNullable.control('', requiredTrimmedValidator),
+        name: this.#fb.nonNullable.control('', [
+          requiredTrimmedValidator,
+          uniquePeriodNameValidator(periods, currentPeriodId),
+        ]),
         description: this.#fb.nonNullable.control('', requiredTrimmedValidator),
         startFrom: this.#fb.control<string | null>(null),
         endTo: this.#fb.control<string | null>(null),

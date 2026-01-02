@@ -46,6 +46,7 @@ export const UI_TEXT = Object.freeze({
       CHOOSE_DAYS: 'Choose one or more days',
       INVALID_TIME_RANGE: 'Invalid time range',
       CHOOSE_WEBSITES: 'Choose one or more websites',
+      DUPLICATE_NAME: 'A period with this name already exists',
     },
     BUTTONS: {
       CREATE: 'Create',
