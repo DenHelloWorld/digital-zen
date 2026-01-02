@@ -57,7 +57,8 @@
       opacity: 0.6;
       transition: opacity 0.2s;
 
-      &:hover {
+      &:hover,
+      &:focus-visible {
         opacity: 1;
         text-decoration: underline;
       }

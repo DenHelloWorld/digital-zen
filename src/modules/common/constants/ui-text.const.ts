@@ -115,5 +115,6 @@ export const UI_TEXT = Object.freeze({
   // Footer
   FOOTER: {
     PRIVACY_POLICY_LINK: 'Privacy Policy',
+    PRIVACY_POLICY_ARIA_LABEL: 'Privacy Policy (opens in new tab)',
   },
 });
