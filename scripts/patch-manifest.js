@@ -17,13 +17,20 @@ try {
     process.exit(1);
   }
 
+  // Check if manifest file exists
+  if (!fs.existsSync(manifestPath)) {
+    console.error(`❌ Manifest file not found at: ${manifestPath}`);
+    console.error('💡 Make sure to run "npm run build" first');
+    process.exit(1);
+  }
+
   // Read the manifest file
   let content = fs.readFileSync(manifestPath, 'utf8');
 
-  // Replace placeholders with environment variables
+  // Replace all occurrences of placeholders with environment variables
   content = content
-    .replace('__OAUTH_CLIENT_ID__', process.env.OAUTH_CLIENT_ID)
-    .replace('__PUBLIC_KEY__', process.env.PUBLIC_KEY);
+    .replaceAll('__OAUTH_CLIENT_ID__', process.env.OAUTH_CLIENT_ID)
+    .replaceAll('__PUBLIC_KEY__', process.env.PUBLIC_KEY);
 
   // Write the patched content back
   fs.writeFileSync(manifestPath, content);
