@@ -167,8 +167,8 @@ If you want to keep your source code private but need a publicly accessible priv
      artifacts:
        paths:
          - public
-     only:
-       - main
+     rules:
+       - if: $CI_COMMIT_BRANCH == "main"
    ```
 5. Privacy policy will be at: `https://username.gitlab.io/project-name/privacy-policy.html`
 
@@ -331,7 +331,7 @@ When you need to update the privacy policy:
 3. **Upgrade to GitHub Enterprise (paid option):**
    - GitHub Enterprise allows private GitHub Pages sites
    - [Learn more about GitHub Enterprise](https://docs.github.com/enterprise-cloud@latest/pages/getting-started-with-github-pages/changing-the-visibility-of-your-github-pages-site)
-   - Costs approximately $21/user/month
+   - Requires paid subscription (see [GitHub pricing](https://github.com/pricing))
 
 > **Recommendation:** If you want to keep your source code private, use alternative hosting (Option 1) instead of making the repository public.
 
