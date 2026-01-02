@@ -5,10 +5,12 @@ This document provides a quick reference for the privacy policy setup and hostin
 ## Files Created
 
 ### Privacy Policy Pages
+
 - **`docs/privacy-policy.html`** - English version of the privacy policy
 - **`docs/privacy-policy-ru.html`** - Russian version of the privacy policy
 
 Both versions include:
+
 - Comprehensive privacy information required for Chrome Web Store
 - Details about data collection, storage, and usage
 - Explanation of Chrome permissions
@@ -17,6 +19,7 @@ Both versions include:
 - Language switcher between English and Russian versions
 
 ### Documentation
+
 - **`docs/PRIVACY_POLICY_HOSTING.md`** - Complete guide for hosting the privacy policy
 
 ## Privacy Policy URLs
@@ -121,18 +124,21 @@ To update the privacy policy in the future:
 ## Troubleshooting
 
 ### Privacy policy not accessible
+
 - **Wait:** Deployment may take 1-2 minutes
 - **Check:** Deployment logs in hosting service dashboard
 - **Verify:** URL is correct (case-sensitive)
 - **Clear:** Browser cache
 
 ### 404 Not Found
+
 - **Verify:** File exists in deployed folder
 - **Check:** File name matches exactly (`privacy-policy.html`)
 - **Ensure:** Deployment completed successfully
 - **Test:** URL in incognito browser
 
 ### Changes not showing
+
 - **Confirm:** Changes were pushed to repository
 - **Check:** Deployment logs show successful build
 - **Clear:** Browser cache
@@ -141,6 +147,7 @@ To update the privacy policy in the future:
 ## Additional Resources
 
 For detailed information, see:
+
 - [Privacy Policy Hosting Guide](./PRIVACY_POLICY_HOSTING.md) - Complete hosting instructions
 - [Chrome Web Store Readiness Report](./chrome-web-store-readiness.md) - Publication requirements
 

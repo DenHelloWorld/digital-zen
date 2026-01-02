@@ -5,9 +5,11 @@ This directory contains documentation for the Digital Zen Chrome extension proje
 ## Documents
 
 ### [Chrome Web Store Readiness Report](./chrome-web-store-readiness.md)
+
 **Purpose:** Comprehensive research and analysis of the extension's readiness for Chrome Web Store publication.
 
 **Contents:**
+
 - Current state analysis (strengths and weaknesses)
 - Chrome Web Store requirements checklist
 - Feature completeness analysis
@@ -23,6 +25,7 @@ This directory contains documentation for the Digital Zen Chrome extension proje
 - Resources & references
 
 **Use this when:**
+
 - Planning for Chrome Web Store submission
 - Understanding what's missing for publication
 - Making strategic decisions about features
@@ -31,9 +34,11 @@ This directory contains documentation for the Digital Zen Chrome extension proje
 ---
 
 ### [Publication Checklist](./publication-checklist.md)
+
 **Purpose:** Actionable, condensed checklist for implementing the recommendations from the readiness report.
 
 **Contents:**
+
 - Phase 1: Critical requirements (before submission)
 - Phase 2: Recommended improvements (post-launch)
 - Phase 3: Future enhancements
@@ -41,6 +46,7 @@ This directory contains documentation for the Digital Zen Chrome extension proje
 - Practical tips for design, screenshots, and submission
 
 **Use this when:**
+
 - Actually working on publication tasks
 - Tracking progress toward submission
 - Ensuring nothing is forgotten before submitting
@@ -58,6 +64,7 @@ This directory contains documentation for the Digital Zen Chrome extension proje
 ## Contributing
 
 If you find issues or have suggestions for improving these documents, please:
+
 - Open an issue on GitHub
 - Submit a pull request with improvements
 - Discuss in team meetings
@@ -65,6 +72,7 @@ If you find issues or have suggestions for improving these documents, please:
 ## Document Maintenance
 
 These documents should be updated:
+
 - When Chrome Web Store requirements change
 - After completing major milestones
 - Before each submission/resubmission

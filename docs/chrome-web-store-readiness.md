@@ -22,8 +22,9 @@ The extension has a solid technical foundation but requires several critical add
 ### ✅ Strengths
 
 #### Technical Implementation
+
 - **Modern Tech Stack:** Built with Angular 21, TypeScript 5.9, and follows current best practices
-- **Code Quality:** 
+- **Code Quality:**
   - ESLint and Prettier configured for code consistency
   - Husky hooks for pre-commit validation
   - Strict TypeScript mode enabled
@@ -39,6 +40,7 @@ The extension has a solid technical foundation but requires several critical add
   - Background service worker implemented
 
 #### Documentation
+
 - **Developer Documentation:** Comprehensive README.md with:
   - Installation instructions
   - Build instructions
@@ -47,6 +49,7 @@ The extension has a solid technical foundation but requires several critical add
 - **Code Documentation:** LLM context file for AI-assisted development
 
 #### Functionality
+
 - Focus session management
 - Website blocking capabilities
 - Google OAuth integration ready
@@ -60,15 +63,16 @@ The extension has a solid technical foundation but requires several critical add
 
 #### 2.1 Store Listing Assets
 
-| Asset | Requirement | Status | Priority |
-|-------|------------|--------|----------|
-| Small Icon (128x128) | ✅ Required | ⚠️ Present but 32x32 | 🔴 Critical |
-| Promotional Images | ✅ Required (1400x560) | ❌ Missing | 🔴 Critical |
-| Screenshots | ✅ Required (1280x800 or 640x400) | ❌ Missing | 🔴 Critical |
-| Detailed Description | ✅ Required | ⚠️ Partial | 🔴 Critical |
-| Category Selection | ✅ Required | ❌ Not specified | 🔴 Critical |
+| Asset                | Requirement                       | Status               | Priority    |
+| -------------------- | --------------------------------- | -------------------- | ----------- |
+| Small Icon (128x128) | ✅ Required                       | ⚠️ Present but 32x32 | 🔴 Critical |
+| Promotional Images   | ✅ Required (1400x560)            | ❌ Missing           | 🔴 Critical |
+| Screenshots          | ✅ Required (1280x800 or 640x400) | ❌ Missing           | 🔴 Critical |
+| Detailed Description | ✅ Required                       | ⚠️ Partial           | 🔴 Critical |
+| Category Selection   | ✅ Required                       | ❌ Not specified     | 🔴 Critical |
 
 **Current Icon Status:**
+
 - ✅ Have: `icon-spa-colored.png` (32x32)
 - ✅ Have: `icon-spa-transparent.png` (32x32)
 - ❌ Need: 128x128 version for store listing
@@ -76,13 +80,14 @@ The extension has a solid technical foundation but requires several critical add
 
 #### 2.2 Privacy Policy
 
-| Requirement | Status | Priority |
-|-------------|--------|----------|
-| Privacy Policy URL | ❌ Missing | 🔴 Critical |
-| Data Collection Disclosure | ❌ Not documented | 🔴 Critical |
+| Requirement                     | Status            | Priority    |
+| ------------------------------- | ----------------- | ----------- |
+| Privacy Policy URL              | ❌ Missing        | 🔴 Critical |
+| Data Collection Disclosure      | ❌ Not documented | 🔴 Critical |
 | Third-party Services Disclosure | ❌ Not documented | 🔴 Critical |
 
 **Required because:**
+
 - Extension uses OAuth (Google authentication)
 - Extension requests `storage` permission
 - Extension requests `identity` permission
@@ -90,43 +95,45 @@ The extension has a solid technical foundation but requires several critical add
 
 #### 2.3 Legal & Compliance
 
-| Requirement | Status | Priority |
-|-------------|--------|----------|
-| License | ❌ Missing | 🟡 High |
-| Terms of Service | ❌ Missing | 🟡 High |
-| Support URL/Email | ❌ Not specified | 🟡 High |
+| Requirement       | Status           | Priority |
+| ----------------- | ---------------- | -------- |
+| License           | ❌ Missing       | 🟡 High  |
+| Terms of Service  | ❌ Missing       | 🟡 High  |
+| Support URL/Email | ❌ Not specified | 🟡 High  |
 
 ### 🟡 Important Requirements (NEEDS IMPROVEMENT)
 
 #### 2.4 Manifest.json
 
-| Field | Status | Notes |
-|-------|--------|-------|
-| `name` | ✅ Good | "Digital Zen" |
-| `version` | ⚠️ Needs update | "1.0" should be "1.0.0" |
-| `description` | ⚠️ Too short | 62 chars (recommended: 100-132) |
-| `icons` | ⚠️ Incomplete | Missing 16x16 icon file, though referenced in manifest |
-| `oauth2.client_id` | ⚠️ Placeholder | Needs real value |
-| `key` | ⚠️ Placeholder | Needs real value |
+| Field              | Status          | Notes                                                  |
+| ------------------ | --------------- | ------------------------------------------------------ |
+| `name`             | ✅ Good         | "Digital Zen"                                          |
+| `version`          | ⚠️ Needs update | "1.0" should be "1.0.0"                                |
+| `description`      | ⚠️ Too short    | 62 chars (recommended: 100-132)                        |
+| `icons`            | ⚠️ Incomplete   | Missing 16x16 icon file, though referenced in manifest |
+| `oauth2.client_id` | ⚠️ Placeholder  | Needs real value                                       |
+| `key`              | ⚠️ Placeholder  | Needs real value                                       |
 
 **Current Description:**
+
 ```
 "Improve your focus by blocking distracting websites and managing focus sessions."
 ```
 
 **Recommended Enhanced Description:**
+
 ```
 "Digital Zen helps you stay productive by blocking distracting websites during customizable focus sessions. Create time-based periods, manage block lists, and maintain your concentration with an intuitive interface designed for modern workflows."
 ```
 
 #### 2.5 User Experience
 
-| Aspect | Status | Notes |
-|--------|--------|-------|
-| First-run Experience | ❌ Not documented | Need onboarding flow |
-| Help/Tutorial | ❌ Missing | Users may not understand features |
-| Error Messages | ⚠️ Unknown | Need to verify user-friendly messages |
-| Accessibility | ⚠️ Unknown | Need ARIA labels verification |
+| Aspect               | Status            | Notes                                 |
+| -------------------- | ----------------- | ------------------------------------- |
+| First-run Experience | ❌ Not documented | Need onboarding flow                  |
+| Help/Tutorial        | ❌ Missing        | Users may not understand features     |
+| Error Messages       | ⚠️ Unknown        | Need to verify user-friendly messages |
+| Accessibility        | ⚠️ Unknown        | Need ARIA labels verification         |
 
 ---
 
@@ -178,28 +185,34 @@ The extension has a solid technical foundation but requires several critical add
 ## 4. Store Listing Content Requirements
 
 ### 4.1 Short Description (Required)
+
 **Character Limit:** 132 characters  
 **Current:** 62 characters (too short)  
 **Status:** ⚠️ Needs expansion
 
 **Recommendation:**
+
 ```
 "Block distracting websites during focus sessions. Boost productivity with customizable time-based periods and intuitive controls."
 ```
+
 (125 characters)
 
 ### 4.2 Detailed Description (Required)
+
 **Character Limit:** Up to 16,000 characters  
 **Current:** Basic description in README  
 **Status:** ❌ Needs creation
 
 **Recommended Structure:**
+
 ```markdown
 ## Stay Focused with Digital Zen
 
 Digital Zen is your personal productivity assistant that helps you maintain concentration by blocking distracting websites during customizable focus sessions.
 
 ### Key Features
+
 • 🎯 Time-Based Focus Periods - Create custom blocking schedules
 • 🚫 Website Blocking - Prevent access to distracting sites
 • 📊 Focus Tracking - Monitor your productivity time
@@ -207,35 +220,42 @@ Digital Zen is your personal productivity assistant that helps you maintain conc
 • ⚡ Fast & Lightweight - Built with modern web technologies
 
 ### How It Works
+
 1. Click the Digital Zen icon in your toolbar
 2. Create a focus period with your desired time frame
 3. Add websites you want to block during that period
 4. Start your focus session and concentrate on what matters
 
 ### Perfect For
+
 - Students preparing for exams
 - Professionals working on important projects
 - Anyone wanting to reduce digital distractions
 - Remote workers maintaining productivity
 
 ### Privacy & Security
+
 Digital Zen respects your privacy:
+
 - No data collection or tracking
 - All settings stored locally on your device
 - Optional Google account sync (with your permission)
 - Open source and transparent
 
 ### Support
+
 Need help? Visit our support page or report issues on GitHub.
 ```
 
 ### 4.3 Screenshots (Required)
+
 **Minimum:** 1 screenshot  
 **Recommended:** 3-5 screenshots  
 **Size:** 1280x800 or 640x400  
 **Status:** ❌ Missing
 
 **Recommended Screenshots:**
+
 1. Main popup interface showing focus periods
 2. Add/edit period form
 3. Active focus session view
@@ -243,12 +263,14 @@ Need help? Visit our support page or report issues on GitHub.
 5. Settings/menu interface
 
 ### 4.4 Promotional Images (Required)
+
 **Small Tile:** 440x280  
 **Large Tile:** 920x680  
 **Marquee:** 1400x560  
 **Status:** ❌ Missing
 
 ### 4.5 Category Selection
+
 **Current:** Not specified  
 **Recommended:** "Productivity"  
 **Status:** ❌ Needs selection
@@ -261,25 +283,27 @@ Need help? Visit our support page or report issues on GitHub.
 
 Current permissions need to be justified in the store listing:
 
-| Permission | Justification | User-Facing Description |
-|------------|---------------|-------------------------|
-| `alarms` | Schedule focus session timers | "Required to start and end focus sessions automatically" |
-| `declarativeNetRequest` | Block websites during focus mode | "Needed to block distracting websites" |
-| `storage` | Save blocked sites and preferences | "Stores your focus periods and blocked websites" |
-| `unlimitedStorage` | Store large block lists | "Allows unlimited saved websites and settings" |
-| `activeTab` | Detect current website | "Identifies the current tab for blocking" |
-| `identity` | Google account sync (optional) | "Optional: Sync your settings across devices" |
-| `host_permissions: <all_urls>` | Block any website | "Required to block any website you choose" |
+| Permission                     | Justification                      | User-Facing Description                                  |
+| ------------------------------ | ---------------------------------- | -------------------------------------------------------- |
+| `alarms`                       | Schedule focus session timers      | "Required to start and end focus sessions automatically" |
+| `declarativeNetRequest`        | Block websites during focus mode   | "Needed to block distracting websites"                   |
+| `storage`                      | Save blocked sites and preferences | "Stores your focus periods and blocked websites"         |
+| `unlimitedStorage`             | Store large block lists            | "Allows unlimited saved websites and settings"           |
+| `activeTab`                    | Detect current website             | "Identifies the current tab for blocking"                |
+| `identity`                     | Google account sync (optional)     | "Optional: Sync your settings across devices"            |
+| `host_permissions: <all_urls>` | Block any website                  | "Required to block any website you choose"               |
 
 **⚠️ Warning:** `host_permissions: <all_urls>` is a sensitive permission that requires extra justification. Chrome Web Store reviewers will scrutinize this.
 
 **Recommendation:** Add detailed justification in the "Permissions" section of the store listing explaining why each permission is essential for core functionality.
 
 ### 5.2 Content Security Policy
+
 **Status:** ✅ Manifest V3 compliant  
 **Notes:** No inline scripts, uses service worker
 
 ### 5.3 Single Purpose Requirement
+
 **Status:** ✅ Compliant  
 **Purpose:** Website blocking for focus/productivity  
 **Notes:** Extension has a clear, singular purpose
@@ -290,16 +314,17 @@ Current permissions need to be justified in the store listing:
 
 ### 6.1 Testing Checklist
 
-| Test Category | Status | Priority |
-|---------------|--------|----------|
+| Test Category               | Status           | Priority    |
+| --------------------------- | ---------------- | ----------- |
 | Installation/Uninstallation | ⚠️ Needs testing | 🔴 Critical |
-| Core Functionality | ⚠️ Needs testing | 🔴 Critical |
-| Permission Handling | ⚠️ Needs testing | 🔴 Critical |
-| Cross-browser Compatibility | ❌ Not tested | 🟡 High |
-| Performance Testing | ❌ Not tested | 🟡 High |
-| Edge Cases | ❌ Not tested | 🟢 Medium |
+| Core Functionality          | ⚠️ Needs testing | 🔴 Critical |
+| Permission Handling         | ⚠️ Needs testing | 🔴 Critical |
+| Cross-browser Compatibility | ❌ Not tested    | 🟡 High     |
+| Performance Testing         | ❌ Not tested    | 🟡 High     |
+| Edge Cases                  | ❌ Not tested    | 🟢 Medium   |
 
 **Recommended Testing:**
+
 1. Fresh install experience
 2. Website blocking functionality
 3. Focus period creation/editing/deletion
@@ -310,7 +335,9 @@ Current permissions need to be justified in the store listing:
 8. Conflict with other extensions
 
 ### 6.2 Automated Testing
+
 **Current Status:**
+
 - Test infrastructure exists (`npm test`)
 - Unit test coverage: Unknown
 - E2E tests: Not present
@@ -322,20 +349,24 @@ Current permissions need to be justified in the store listing:
 ## 7. Localization & Internationalization
 
 ### Current State
+
 **Status:** ❌ English only  
 **i18n Implementation:** ⚠️ Prepared but not implemented
 
 **Findings:**
+
 - UI text centralized in `UI_TEXT` constant (good foundation)
 - Not using Chrome's i18n API (`chrome.i18n`)
 - No `_locales` folder
 
 **Recommendation for v1.0:**
+
 - Launch with English only
 - Document i18n readiness in roadmap
 - Add translations in future versions
 
 **Recommendation for Future:**
+
 - Implement `chrome.i18n` API
 - Add support for:
   - Russian (project owner's language)
@@ -351,6 +382,7 @@ Current permissions need to be justified in the store listing:
 ### 8.1 Data Collection
 
 **Current Data Handling:**
+
 - Focus periods stored in `chrome.storage`
 - Blocked website lists stored locally
 - OAuth tokens (if authenticated)
@@ -360,6 +392,7 @@ Current permissions need to be justified in the store listing:
 ### 8.2 Third-Party Services
 
 **Services Used:**
+
 - Google OAuth (for optional account sync)
 - No analytics
 - No crash reporting
@@ -369,13 +402,13 @@ Current permissions need to be justified in the store listing:
 
 ### 8.3 Security Best Practices
 
-| Practice | Status | Notes |
-|----------|--------|-------|
-| HTTPS enforcement | ✅ Yes | Manifest V3 requirement |
-| No remote code execution | ✅ Yes | No `eval()` or external scripts |
-| CSP compliance | ✅ Yes | Manifest V3 default CSP |
-| Secure storage | ✅ Yes | Uses `chrome.storage` API |
-| Input validation | ⚠️ Unknown | Needs code review |
+| Practice                 | Status     | Notes                           |
+| ------------------------ | ---------- | ------------------------------- |
+| HTTPS enforcement        | ✅ Yes     | Manifest V3 requirement         |
+| No remote code execution | ✅ Yes     | No `eval()` or external scripts |
+| CSP compliance           | ✅ Yes     | Manifest V3 default CSP         |
+| Secure storage           | ✅ Yes     | Uses `chrome.storage` API       |
+| Input validation         | ⚠️ Unknown | Needs code review               |
 
 ---
 
@@ -384,6 +417,7 @@ Current permissions need to be justified in the store listing:
 **Current State:** Free extension, no monetization
 
 **Options for Future:**
+
 1. **Freemium Model**
    - Free: Basic website blocking
    - Premium: Advanced features (analytics, themes, cloud sync)
@@ -404,24 +438,26 @@ Current permissions need to be justified in the store listing:
 
 ### 10.1 Developer Program Policies
 
-| Policy | Compliance | Notes |
-|--------|------------|-------|
-| No deceptive behavior | ✅ Yes | Clear purpose and functionality |
-| No malware | ✅ Yes | Clean codebase |
-| No spam | ✅ Yes | No promotional content |
-| Minimum functionality | ✅ Yes | Provides clear value |
-| Single purpose | ✅ Yes | Focus/productivity tool |
-| User data privacy | ⚠️ Needs policy | Must add privacy policy |
-| Permissions justification | ⚠️ Needs documentation | Must document in listing |
+| Policy                    | Compliance             | Notes                           |
+| ------------------------- | ---------------------- | ------------------------------- |
+| No deceptive behavior     | ✅ Yes                 | Clear purpose and functionality |
+| No malware                | ✅ Yes                 | Clean codebase                  |
+| No spam                   | ✅ Yes                 | No promotional content          |
+| Minimum functionality     | ✅ Yes                 | Provides clear value            |
+| Single purpose            | ✅ Yes                 | Focus/productivity tool         |
+| User data privacy         | ⚠️ Needs policy        | Must add privacy policy         |
+| Permissions justification | ⚠️ Needs documentation | Must document in listing        |
 
 ### 10.2 Branding Guidelines
 
 **Extension Name:** "Digital Zen"
+
 - ✅ Unique (not using "Chrome" or trademarked terms)
 - ✅ Descriptive
 - ✅ Professional
 
 **Recommendations:**
+
 - Ensure icon doesn't violate any trademarks
 - Current icon appears original (spa/meditation theme)
 
@@ -443,7 +479,7 @@ Current permissions need to be justified in the store listing:
      - Settings menu
    - [ ] Design promotional images
      - Small tile (440x280)
-     - Large tile (920x680)  
+     - Large tile (920x680)
      - Marquee (1400x560)
 
 2. **Privacy Policy & Legal Documents** ⏰ 2-3 days
@@ -525,14 +561,17 @@ Current permissions need to be justified in the store listing:
 ## 12. Estimated Timeline
 
 ### Minimum Viable Publication
+
 **Timeline:** 3-4 weeks  
 **Requirements:** Phase 1 only
 
 ### Recommended Publication
+
 **Timeline:** 6-8 weeks  
 **Requirements:** Phase 1 + Phase 2
 
 ### Full Feature Release
+
 **Timeline:** 10-12 weeks  
 **Requirements:** Phase 1 + Phase 2 + Phase 3
 
@@ -600,6 +639,7 @@ Current permissions need to be justified in the store listing:
    - Differentiator: Digital Zen is free, Chrome-native
 
 **Opportunities:**
+
 - Modern Angular-based UI (faster, smoother)
 - Focus session paradigm (not just blocking)
 - Clean, minimal interface
@@ -612,23 +652,27 @@ Current permissions need to be justified in the store listing:
 ### Post-Launch Metrics to Track
 
 **Week 1:**
+
 - Daily active installations
 - Uninstall rate
 - Critical bugs reported
 
 **Month 1:**
+
 - Total installations
 - User ratings
 - Feature usage statistics
 - Support requests
 
 **Month 3:**
+
 - User retention rate
 - Review sentiment
 - Feature requests
 - Growth rate
 
 **Target Metrics (6 months):**
+
 - 1,000+ users
 - 4.0+ star rating
 - <5% uninstall rate
@@ -641,12 +685,14 @@ Current permissions need to be justified in the store listing:
 ### Pre-Submission Verification
 
 #### Assets
+
 - [ ] Icon 128x128 uploaded
 - [ ] 3-5 screenshots uploaded
 - [ ] Promotional images uploaded (small, large, marquee)
 - [ ] All images meet size/format requirements
 
 #### Legal
+
 - [ ] Privacy policy URL added
 - [ ] Privacy policy covers all data collection
 - [ ] Terms of service created (optional)
@@ -654,6 +700,7 @@ Current permissions need to be justified in the store listing:
 - [ ] Support email/URL configured
 
 #### Store Listing
+
 - [ ] Detailed description written (500+ words)
 - [ ] Short description (100-132 characters)
 - [ ] Category selected (Productivity)
@@ -662,6 +709,7 @@ Current permissions need to be justified in the store listing:
 - [ ] Language set (English)
 
 #### Technical
+
 - [ ] Manifest version updated to 1.0.0
 - [ ] OAuth client ID configured
 - [ ] Extension key added
@@ -671,6 +719,7 @@ Current permissions need to be justified in the store listing:
 - [ ] All features working
 
 #### Testing
+
 - [ ] Installation tested
 - [ ] All core features tested
 - [ ] OAuth flow tested
@@ -680,6 +729,7 @@ Current permissions need to be justified in the store listing:
 - [ ] Cross-browser tested
 
 #### Payment
+
 - [ ] Developer account registered ($5 one-time fee)
 - [ ] Payment method added
 
@@ -688,12 +738,14 @@ Current permissions need to be justified in the store listing:
 ## 17. Post-Launch Plan
 
 ### Week 1 After Launch
+
 - [ ] Monitor user reviews daily
 - [ ] Respond to all support requests within 24 hours
 - [ ] Track installation/uninstall metrics
 - [ ] Fix critical bugs immediately
 
 ### Month 1 After Launch
+
 - [ ] Gather user feedback
 - [ ] Prioritize feature requests
 - [ ] Plan version 1.1
@@ -701,6 +753,7 @@ Current permissions need to be justified in the store listing:
 - [ ] Share on social media
 
 ### Quarter 1 After Launch
+
 - [ ] Release version 1.1 with improvements
 - [ ] Add analytics dashboard
 - [ ] Consider adding localization
@@ -711,11 +764,13 @@ Current permissions need to be justified in the store listing:
 ## 18. Budget Considerations
 
 ### One-Time Costs
+
 - Chrome Web Store developer registration: **$5**
 - Domain for privacy policy (if not using GitHub Pages): **$10-15/year** (optional)
 - Design tools (if not using free tools): **$0** (use Figma free tier)
 
 ### Ongoing Costs
+
 - OAuth setup: **Free** (Google Cloud free tier)
 - Hosting privacy policy: **Free** (GitHub Pages)
 - Support infrastructure: **Free** (GitHub Issues, email)
@@ -731,6 +786,7 @@ Current permissions need to be justified in the store listing:
 Digital Zen is a well-built Chrome extension with a solid technical foundation. However, it currently lacks several critical requirements for Chrome Web Store publication:
 
 **Critical Missing Items:**
+
 1. ❌ Privacy Policy (REQUIRED)
 2. ❌ Store Listing Assets (screenshots, promotional images)
 3. ❌ Proper icon sizes (need 128x128)
@@ -738,6 +794,7 @@ Digital Zen is a well-built Chrome extension with a solid technical foundation. 
 5. ❌ OAuth credentials configuration
 
 **Recommended Timeline:**
+
 - **Minimum:** 3-4 weeks to address critical items
 - **Recommended:** 6-8 weeks to include UX improvements
 - **Ideal:** 10-12 weeks for complete feature set
@@ -747,6 +804,7 @@ Digital Zen is a well-built Chrome extension with a solid technical foundation. 
 **Action:** Proceed with publication preparation following the Phase 1 action plan.
 
 **Priority Order:**
+
 1. Create privacy policy (Week 1)
 2. Design store listing assets (Week 1-2)
 3. Configure OAuth credentials (Week 1)
@@ -761,22 +819,26 @@ The extension has significant potential to succeed in the Chrome Web Store given
 ## 20. Resources & References
 
 ### Chrome Web Store Documentation
+
 - [Developer Dashboard](https://chrome.google.com/webstore/devconsole)
 - [Publishing Guidelines](https://developer.chrome.com/docs/webstore/publish/)
 - [Program Policies](https://developer.chrome.com/docs/webstore/program-policies/)
 - [Best Practices](https://developer.chrome.com/docs/webstore/best-practices/)
 
 ### Design Resources
+
 - [Icon Guidelines](https://developer.chrome.com/docs/webstore/images/)
 - [Screenshot Guidelines](https://developer.chrome.com/docs/webstore/images/#screenshots)
 - [Promotional Images](https://developer.chrome.com/docs/webstore/images/#promotional-images)
 
 ### Privacy & Legal
+
 - [Privacy Policy Generator](https://www.privacypolicygenerator.info/)
 - [Terms of Service Template](https://www.termsfeed.com/blog/sample-terms-of-service-template/)
 - [GDPR Compliance](https://gdpr.eu/)
 
 ### Testing Tools
+
 - [Lighthouse](https://developers.google.com/web/tools/lighthouse) - Performance testing
 - [Chrome DevTools](https://developer.chrome.com/docs/devtools/) - Debugging
 - [Extension Testing](https://developer.chrome.com/docs/extensions/mv3/tut_debugging/)
