@@ -73,13 +73,9 @@ export class PeriodFormComponent implements OnInit {
       const periods = this.#focusService.periods();
       const currentPeriodId = this.period()?.id;
 
-      if (this.form) {
-        this.form.controls.name.clearValidators();
-        this.form.controls.name.setValidators([
-          requiredTrimmedValidator,
-          uniquePeriodNameValidator(periods, currentPeriodId),
-        ]);
-        this.form.controls.name.updateValueAndValidity();
+      // Only update if form is initialized
+      if (this.form?.controls.name) {
+        this.#updateNameValidators(periods, currentPeriodId);
       }
     });
   }
@@ -181,6 +177,19 @@ export class PeriodFormComponent implements OnInit {
     }
 
     return date;
+  }
+
+  /**
+   * Updates the validators for the name field.
+   * Extracted to avoid code duplication between constructor effect and #initForm.
+   */
+  #updateNameValidators(periods: IFocus.Period[] | null, currentPeriodId?: string): void {
+    this.form.controls.name.clearValidators();
+    this.form.controls.name.setValidators([
+      requiredTrimmedValidator,
+      uniquePeriodNameValidator(periods, currentPeriodId),
+    ]);
+    this.form.controls.name.updateValueAndValidity();
   }
 
   #initForm(): void {

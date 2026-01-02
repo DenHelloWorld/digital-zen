@@ -24,8 +24,8 @@ export function uniquePeriodNameValidator(
   return (control: AbstractControl): ValidationErrors | null => {
     const value: string = control.value;
 
-    // If no value or no periods to check, validation passes
-    if (!value || !existingPeriods || existingPeriods.length === 0) {
+    // If no value or value is not a string or no periods to check, validation passes
+    if (!value || typeof value !== 'string' || !existingPeriods || existingPeriods.length === 0) {
       return null;
     }
 
