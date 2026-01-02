@@ -57,18 +57,18 @@
       }
     }
   }
-
-  <footer class="dz-footer">
-    <a
-      href="https://digital-zen-five.vercel.app/privacy-policy.html"
-      target="_blank"
-      rel="noopener noreferrer"
-      class="dz-footer__link"
-      [attr.aria-label]="uiText.FOOTER.PRIVACY_POLICY_ARIA_LABEL"
-    >
-      {{ uiText.FOOTER.PRIVACY_POLICY_LINK }}
-    </a>
-  </footer>
 </main>
+
+<footer class="dz-footer" [class.dark-theme]="theme() === colorSchemes.DARK">
+  <a
+    href="https://digital-zen-five.vercel.app/privacy-policy.html"
+    target="_blank"
+    rel="noopener noreferrer"
+    class="dz-footer__link"
+    [attr.aria-label]="uiText.FOOTER.PRIVACY_POLICY_ARIA_LABEL"
+  >
+    {{ uiText.FOOTER.PRIVACY_POLICY_LINK }}
+  </a>
+</footer>
 
 <dz-toast-container />
