@@ -162,7 +162,7 @@ If you want to keep your source code private but need a publicly accessible priv
      stage: deploy
      script:
        - mkdir .public
-       - cp -r docs/* .public
+       - cp -r docs/. .public
        - mv .public public
      artifacts:
        paths:
@@ -199,10 +199,13 @@ If you want to keep your source code private but need a publicly accessible priv
 2. Create new **public** gist
 3. Paste privacy policy HTML content
 4. Name file `privacy-policy.html`
-5. Get URL like: `https://gist.githubusercontent.com/username/gist-id/raw/privacy-policy.html`
+5. Click "Create public gist"
+6. Get raw URL (click "Raw" button and copy URL)
+   - Pattern: `https://gist.githubusercontent.com/username/gist-id/raw/[hash]/privacy-policy.html`
+   - For latest version, use: `https://gist.github.com/username/gist-id` (redirects to gist page)
 
 **Pros:** Very simple, uses GitHub, public gists don't affect repo visibility  
-**Cons:** Not ideal for styled HTML, URL is long
+**Cons:** Raw URL includes commit hash (changes on updates), gist page view doesn't render HTML properly
 
 ### Option 6: Separate Public Documentation Repository
 
