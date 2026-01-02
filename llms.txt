@@ -35,12 +35,58 @@ src/
 ├── app/              # Main app component
 ├── modules/          # Feature modules
 │   ├── common/       # Shared components, services, utilities
+│   │   ├── components/   # Reusable UI components
+│   │   ├── constants/    # Application constants (UI_TEXT, etc.)
+│   │   ├── enums/        # Enumerations
+│   │   ├── services/     # Shared services
+│   │   ├── models/       # TypeScript interfaces
+│   │   └── validators/   # Form validators
 │   ├── focus/        # Focus mode feature
 │   ├── menu/         # Menu feature
 │   └── auth/         # Authentication
 ├── background/       # Chrome extension background scripts
 └── styles/           # Global styles
 ```
+
+## UI Text Management
+
+**All hardcoded text must be extracted to constants:**
+
+Location: `src/modules/common/constants/ui-text.const.ts`
+
+```typescript
+export const UI_TEXT = Object.freeze({
+  HEADER: {
+    FOCUS_MENU_TITLE: 'Focus menu',
+    // ...
+  },
+  PERIOD_FORM: {
+    LABELS: { /* ... */ },
+    PLACEHOLDERS: { /* ... */ },
+    ERRORS: { /* ... */ },
+  },
+  // Organized by feature/component
+});
+```
+
+**Component Usage:**
+```typescript
+export class ExampleComponent {
+  protected readonly uiText = UI_TEXT;
+}
+```
+
+**Template Usage:**
+```html
+<button [title]="uiText.HEADER.FOCUS_MENU_TITLE">...</button>
+<input [placeholder]="uiText.PERIOD_FORM.PLACEHOLDERS.NAME" />
+```
+
+**Rules:**
+- NO hardcoded strings in templates (labels, titles, placeholders, aria-labels, errors, buttons)
+- All UI text MUST be in UI_TEXT constant
+- Structure is i18n-ready (easy to replace with translation provider)
+- Use property binding `[title]="uiText.X"` not attributes `title="text"`
 
 ## Coding Standards
 - Use strict TypeScript (no `any` types)
