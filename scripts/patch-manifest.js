@@ -11,13 +11,19 @@ const path = require('path');
 const manifestPath = path.join(__dirname, '..', 'dist', 'browser', 'manifest.json');
 
 try {
+  // Check if required environment variables are set
+  if (!process.env.OAUTH_CLIENT_ID || !process.env.PUBLIC_KEY) {
+    console.error('❌ Missing required environment variables: OAUTH_CLIENT_ID and/or PUBLIC_KEY');
+    process.exit(1);
+  }
+
   // Read the manifest file
   let content = fs.readFileSync(manifestPath, 'utf8');
 
   // Replace placeholders with environment variables
   content = content
-    .replace('__OAUTH_CLIENT_ID__', process.env.OAUTH_CLIENT_ID || '__OAUTH_CLIENT_ID__')
-    .replace('__PUBLIC_KEY__', process.env.PUBLIC_KEY || '__PUBLIC_KEY__');
+    .replace('__OAUTH_CLIENT_ID__', process.env.OAUTH_CLIENT_ID)
+    .replace('__PUBLIC_KEY__', process.env.PUBLIC_KEY);
 
   // Write the patched content back
   fs.writeFileSync(manifestPath, content);
