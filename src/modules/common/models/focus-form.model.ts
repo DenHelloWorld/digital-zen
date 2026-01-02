@@ -7,8 +7,8 @@ export namespace IFocusForm {
     id: FormControl<string>;
     name: FormControl<string>;
     description: FormControl<string>;
-    startFrom: FormControl<Date>;
-    endTo: FormControl<Date>;
+    startFrom: FormControl<Date | null>;
+    endTo: FormControl<Date | null>;
     webSites: FormControl<IFocus.WebSite[]>;
     daysOfWeek: FormControl<DayOfWeekType[]>;
     focusedTimes: FormControl<IFocus.FocusedTime[]>;
