@@ -10,6 +10,7 @@ import {
   signal,
   WritableSignal,
 } from '@angular/core';
+import { UI_TEXT } from '../../constants';
 
 @Component({
   selector: 'dz-dynamic-input',
@@ -23,6 +24,7 @@ export class DynamicInputComponent<T> implements OnInit {
 
   protected readonly isAdding: WritableSignal<boolean> = signal<boolean>(false);
   protected readonly newEntity = signal<T | null>(null);
+  protected readonly uiText = UI_TEXT;
   protected readonly entityKeys = computed(() => {
     const list = this.#initEntities();
     const first = list && list.length > 0 ? list[0] : null;

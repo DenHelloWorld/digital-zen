@@ -11,7 +11,7 @@
       />
 
       <button
-        title="Remove"
+        [title]="uiText.DYNAMIC_INPUT.TITLES.REMOVE"
         type="button"
         class="dz-button dz-button--xs dz-button--ghost dz-button--error delete"
         (click)="removeEntity(entity)"
@@ -27,7 +27,7 @@
   @if (isAdding()) {
     <li class="item dz-box shadow">
       <ul class="dz-list dz-list--full">
-        <span class="dz-form__hint"> Fill to add... </span>
+        <span class="dz-form__hint"> {{ uiText.DYNAMIC_INPUT.HINTS.FILL_TO_ADD }} </span>
 
         @for (key of entityKeys(); track key) {
           @if (key !== idKey()) {
@@ -45,7 +45,7 @@
           <button
             [disabled]="!isNewEntityValid()"
             type="button"
-            title="Save"
+            [title]="uiText.DYNAMIC_INPUT.TITLES.SAVE"
             class="dz-button dz-button--xs dz-button--icon dz-button--activated dz-button--ghost shadow"
             (click)="addEntity()"
           >
@@ -56,7 +56,7 @@
 
           <button
             type="button"
-            title="Cancel"
+            [title]="uiText.DYNAMIC_INPUT.TITLES.CANCEL"
             class="dz-button dz-button--xs dz-button--icon dz-button--error dz-button--ghost shadow"
             (click)="cancelAdding()"
           >
@@ -77,15 +77,15 @@
         </svg>
       </div>
 
-      <div class="dz-placeholder__text">Empty...</div>
+      <div class="dz-placeholder__text">{{ uiText.DYNAMIC_INPUT.EMPTY_PLACEHOLDER }}</div>
 
       <button
         type="button"
-        title="Add"
+        [title]="uiText.DYNAMIC_INPUT.TITLES.ADD"
         class="dz-button dz-button--md dz-button--icon dz-button--ghost shadow"
         (click)="toggleIsAdding()"
       >
-        Add
+        {{ uiText.DYNAMIC_INPUT.ADD_BUTTON }}
         <svg class="dz-icon" aria-hidden="true" focusable="false">
           <use href="#icon-plus"></use>
         </svg>
@@ -99,7 +99,7 @@
     @if (entities()?.length) {
       <button
         type="button"
-        title="Add"
+        [title]="uiText.DYNAMIC_INPUT.TITLES.ADD"
         class="dz-button dz-button--xs dz-button--icon dz-button--ghost shadow"
         (click)="toggleIsAdding()"
       >
@@ -111,7 +111,7 @@
 
     <button
       type="button"
-      title="Reset"
+      [title]="uiText.DYNAMIC_INPUT.TITLES.RESET"
       class="dz-button dz-button--xs dz-button--icon dz-button--ghost shadow"
       (click)="resetEntities()"
     >
@@ -123,7 +123,7 @@
     @if (entities()?.length) {
       <button
         type="button"
-        title="Delete All"
+        [title]="uiText.DYNAMIC_INPUT.TITLES.DELETE_ALL"
         class="dz-button dz-button--xs dz-button--icon dz-button--ghost shadow"
         (click)="clearEntities()"
       >

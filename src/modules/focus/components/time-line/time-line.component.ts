@@ -11,6 +11,7 @@ import {
   WritableSignal,
 } from '@angular/core';
 import { DatePipe } from '@angular/common';
+import { UI_TEXT } from '../../../common/constants';
 
 @Component({
   selector: 'dz-time-line',
@@ -42,6 +43,7 @@ export class TimeLineComponent implements OnInit, OnDestroy {
     return ((now - start) / (end - start)) * 100;
   });
   readonly nowTime: Signal<Date> = computed(() => new Date(this.#now()));
+  protected readonly uiText = UI_TEXT;
 
   public readonly startFrom: InputSignal<Date> = input.required<Date>();
   public readonly endTo: InputSignal<Date> = input.required<Date>();

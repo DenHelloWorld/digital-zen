@@ -13,6 +13,7 @@ import {
   LoaderComponent,
   ThemeService,
   ThemeSwitcherComponent,
+  UI_TEXT,
   VIEW_ENUM,
   ViewType,
 } from '../modules/common';
@@ -49,6 +50,7 @@ export class App {
 
   protected readonly colorSchemes: typeof COLOR_SCHEMA_ENUM = COLOR_SCHEMA_ENUM;
   protected readonly viewTypes: typeof VIEW_ENUM = VIEW_ENUM;
+  protected readonly uiText = UI_TEXT;
 
   protected setViewType(viewType: ViewType) {
     this.currentViewType.set(viewType);

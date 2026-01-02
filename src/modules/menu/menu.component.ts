@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, signal, WritableSignal } from '@angular/core';
 import { PeriodFormComponent } from './components/period-form';
+import { UI_TEXT } from '../common';
 
 @Component({
   selector: 'dz-menu',
@@ -10,6 +11,7 @@ import { PeriodFormComponent } from './components/period-form';
 })
 export class MenuComponent {
   protected isAddPeriodFormShow: WritableSignal<boolean> = signal(false);
+  protected readonly uiText = UI_TEXT;
 
   protected onAddClick(): void {
     this.isAddPeriodFormShow.set(true);

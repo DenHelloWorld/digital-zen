@@ -61,11 +61,13 @@
       <div class="dz-period-actions">
         @if (isConfirmingDelete()) {
           <div class="dz-confirm-delete">
-            <span class="dz-confirm-message">Delete "{{ p.name }}"?</span>
+            <span class="dz-confirm-message"
+              >{{ uiText.PERIOD.CONFIRM_DELETE }} "{{ p.name }}"?</span
+            >
             <button
               type="button"
               class="dz-button dz-button--sm dz-button--error shadow"
-              aria-label="Confirm delete period"
+              [attr.aria-label]="uiText.PERIOD.ARIA_LABELS.CONFIRM_DELETE"
               (click)="onConfirmDelete()"
             >
               <svg class="dz-icon" aria-hidden="true" focusable="false">
@@ -75,7 +77,7 @@
             <button
               type="button"
               class="dz-button dz-button--sm shadow"
-              aria-label="Cancel delete"
+              [attr.aria-label]="uiText.PERIOD.ARIA_LABELS.CANCEL_DELETE"
               (click)="onCancelDelete()"
             >
               <svg class="dz-icon" aria-hidden="true" focusable="false">
@@ -87,7 +89,7 @@
           <button
             type="button"
             class="dz-button dz-button--sm shadow"
-            aria-label="Edit period"
+            [attr.aria-label]="uiText.PERIOD.ARIA_LABELS.EDIT_PERIOD"
             (click)="onEdit()"
           >
             <svg class="dz-icon" aria-hidden="true" focusable="false">
@@ -99,7 +101,7 @@
             <button
               type="button"
               class="dz-button dz-button--sm dz-button--error shadow"
-              aria-label="Delete period"
+              [attr.aria-label]="uiText.PERIOD.ARIA_LABELS.DELETE_PERIOD"
               (click)="onDelete()"
             >
               <svg class="dz-icon" aria-hidden="true" focusable="false">
