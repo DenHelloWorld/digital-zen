@@ -17,9 +17,9 @@ import {
   ViewType,
 } from '../modules/common';
 import { FocusComponent } from '../modules/focus/focus.component';
-import { MenuComponent } from '../modules/menu/menu.component';
 import { DzToastContainerComponent } from '../modules/common/components/toast-container/toast-container';
 import { AuthService } from '../modules/auth';
+import { PeriodFormComponent } from '../modules/menu/components/period-form';
 
 @Component({
   selector: 'dz-app',
@@ -32,9 +32,9 @@ import { AuthService } from '../modules/auth';
     // components
     ThemeSwitcherComponent,
     FocusComponent,
-    MenuComponent,
     DzToastContainerComponent,
     LoaderComponent,
+    PeriodFormComponent,
   ],
 })
 export class App {

@@ -16,6 +16,12 @@ export interface IGoogleUserInfo {
   providedIn: 'root',
 })
 export class GoogleAuthService {
+  readonly #isChromeRuntime: boolean =
+    typeof chrome !== 'undefined' &&
+    !!chrome.runtime &&
+    !!chrome.runtime.id &&
+    !!chrome.identity &&
+    typeof chrome.identity.getAuthToken === 'function';
   readonly #apiService: ApiService = inject(ApiService);
 
   readonly #isGoogleAuthenticated: WritableSignal<boolean> = signal(false);
@@ -31,7 +37,7 @@ export class GoogleAuthService {
   }
 
   public login(): void {
-    if (this.#isPending()) {
+    if (this.#isPending() || !this.#isChromeRuntime) {
       return;
     }
 
@@ -55,7 +61,7 @@ export class GoogleAuthService {
   }
 
   public logout(): void {
-    if (this.#isPending()) {
+    if (this.#isPending() || !this.#isChromeRuntime) {
       return;
     }
 
@@ -80,7 +86,7 @@ export class GoogleAuthService {
   }
 
   public checkExistingGoogleAuth(): void {
-    if (this.#isPending()) {
+    if (this.#isPending() || !this.#isChromeRuntime) {
       return;
     }
 

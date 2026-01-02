@@ -25,6 +25,12 @@
     <span class="dz-form__hint"> <span class="dz-form__required">*</span> Days of week </span>
 
     <dz-weekdays-selector [(selectedDays)]="selectedDays" [isTodayShow]="false" />
+
+    @if (form.controls.daysOfWeek.invalid) {
+      <span class="dz-form__hint">
+        <span class="dz-form__required">Choose one or more days</span>
+      </span>
+    }
   </div>
 
   <ul class="dz-list dz-list--horizontal dz-list--full">
@@ -34,7 +40,7 @@
       <input
         type="time"
         class="dz-input dz-input--fit"
-        [class.dz-input--invalid]="form.controls.startFrom.invalid"
+        [class.dz-input--invalid]="form.errors?.['invalidTimeRange']"
         formControlName="startFrom"
         placeholder="* Start From"
       />
@@ -46,7 +52,7 @@
       <input
         type="time"
         class="dz-input dz-input--fit"
-        [class.dz-input--invalid]="form.controls.endTo.invalid"
+        [class.dz-input--invalid]="form.errors?.['invalidTimeRange']"
         formControlName="endTo"
         placeholder="* End To"
       />
@@ -68,6 +74,12 @@
       idKey="id"
       labelKey="name"
     />
+
+    @if (form.controls.webSites.invalid) {
+      <span class="dz-form__hint">
+        <span class="dz-form__required">Choose one or more websites</span>
+      </span>
+    }
   </div>
 
   <div class="dz-form__actions">

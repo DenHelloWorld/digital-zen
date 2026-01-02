@@ -26,7 +26,12 @@ export function timeRangeValidator(
     const start: string = group.get(startKey)?.value;
     const end: string = group.get(endKey)?.value;
 
-    if (start && end && start >= end) {
+    // If only one is provided, it's invalid
+    if (!start || !end) {
+      return { invalidTimeRange: true };
+    }
+
+    if (start >= end) {
       return { invalidTimeRange: true };
     }
 

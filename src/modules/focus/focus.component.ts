@@ -32,10 +32,6 @@ export class FocusComponent {
     this.#focusService.toggleFocus();
   }
 
-  protected toggleQuickFocus(): void {
-    this.#focusService.toggleQuickFocus();
-  }
-
   protected addCurrentTabToPeriod(): void {
     this.#focusService.addCurrentTabToPeriod();
   }

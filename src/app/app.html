@@ -1,14 +1,22 @@
 <header class="dz-header" [class.dark-theme]="theme() === colorSchemes.DARK">
   <nav class="dz-header__navigation">
-    <button (click)="setViewType(viewTypes.FOCUS)" class="dz-button dz-button--round dz-button--md">
+    <button
+      title="Focus menu"
+      (click)="setViewType(viewTypes.FOCUS)"
+      class="dz-button dz-button--round dz-button--md"
+    >
       <svg class="dz-icon" aria-hidden="true" focusable="false">
         <use href="#icon-person-zen"></use>
       </svg>
     </button>
 
-    <button (click)="setViewType(viewTypes.MENU)" class="dz-button dz-button--round dz-button--md">
+    <button
+      title="Add new period"
+      (click)="setViewType(viewTypes.ADD_PERIOD)"
+      class="dz-button dz-button--round dz-button--md"
+    >
       <svg class="dz-icon" aria-hidden="true" focusable="false">
-        <use href="#icon-menu"></use>
+        <use href="#icon-plus"></use>
       </svg>
     </button>
 
@@ -38,8 +46,10 @@
         <dz-focus />
       }
 
-      @case (viewTypes.MENU) {
-        <dz-menu />
+      @case (viewTypes.ADD_PERIOD) {
+        <div class="dz-box">
+          <dz-period-form mode="create" (completed)="setViewType(viewTypes.FOCUS)" />
+        </div>
       }
     }
   }
