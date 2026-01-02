@@ -5,7 +5,7 @@
  * @example
  * ```html
  * <svg class="dz-icon">
- *   <use [attr.href]="ICONS.PLUS"></use>
+ *   <use [attr.href]="icons.PLUS"></use>
  * </svg>
  * ```
  */
