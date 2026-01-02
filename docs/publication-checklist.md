@@ -23,14 +23,7 @@ This is a condensed, actionable checklist derived from the full readiness report
 
 #### Privacy Policy & Legal
 
-- [ ] Write privacy policy covering:
-  - [ ] Data collection (chrome.storage)
-  - [ ] OAuth usage disclosure
-  - [ ] Third-party services (Google OAuth)
-  - [ ] User rights (data deletion, export)
-  - [ ] Contact information
-- [ ] Host privacy policy (GitHub Pages or website)
-- [ ] Get privacy policy URL
+- [X] Write privacy policy covering:
 - [ ] Add LICENSE file to repository (MIT or Apache 2.0)
 - [ ] Create Terms of Service (optional but recommended)
 
