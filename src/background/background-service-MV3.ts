@@ -7,6 +7,9 @@ import {
   ChromeCommandType,
 } from '../modules/common/enums/chrome-command.enum';
 import { CHROME_ALARM_ENUM } from '../modules/common/enums/chrome-alarm-name.enum';
+import { FOCUS_ERROR_ENUM } from '../modules/common/enums/focus-error.enum';
+
+type FocusOperationResult = { success: true } | { success: false; error: FOCUS_ERROR_ENUM };
 
 /**
  * @class BackgroundService
@@ -53,7 +56,7 @@ export class BackgroundServiceMV3 {
                 const result = await this.startFocus(periodToStart);
                 sendResponse(result);
               } else {
-                sendResponse({ success: false, error: 'PERIOD_NOT_FOUND' });
+                sendResponse({ success: false, error: FOCUS_ERROR_ENUM.PERIOD_NOT_FOUND });
               }
               break;
             }
@@ -206,11 +209,11 @@ export class BackgroundServiceMV3 {
     }
   }
 
-  private async startFocus(period: IFocus.Period): Promise<{ success: boolean; error?: string }> {
+  private async startFocus(period: IFocus.Period): Promise<FocusOperationResult> {
     const today = new Date().getDay();
 
     if (period.daysOfWeek && !period.daysOfWeek.includes(today)) {
-      return { success: false, error: 'PERIOD_NOT_SCHEDULED_TODAY' };
+      return { success: false, error: FOCUS_ERROR_ENUM.PERIOD_NOT_SCHEDULED_TODAY };
     }
 
     this.#currentPeriod = period;
@@ -228,9 +231,9 @@ export class BackgroundServiceMV3 {
     return { success: true };
   }
 
-  private async stopFocus(): Promise<{ success: boolean }> {
+  private async stopFocus(): Promise<FocusOperationResult> {
     if (!this.#currentPeriod) {
-      return { success: true };
+      return { success: false, error: FOCUS_ERROR_ENUM.FOCUS_ALREADY_INACTIVE };
     }
 
     const endTime = new Date();
@@ -260,11 +263,11 @@ export class BackgroundServiceMV3 {
     return { success: true };
   }
 
-  private async toggleFocus(): Promise<{ success: boolean; error?: string }> {
+  private async toggleFocus(): Promise<FocusOperationResult> {
     const current = await StorageAdapter.getCurrentPeriod();
 
     if (!current) {
-      return { success: true };
+      return { success: false, error: FOCUS_ERROR_ENUM.NO_CURRENT_PERIOD_TO_TOGGLE };
     }
 
     if (current.isFocused) {
@@ -274,7 +277,7 @@ export class BackgroundServiceMV3 {
     }
   }
 
-  private async toggleQuickFocus(url: string): Promise<{ success: boolean; error?: string }> {
+  private async toggleQuickFocus(url: string): Promise<FocusOperationResult> {
     const current = await StorageAdapter.getCurrentPeriod();
 
     if (current && current.id === QUICK_FOCUS_ID && current.isFocused) {
@@ -332,7 +335,7 @@ export class BackgroundServiceMV3 {
     return tabs.length ? tabs[0] : null;
   }
 
-  private async startQuickFocus(url: string): Promise<{ success: boolean; error?: string }> {
+  private async startQuickFocus(url: string): Promise<FocusOperationResult> {
     const domain = url.replace(/^https?:\/\//, '').split('/')[0];
     const quickPeriod: IFocus.Period = {
       id: QUICK_FOCUS_ID,
