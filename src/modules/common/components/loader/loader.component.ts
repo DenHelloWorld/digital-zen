@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ICONS } from '../../constants';
 
 @Component({
   selector: 'dz-loader',
@@ -6,4 +7,6 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
   styleUrls: ['loader.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class LoaderComponent {}
+export class LoaderComponent {
+  protected readonly icons = ICONS;
+}

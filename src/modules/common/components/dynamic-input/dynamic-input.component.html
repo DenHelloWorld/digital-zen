@@ -18,7 +18,7 @@
         [disabled]="isReadonly(entity)"
       >
         <svg class="dz-icon" aria-hidden="true" focusable="false">
-          <use href="#icon-delete"></use>
+          <use [attr.href]="icons.DELETE"></use>
         </svg>
       </button>
     </li>
@@ -50,7 +50,7 @@
             (click)="addEntity()"
           >
             <svg class="dz-icon" aria-hidden="true" focusable="false">
-              <use href="#icon-save"></use>
+              <use [attr.href]="icons.SAVE"></use>
             </svg>
           </button>
 
@@ -61,7 +61,7 @@
             (click)="cancelAdding()"
           >
             <svg class="dz-icon" aria-hidden="true" focusable="false">
-              <use href="#icon-close"></use>
+              <use [attr.href]="icons.CLOSE"></use>
             </svg>
           </button>
         </div>
@@ -73,7 +73,7 @@
     <li class="dz-placeholder">
       <div class="dz-placeholder__icon">
         <svg class="dz-icon" aria-hidden="true" focusable="false">
-          <use href="#icon-folder-off"></use>
+          <use [attr.href]="icons.FOLDER_OFF"></use>
         </svg>
       </div>
 
@@ -87,7 +87,7 @@
       >
         {{ uiText.DYNAMIC_INPUT.ADD_BUTTON }}
         <svg class="dz-icon" aria-hidden="true" focusable="false">
-          <use href="#icon-plus"></use>
+          <use [attr.href]="icons.PLUS"></use>
         </svg>
       </button>
     </li>
@@ -104,7 +104,7 @@
         (click)="toggleIsAdding()"
       >
         <svg class="dz-icon" aria-hidden="true" focusable="false">
-          <use href="#icon-plus"></use>
+          <use [attr.href]="icons.PLUS"></use>
         </svg>
       </button>
     }
@@ -116,7 +116,7 @@
       (click)="resetEntities()"
     >
       <svg class="dz-icon" aria-hidden="true" focusable="false">
-        <use href="#icon-reset"></use>
+        <use [attr.href]="icons.RESET"></use>
       </svg>
     </button>
 
@@ -128,7 +128,7 @@
         (click)="clearEntities()"
       >
         <svg class="dz-icon" aria-hidden="true" focusable="false">
-          <use href="#icon-delete"></use>
+          <use [attr.href]="icons.DELETE"></use>
         </svg>
       </button>
     }

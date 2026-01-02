@@ -10,6 +10,7 @@ import { CommonModule } from '@angular/common';
 import {
   COLOR_SCHEMA_ENUM,
   ColorSchemaType,
+  ICONS,
   LoaderComponent,
   ThemeService,
   ThemeSwitcherComponent,
@@ -51,6 +52,7 @@ export class App {
   protected readonly colorSchemes: typeof COLOR_SCHEMA_ENUM = COLOR_SCHEMA_ENUM;
   protected readonly viewTypes: typeof VIEW_ENUM = VIEW_ENUM;
   protected readonly uiText = UI_TEXT;
+  protected readonly icons = ICONS;
 
   protected setViewType(viewType: ViewType) {
     this.currentViewType.set(viewType);

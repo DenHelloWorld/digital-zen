@@ -71,7 +71,7 @@
               (click)="onConfirmDelete()"
             >
               <svg class="dz-icon" aria-hidden="true" focusable="false">
-                <use href="#icon-delete"></use>
+                <use [attr.href]="icons.DELETE"></use>
               </svg>
             </button>
             <button
@@ -81,7 +81,7 @@
               (click)="onCancelDelete()"
             >
               <svg class="dz-icon" aria-hidden="true" focusable="false">
-                <use href="#icon-close"></use>
+                <use [attr.href]="icons.CLOSE"></use>
               </svg>
             </button>
           </div>
@@ -110,7 +110,7 @@
             (click)="onEdit()"
           >
             <svg class="dz-icon" aria-hidden="true" focusable="false">
-              <use href="#icon-edit"></use>
+              <use [attr.href]="icons.EDIT"></use>
             </svg>
           </button>
 
@@ -122,7 +122,7 @@
               (click)="onDelete()"
             >
               <svg class="dz-icon" aria-hidden="true" focusable="false">
-                <use href="#icon-delete"></use>
+                <use [attr.href]="icons.DELETE"></use>
               </svg>
             </button>
           }
