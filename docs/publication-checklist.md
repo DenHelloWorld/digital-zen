@@ -9,6 +9,7 @@ This is a condensed, actionable checklist derived from the full readiness report
 ### Week 1: Assets & Legal
 
 #### Store Listing Assets
+
 - [ ] Design 128x128 icon (upscale/redesign current 32x32 icons)
 - [ ] Design 16x16 icon for completeness
 - [ ] Create screenshot 1: Main popup interface (1280x800)
@@ -21,6 +22,7 @@ This is a condensed, actionable checklist derived from the full readiness report
 - [ ] Design marquee promotional image (1400x560)
 
 #### Privacy Policy & Legal
+
 - [ ] Write privacy policy covering:
   - [ ] Data collection (chrome.storage)
   - [ ] OAuth usage disclosure
@@ -33,6 +35,7 @@ This is a condensed, actionable checklist derived from the full readiness report
 - [ ] Create Terms of Service (optional but recommended)
 
 #### Manifest Updates
+
 - [ ] Update version from "1.0" to "1.0.0"
 - [ ] Expand description to 100-132 characters
 - [ ] Set up Google Cloud project for OAuth
@@ -45,6 +48,7 @@ This is a condensed, actionable checklist derived from the full readiness report
 ### Week 2: Store Listing Content
 
 #### Write Store Listing
+
 - [ ] Write detailed description (500-1000 words)
   - [ ] Introduction paragraph
   - [ ] Key features section
@@ -69,6 +73,7 @@ This is a condensed, actionable checklist derived from the full readiness report
 ### Week 3: Testing & QA
 
 #### Manual Testing
+
 - [ ] Test fresh install in clean Chrome profile
 - [ ] Test extension icon appears in toolbar
 - [ ] Test popup opens correctly
@@ -84,11 +89,13 @@ This is a condensed, actionable checklist derived from the full readiness report
 - [ ] Test performance (no lag, smooth UI)
 
 #### Cross-Browser Testing
+
 - [ ] Test in Chrome (primary target)
 - [ ] Test in Edge (Chromium-based)
 - [ ] Test in Brave (Chromium-based)
 
 #### Bug Fixes
+
 - [ ] Document all bugs found
 - [ ] Fix critical bugs
 - [ ] Retest after fixes
@@ -96,17 +103,20 @@ This is a condensed, actionable checklist derived from the full readiness report
 ### Week 4: Submission
 
 #### Developer Account Setup
+
 - [ ] Register Chrome Web Store developer account ($5 fee)
 - [ ] Add payment method
 - [ ] Verify developer account
 
 #### Final Build
+
 - [ ] Run `npm run build:prod`
 - [ ] Verify dist/browser folder contents
 - [ ] Test built extension in Chrome
 - [ ] Create zip file of dist/browser folder
 
 #### Upload & Submit
+
 - [ ] Upload extension zip to Chrome Web Store
 - [ ] Upload all screenshots (5 images)
 - [ ] Upload promotional images (small, large, marquee)
@@ -123,6 +133,7 @@ This is a condensed, actionable checklist derived from the full readiness report
 ## 🟡 Phase 2: Recommended Improvements (Post-Launch or v1.1)
 
 ### User Experience
+
 - [ ] Design first-run onboarding flow
 - [ ] Create help/tutorial section
 - [ ] Add tooltips for complex features
@@ -131,12 +142,14 @@ This is a condensed, actionable checklist derived from the full readiness report
 - [ ] Implement accessibility improvements (ARIA labels)
 
 ### Documentation
+
 - [ ] Create user guide
 - [ ] Write FAQ section
 - [ ] Document common issues and solutions
 - [ ] Create video tutorial (optional)
 
 ### Additional Features
+
 - [ ] Statistics dashboard (focus time tracking)
 - [ ] Export settings functionality
 - [ ] Import settings functionality
@@ -149,6 +162,7 @@ This is a condensed, actionable checklist derived from the full readiness report
 ## 🟢 Phase 3: Future Enhancements (v1.2+)
 
 ### Advanced Features
+
 - [ ] Implement `chrome.i18n` API
 - [ ] Add Russian localization
 - [ ] Add Spanish localization
@@ -159,6 +173,7 @@ This is a condensed, actionable checklist derived from the full readiness report
 - [ ] Browser history integration
 
 ### Community & Growth
+
 - [ ] Set up Discord/community channel
 - [ ] Create Twitter/X account
 - [ ] Plan content marketing strategy
@@ -172,17 +187,20 @@ This is a condensed, actionable checklist derived from the full readiness report
 Use this before clicking "Submit for Review":
 
 ### Assets ✓
+
 - [ ] Icon 128x128 uploaded and looks good
 - [ ] 3-5 screenshots uploaded (1280x800)
 - [ ] All promotional images uploaded
 - [ ] All images are high quality and professional
 
 ### Legal ✓
+
 - [ ] Privacy policy URL works and is complete
 - [ ] LICENSE file in repository
 - [ ] Support email/URL configured and working
 
 ### Store Listing ✓
+
 - [ ] Description is compelling and complete (500+ words)
 - [ ] Short description is 100-132 characters
 - [ ] Category is set to "Productivity"
@@ -190,6 +208,7 @@ Use this before clicking "Submit for Review":
 - [ ] Language is set to English
 
 ### Technical ✓
+
 - [ ] Manifest version is "1.0.0"
 - [ ] OAuth client ID is real (not placeholder)
 - [ ] Extension key is added
@@ -199,6 +218,7 @@ Use this before clicking "Submit for Review":
 - [ ] All core features work
 
 ### Testing ✓
+
 - [ ] Installation works smoothly
 - [ ] All core features tested and working
 - [ ] OAuth flow tested and working
@@ -211,12 +231,14 @@ Use this before clicking "Submit for Review":
 ## 📝 Notes & Tips
 
 ### Icon Design Tips
+
 - Use vector graphics for scalability
 - Keep design simple and recognizable at small sizes
 - Use brand colors consistently
 - Test at all required sizes (16, 32, 48, 128)
 
 ### Screenshot Tips
+
 - Use consistent browser theme
 - Show real use cases
 - Add annotations if helpful
@@ -224,12 +246,14 @@ Use this before clicking "Submit for Review":
 - Showcase key features
 
 ### Privacy Policy Tips
+
 - Be transparent about all data usage
 - Use clear, non-legal language
 - Provide contact information
 - Update whenever you add features
 
 ### Submission Tips
+
 - Be thorough in permission justifications
 - Respond quickly to reviewer questions
 - Plan for 1-3 week review process

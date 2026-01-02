@@ -21,6 +21,7 @@ This guide provides instructions for hosting the Digital Zen privacy policy on f
 The privacy policy must be publicly accessible for Chrome Web Store publication, but you can keep your source code private by hosting only the privacy policy on a free static hosting service.
 
 **Privacy Policy Files:**
+
 - `docs/privacy-policy.html` - English version
 - `docs/privacy-policy-ru.html` - Russian version
 
@@ -51,6 +52,7 @@ Vercel offers free static hosting with automatic deployments from Git repositori
 **Cons:** Requires account
 
 **Privacy Policy URL for Chrome Web Store:**
+
 - English: `https://your-project.vercel.app/privacy-policy.html`
 - Russian: `https://your-project.vercel.app/privacy-policy-ru.html`
 
@@ -88,6 +90,7 @@ This is unique among free hosting providers - you can keep your repository priva
 **Cons:** Need to use GitLab instead of GitHub
 
 **Privacy Policy URL for Chrome Web Store:**
+
 - English: `https://username.gitlab.io/project-name/privacy-policy.html`
 - Russian: `https://username.gitlab.io/project-name/privacy-policy-ru.html`
 
@@ -116,6 +119,7 @@ Cloudflare Pages offers free static hosting with fast global CDN.
 **Cons:** Requires account
 
 **Privacy Policy URL for Chrome Web Store:**
+
 - English: `https://digital-zen.pages.dev/privacy-policy.html`
 - Russian: `https://digital-zen.pages.dev/privacy-policy-ru.html`
 
@@ -216,6 +220,7 @@ When you need to update the privacy policy:
 ### Issue: Privacy policy not accessible after deployment
 
 **Solution:**
+
 - Wait 1-2 minutes for deployment to complete
 - Check deployment logs in your hosting service dashboard
 - Verify the URL is correct (case-sensitive)
@@ -224,6 +229,7 @@ When you need to update the privacy policy:
 ### Issue: Changes not showing after update
 
 **Solution:**
+
 - Confirm changes were committed and pushed to repository
 - Check deployment logs to ensure build succeeded
 - Clear browser cache
@@ -248,6 +254,7 @@ When you need to update the privacy policy:
 ### Issue: GitLab CI/CD pipeline failing
 
 **Solution:**
+
 - Check `.gitlab-ci.yml` syntax is correct
 - Verify file paths in the script match your repository structure
 - Check GitLab CI/CD logs for specific error messages

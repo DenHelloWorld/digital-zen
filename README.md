@@ -368,6 +368,7 @@ These documents provide detailed guidance on assets, legal requirements, testing
 ### Privacy Policy
 
 The privacy policy is available in English and Russian versions in the `docs/` folder:
+
 - `docs/privacy-policy.html` - English version
 - `docs/privacy-policy-ru.html` - Russian version
 
