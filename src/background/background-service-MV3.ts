@@ -92,11 +92,11 @@ export class BackgroundServiceMV3 {
               break;
             }
             default:
-              sendResponse({ success: false, error: 'Unknown command' });
+              sendResponse({ success: false, error: FOCUS_ERROR_ENUM.UNKNOWN_COMMAND });
           }
         } catch (error) {
           console.error('Background error:', error);
-          sendResponse({ success: false, error: String(error) });
+          sendResponse({ success: false, error: FOCUS_ERROR_ENUM.GENERIC_ERROR });
         }
       })();
 
