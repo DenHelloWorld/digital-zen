@@ -24,18 +24,12 @@ This is a condensed, actionable checklist derived from the full readiness report
 #### Privacy Policy & Legal
 
 - [X] Write privacy policy covering:
-- [ ] Add LICENSE file to repository (MIT or Apache 2.0)
-- [ ] Create Terms of Service (optional but recommended)
+- [X] Add LICENSE file to repository (MIT or Apache 2.0)
 
 #### Manifest Updates
 
-- [ ] Update version from "1.0" to "1.0.0"
+- [X] Update version from "1.0" to "1.0.0"
 - [ ] Expand description to 100-132 characters
-- [ ] Set up Google Cloud project for OAuth
-- [ ] Get OAuth client ID
-- [ ] Add real OAuth client ID to manifest
-- [ ] Get extension key (after first upload to developer dashboard)
-- [ ] Add extension key to manifest
 - [ ] Verify all icon references (16, 32, 48, 128)
 
 ### Week 2: Store Listing Content
