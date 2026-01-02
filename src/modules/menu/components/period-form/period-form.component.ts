@@ -169,7 +169,7 @@ export class PeriodFormComponent implements OnInit {
 
   /**
    * Updates the validators for the name field.
-   * Extracted to avoid code duplication between constructor effect and #initForm.
+   * Extracted to avoid code duplication between #setupValidatorUpdates effect and #initForm.
    */
   #updateNameValidators(periods: IFocus.Period[] | null, currentPeriodId?: string): void {
     this.form.controls.name.clearValidators();

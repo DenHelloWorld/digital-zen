@@ -31,6 +31,11 @@ export function uniquePeriodNameValidator(
 
     const trimmedValue = value.trim().toLowerCase();
 
+    // If the trimmed value is empty, skip duplicate validation
+    if (!trimmedValue) {
+      return null;
+    }
+
     // Check if a period with the same name already exists
     const isDuplicate = existingPeriods.some(period => {
       // Skip the current period when in edit mode
