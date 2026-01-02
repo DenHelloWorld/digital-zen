@@ -91,6 +91,11 @@
               type="button"
               class="dz-button dz-button--sm dz-button--accent shadow"
               [attr.aria-label]="uiText.PERIOD.ARIA_LABELS.ACTIVATE_PERIOD"
+              [attr.title]="
+                isFocusActive()
+                  ? 'Stop focus to activate this period'
+                  : uiText.PERIOD.ARIA_LABELS.ACTIVATE_PERIOD
+              "
               [disabled]="isFocusActive()"
               (click)="onActivate()"
             >
