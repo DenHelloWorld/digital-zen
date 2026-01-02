@@ -6,7 +6,7 @@
     "start": "ng serve",
     "build": "ng build && tsc -p tsconfig.background.json && tsc-alias -p tsconfig.background.json",
     "build:prod": "ng build && tsc -p tsconfig.background.json && tsc-alias -p tsconfig.background.json && npm run patch-manifest",
-    "patch-manifest": "dotenv -- node -e \"const fs=require('fs'); const m='./dist/browser/manifest.json'; let c=fs.readFileSync(m,'utf8'); c=c.replace('__OAUTH_CLIENT_ID__', process.env.OAUTH_CLIENT_ID).replace('__PUBLIC_KEY__', process.env.PUBLIC_KEY); fs.writeFileSync(m, c);\"",
+    "patch-manifest": "dotenv -- node scripts/patch-manifest.js",
     "test": "ng test",
     "lint": "ng lint",
     "format": "npx prettier --write .",
