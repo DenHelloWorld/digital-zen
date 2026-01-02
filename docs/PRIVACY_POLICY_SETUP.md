@@ -34,6 +34,19 @@ Once GitHub Pages is enabled, the privacy policy will be accessible at:
 
 To make the privacy policy publicly accessible, follow these steps:
 
+### 0. Ensure Repository is Public
+
+**Important:** GitHub Pages requires a public repository on free GitHub accounts. If your repository is private:
+
+- **Option 1 (Recommended):** Make the repository public
+  1. Go to Settings → General
+  2. Scroll to "Danger Zone"
+  3. Click "Change visibility" → "Make public"
+  
+- **Option 2:** Upgrade to GitHub Enterprise for private repository hosting
+  - GitHub Enterprise allows private GitHub Pages sites
+  - [Learn more about GitHub Enterprise](https://docs.github.com/pages/getting-started-with-github-pages/changing-the-visibility-of-your-github-pages-site)
+
 ### 1. Merge this PR to main branch
 ```bash
 # After PR review and approval, merge to main
@@ -82,6 +95,12 @@ To update the privacy policy in the future:
 4. GitHub Actions will automatically deploy the changes
 
 ## Troubleshooting
+
+### Cannot enable GitHub Pages (Private repository)
+- **Problem:** Message says "Upgrade or make this repository public to enable Pages"
+- **Cause:** GitHub Pages requires public repositories on free accounts
+- **Solution:** Make repository public (Settings → General → Danger Zone → Change visibility) or upgrade to GitHub Enterprise
+- **Note:** Privacy policy must be publicly accessible for Chrome Web Store anyway
 
 ### Privacy policy not accessible
 - **Check:** GitHub Pages is enabled in repository settings

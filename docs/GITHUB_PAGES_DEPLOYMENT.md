@@ -34,9 +34,12 @@ GitHub Pages allows us to host static documentation and the privacy policy direc
 
 Before deploying to GitHub Pages, ensure you have:
 
-1. **Repository access:** Write permissions to the `DenHelloWorld/digital-zen` repository
-2. **Git installed:** For manual deployment method
-3. **GitHub Actions enabled:** For automated deployment (should be enabled by default)
+1. **Public repository:** The repository must be public to use GitHub Pages (or have a GitHub Enterprise account for private repository hosting)
+2. **Repository access:** Write permissions to the `DenHelloWorld/digital-zen` repository
+3. **Git installed:** For manual deployment method
+4. **GitHub Actions enabled:** For automated deployment (should be enabled by default)
+
+> **Important:** GitHub Pages is only available for public repositories on free GitHub accounts. To use GitHub Pages with a private repository, you need a GitHub Enterprise account. [Learn more about GitHub Pages visibility](https://docs.github.com/pages/getting-started-with-github-pages/changing-the-visibility-of-your-github-pages-site).
 
 ---
 
@@ -194,6 +197,28 @@ When you need to update the privacy policy:
 ---
 
 ## Troubleshooting
+
+### Issue: Cannot enable GitHub Pages - "Upgrade or make this repository public"
+
+**Problem:** When trying to enable GitHub Pages, you see a message: "Upgrade or make this repository public to enable Pages"
+
+**Cause:** GitHub Pages is only available for public repositories on free GitHub accounts.
+
+**Solutions:**
+
+1. **Make repository public (Recommended for open-source projects):**
+   - Go to Settings → General
+   - Scroll to "Danger Zone"
+   - Click "Change visibility" → "Make public"
+   - Confirm the change
+   - Return to Settings → Pages to enable GitHub Pages
+
+2. **Upgrade to GitHub Enterprise:**
+   - GitHub Enterprise allows private GitHub Pages sites
+   - [Learn more about GitHub Enterprise](https://docs.github.com/enterprise-cloud@latest/pages/getting-started-with-github-pages/changing-the-visibility-of-your-github-pages-site)
+   - This option requires a paid subscription
+
+> **Note:** For Chrome Web Store publication, the privacy policy must be publicly accessible anyway, so making the repository public is the recommended approach.
 
 ### Issue: GitHub Pages not showing updated content
 
