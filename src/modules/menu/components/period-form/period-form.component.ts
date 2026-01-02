@@ -67,22 +67,10 @@ export class PeriodFormComponent implements OnInit {
     WEBSITE_FACEBOOK,
   ]);
 
-  constructor() {
-    // Update the name field validator whenever the periods list changes
-    effect(() => {
-      const periods = this.#focusService.periods();
-      const currentPeriodId = this.period()?.id;
-
-      // Only update if form is initialized
-      if (this.form?.controls.name) {
-        this.#updateNameValidators(periods, currentPeriodId);
-      }
-    });
-  }
-
   public ngOnInit(): void {
     this.#initForm();
     this.#loadPeriodData();
+    this.#setupValidatorUpdates();
 
     this.form.valueChanges
       .pipe(
@@ -190,6 +178,22 @@ export class PeriodFormComponent implements OnInit {
       uniquePeriodNameValidator(periods, currentPeriodId),
     ]);
     this.form.controls.name.updateValueAndValidity();
+  }
+
+  /**
+   * Sets up reactive validator updates whenever the periods list changes.
+   * Uses effect to automatically update validators when periods or current period changes.
+   */
+  #setupValidatorUpdates(): void {
+    effect(
+      () => {
+        const periods = this.#focusService.periods();
+        const currentPeriodId = this.period()?.id;
+
+        this.#updateNameValidators(periods, currentPeriodId);
+      },
+      { injector: this.#injector }
+    );
   }
 
   #initForm(): void {
