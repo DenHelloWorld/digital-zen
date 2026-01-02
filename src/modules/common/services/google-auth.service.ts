@@ -16,7 +16,12 @@ export interface IGoogleUserInfo {
   providedIn: 'root',
 })
 export class GoogleAuthService {
-  readonly #isChromeRuntime: boolean = !!chrome.runtime;
+  readonly #isChromeRuntime: boolean =
+    typeof chrome !== 'undefined' &&
+    !!chrome.runtime &&
+    !!chrome.runtime.id &&
+    !!chrome.identity &&
+    typeof chrome.identity.getAuthToken === 'function';
   readonly #apiService: ApiService = inject(ApiService);
 
   readonly #isGoogleAuthenticated: WritableSignal<boolean> = signal(false);
