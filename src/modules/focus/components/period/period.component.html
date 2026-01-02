@@ -86,6 +86,18 @@
             </button>
           </div>
         } @else {
+          @if (!isCurrent()) {
+            <button
+              type="button"
+              class="dz-button dz-button--sm dz-button--accent shadow"
+              [attr.aria-label]="uiText.PERIOD.ARIA_LABELS.ACTIVATE_PERIOD"
+              [disabled]="isFocusActive()"
+              (click)="onActivate()"
+            >
+              {{ uiText.PERIOD.ACTIVATE_BUTTON }}
+            </button>
+          }
+
           <button
             type="button"
             class="dz-button dz-button--sm shadow"

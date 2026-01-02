@@ -353,4 +353,10 @@ export class FocusService {
       });
     }
   }
+
+  public setCurrentPeriod(periodId: string): void {
+    if (this.#isChromeRuntime) {
+      chrome.runtime.sendMessage({ command: CHROME_COMMAND_ENUM.SET_CURRENT_PERIOD, periodId });
+    }
+  }
 }

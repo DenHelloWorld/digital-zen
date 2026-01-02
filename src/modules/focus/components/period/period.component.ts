@@ -44,6 +44,8 @@ export class PeriodComponent {
 
   public readonly period: InputSignal<IFocus.Period> = input.required<IFocus.Period>();
   public readonly totalPeriodsCount: InputSignal<number> = input.required<number>();
+  public readonly isCurrent: InputSignal<boolean> = input.required<boolean>();
+  public readonly isFocusActive: InputSignal<boolean> = input.required<boolean>();
 
   public readonly toggleBlockedWebsite: OutputEmitterRef<IFocus.WebSite> = output<IFocus.WebSite>();
 
@@ -70,5 +72,9 @@ export class PeriodComponent {
 
   protected onCancelDelete(): void {
     this.isConfirmingDelete.set(false);
+  }
+
+  protected onActivate(): void {
+    this.#focusService.setCurrentPeriod(this.period().id);
   }
 }
