@@ -126,7 +126,7 @@ export class BackgroundServiceMV3 {
     chrome.alarms.onAlarm.addListener(async alarm => {
       if (alarm.name === CHROME_ALARM_ENUM.CHECK_FOCUS_END) {
         const current = await StorageAdapter.getCurrentPeriod();
-        if (current?.isFocused && current.endTo && new Date() > current.endTo) {
+        if (current?.isFocused && current.endTo && this.isCurrentTimeAfter(current.endTo)) {
           await this.stopFocus();
         }
       }
@@ -162,6 +162,29 @@ export class BackgroundServiceMV3 {
    * */
   private scheduleAlarm(): void {
     chrome.alarms.create(CHROME_ALARM_ENUM.CHECK_FOCUS_END, { periodInMinutes: 1 });
+  }
+
+  /**
+   * Compares current time with a target time, ignoring the date portion.
+   * Returns true if current time (hours:minutes:seconds) is after the target time.
+   */
+  private isCurrentTimeAfter(targetDate: Date): boolean {
+    const now = new Date();
+    const currentTimeMs = this.getTimeInMilliseconds(now);
+    const targetTimeMs = this.getTimeInMilliseconds(targetDate);
+    return currentTimeMs > targetTimeMs;
+  }
+
+  /**
+   * Extracts time-only value from a Date object.
+   * Returns milliseconds since midnight (ignoring the date portion).
+   */
+  private getTimeInMilliseconds(date: Date): number {
+    const hours = date.getHours();
+    const minutes = date.getMinutes();
+    const seconds = date.getSeconds();
+    const milliseconds = date.getMilliseconds();
+    return hours * 60 * 60 * 1000 + minutes * 60 * 1000 + seconds * 1000 + milliseconds;
   }
 
   private async addPeriod(period: IFocus.Period): Promise<void> {
