@@ -244,7 +244,7 @@ Hostinger shared hosting typically includes:
 └───────────┼──────────────────────────────┘
             │
             │ HTTPS REST API
-            │ (Authorization: ******
+            │ (Authorization: Bearer <access_token>)
             ▼
 ┌─────────────────────────────────────────┐
 │   Hostinger PHP Backend                  │
@@ -1382,6 +1382,20 @@ class RateLimitMiddleware {
            }
          )
        );
+     }
+     
+     async #getAuthToken(): Promise<string> {
+       if (typeof chrome === 'undefined' || !chrome.identity) {
+         throw new Error('Chrome identity API not available');
+       }
+       
+       const result = await chrome.identity.getAuthToken({ interactive: false });
+       
+       if (!result?.token) {
+         throw new Error('No token available');
+       }
+       
+       return result.token;
      }
    }
    ```

@@ -612,7 +612,7 @@ export class BackendSyncService {
     
     return new HttpHeaders({
       'Content-Type': 'application/json',
-      'Authorization': `****** // Bearer токен для серверной валидации
+      'Authorization': `Bearer ${token}` // Bearer токен для серверной валидации
     });
   }
   
@@ -644,11 +644,13 @@ export * from './backend-sync.service';
 #### Использование в компоненте
 
 ```typescript
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { BackendSyncService } from '@modules/common/services';
 
 @Component({
   selector: 'dz-sync-button',
+  standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <button (click)="syncData()">
       @if (isSyncing()) {
@@ -747,7 +749,7 @@ curl -X POST https://your-domain.com/api/v1/periods \
 
 **Решение:**
 1. Проверь, что Google OAuth токен валидный и не истёк
-2. Убедись, что токен отправляется в header `Authorization: ******
+2. Убедись, что токен отправляется в header `Authorization: Bearer YOUR_GOOGLE_ACCESS_TOKEN`
 3. Проверь, что Chrome Extension получил токен через `chrome.identity.getAuthToken()`
 4. Проверь логи ошибок PHP
 
