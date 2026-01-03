@@ -146,7 +146,7 @@ class Database {
         $host = 'localhost';
         $dbname = 'digital_zen_db';
         $username = 'dz_user';
-        $password = '{ТВОЙ_СИЛЬНЫЙ_ПАРОЛЬ}'; // Генерируй 20+ символов случайных
+        $password = '{STRONG_PASSWORD_20_CHARS}'; // Генерируй 20+ символов случайных
         
         try {
             $this->connection = new PDO(
@@ -505,7 +505,8 @@ import { GoogleAuthService } from './google-auth.service';
 export class BackendSyncService {
   readonly #http = inject(HttpClient);
   
-  // ⚠️ ВАЖНО: Замени {YOUR_DOMAIN} на реальный домен (например: mysite.com)
+  // ⚠️ ВАЖНО: Замени {YOUR_DOMAIN} на реальный домен
+  // Пример: 'https://mysite.com/api/v1' или 'https://digital-zen.hostinger-site.com/api/v1'
   readonly #apiUrl = 'https://{YOUR_DOMAIN}/api/v1';
   
   /**
