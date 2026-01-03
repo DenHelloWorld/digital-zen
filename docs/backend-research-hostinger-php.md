@@ -169,9 +169,10 @@ Hostinger shared hosting typically includes:
 ### ✅ Feasible Features / Реализуемые функции
 
 1. **User Authentication & Management**
-   - Validate Google OAuth tokens received from Chrome Extension
+   - Chrome Extension handles Google OAuth authentication
+   - Backend uses user email for identification (already verified by Chrome)
    - Create user profiles in MySQL database
-   - Session management with JWT or session cookies
+   - Simple email-based session management
 
 2. **Data Synchronization**
    - Store focus periods in MySQL
@@ -232,7 +233,7 @@ Hostinger shared hosting typically includes:
 │  │ (Identity API) │  │ (Fallback)     │ │
 │  └────────┬───────┘  └────────────────┘ │
 │           │                              │
-│           │ Auth Token                   │
+│           │ User Info (email, name)      │
 │           ▼                              │
 │  ┌────────────────────────────────────┐ │
 │  │    ApiService (HttpClient)         │ │
@@ -243,7 +244,7 @@ Hostinger shared hosting typically includes:
 └───────────┼──────────────────────────────┘
             │
             │ HTTPS REST API
-            │ (Authorization: Bearer token)
+            │ (X-User-Email: user@gmail.com)
             ▼
 ┌─────────────────────────────────────────┐
 │   Hostinger PHP Backend                  │
