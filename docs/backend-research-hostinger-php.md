@@ -471,7 +471,9 @@ CREATE TABLE sync_metadata (
 RewriteEngine On
 
 # CORS headers for Chrome Extension
-Header always set Access-Control-Allow-Origin "chrome-extension://YOUR_EXTENSION_ID"
+# IMPORTANT: Replace {YOUR_EXTENSION_ID} with your actual Chrome Extension ID
+# Find it at chrome://extensions/ in Developer Mode
+Header always set Access-Control-Allow-Origin "chrome-extension://{YOUR_EXTENSION_ID}"
 Header always set Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
 Header always set Access-Control-Allow-Headers "Content-Type, Authorization, X-Requested-With"
 Header always set Access-Control-Allow-Credentials "true"
@@ -1224,13 +1226,15 @@ try {
 ### PHP Security Best Practices / Лучшие практики безопасности PHP
 
 ```php
-// .env file (store outside public_html)
+// .env file (store OUTSIDE public_html for security)
+// SECURITY WARNING: Never commit this file to version control
+// Use strong, unique passwords generated with a password manager
 DB_HOST=localhost
 DB_NAME=digital_zen
 DB_USER=dz_user
-DB_PASSWORD=strong_random_password_here
-GOOGLE_CLIENT_ID=your_client_id.apps.googleusercontent.com
-EXTENSION_ID=your_extension_id_here
+DB_PASSWORD={GENERATE_STRONG_PASSWORD_HERE}  // Use 20+ character random password
+GOOGLE_CLIENT_ID={YOUR_OAUTH_CLIENT_ID}.apps.googleusercontent.com  // From Google Cloud Console
+EXTENSION_ID={YOUR_CHROME_EXTENSION_ID}  // From chrome://extensions/
 ENVIRONMENT=production
 
 // Rate limiting example

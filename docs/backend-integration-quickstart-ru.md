@@ -2,6 +2,17 @@
 
 > Краткое руководство по интеграции PHP бэкенда на Hostinger для Digital Zen
 
+## ⚠️ ВАЖНЫЕ ЗАМЕЧАНИЯ ПО БЕЗОПАСНОСТИ
+
+**Перед началом работы:**
+
+1. **Пароли:** Используй генератор паролей для создания сильных, уникальных паролей (20+ символов)
+2. **Credentials:** Никогда не коммить пароли и ключи API в git
+3. **HTTPS:** Обязательно используй SSL сертификат (бесплатный Let's Encrypt на Hostinger)
+4. **Extension ID:** Замени все плейсхолдеры `{YOUR_EXTENSION_ID}` на реальный ID
+5. **Domain:** Замени `{YOUR_DOMAIN}` на реальный домен
+6. **Environment Variables:** В продакшене используй переменные окружения вместо хардкода
+
 ## 🎯 Цель
 
 Добавить возможность синхронизации данных между устройствами через PHP API на Hostinger.
@@ -102,8 +113,10 @@ public_html/
 ```apache
 RewriteEngine On
 
-# CORS для Chrome Extension (замени YOUR_EXTENSION_ID)
-Header always set Access-Control-Allow-Origin "chrome-extension://YOUR_EXTENSION_ID"
+# CORS для Chrome Extension
+# ⚠️ ВАЖНО: Замени {YOUR_EXTENSION_ID} на реальный ID твоего расширения
+# ID можно найти на chrome://extensions/ (включи режим разработчика)
+Header always set Access-Control-Allow-Origin "chrome-extension://{YOUR_EXTENSION_ID}"
 Header always set Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
 Header always set Access-Control-Allow-Headers "Content-Type, Authorization"
 Header always set Access-Control-Allow-Credentials "true"
@@ -128,10 +141,12 @@ class Database {
     private $connection;
     
     private function __construct() {
+        // ⚠️ БЕЗОПАСНОСТЬ: Используй переменные окружения в продакшене
+        // Никогда не коммить реальные пароли в git!
         $host = 'localhost';
         $dbname = 'digital_zen_db';
         $username = 'dz_user';
-        $password = 'твой_пароль_здесь';
+        $password = '{ТВОЙ_СИЛЬНЫЙ_ПАРОЛЬ}'; // Генерируй 20+ символов случайных
         
         try {
             $this->connection = new PDO(
@@ -491,7 +506,8 @@ export class BackendSyncService {
   readonly #http = inject(HttpClient);
   readonly #googleAuth = inject(GoogleAuthService);
   
-  readonly #apiUrl = 'https://your-domain.com/api/v1'; // Замени на свой домен
+  // ⚠️ ВАЖНО: Замени {YOUR_DOMAIN} на реальный домен (например: mysite.com)
+  readonly #apiUrl = 'https://{YOUR_DOMAIN}/api/v1';
   
   /**
    * Получить все периоды с сервера
