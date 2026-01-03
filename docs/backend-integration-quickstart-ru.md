@@ -504,7 +504,6 @@ import { GoogleAuthService } from './google-auth.service';
 @Injectable({ providedIn: 'root' })
 export class BackendSyncService {
   readonly #http = inject(HttpClient);
-  readonly #googleAuth = inject(GoogleAuthService);
   
   // ⚠️ ВАЖНО: Замени {YOUR_DOMAIN} на реальный домен (например: mysite.com)
   readonly #apiUrl = 'https://{YOUR_DOMAIN}/api/v1';
@@ -556,22 +555,21 @@ export class BackendSyncService {
     }
   }
   
+  /**
+   * Получить Google OAuth токен
+   */
   async #getToken(): Promise<string> {
-    return new Promise((resolve, reject) => {
-      if (typeof chrome !== 'undefined' && chrome.identity) {
-        chrome.identity.getAuthToken({ interactive: false })
-          .then(result => {
-            if (result?.token) {
-              resolve(result.token);
-            } else {
-              reject(new Error('No token available'));
-            }
-          })
-          .catch(reject);
-      } else {
-        reject(new Error('Chrome identity API not available'));
-      }
-    });
+    if (typeof chrome === 'undefined' || !chrome.identity) {
+      throw new Error('Chrome identity API not available');
+    }
+    
+    const result = await chrome.identity.getAuthToken({ interactive: false });
+    
+    if (!result?.token) {
+      throw new Error('No token available');
+    }
+    
+    return result.token;
   }
   
   #getHeaders(token: string): HttpHeaders {

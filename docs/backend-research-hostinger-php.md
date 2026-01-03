@@ -962,6 +962,11 @@ class PeriodsController {
     }
     
     private function generateUUID() {
+        // Note: For production, consider using a proper UUID library like ramsey/uuid
+        // This implementation provides UUID v4 format but may not be cryptographically secure
+        // Install via: composer require ramsey/uuid
+        // Usage: return Uuid::uuid4()->toString();
+        
         return sprintf('%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
             mt_rand(0, 0xffff), mt_rand(0, 0xffff),
             mt_rand(0, 0xffff),
@@ -1287,6 +1292,7 @@ class RateLimitMiddleware {
      readonly #apiService = inject(ApiService);
      readonly #chromeStorage = inject(ChromeStorageService);
      readonly #authService = inject(GoogleAuthService);
+     readonly #http = inject(HttpClient);
      
      readonly #baseUrl = 'https://your-domain.com/api/v1';
      
@@ -1294,14 +1300,19 @@ class RateLimitMiddleware {
        const token = await this.#getAuthToken();
        
        // Pull data from backend
+       // Note: Backend returns { success: boolean, data: T }
        const response = await firstValueFrom(
-         this.#apiService.get<IFocus.Period[]>(
-           `${this.#baseUrl}/sync/pull`,
-           { Authorization: `Bearer ${token}` }
+         this.#http.get<{ success: boolean; data: IFocus.Period[] }>(
+           `${this.#baseUrl}/periods`,
+           { 
+             headers: new HttpHeaders({
+               'Authorization': `Bearer ${token}`
+             })
+           }
          )
        );
        
-       // Update local storage
+       // Update local storage with the data array
        this.#chromeStorage.set(
          ChromeStorageKeyType.PERIODS,
          response.data
@@ -1312,10 +1323,14 @@ class RateLimitMiddleware {
        const token = await this.#getAuthToken();
        
        await firstValueFrom(
-         this.#apiService.post(
+         this.#http.post(
            `${this.#baseUrl}/sync/push`,
            { periods },
-           { Authorization: `Bearer ${token}` }
+           { 
+             headers: new HttpHeaders({
+               'Authorization': `Bearer ${token}`
+             })
+           }
          )
        );
      }
