@@ -30,17 +30,20 @@ export class TimeLineComponent implements OnInit, OnDestroy {
     this.#currentDay();
 
     const now: number = this.#now();
-    const start: number = new Date(this.startFrom()).getTime();
-    const end: number = new Date(this.endTo()).getTime();
 
-    if (now <= start) {
+    // Extract time-only values (hours, minutes, seconds) for comparison
+    const nowTime = this.#getTimeInMilliseconds(new Date(now));
+    const startTime = this.#getTimeInMilliseconds(new Date(this.startFrom()));
+    const endTime = this.#getTimeInMilliseconds(new Date(this.endTo()));
+
+    if (nowTime <= startTime) {
       return 0;
     }
-    if (now >= end) {
+    if (nowTime >= endTime) {
       return 100;
     }
 
-    return ((now - start) / (end - start)) * 100;
+    return ((nowTime - startTime) / (endTime - startTime)) * 100;
   });
   readonly nowTime: Signal<Date> = computed(() => new Date(this.#now()));
   protected readonly uiText = UI_TEXT;
@@ -71,5 +74,19 @@ export class TimeLineComponent implements OnInit, OnDestroy {
     const month = String(now.getMonth() + 1).padStart(2, '0');
     const day = String(now.getDate()).padStart(2, '0');
     return `${year}-${month}-${day}`;
+  }
+
+  /**
+   * Extracts time-only value from a Date object.
+   * Returns milliseconds since midnight (ignoring the date portion).
+   * This allows for time-only comparisons regardless of the actual date.
+   */
+  #getTimeInMilliseconds(date: Date): number {
+    const hours = date.getHours();
+    const minutes = date.getMinutes();
+    const seconds = date.getSeconds();
+    const milliseconds = date.getMilliseconds();
+
+    return hours * 60 * 60 * 1000 + minutes * 60 * 1000 + seconds * 1000 + milliseconds;
   }
 }
