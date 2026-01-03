@@ -12,8 +12,8 @@ const MINUTES_PER_HOUR = 60;
  *
  * @example
  * ```typescript
- * const date1 = new Date('2024-01-01 14:30:00');
- * const date2 = new Date('2024-12-31 14:30:00');
+ * const date1 = new Date('2024-01-01T14:30:00');
+ * const date2 = new Date('2024-12-31T14:30:00');
  * getTimeInMilliseconds(date1) === getTimeInMilliseconds(date2); // true
  * ```
  */
@@ -44,8 +44,8 @@ export function getTimeInMilliseconds(date: Date): number {
  *
  * @example
  * ```typescript
- * const now = new Date('2024-01-15 14:30:00');
- * const target = new Date('2024-01-01 10:00:00');
+ * const now = new Date('2024-01-15T14:30:00');
+ * const target = new Date('2024-01-01T10:00:00');
  * isCurrentTimeAfter(now, target); // true (14:30 > 10:00)
  * ```
  */
