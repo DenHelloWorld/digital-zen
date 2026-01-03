@@ -11,6 +11,7 @@ import {
   WritableSignal,
 } from '@angular/core';
 import { DatePipe } from '@angular/common';
+import { getTimeInMilliseconds } from '../../../common/helpers/time.helper';
 import { UI_TEXT } from '../../../common/constants';
 
 @Component({
@@ -30,17 +31,20 @@ export class TimeLineComponent implements OnInit, OnDestroy {
     this.#currentDay();
 
     const now: number = this.#now();
-    const start: number = new Date(this.startFrom()).getTime();
-    const end: number = new Date(this.endTo()).getTime();
 
-    if (now <= start) {
+    // Extract time-only values for comparison
+    const nowTime = getTimeInMilliseconds(new Date(now));
+    const startTime = getTimeInMilliseconds(this.startFrom());
+    const endTime = getTimeInMilliseconds(this.endTo());
+
+    if (nowTime <= startTime) {
       return 0;
     }
-    if (now >= end) {
+    if (nowTime >= endTime) {
       return 100;
     }
 
-    return ((now - start) / (end - start)) * 100;
+    return ((nowTime - startTime) / (endTime - startTime)) * 100;
   });
   readonly nowTime: Signal<Date> = computed(() => new Date(this.#now()));
   protected readonly uiText = UI_TEXT;
