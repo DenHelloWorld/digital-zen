@@ -17,7 +17,7 @@ const MINUTES_PER_HOUR = 60;
  * getTimeInMilliseconds(date1) === getTimeInMilliseconds(date2); // true
  * ```
  */
-export function getTimeInMilliseconds(date: Date): number {
+export const getTimeInMilliseconds = (date: Date): number => {
   const hours = date.getHours();
   const minutes = date.getMinutes();
   const seconds = date.getSeconds();
@@ -29,7 +29,7 @@ export function getTimeInMilliseconds(date: Date): number {
     seconds * MILLISECONDS_PER_SECOND +
     milliseconds
   );
-}
+};
 
 /**
  * Compares current time with a target time, ignoring the date portion.
@@ -49,8 +49,8 @@ export function getTimeInMilliseconds(date: Date): number {
  * isCurrentTimeAfter(now, target); // true (14:30 > 10:00)
  * ```
  */
-export function isCurrentTimeAfter(currentDate: Date, targetDate: Date): boolean {
+export const isCurrentTimeAfter = (currentDate: Date, targetDate: Date): boolean => {
   const currentTimeMs = getTimeInMilliseconds(currentDate);
   const targetTimeMs = getTimeInMilliseconds(targetDate);
   return currentTimeMs > targetTimeMs;
-}
+};
