@@ -11,7 +11,8 @@ import {
   WritableSignal,
 } from '@angular/core';
 import { DatePipe } from '@angular/common';
-import { getTimeInMilliseconds, UI_TEXT } from '../../../common';
+import { getTimeInMilliseconds } from '../../../common/helpers/time.helper';
+import { UI_TEXT } from '../../../common/constants';
 
 @Component({
   selector: 'dz-time-line',

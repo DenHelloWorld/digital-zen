@@ -1,3 +1,7 @@
+const MILLISECONDS_PER_SECOND = 1000;
+const SECONDS_PER_MINUTE = 60;
+const MINUTES_PER_HOUR = 60;
+
 /**
  * Extracts time-only value from a Date object.
  * Returns milliseconds since midnight (ignoring the date portion).
@@ -19,7 +23,12 @@ export function getTimeInMilliseconds(date: Date): number {
   const seconds = date.getSeconds();
   const milliseconds = date.getMilliseconds();
 
-  return hours * 60 * 60 * 1000 + minutes * 60 * 1000 + seconds * 1000 + milliseconds;
+  return (
+    hours * MINUTES_PER_HOUR * SECONDS_PER_MINUTE * MILLISECONDS_PER_SECOND +
+    minutes * SECONDS_PER_MINUTE * MILLISECONDS_PER_SECOND +
+    seconds * MILLISECONDS_PER_SECOND +
+    milliseconds
+  );
 }
 
 /**
