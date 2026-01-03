@@ -32,7 +32,7 @@ export class TimeLineComponent implements OnInit, OnDestroy {
 
     const now: number = this.#now();
 
-    // Extract time-only values (hours, minutes, seconds) for comparison
+    // Extract time-only values for comparison
     const nowTime = getTimeInMilliseconds(new Date(now));
     const startTime = getTimeInMilliseconds(this.startFrom());
     const endTime = getTimeInMilliseconds(this.endTo());
