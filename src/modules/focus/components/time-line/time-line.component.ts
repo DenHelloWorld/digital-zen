@@ -11,7 +11,7 @@ import {
   WritableSignal,
 } from '@angular/core';
 import { DatePipe } from '@angular/common';
-import { UI_TEXT } from '../../../common/constants';
+import { getTimeInMilliseconds, UI_TEXT } from '../../../common';
 
 @Component({
   selector: 'dz-time-line',
@@ -32,9 +32,9 @@ export class TimeLineComponent implements OnInit, OnDestroy {
     const now: number = this.#now();
 
     // Extract time-only values (hours, minutes, seconds) for comparison
-    const nowTime = this.#getTimeInMilliseconds(new Date(now));
-    const startTime = this.#getTimeInMilliseconds(new Date(this.startFrom()));
-    const endTime = this.#getTimeInMilliseconds(new Date(this.endTo()));
+    const nowTime = getTimeInMilliseconds(new Date(now));
+    const startTime = getTimeInMilliseconds(new Date(this.startFrom()));
+    const endTime = getTimeInMilliseconds(new Date(this.endTo()));
 
     if (nowTime <= startTime) {
       return 0;
@@ -74,19 +74,5 @@ export class TimeLineComponent implements OnInit, OnDestroy {
     const month = String(now.getMonth() + 1).padStart(2, '0');
     const day = String(now.getDate()).padStart(2, '0');
     return `${year}-${month}-${day}`;
-  }
-
-  /**
-   * Extracts time-only value from a Date object.
-   * Returns milliseconds since midnight (ignoring the date portion).
-   * This allows for time-only comparisons regardless of the actual date.
-   */
-  #getTimeInMilliseconds(date: Date): number {
-    const hours = date.getHours();
-    const minutes = date.getMinutes();
-    const seconds = date.getSeconds();
-    const milliseconds = date.getMilliseconds();
-
-    return hours * 60 * 60 * 1000 + minutes * 60 * 1000 + seconds * 1000 + milliseconds;
   }
 }
