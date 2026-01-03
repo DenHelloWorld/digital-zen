@@ -169,10 +169,10 @@ Hostinger shared hosting typically includes:
 ### ✅ Feasible Features / Реализуемые функции
 
 1. **User Authentication & Management**
-   - Chrome Extension handles Google OAuth authentication
-   - Backend uses user email for identification (already verified by Chrome)
-   - Create user profiles in MySQL database
-   - Simple email-based session management
+   - Chrome Extension obtains Google OAuth tokens via chrome.identity API
+   - Backend validates OAuth tokens on every request for security
+   - Create user profiles in MySQL database (indexed by google_id)
+   - Secure token-based authentication
 
 2. **Data Synchronization**
    - Store focus periods in MySQL
@@ -233,7 +233,7 @@ Hostinger shared hosting typically includes:
 │  │ (Identity API) │  │ (Fallback)     │ │
 │  └────────┬───────┘  └────────────────┘ │
 │           │                              │
-│           │ User Info (email, name)      │
+│           │ OAuth Access Token           │
 │           ▼                              │
 │  ┌────────────────────────────────────┐ │
 │  │    ApiService (HttpClient)         │ │
@@ -244,7 +244,7 @@ Hostinger shared hosting typically includes:
 └───────────┼──────────────────────────────┘
             │
             │ HTTPS REST API
-            │ (X-User-Email: user@gmail.com)
+            │ (Authorization: ******
             ▼
 ┌─────────────────────────────────────────┐
 │   Hostinger PHP Backend                  │
@@ -963,23 +963,32 @@ class PeriodsController {
     }
     
     private function generateUUID() {
-        // IMPORTANT: For production use, install and use a proper UUID library
-        // This simple implementation is NOT cryptographically secure
-        // 
-        // Recommended: Install ramsey/uuid via Composer
-        // $ composer require ramsey/uuid
-        // 
-        // Then use: return Uuid::uuid4()->toString();
-        // 
-        // Only use the code below for development/testing
+        // IMPORTANT: For production use, install ramsey/uuid via Composer:
+        //   $ composer require ramsey/uuid
+        //   return Uuid::uuid4()->toString();
+        //
+        // On basic shared hosting where Composer may not be available,
+        // we generate a RFC 4122 version 4 UUID using cryptographically
+        // secure random bytes.
         
-        return sprintf('%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
-            mt_rand(0, 0xffff), mt_rand(0, 0xffff),
-            mt_rand(0, 0xffff),
-            mt_rand(0, 0x0fff) | 0x4000,
-            mt_rand(0, 0x3fff) | 0x8000,
-            mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff)
-        );
+        // Prefer PHP's built-in CSPRNG if available
+        if (function_exists('random_bytes')) {
+            $data = random_bytes(16);
+        } elseif (function_exists('openssl_random_pseudo_bytes')) {
+            $data = openssl_random_pseudo_bytes(16);
+        } else {
+            // No secure random source available; fail fast rather than
+            // generating predictable identifiers.
+            throw new RuntimeException('No secure random source available for UUID generation');
+        }
+        
+        // Set version to 0100 (version 4)
+        $data[6] = chr((ord($data[6]) & 0x0f) | 0x40);
+        // Set variant to 10xxxxxx
+        $data[8] = chr((ord($data[8]) & 0x3f) | 0x80);
+        
+        // Format as 8-4-4-4-12 hex digits
+        return vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex($data), 4));
     }
 }
 ```
@@ -1248,9 +1257,17 @@ GOOGLE_CLIENT_ID={YOUR_OAUTH_CLIENT_ID}.apps.googleusercontent.com  // From Goog
 EXTENSION_ID={YOUR_EXTENSION_ID}  // From chrome://extensions/ (32 char alphanumeric)
 ENVIRONMENT=production
 
-// Rate limiting example
+// Rate limiting example (file-based implementation for shared hosting)
 class RateLimitMiddleware {
-    private $redis; // or use file-based cache
+    private $cacheDir;
+    
+    public function __construct() {
+        // Store rate limit data in temporary directory
+        $this->cacheDir = sys_get_temp_dir() . '/rate_limits/';
+        if (!is_dir($this->cacheDir)) {
+            mkdir($this->cacheDir, 0700, true);
+        }
+    }
     
     public function check($userId, $limit = 100, $window = 60) {
         $key = "rate_limit:$userId:" . floor(time() / $window);
@@ -1262,6 +1279,34 @@ class RateLimitMiddleware {
         }
         
         $this->increment($key, $window);
+    }
+    
+    private function getCount($key) {
+        $file = $this->cacheDir . md5($key) . '.txt';
+        if (!file_exists($file)) {
+            return 0;
+        }
+        $data = file_get_contents($file);
+        return (int) $data;
+    }
+    
+    private function increment($key, $ttl) {
+        $file = $this->cacheDir . md5($key) . '.txt';
+        $count = $this->getCount($key) + 1;
+        file_put_contents($file, $count);
+        
+        // Clean up old files (basic implementation)
+        $this->cleanupOldFiles($ttl);
+    }
+    
+    private function cleanupOldFiles($maxAge) {
+        $files = glob($this->cacheDir . '*.txt');
+        $now = time();
+        foreach ($files as $file) {
+            if ($now - filemtime($file) > $maxAge * 2) {
+                @unlink($file);
+            }
+        }
     }
 }
 ```

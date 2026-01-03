@@ -35,14 +35,16 @@
 
 ```sql
 -- Таблица пользователей
--- Chrome Extension уже управляет аутентификацией через Google OAuth
--- Мы просто используем email как идентификатор пользователя
+-- Храним google_id для идентификации пользователя и email для удобства
 CREATE TABLE users (
     id INT AUTO_INCREMENT PRIMARY KEY,
+    google_id VARCHAR(255) UNIQUE NOT NULL,
     email VARCHAR(255) UNIQUE NOT NULL,
     name VARCHAR(255),
+    picture_url TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     last_login_at TIMESTAMP NULL,
+    INDEX idx_google_id (google_id),
     INDEX idx_email (email)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -102,7 +104,7 @@ public_html/
         ├── controllers/
         │   └── PeriodsController.php
         ├── services/
-        │   └── UserService.php
+        │   └── GoogleAuthService.php
         ├── middleware/
         │   └── AuthMiddleware.php
         └── utils/
@@ -119,7 +121,7 @@ RewriteEngine On
 # ID можно найти на chrome://extensions/ (включи режим разработчика)
 Header always set Access-Control-Allow-Origin "chrome-extension://{YOUR_EXTENSION_ID}"
 Header always set Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
-Header always set Access-Control-Allow-Headers "Content-Type, X-User-Email, X-User-Name"
+Header always set Access-Control-Allow-Headers "Content-Type, Authorization"
 Header always set Access-Control-Allow-Credentials "true"
 
 # Обработка OPTIONS запросов
@@ -161,7 +163,11 @@ class Database {
             );
         } catch (PDOException $e) {
             error_log("DB Error: " . $e->getMessage());
-            die("Database connection failed");
+            // Используем Response для последовательного формата ошибок API
+            header('Content-Type: application/json; charset=utf-8');
+            http_response_code(500);
+            echo json_encode(['success' => false, 'error' => 'Database connection failed']);
+            exit;
         }
     }
     
@@ -205,24 +211,60 @@ class Response {
 }
 ```
 
-#### Файл `services/UserService.php`
+#### Файл `services/GoogleAuthService.php`
 
 ```php
 <?php
 
-class UserService {
+class GoogleAuthService {
+    private const GOOGLE_TOKEN_INFO_URL = 'https://oauth2.googleapis.com/tokeninfo';
+    
     /**
-     * Получить или создать пользователя по email
+     * Валидация Google OAuth токена
      * 
-     * Chrome Extension уже обрабатывает Google OAuth аутентификацию,
-     * поэтому мы просто используем email для идентификации пользователя.
+     * ВАЖНО: Бэкенд ДОЛЖЕН проверять токен на каждом запросе
+     * для предотвращения подделки identity
      */
-    public function getOrCreateUserByEmail($email, $name = null) {
+    public function validateToken($token) {
+        if (empty($token)) {
+            return false;
+        }
+        
+        $url = self::GOOGLE_TOKEN_INFO_URL . '?access_token=' . urlencode($token);
+        
+        $ch = curl_init($url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+        
+        $response = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+        
+        if ($httpCode !== 200) {
+            return false;
+        }
+        
+        $tokenInfo = json_decode($response, true);
+        
+        // Опционально: проверка client ID (если настроен)
+        $expectedClientId = getenv('GOOGLE_CLIENT_ID');
+        if ($expectedClientId && isset($tokenInfo['aud']) && $tokenInfo['aud'] !== $expectedClientId) {
+            return false;
+        }
+        
+        return $tokenInfo;
+    }
+    
+    /**
+     * Получить или создать пользователя по токену
+     */
+    public function getOrCreateUser($tokenInfo) {
         $db = Database::getInstance()->getConnection();
         
-        // Проверяем существует ли пользователь
-        $stmt = $db->prepare("SELECT * FROM users WHERE email = :email");
-        $stmt->execute(['email' => $email]);
+        // Проверяем существует ли пользователь по google_id
+        $stmt = $db->prepare("SELECT * FROM users WHERE google_id = :google_id");
+        $stmt->execute(['google_id' => $tokenInfo['sub']]);
         $user = $stmt->fetch();
         
         if ($user) {
@@ -234,18 +276,20 @@ class UserService {
         
         // Создаём нового пользователя
         $stmt = $db->prepare("
-            INSERT INTO users (email, name, last_login_at)
-            VALUES (:email, :name, NOW())
+            INSERT INTO users (google_id, email, name, picture_url, last_login_at)
+            VALUES (:google_id, :email, :name, :picture_url, NOW())
         ");
         
         $stmt->execute([
-            'email' => $email,
-            'name' => $name ?? ''
+            'google_id' => $tokenInfo['sub'],
+            'email' => $tokenInfo['email'] ?? '',
+            'name' => $tokenInfo['name'] ?? '',
+            'picture_url' => $tokenInfo['picture'] ?? ''
         ]);
         
         // Возвращаем созданного пользователя
-        $stmt = $db->prepare("SELECT * FROM users WHERE email = :email");
-        $stmt->execute(['email' => $email]);
+        $stmt = $db->prepare("SELECT * FROM users WHERE google_id = :google_id");
+        $stmt->execute(['google_id' => $tokenInfo['sub']]);
         return $stmt->fetch();
     }
 }
@@ -258,30 +302,41 @@ class UserService {
 
 class AuthMiddleware {
     /**
-     * Аутентификация пользователя по email из заголовка
+     * Аутентификация пользователя по OAuth токену
      * 
-     * Chrome Extension уже проверил пользователя через Google OAuth,
-     * поэтому мы доверяем email, который он отправляет.
+     * ВАЖНО: Бэкенд проверяет токен на каждом запросе для безопасности
      */
     public function authenticate() {
         $headers = getallheaders();
         
-        // Получаем email из заголовка X-User-Email
-        $userEmail = $headers['X-User-Email'] ?? '';
+        // Получаем токен из заголовка Authorization
+        $authHeader = $headers['Authorization'] ?? $headers['authorization'] ?? '';
         
-        if (empty($userEmail)) {
-            Response::unauthorized('User email header missing');
+        if (empty($authHeader)) {
+            Response::unauthorized('Authorization header missing');
         }
         
-        // Валидируем формат email
-        if (!filter_var($userEmail, FILTER_VALIDATE_EMAIL)) {
-            Response::unauthorized('Invalid email format');
+        // Проверяем формат "Bearer TOKEN"
+        if (!preg_match('/^Bearer\s+(.+)$/i', $authHeader, $matches)) {
+            Response::unauthorized('Invalid authorization format');
+        }
+        
+        $token = trim($matches[1]);
+        
+        if (empty($token)) {
+            Response::unauthorized('Empty bearer token');
+        }
+        
+        // Валидируем токен с Google
+        $googleAuth = new GoogleAuthService();
+        $tokenInfo = $googleAuth->validateToken($token);
+        
+        if (!$tokenInfo) {
+            Response::unauthorized('Invalid or expired token');
         }
         
         // Получаем или создаём пользователя
-        $userService = new UserService();
-        $userName = $headers['X-User-Name'] ?? null;
-        $user = $userService->getOrCreateUserByEmail($userEmail, $userName);
+        $user = $googleAuth->getOrCreateUser($tokenInfo);
         
         if (!$user) {
             Response::error('User creation failed', 500);
@@ -549,21 +604,33 @@ export class BackendSyncService {
   
   /**
    * Получить заголовки для запросов
-   * Используем email пользователя для идентификации
-   * (Chrome Extension уже проверил пользователя через Google OAuth)
+   * ВАЖНО: Используем Google OAuth токен для безопасной аутентификации
    */
   async #getHeaders(): Promise<HttpHeaders> {
-    const userInfo = this.#googleAuth.userInfo();
-    
-    if (!userInfo?.email) {
-      throw new Error('User not authenticated');
-    }
+    // Получаем OAuth токен из Chrome Identity API
+    const token = await this.#getAuthToken();
     
     return new HttpHeaders({
       'Content-Type': 'application/json',
-      'X-User-Email': userInfo.email,
-      'X-User-Name': userInfo.name || ''
+      'Authorization': `****** // Bearer токен для серверной валидации
     });
+  }
+  
+  /**
+   * Получить Google OAuth токен
+   */
+  async #getAuthToken(): Promise<string> {
+    if (typeof chrome === 'undefined' || !chrome.identity) {
+      throw new Error('Chrome identity API not available');
+    }
+    
+    const result = await chrome.identity.getAuthToken({ interactive: false });
+    
+    if (!result?.token) {
+      throw new Error('No token available');
+    }
+    
+    return result.token;
   }
 }
 ```
@@ -577,7 +644,7 @@ export * from './backend-sync.service';
 #### Использование в компоненте
 
 ```typescript
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { BackendSyncService } from '@modules/common/services';
 
 @Component({
@@ -639,14 +706,15 @@ curl https://your-domain.com/api/v1/health
 
 #### Тест 2: Авторизация
 
-1. В Chrome Extension пользователь уже авторизован через Google
-2. Extension получает email пользователя
-3. Отправить запрос:
+**ВАЖНО**: Для безопасного тестирования нужен реальный Google OAuth токен.
+
+1. В Chrome Extension пользователь авторизован через Google OAuth
+2. Extension получает access_token от `chrome.identity.getAuthToken()`
+3. Тестовый запрос (замени YOUR_GOOGLE_ACCESS_TOKEN на реальный токен):
 
 ```bash
 curl -X GET https://your-domain.com/api/v1/periods \
-  -H "X-User-Email: user@gmail.com" \
-  -H "X-User-Name: User Name"
+  -H "Authorization: Bearer YOUR_GOOGLE_ACCESS_TOKEN"
 # Должен вернуть список периодов (пустой массив для нового пользователя)
 ```
 
@@ -654,8 +722,7 @@ curl -X GET https://your-domain.com/api/v1/periods \
 
 ```bash
 curl -X POST https://your-domain.com/api/v1/periods \
-  -H "X-User-Email: user@gmail.com" \
-  -H "X-User-Name: User Name" \
+  -H "Authorization: Bearer YOUR_GOOGLE_ACCESS_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
     "id": "test-period-1",
@@ -674,14 +741,15 @@ curl -X POST https://your-domain.com/api/v1/periods \
 **Решение:**
 1. Проверь, что в `.htaccess` указан правильный Extension ID
 2. Убедись, что HTTPS работает
-3. Проверь, что заголовки CORS установлены (включая X-User-Email, X-User-Name)
+3. Проверь, что заголовки CORS установлены (включая Authorization)
 
 ### Проблема: 401 Unauthorized
 
 **Решение:**
-1. Проверь, что заголовок X-User-Email отправляется
-2. Убедись, что email имеет валидный формат
-3. Проверь логи ошибок PHP
+1. Проверь, что Google OAuth токен валидный и не истёк
+2. Убедись, что токен отправляется в header `Authorization: ******
+3. Проверь, что Chrome Extension получил токен через `chrome.identity.getAuthToken()`
+4. Проверь логи ошибок PHP
 
 ### Проблема: Database connection failed
 
