@@ -106,8 +106,8 @@ class JWTService {
             return false;
         }
         
-        // Check expiration: token is invalid only if exp < current time (valid through exp timestamp)
-        if (isset($payload['exp']) && $payload['exp'] < time()) {
+        // Check expiration: token is invalid once current time is equal to or after exp (valid strictly before exp timestamp)
+        if (isset($payload['exp']) && time() >= $payload['exp']) {
             error_log('JWT validation failed: token expired');
             return false;
         }

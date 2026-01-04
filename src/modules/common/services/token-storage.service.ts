@@ -143,7 +143,7 @@ export class TokenStorageService {
       }
 
       const nowInSeconds = Math.floor(Date.now() / 1000);
-      return payload.exp > nowInSeconds;
+      return payload.exp >= nowInSeconds;
     } catch (error) {
       console.warn('[TokenStorageService] Failed to parse JWT from storage', error);
       return false;
