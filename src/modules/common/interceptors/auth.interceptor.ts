@@ -44,12 +44,14 @@ const isAuthGoogleEndpoint = (url: string): boolean => {
   // Try to use the URL API for robust parsing
   try {
     const parsed = new URL(url, API_URLS.BACKEND.BASE_URL);
+    // Remove trailing slashes, but preserve the leading slash
     const normalizedPath = parsed.pathname.replace(/\/+$/, '') || '/';
     return normalizedPath === '/auth/google';
   } catch {
     // Fallback for non-standard/relative URLs: strip query/hash and check the path
     const rawPath = url.split(/[?#]/)[0];
-    const normalizedPath = rawPath.replace(/\/+$/, '');
+    // Remove trailing slashes
+    const normalizedPath = rawPath.replace(/\/+$/, '') || '/';
     return normalizedPath === '/auth/google';
   }
 };

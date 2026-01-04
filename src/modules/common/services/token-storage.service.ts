@@ -152,10 +152,10 @@ export class TokenStorageService {
         return true;
       }
 
-      // Token is valid if current time is at or before the expiration timestamp.
-      // This ensures the frontend and backend treat the exp boundary consistently.
+      // Token is valid if current time is strictly before expiration timestamp.
+      // This matches the backend validation logic (JWTService.php line 117).
       const nowInSeconds = Math.floor(Date.now() / 1000);
-      return nowInSeconds <= payload.exp;
+      return nowInSeconds < payload.exp;
     } catch (error) {
       console.warn('[TokenStorageService] Failed to parse JWT from storage', error);
       return false;
