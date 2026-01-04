@@ -6,7 +6,7 @@ import { from, switchMap, catchError } from 'rxjs';
  * Determines whether the given URL targets the backend API, using a
  * boundary-aware prefix match on the configured base URL.
  */
-function isBackendApiUrl(url: string, baseUrl: string): boolean {
+const isBackendApiUrl = (url: string, baseUrl: string): boolean => {
   if (!url.startsWith(baseUrl)) {
     return false;
   }
@@ -17,7 +17,7 @@ function isBackendApiUrl(url: string, baseUrl: string): boolean {
 
   const nextChar = url.charAt(baseUrl.length);
   return nextChar === '/' || nextChar === '?' || nextChar === '#';
-}
+};
 
 /**
  * HTTP interceptor that adds Authorization header with Google OAuth token

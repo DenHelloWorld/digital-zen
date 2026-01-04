@@ -2,7 +2,7 @@ import { inject, Injectable, Signal, signal, WritableSignal } from '@angular/cor
 import { catchError, finalize, map, Observable, of, tap } from 'rxjs';
 import { ApiService } from './api.service';
 import { API_URLS } from '../constants/api-urls.const';
-import { IFocus, BackendResponse } from '../models';
+import { IFocus, IBackendResponse } from '../models';
 
 @Injectable({ providedIn: 'root' })
 export class BackendSyncService {
@@ -33,11 +33,11 @@ export class BackendSyncService {
     this.#incrementCounter(this.#checkHealthCounter, this.#isCheckingHealth);
 
     return this.#apiService
-      .get<BackendResponse<{ status: string }>>(`${API_URLS.BACKEND.BASE_URL}/health`)
+      .get<IBackendResponse<{ status: string }>>(`${API_URLS.BACKEND.BASE_URL}/health`)
       .pipe(
         catchError(error => {
           console.error('Health check failed:', error);
-          return of<BackendResponse<{ status: string }>>({
+          return of<IBackendResponse<{ status: string }>>({
             success: false,
             error: 'Health check failed',
           });
@@ -65,11 +65,11 @@ export class BackendSyncService {
     this.#incrementCounter(this.#pushPeriodCounter, this.#isPushingPeriod);
 
     return this.#apiService
-      .post<BackendResponse<{ message: string }>>(`${API_URLS.BACKEND.BASE_URL}/periods`, period)
+      .post<IBackendResponse<{ message: string }>>(`${API_URLS.BACKEND.BASE_URL}/periods`, period)
       .pipe(
         catchError(error => {
           console.error('Push period failed:', error);
-          return of<BackendResponse<{ message: string }>>({
+          return of<IBackendResponse<{ message: string }>>({
             success: false,
             error: 'Push period failed',
           });
@@ -96,11 +96,11 @@ export class BackendSyncService {
     this.#incrementCounter(this.#pullPeriodsCounter, this.#isPullingPeriods);
 
     return this.#apiService
-      .get<BackendResponse<IFocus.Period[]>>(`${API_URLS.BACKEND.BASE_URL}/periods`)
+      .get<IBackendResponse<IFocus.Period[]>>(`${API_URLS.BACKEND.BASE_URL}/periods`)
       .pipe(
         catchError(error => {
           console.error('Pull periods failed:', error);
-          return of<BackendResponse<IFocus.Period[]>>({
+          return of<IBackendResponse<IFocus.Period[]>>({
             success: false,
             error: 'Pull periods failed',
           });
