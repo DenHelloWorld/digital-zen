@@ -16,12 +16,9 @@ class AuthMiddleware {
      * 
      * @param bool $requireUser Whether an existing user is required.
      * @return array{user: array|null, tokenInfo: array|null} Associative array with keys 'user' and 'tokenInfo'.
-     *               JWT flow:
-     *               - On successful validation, 'tokenInfo' is always null.
-     *               - 'user' is an array when the user is found; if no user is found and $requireUser is false, 'user' is null.
-     *               Google OAuth flow:
-     *               - If $requireUser is false, 'tokenInfo' is an array with token data and 'user' is always null.
-     *               - If $requireUser is true and the linked user exists, both 'tokenInfo' and 'user' are arrays.
+     *               Response structure is consistent across both flows:
+     *               - 'user' is an array when user is found, null otherwise
+     *               - 'tokenInfo' is null for JWT flow, may contain token data for Google OAuth flow
      */
     public function authenticate($requireUser = true) {
         $headers = getallheaders();

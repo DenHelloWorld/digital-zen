@@ -163,7 +163,7 @@ This allows gradual migration without breaking existing deployments.
 1. **JWT Secret**: Must be strong (use `openssl rand -base64 64`) and kept confidential
 2. **Environment Variables**: Store JWT_SECRET and database credentials as server-side environment variables, NOT in `.env` files within the web root
 3. **File Access Protection**: The `.htaccess` file blocks direct access to `.env` files, but storing sensitive data outside the web root is safer
-4. **Token Storage**: Stored in chrome.storage.local (browser-managed persistence; not encrypted by default—consider encrypting tokens before storage if required by your security model)
+4. **Token Storage**: Tokens are stored in `chrome.storage.local` using the browser's persistence mechanisms. In the current implementation they are stored in plaintext (not encrypted). Chrome's storage API provides isolation between extensions, but tokens are not encrypted at rest. If your security model requires additional encryption, you must implement client-side encryption in the token storage layer (for example, in `TokenStorageService`) before saving tokens.
 5. **HTTPS**: Always use HTTPS for API communication to prevent token interception
 6. **Token Expiration**: 7 days - adjust based on security requirements
 7. **Audience Validation**: JWT tokens include user_id to prevent token reuse

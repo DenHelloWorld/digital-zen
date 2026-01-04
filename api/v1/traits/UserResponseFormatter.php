@@ -22,10 +22,11 @@ trait UserResponseFormatter {
             'last_login_at' => $user['last_login_at']
         ];
         
-        // Include google_id in the API response if present in the user data.
-        // Note: this trait only formats HTTP responses and does not control JWT token payloads.
-        // Controllers can choose whether to expose google_id by deciding what user data to pass here
-        // or how to use the formatted response (e.g., login vs. profile endpoints).
+        // If google_id is present in the user data, it will be included in the API response.
+        // SECURITY NOTE: This trait only formats HTTP responses and does not make any policy
+        // decisions about which fields are sensitive. Controllers are responsible for removing
+        // google_id from the $user array before calling this method when they do not want it
+        // exposed (e.g., for certain endpoints or client types).
         if (isset($user['google_id'])) {
             $response['google_id'] = $user['google_id'];
         }
