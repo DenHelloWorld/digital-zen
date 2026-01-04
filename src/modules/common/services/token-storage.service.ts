@@ -108,11 +108,14 @@ export class TokenStorageService {
   }
 
   /**
-   * Check if a valid token exists
+   * Check if a token exists in storage
+   *
+   * Note: This only checks for token existence, not validity or expiration.
+   * The token may be expired or invalid even if this returns true.
    *
    * @returns Promise that resolves with true if token exists, false otherwise
    */
-  public async hasToken(): Promise<boolean> {
+  public async hasStoredToken(): Promise<boolean> {
     const token = await this.getToken();
     return !!token;
   }

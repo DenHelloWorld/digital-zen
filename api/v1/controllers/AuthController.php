@@ -64,12 +64,10 @@ class AuthController {
                 return;
             }
             
-            // Generate JWT token
+            // Generate JWT token with minimal claims
+            // We only store user_id in the token to keep it small and avoid exposing sensitive data
             $jwtService = new JWTService();
-            $jwtToken = $jwtService->generateToken($user['id'], [
-                'email' => $user['email'],
-                'name' => $user['name']
-            ]);
+            $jwtToken = $jwtService->generateToken($user['id']);
             
             // Return JWT token and user data
             Response::success([

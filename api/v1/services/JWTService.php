@@ -33,7 +33,7 @@ class JWTService {
         ];
         
         $payload = array_merge([
-            'iss' => $_SERVER['HTTP_HOST'] ?? 'digital-zen-api',
+            'iss' => 'digital-zen-api', // Fixed issuer for security
             'iat' => $issuedAt,
             'exp' => $expiresAt,
             'user_id' => $userId
