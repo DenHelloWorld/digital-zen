@@ -28,21 +28,32 @@ export class TokenStorageService {
   private readonly TOKEN_KEY = 'dz_jwt_token';
 
   /**
-   * Check if Chrome storage API is available
+   * Check if Chrome storage API is available.
+   *
+   * This is implemented as a getter so that availability is evaluated
+   * dynamically, handling cases where Chrome APIs become available after
+   * service initialization.
    */
-  readonly #isChromeStorage: boolean =
-    typeof chrome !== 'undefined' && !!chrome.storage && !!chrome.storage.local;
+  get #isChromeStorage(): boolean {
+    return typeof chrome !== 'undefined' && !!chrome.storage && !!chrome.storage.local;
+  }
 
   /**
    * Save JWT token to storage
    *
    * @param token JWT token to store
    * @returns Promise that resolves when token is saved
+   *
+   * ⚠️ SECURITY WARNING: When Chrome storage is not available, tokens are stored in sessionStorage
+   * as a fallback. Unlike chrome.storage.local which has some isolation, sessionStorage can be
+   * accessed by any script on the page, making tokens vulnerable to XSS attacks in non-extension
+   * environments. Ensure this service is only used in trusted contexts.
    */
   public async saveToken(token: string): Promise<void> {
     if (!this.#isChromeStorage) {
       console.warn(
-        '[TokenStorageService] Chrome storage not available, using sessionStorage fallback'
+        '[TokenStorageService] Chrome storage not available, using sessionStorage fallback. ' +
+          'This may expose tokens to XSS attacks in non-extension contexts.'
       );
       sessionStorage.setItem(this.TOKEN_KEY, token);
       return Promise.resolve();
@@ -142,8 +153,10 @@ export class TokenStorageService {
         return true;
       }
 
+      // Token is valid if current time is strictly before expiration timestamp.
+      // This matches the backend validation logic (JWTService.php line 115).
       const nowInSeconds = Math.floor(Date.now() / 1000);
-      return payload.exp > nowInSeconds;
+      return nowInSeconds < payload.exp;
     } catch (error) {
       console.warn('[TokenStorageService] Failed to parse JWT from storage', error);
       return false;

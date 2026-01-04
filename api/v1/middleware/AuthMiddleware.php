@@ -15,7 +15,9 @@ class AuthMiddleware {
      * - Supported for backward compatibility during migration
      * 
      * @param bool $requireUser Whether an existing user is required
-     * @return array Returns ['user' => array|null, 'tokenInfo' => array|null]
+     * @return array Array with keys 'user' and 'tokenInfo'; each value may be an array or null.
+     *               In the JWT flow, 'tokenInfo' is always null and 'user' may be null when $requireUser is false.
+     *               In the Google OAuth flow, both may be arrays or null depending on validation results.
      */
     public function authenticate($requireUser = true) {
         $headers = getallheaders();
@@ -81,7 +83,7 @@ class AuthMiddleware {
         $user = $googleAuth->getUser($tokenInfo);
         
         if (!$user) {
-            Response::unauthorized('User account not found. Please ensure you have completed the initial setup.');
+            Response::unauthorized('User account not found. Please contact support or try logging in again.');
         }
         
         return ['tokenInfo' => $tokenInfo, 'user' => $user];

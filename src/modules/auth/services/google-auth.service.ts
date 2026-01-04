@@ -128,10 +128,17 @@ export class GoogleAuthService {
             .subscribe({
               next: async response => {
                 if (response.success && response.data?.token) {
-                  // Store JWT token for future API requests
-                  await this.#tokenStorage.saveToken(response.data.token);
-                  console.log('[GoogleAuthService] JWT token obtained and stored');
-                  console.log('[GoogleAuthService] User authenticated:', response.data.user);
+                  try {
+                    // Store JWT token for future API requests
+                    await this.#tokenStorage.saveToken(response.data.token);
+                    console.log('[GoogleAuthService] JWT token obtained and stored');
+                    console.log('[GoogleAuthService] User authenticated:', response.data.user);
+                  } catch (storageError) {
+                    console.error('[GoogleAuthService] Failed to store JWT token:', storageError);
+                    // Reset authentication state since we couldn't save the token
+                    this.#isGoogleAuthenticated.set(false);
+                    this.#userInfo.set(null);
+                  }
                 } else {
                   console.error('[GoogleAuthService] Failed to obtain JWT token');
                   // Reset authentication state since we couldn't get a JWT
