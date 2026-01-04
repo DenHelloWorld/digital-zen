@@ -1,4 +1,5 @@
 import { computed, inject, Injectable, Signal, signal, WritableSignal } from '@angular/core';
+import { take } from 'rxjs';
 import { API_URLS, ApiService, UserService } from '../../common';
 
 export interface IGoogleUserInfo {
@@ -116,18 +117,21 @@ export class GoogleAuthService {
 
           // Create or get user in backend database
           // The backend will identify the user by email and create only if not exists
-          this.#userService.createUser().subscribe({
-            next: user => {
-              if (user) {
-                console.log('User ensured in database:', user);
-              } else {
-                console.error('Failed to ensure user in database');
-              }
-            },
-            error: (err: unknown) => {
-              console.error('Failed to create/get user in database', err);
-            },
-          });
+          this.#userService
+            .createUser()
+            .pipe(take(1))
+            .subscribe({
+              next: user => {
+                if (user) {
+                  console.log('User ensured in database:', user);
+                } else {
+                  console.error('Failed to ensure user in database');
+                }
+              },
+              error: (err: unknown) => {
+                console.error('Failed to create/get user in database', err);
+              },
+            });
         },
         error: (err: unknown) => {
           console.error('Failed to fetch user info', err);

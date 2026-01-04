@@ -29,6 +29,9 @@ export class UserService {
    * This is called after successful Google login to ensure the user exists in our database
    * If the user already exists (identified by email), the existing user data is returned
    *
+   * NOTE: The backend extracts user information (email, name, picture) from the Google OAuth token
+   * sent in the Authorization header via the auth interceptor. No user data needs to be sent in the body.
+   *
    * @returns Observable that emits the user data or null on error
    */
   public createUser(): Observable<IUser | null> {
