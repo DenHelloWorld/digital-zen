@@ -7,7 +7,7 @@ class AuthMiddleware {
      * ВАЖНО: Бэкенд проверяет токен на каждом запросе для безопасности
      * 
      * @param bool $requireUser Требуется ли существующий пользователь
-     * @return array|null Если requireUser=false, может вернуть null для user
+     * @return array Возвращает ['tokenInfo' => array, 'user' => array|null]
      */
     public function authenticate($requireUser = true) {
         $headers = getallheaders();
