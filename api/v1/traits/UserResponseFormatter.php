@@ -22,9 +22,10 @@ trait UserResponseFormatter {
             'last_login_at' => $user['last_login_at']
         ];
         
-        // Include google_id if present
-        // Note: AuthController intentionally excludes google_id from JWT login responses
-        // to minimize data in JWT tokens. UsersController includes it for user profile endpoints.
+        // Include google_id in the API response if present in the user data.
+        // Note: this trait only formats HTTP responses and does not control JWT token payloads.
+        // Controllers can choose whether to expose google_id by deciding what user data to pass here
+        // or how to use the formatted response (e.g., login vs. profile endpoints).
         if (isset($user['google_id'])) {
             $response['google_id'] = $user['google_id'];
         }

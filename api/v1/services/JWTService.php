@@ -63,8 +63,7 @@ class JWTService {
         $secret = Config::getJWTSecret();
         
         if (empty($secret)) {
-            error_log('JWT validation failed: JWT_SECRET not configured');
-            return false;
+            throw new Exception('JWT_SECRET not configured');
         }
         
         if (empty($token)) {
@@ -99,9 +98,16 @@ class JWTService {
         // Verify signature
         $signatureExpected = $this->sign($headerEncoded . '.' . $payloadEncoded, $secret);
         
-        if (!hash_equals($signatureExpected, $signatureProvided)) {
-            // Use generic error message to avoid revealing signature validation details
-            error_log('JWT validation failed: invalid signature');
+        // Perform timing-safe comparison and add more specific logging for failure reasons
+        $signatureLengthsMatch = strlen($signatureExpected) === strlen($signatureProvided);
+        $signatureValid = hash_equals($signatureExpected, $signatureProvided);
+
+        if (!$signatureValid) {
+            if (!$signatureLengthsMatch) {
+                error_log('JWT validation failed: invalid signature (length mismatch)');
+            } else {
+                error_log('JWT validation failed: invalid signature (content mismatch)');
+            }
             return false;
         }
         

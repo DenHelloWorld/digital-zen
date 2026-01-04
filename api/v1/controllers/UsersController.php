@@ -30,27 +30,8 @@ class UsersController {
                 // Log only google_id (not PII) for debugging
                 $googleId = $tokenInfo['sub'] ?? 'unknown';
                 
-                // Check for missing required token fields to provide more specific feedback
-                // Only 'sub' and 'email' are required; 'name' and 'picture' are optional
-                $requiredFields = ['sub', 'email'];
-                $missingFields = [];
-                foreach ($requiredFields as $field) {
-                    if (!isset($tokenInfo[$field]) || trim($tokenInfo[$field]) === '') {
-                        $missingFields[] = $field;
-                    }
-                }
-                
-                if (!empty($missingFields)) {
-                    $missingList = implode(', ', $missingFields);
-                    error_log("User creation failed for google_id: $googleId; missing token fields: $missingList");
-                    Response::error(
-                        'User creation failed: missing required authentication data (' . $missingList . ')',
-                        400
-                    );
-                    return;
-                }
-                
-                // All required token fields are present; treat this as an internal error
+                // All validation is handled inside GoogleAuthService::createUser()
+                // If we reach here, it's likely a database error or other internal issue
                 error_log("User creation failed for google_id: $googleId; GoogleAuthService::createUser returned false");
                 Response::error(
                     'User creation failed due to an internal error while creating your account',
