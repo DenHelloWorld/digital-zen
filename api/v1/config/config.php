@@ -10,18 +10,18 @@ class Config {
     /**
      * Get Google OAuth Client ID
      * This must match the client ID configured in the Chrome extension manifest.
-     * 
-     * @return string|null The Google OAuth Client ID or null if not set
+     *
+     * @return string The Google OAuth Client ID
+     * @throws \RuntimeException If GOOGLE_CLIENT_ID is not configured
      */
     public static function getGoogleClientId() {
         // Use $_ENV for better performance and consistency with modern PHP
         $clientId = $_ENV['GOOGLE_CLIENT_ID'] ?? null;
-        
-        if ($clientId === null) {
-            error_log("WARNING: GOOGLE_CLIENT_ID environment variable not set");
-            return null;
+
+        if ($clientId === null || $clientId === '') {
+            error_log("CRITICAL: GOOGLE_CLIENT_ID environment variable not set or empty. The application cannot safely verify Google OAuth tokens.");
+            throw new \RuntimeException('GOOGLE_CLIENT_ID environment variable must be set and non-empty.');
         }
-        
         return $clientId;
     }
     
