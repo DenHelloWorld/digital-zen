@@ -35,9 +35,9 @@ class UsersController {
     }
     
     /**
-     * Получить информацию о текущем пользователе
+     * Get information about the current user
      * 
-     * @param array $user Массив с данными пользователя из БД
+     * @param array $user Array with user data from the database
      */
     public function me($user) {
         Response::success($this->formatUserResponse($user));
