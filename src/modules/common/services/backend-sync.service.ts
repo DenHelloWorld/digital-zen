@@ -3,13 +3,7 @@ import { Subject, switchMap, catchError, of } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ApiService } from './api.service';
 import { API_URLS } from '../constants/api-urls.const';
-import { IFocus } from '../models/focus.model';
-
-interface BackendResponse<T> {
-  success: boolean;
-  data?: T;
-  error?: string;
-}
+import { IFocus, BackendResponse } from '../models';
 
 @Injectable({ providedIn: 'root' })
 export class BackendSyncService {
@@ -127,7 +121,6 @@ export class BackendSyncService {
       .subscribe((response: BackendResponse<IFocus.Period[]>) => {
         if (response.success && response.data) {
           console.log('Periods pulled successfully:', response.data);
-          // Here you could emit the data or update a signal if needed
         } else {
           console.error('Failed to pull periods:', response.error);
         }

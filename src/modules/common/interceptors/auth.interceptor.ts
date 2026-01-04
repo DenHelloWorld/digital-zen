@@ -1,6 +1,6 @@
 import { HttpInterceptorFn } from '@angular/common/http';
 import { API_URLS } from '../constants/api-urls.const';
-import { from, switchMap } from 'rxjs';
+import { from, switchMap, catchError } from 'rxjs';
 
 /**
  * HTTP interceptor that adds Authorization header with Google OAuth token
@@ -20,7 +20,8 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   // Get auth token and add it to the request
   return from(chrome.identity.getAuthToken({ interactive: false })).pipe(
     switchMap(result => {
-      if (!result?.token) {
+      // Defensive checks for both result object and token property
+      if (!result || !result.token || typeof result.token !== 'string') {
         return next(req);
       }
 
@@ -31,6 +32,10 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
       });
 
       return next(authReq);
+    }),
+    catchError(() => {
+      // If token retrieval fails, continue without auth header
+      return next(req);
     })
   );
 };
