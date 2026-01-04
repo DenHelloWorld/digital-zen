@@ -1,4 +1,4 @@
-import { inject, Injectable, signal, WritableSignal } from '@angular/core';
+import { inject, Injectable, Signal, signal, WritableSignal } from '@angular/core';
 import { catchError, finalize, map, Observable, of, tap } from 'rxjs';
 import { ApiService } from './api.service';
 import { API_URLS } from '../constants/api-urls.const';
@@ -13,21 +13,24 @@ export class BackendSyncService {
   readonly #pushPeriodCounter: WritableSignal<number> = signal(0);
   readonly #pullPeriodsCounter: WritableSignal<number> = signal(0);
 
-  // Readonly signals exposed to consumers (true if counter > 0)
-  public readonly isCheckingHealth: WritableSignal<boolean> = signal(false);
-  public readonly isPushingPeriod: WritableSignal<boolean> = signal(false);
-  public readonly isPullingPeriods: WritableSignal<boolean> = signal(false);
-
-  // Overall pending state (true if any operation is pending)
+  // Private writable signals for pending states
+  readonly #isCheckingHealth: WritableSignal<boolean> = signal(false);
+  readonly #isPushingPeriod: WritableSignal<boolean> = signal(false);
+  readonly #isPullingPeriods: WritableSignal<boolean> = signal(false);
   readonly #isPending: WritableSignal<boolean> = signal(false);
-  public readonly isPending = this.#isPending.asReadonly();
+
+  // Public readonly signals exposed to consumers
+  public readonly isCheckingHealth: Signal<boolean> = this.#isCheckingHealth.asReadonly();
+  public readonly isPushingPeriod: Signal<boolean> = this.#isPushingPeriod.asReadonly();
+  public readonly isPullingPeriods: Signal<boolean> = this.#isPullingPeriods.asReadonly();
+  public readonly isPending: Signal<boolean> = this.#isPending.asReadonly();
 
   /**
    * Trigger a health check of the backend API
    * @returns Observable that emits true if healthy, false otherwise
    */
   public checkHealth(): Observable<boolean> {
-    this.#incrementCounter(this.#checkHealthCounter, this.isCheckingHealth);
+    this.#incrementCounter(this.#checkHealthCounter, this.#isCheckingHealth);
 
     return this.#apiService
       .get<BackendResponse<{ status: string }>>(`${API_URLS.BACKEND.BASE_URL}/health`)
@@ -48,7 +51,7 @@ export class BackendSyncService {
         }),
         map(response => response.success),
         finalize(() => {
-          this.#decrementCounter(this.#checkHealthCounter, this.isCheckingHealth);
+          this.#decrementCounter(this.#checkHealthCounter, this.#isCheckingHealth);
         })
       );
   }
@@ -59,7 +62,7 @@ export class BackendSyncService {
    * @returns Observable that emits true if successful, false otherwise
    */
   public pushPeriod(period: IFocus.Period): Observable<boolean> {
-    this.#incrementCounter(this.#pushPeriodCounter, this.isPushingPeriod);
+    this.#incrementCounter(this.#pushPeriodCounter, this.#isPushingPeriod);
 
     return this.#apiService
       .post<BackendResponse<{ message: string }>>(`${API_URLS.BACKEND.BASE_URL}/periods`, period)
@@ -80,7 +83,7 @@ export class BackendSyncService {
         }),
         map(response => response.success),
         finalize(() => {
-          this.#decrementCounter(this.#pushPeriodCounter, this.isPushingPeriod);
+          this.#decrementCounter(this.#pushPeriodCounter, this.#isPushingPeriod);
         })
       );
   }
@@ -90,7 +93,7 @@ export class BackendSyncService {
    * @returns Observable that emits the array of periods or null on error
    */
   public pullPeriods(): Observable<IFocus.Period[] | null> {
-    this.#incrementCounter(this.#pullPeriodsCounter, this.isPullingPeriods);
+    this.#incrementCounter(this.#pullPeriodsCounter, this.#isPullingPeriods);
 
     return this.#apiService
       .get<BackendResponse<IFocus.Period[]>>(`${API_URLS.BACKEND.BASE_URL}/periods`)
@@ -111,7 +114,7 @@ export class BackendSyncService {
         }),
         map(response => (response.success && response.data ? response.data : null)),
         finalize(() => {
-          this.#decrementCounter(this.#pullPeriodsCounter, this.isPullingPeriods);
+          this.#decrementCounter(this.#pullPeriodsCounter, this.#isPullingPeriods);
         })
       );
   }
@@ -144,7 +147,8 @@ export class BackendSyncService {
    * Update the overall pending state based on individual operation states
    */
   #updateOverallPending(): void {
-    const anyPending = this.isCheckingHealth() || this.isPushingPeriod() || this.isPullingPeriods();
+    const anyPending =
+      this.#isCheckingHealth() || this.#isPushingPeriod() || this.#isPullingPeriods();
     this.#isPending.set(anyPending);
   }
 }
