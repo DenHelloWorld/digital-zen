@@ -1,4 +1,5 @@
-import { inject, Injectable } from '@angular/core';
+import { DestroyRef, inject, Injectable } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { map, Observable } from 'rxjs';
 import { ApiService } from './api.service';
 import { API_URLS } from '../constants';
@@ -35,6 +36,7 @@ export interface IUser {
 @Injectable({ providedIn: 'root' })
 export class UserService {
   readonly #apiService: ApiService = inject(ApiService);
+  readonly #destroyRef: DestroyRef = inject(DestroyRef);
 
   /**
    * Create or get existing user in the backend
@@ -50,7 +52,10 @@ export class UserService {
   public createUser(): Observable<IUser | null> {
     return this.#apiService
       .post<IBackendResponse<IUser>>(`${API_URLS.BACKEND.BASE_URL}${API_URLS.BACKEND.USERS}`, {})
-      .pipe(map(response => (response.success && response.data ? response.data : null)));
+      .pipe(
+        takeUntilDestroyed(this.#destroyRef),
+        map(response => (response.success && response.data ? response.data : null))
+      );
   }
 
   /**
@@ -62,6 +67,9 @@ export class UserService {
   public getCurrentUser(): Observable<IUser | null> {
     return this.#apiService
       .get<IBackendResponse<IUser>>(`${API_URLS.BACKEND.BASE_URL}${API_URLS.BACKEND.ME}`)
-      .pipe(map(response => (response.success && response.data ? response.data : null)));
+      .pipe(
+        takeUntilDestroyed(this.#destroyRef),
+        map(response => (response.success && response.data ? response.data : null))
+      );
   }
 }
