@@ -52,7 +52,7 @@ export class UserService {
       .post<IBackendResponse<IUser>>(`${API_URLS.BACKEND.BASE_URL}${API_URLS.BACKEND.USERS}`, {})
       .pipe(
         map(response => {
-          if (!response || typeof response !== 'object') {
+          if (!response || typeof response !== 'object' || Array.isArray(response)) {
             console.error('[UserService] Invalid response structure from createUser:', response);
             return null;
           }
@@ -72,7 +72,7 @@ export class UserService {
       .get<IBackendResponse<IUser>>(`${API_URLS.BACKEND.BASE_URL}${API_URLS.BACKEND.ME}`)
       .pipe(
         map(response => {
-          if (!response || typeof response !== 'object') {
+          if (!response || typeof response !== 'object' || Array.isArray(response)) {
             console.error(
               '[UserService] Invalid response structure from getCurrentUser:',
               response

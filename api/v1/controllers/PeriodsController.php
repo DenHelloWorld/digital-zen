@@ -121,9 +121,13 @@ class PeriodsController {
     
     private function createWebsite($periodId, $site) {
         // Validate required fields
-        if (!isset($site['id']) || !isset($site['name']) || !isset($site['url'])) {
-            error_log("createWebsite: Missing required fields (id, name, or url) in website data");
-            throw new Exception('Invalid website data: missing required fields');
+        if (
+            !isset($site['id']) || trim((string)$site['id']) === '' ||
+            !isset($site['name']) || trim((string)$site['name']) === '' ||
+            !isset($site['url']) || trim((string)$site['url']) === ''
+        ) {
+            error_log("createWebsite: Missing or empty required fields (id, name, or url) in website data");
+            throw new Exception('Invalid website data: missing or empty required fields');
         }
         
         $stmt = $this->db->prepare("
@@ -145,9 +149,9 @@ class PeriodsController {
     
     private function createFocusedTime($periodId, $time) {
         // Validate required fields
-        if (!isset($time['id'])) {
-            error_log("createFocusedTime: Missing required field 'id' in focused time data");
-            throw new Exception('Invalid focused time data: missing required field id');
+        if (!isset($time['id']) || trim((string)$time['id']) === '') {
+            error_log("createFocusedTime: Missing or empty required field 'id' in focused time data");
+            throw new Exception('Invalid focused time data: missing or empty required field id');
         }
         
         $stmt = $this->db->prepare("
