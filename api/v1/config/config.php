@@ -36,4 +36,23 @@ class Config {
             'accounts.google.com'
         ];
     }
+    
+    /**
+     * Get JWT secret for token signing
+     * 
+     * CRITICAL: This must be a strong, random secret in production.
+     * Generate with: openssl rand -base64 64
+     * 
+     * @return string|null The JWT secret or null if not set
+     */
+    public static function getJWTSecret() {
+        $secret = $_ENV['JWT_SECRET'] ?? null;
+        
+        if ($secret === null) {
+            error_log("WARNING: JWT_SECRET environment variable not set");
+            return null;
+        }
+        
+        return $secret;
+    }
 }

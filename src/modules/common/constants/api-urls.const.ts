@@ -5,6 +5,7 @@ export const API_URLS = {
   },
   BACKEND: {
     BASE_URL: 'https://digital-zen.csmpoint.com/api/v1',
+    AUTH_GOOGLE: '/auth/google',
     PERIODS: '/periods',
     HEALTH: '/health',
     USERS: '/users',

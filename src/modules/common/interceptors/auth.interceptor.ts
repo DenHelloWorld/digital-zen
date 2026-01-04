@@ -1,6 +1,8 @@
 import { HttpInterceptorFn } from '@angular/common/http';
+import { inject } from '@angular/core';
 import { API_URLS } from '../constants';
 import { from, switchMap, catchError } from 'rxjs';
+import { TokenStorageService } from '../services/token-storage.service';
 
 /**
  * Determines whether the given URL targets the backend API, using a
@@ -20,8 +22,22 @@ const isBackendApiUrl = (url: string, baseUrl: string): boolean => {
 };
 
 /**
- * HTTP interceptor that adds Authorization header with Google OAuth token
- * for requests to the backend API.
+ * Check if the URL is the auth/google endpoint which needs Google token
+ */
+const isAuthGoogleEndpoint = (url: string): boolean => {
+  return url.includes('/auth/google');
+};
+
+/**
+ * HTTP interceptor that adds Authorization header for backend API requests
+ *
+ * NEW FLOW (JWT-based):
+ * - For most API requests, uses JWT token from TokenStorageService
+ * - JWT tokens are fast to validate and work with any auth provider
+ *
+ * SPECIAL CASE:
+ * - For /auth/google endpoint, uses Google OAuth token from Chrome Identity
+ * - This endpoint exchanges Google token for JWT
  */
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   // Only add Authorization header for backend API requests
@@ -29,33 +45,60 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     return next(req);
   }
 
-  // Check if Chrome runtime is available
-  if (typeof chrome === 'undefined' || !chrome?.identity) {
-    return next(req);
+  const tokenStorage = inject(TokenStorageService);
+
+  // Special case: /auth/google endpoint needs Google OAuth token
+  if (isAuthGoogleEndpoint(req.url)) {
+    // Check if Chrome runtime is available
+    if (typeof chrome === 'undefined' || !chrome?.identity) {
+      return next(req);
+    }
+
+    // Get Google OAuth token and add it to the request
+    return from(chrome.identity.getAuthToken({ interactive: false })).pipe(
+      switchMap(result => {
+        // Defensive checks for both result object and token property
+        if (!result || !result.token || typeof result.token !== 'string') {
+          return next(req);
+        }
+
+        const authReq = req.clone({
+          setHeaders: {
+            Authorization: `Bearer ${result.token}`,
+          },
+        });
+
+        return next(authReq);
+      }),
+      catchError(error => {
+        // If token retrieval fails, log the error and continue without auth header
+        console.error(
+          '[authInterceptor] Failed to retrieve Google token via chrome.identity.getAuthToken:',
+          error
+        );
+        return next(req);
+      })
+    );
   }
 
-  // Get auth token and add it to the request
-  return from(chrome.identity.getAuthToken({ interactive: false })).pipe(
-    switchMap(result => {
-      // Defensive checks for both result object and token property
-      if (!result || !result.token || typeof result.token !== 'string') {
+  // Default flow: use JWT token from storage
+  return from(tokenStorage.getToken()).pipe(
+    switchMap(jwtToken => {
+      if (!jwtToken) {
+        // No JWT token available, continue without auth header
         return next(req);
       }
 
       const authReq = req.clone({
         setHeaders: {
-          Authorization: `Bearer ${result.token}`,
+          Authorization: `Bearer ${jwtToken}`,
         },
       });
 
       return next(authReq);
     }),
     catchError(error => {
-      // If token retrieval fails, log the error and continue without auth header
-      console.error(
-        '[authInterceptor] Failed to retrieve auth token via chrome.identity.getAuthToken:',
-        error
-      );
+      console.error('[authInterceptor] Failed to retrieve JWT token from storage:', error);
       return next(req);
     })
   );
