@@ -31,7 +31,8 @@ class UsersController {
                 $googleId = $tokenInfo['sub'] ?? 'unknown';
                 
                 // Check for missing required token fields to provide more specific feedback
-                $requiredFields = ['sub', 'email', 'name', 'picture'];
+                // Only 'sub' and 'email' are required; 'name' and 'picture' are optional
+                $requiredFields = ['sub', 'email'];
                 $missingFields = [];
                 foreach ($requiredFields as $field) {
                     if (!isset($tokenInfo[$field]) || $tokenInfo[$field] === '') {
