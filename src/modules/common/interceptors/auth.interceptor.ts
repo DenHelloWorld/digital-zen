@@ -69,6 +69,9 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
       switchMap(result => {
         // Defensive checks for both result object and token property
         if (!result || !result.token || typeof result.token !== 'string') {
+          console.warn(
+            '[authInterceptor] No Google OAuth token available for /auth/google endpoint'
+          );
           return next(req);
         }
 
@@ -95,7 +98,8 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   return from(tokenStorage.getToken()).pipe(
     switchMap(jwtToken => {
       if (!jwtToken) {
-        // No JWT token available, continue without auth header
+        // No JWT token available - log warning for protected endpoints
+        console.warn('[authInterceptor] No JWT token found in storage for request to:', req.url);
         return next(req);
       }
 

@@ -5,7 +5,7 @@ ini_set('display_errors', '0');
 ini_set('log_errors', '1');
 
 spl_autoload_register(function ($className) {
-    $dirs = ['controllers', 'services', 'middleware', 'utils', 'config'];
+    $dirs = ['controllers', 'services', 'middleware', 'utils', 'config', 'traits'];
     foreach ($dirs as $dir) {
         $file = __DIR__ . "/$dir/$className.php";
         if (file_exists($file)) {

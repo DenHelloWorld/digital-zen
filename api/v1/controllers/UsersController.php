@@ -1,23 +1,7 @@
 <?php
 
 class UsersController {
-    /**
-     * Форматировать данные пользователя для ответа
-     * 
-     * @param array $user Массив с данными пользователя из БД
-     * @return array Отформатированные данные пользователя
-     */
-    private function formatUserResponse($user) {
-        return [
-            'id' => $user['id'],
-            'google_id' => $user['google_id'],
-            'email' => $user['email'],
-            'name' => $user['name'],
-            'picture_url' => $user['picture_url'],
-            'created_at' => $user['created_at'],
-            'last_login_at' => $user['last_login_at']
-        ];
-    }
+    use UserResponseFormatter;
     
     /**
      * Создать нового пользователя

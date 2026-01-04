@@ -7,6 +7,7 @@
  * Each provider endpoint validates credentials and returns a JWT token.
  */
 class AuthController {
+    use UserResponseFormatter;
     
     /**
      * Exchange Google OAuth token for JWT token
@@ -79,22 +80,5 @@ class AuthController {
             error_log('Google auth error: ' . $e->getMessage());
             Response::error('Authentication failed', 500);
         }
-    }
-    
-    /**
-     * Format user data for API response
-     * 
-     * @param array $user User data from database
-     * @return array Formatted user data
-     */
-    private function formatUserResponse($user) {
-        return [
-            'id' => (int) $user['id'],
-            'email' => $user['email'],
-            'name' => $user['name'],
-            'picture_url' => $user['picture_url'] ?? '',
-            'created_at' => $user['created_at'],
-            'last_login_at' => $user['last_login_at']
-        ];
     }
 }
