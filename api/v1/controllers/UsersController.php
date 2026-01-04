@@ -4,21 +4,21 @@ class UsersController {
     use UserResponseFormatter;
     
     /**
-     * Создать нового пользователя
-     * Вызывается фронтендом при первом логине
+     * Create a new user
+     * Called by frontend on first login
      * 
-     * @param array $tokenInfo Информация из Google OAuth токена (sub, email, name, picture)
+     * @param array $tokenInfo Information from Google OAuth token (sub, email, name, picture)
      */
     public function create($tokenInfo) {
         try {
             $googleAuth = new GoogleAuthService();
             
-            // Создаём пользователя (или получаем существующего)
-            // GoogleAuthService.createUser уже валидирует обязательные поля
+            // Create user (or get existing one)
+            // GoogleAuthService.createUser already validates required fields
             $user = $googleAuth->createUser($tokenInfo);
             
             if (!$user) {
-                // Логируем только google_id (не PII) для отладки
+                // Log only google_id (not PII) for debugging
                 $googleId = $tokenInfo['sub'] ?? 'unknown';
                 error_log("User creation failed for google_id: $googleId");
                 Response::error('User creation failed: unable to create or retrieve user record', 500);

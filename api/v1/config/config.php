@@ -12,7 +12,7 @@ class Config {
      * This must match the client ID configured in the Chrome extension manifest.
      *
      * @return string The Google OAuth Client ID
-     * @throws \RuntimeException If GOOGLE_CLIENT_ID is not configured
+     * @throws ConfigurationException If GOOGLE_CLIENT_ID is not configured
      */
     public static function getGoogleClientId() {
         // Use $_ENV for better performance and consistency with modern PHP
@@ -20,7 +20,7 @@ class Config {
 
         if ($clientId === null || $clientId === '') {
             error_log("CRITICAL: GOOGLE_CLIENT_ID environment variable not set or empty. The application cannot safely verify Google OAuth tokens.");
-            throw new \RuntimeException('GOOGLE_CLIENT_ID environment variable must be set and non-empty.');
+            throw new ConfigurationException('GOOGLE_CLIENT_ID environment variable must be set and non-empty.');
         }
         return $clientId;
     }
@@ -65,7 +65,7 @@ class Config {
      * This should be called during application bootstrap to ensure
      * all required configuration is present before handling requests.
      * 
-     * @throws RuntimeException if critical configuration is missing
+     * @throws ConfigurationException if critical configuration is missing
      */
     public static function validateStartupConfig() {
         $errors = [];
@@ -75,15 +75,17 @@ class Config {
             $errors[] = 'JWT_SECRET environment variable is required but not set. Generate with: openssl rand -base64 64';
         }
         
-        // Validate Google Client ID - getGoogleClientId already checks for null and empty
-        if (self::getGoogleClientId() === null) {
+        // Validate Google Client ID - this will throw ConfigurationException if not set
+        try {
+            self::getGoogleClientId();
+        } catch (ConfigurationException $e) {
             $errors[] = 'GOOGLE_CLIENT_ID environment variable is required but not set';
         }
         
         if (!empty($errors)) {
             $errorMessage = "Application configuration validation failed:\n" . implode("\n", $errors);
             error_log($errorMessage);
-            throw new RuntimeException($errorMessage);
+            throw new ConfigurationException($errorMessage);
         }
     }
 }

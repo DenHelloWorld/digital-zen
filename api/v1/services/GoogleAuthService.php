@@ -4,18 +4,18 @@ class GoogleAuthService {
     private const GOOGLE_TOKEN_INFO_URL = 'https://oauth2.googleapis.com/tokeninfo';
     
     /**
-     * Валидация Google OAuth токена
+     * Validate Google OAuth token
      * 
-     * ВАЖНО: Бэкенд ДОЛЖЕН проверять токен на каждом запросе
-     * для предотвращения подделки identity
+     * IMPORTANT: The backend MUST verify the token on every request
+     * to prevent identity forgery
      * 
-     * Проверяет:
-     * 1. Валидность токена через Google API
-     * 2. Audience (aud) - токен должен быть выдан для нашего OAuth клиента
-     * 3. Issuer (iss) - токен должен быть выдан Google
+     * Verifies:
+     * 1. Token validity through Google API
+     * 2. Audience (aud) - token must be issued for our OAuth client
+     * 3. Issuer (iss) - token must be issued by Google
      * 
      * @param string $token Google OAuth access token
-     * @return array|false Token info если валиден, false если нет
+     * @return array|false Token info if valid, false otherwise
      */
     public function validateToken($token) {
         if (empty($token)) {
@@ -46,24 +46,19 @@ class GoogleAuthService {
             return false;
         }
         
-        // Проверяем audience (aud) - токен должен быть выдан для нашего клиента
+        // Validate audience (aud) - token must be issued for our OAuth client
         $expectedClientId = Config::getGoogleClientId();
-        if ($expectedClientId && isset($tokenInfo['aud'])) {
-            if ($tokenInfo['aud'] !== $expectedClientId) {
-                error_log("Token validation failed: audience mismatch. Expected: $expectedClientId, Got: " . $tokenInfo['aud']);
-                return false;
-            }
-        } elseif ($expectedClientId && !isset($tokenInfo['aud'])) {
+        if (!isset($tokenInfo['aud'])) {
             error_log("Token validation failed: no audience (aud) field in token");
             return false;
         }
-        // Если GOOGLE_CLIENT_ID не настроен, логируем предупреждение но продолжаем
-        // (для обратной совместимости с существующими установками)
-        elseif (!$expectedClientId) {
-            error_log("WARNING: GOOGLE_CLIENT_ID not configured, skipping audience verification");
+        
+        if ($tokenInfo['aud'] !== $expectedClientId) {
+            error_log("Token validation failed: audience mismatch. Expected: $expectedClientId, Got: " . $tokenInfo['aud']);
+            return false;
         }
         
-        // Проверяем issuer (iss) - токен должен быть выдан Google
+        // Validate issuer (iss) - token must be issued by Google
         if (isset($tokenInfo['iss'])) {
             $validIssuers = Config::getValidIssuers();
             if (!in_array($tokenInfo['iss'], $validIssuers, true)) {
@@ -76,13 +71,13 @@ class GoogleAuthService {
     }
     
     /**
-     * Получить пользователя по google_id из токена
+     * Get user by google_id from token
      * 
-     * @param array $tokenInfo Информация из Google OAuth токена (должен содержать 'sub')
-     * @return array|false Данные пользователя или false если не найден
+     * @param array $tokenInfo Information from Google OAuth token (must contain 'sub')
+     * @return array|false User data or false if not found
      */
     public function getUser($tokenInfo) {
-        // Валидация обязательного поля 'sub'
+        // Validate required 'sub' field
         if (!isset($tokenInfo['sub']) || empty($tokenInfo['sub'])) {
             error_log("getUser: missing or empty 'sub' field in tokenInfo");
             return false;
@@ -90,13 +85,13 @@ class GoogleAuthService {
         
         $db = Database::getInstance()->getConnection();
         
-        // Проверяем существует ли пользователь по google_id
+        // Check if user exists by google_id
         $stmt = $db->prepare("SELECT * FROM users WHERE google_id = :google_id");
         $stmt->execute(['google_id' => $tokenInfo['sub']]);
         $user = $stmt->fetch();
         
         if ($user) {
-            // Обновляем время последнего входа
+            // Update last login time
             $stmt = $db->prepare("UPDATE users SET last_login_at = NOW() WHERE id = :id");
             $stmt->execute(['id' => $user['id']]);
         }
@@ -105,13 +100,13 @@ class GoogleAuthService {
     }
     
     /**
-     * Создать нового пользователя
+     * Create a new user
      * 
-     * @param array $tokenInfo Информация из Google OAuth токена (sub, email, name, picture)
-     * @return array|false Данные пользователя (существующего или созданного) или false при ошибке
+     * @param array $tokenInfo Information from Google OAuth token (sub, email, name, picture)
+     * @return array|false User data (existing or newly created) or false on error
      */
     public function createUser($tokenInfo) {
-        // Валидация обязательных полей 'sub' и 'email'
+        // Validate required fields 'sub' and 'email'
         if (!isset($tokenInfo['sub']) || empty($tokenInfo['sub'])) {
             error_log("createUser: missing or empty 'sub' field in tokenInfo");
             return false;
@@ -124,21 +119,21 @@ class GoogleAuthService {
         
         $db = Database::getInstance()->getConnection();
         
-        // Проверяем, не существует ли уже пользователь
+        // Check if user already exists
         $stmt = $db->prepare("SELECT * FROM users WHERE google_id = :google_id");
         $stmt->execute(['google_id' => $tokenInfo['sub']]);
         $existingUser = $stmt->fetch();
         
         if ($existingUser) {
-            // Обновляем время последнего входа для существующего пользователя
+            // Update last login time for existing user
             $updateStmt = $db->prepare("UPDATE users SET last_login_at = NOW() WHERE id = :id");
             $updateStmt->execute(['id' => $existingUser['id']]);
             
-            // Возвращаем данные существующего пользователя
+            // Return existing user data
             return $existingUser;
         }
         
-        // Создаём нового пользователя
+        // Create new user
         $stmt = $db->prepare("
             INSERT INTO users (google_id, email, name, picture_url, last_login_at)
             VALUES (:google_id, :email, :name, :picture_url, NOW())
