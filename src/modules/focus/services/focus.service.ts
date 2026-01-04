@@ -17,6 +17,7 @@ import {
   ChromeStorageService,
   FOCUS_ERROR_ENUM,
 } from '../../common';
+import { BackendSyncService } from '../../common/services/backend-sync.service';
 import { DzToastService } from '../../common/components/toast-container/toast.service';
 import { cleanUrlHelper, isImageIcon, isSvgIcon } from '../../common/helpers';
 import { CHROME_COMMAND_ENUM } from '../../common/enums/chrome-command.enum';
@@ -35,6 +36,7 @@ export class FocusService {
   readonly #isChromeRuntime: boolean = !!chrome.runtime;
   readonly #toastService: DzToastService = inject(DzToastService);
   readonly #chromeStorageService: ChromeStorageService = inject(ChromeStorageService);
+  readonly #backendSyncService: BackendSyncService = inject(BackendSyncService);
   readonly #destroyRef: DestroyRef = inject(DestroyRef);
 
   readonly #currentPeriod: WritableSignal<IFocus.Period | null> = signal<IFocus.Period | null>(
@@ -210,6 +212,7 @@ export class FocusService {
   public addPeriod(period: IFocus.Period): void {
     if (this.#isChromeRuntime) {
       chrome.runtime.sendMessage({ command: CHROME_COMMAND_ENUM.ADD_PERIOD, period });
+      this.#syncPeriodToBackend(period);
     }
   }
 
@@ -222,6 +225,7 @@ export class FocusService {
   public updatePeriod(period: IFocus.Period): void {
     if (this.#isChromeRuntime) {
       chrome.runtime.sendMessage({ command: CHROME_COMMAND_ENUM.UPDATE_PERIOD, period });
+      this.#syncPeriodToBackend(period);
     }
   }
 
@@ -389,5 +393,24 @@ export class FocusService {
         }
       );
     }
+  }
+
+  /**
+   * Sync a period to the backend
+   * This method pushes the period to the backend API
+   */
+  #syncPeriodToBackend(period: IFocus.Period): void {
+    this.#backendSyncService.pushPeriod(period).subscribe({
+      next: success => {
+        if (success) {
+          console.log('[FocusService] Period synced to backend successfully');
+        } else {
+          console.warn('[FocusService] Failed to sync period to backend');
+        }
+      },
+      error: (err: unknown) => {
+        console.error('[FocusService] Error syncing period to backend:', err);
+      },
+    });
   }
 }
