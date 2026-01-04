@@ -5,10 +5,18 @@ class Database {
     private $connection;
 
     private function __construct() {
-        $host = 'localhost';
-        $dbname = 'u387418961_digital_zen_db';
-        $username = 'u387418961_dz_user';
-        $password = 'CHANGE_ME_TO_A_STRONG_RANDOM_PASSWORD_24+CHARS'; // Генерируй 20+ символов случайных перед продакшеном
+        $host = getenv('DB_HOST') ?: 'localhost';
+        $dbname = getenv('DB_NAME') ?: 'u387418961_digital_zen_db';
+        $username = getenv('DB_USER') ?: 'u387418961_dz_user';
+        $password = getenv('DB_PASSWORD');
+
+        if ($password === false || $password === null || $password === '') {
+            error_log("DB Error: Database password is not configured (environment variable DB_PASSWORD is missing).");
+            header('Content-Type: application/json; charset=utf-8');
+            http_response_code(500);
+            echo json_encode(['success' => false, 'error' => 'Database configuration error']);
+            exit;
+        }
 
         try {
             $this->connection = new PDO(
@@ -18,6 +26,7 @@ class Database {
                 [
                     PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
                     PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+                    PDO::ATTR_EMULATE_PREPARES => false,
                 ]
             );
         } catch (PDOException $e) {

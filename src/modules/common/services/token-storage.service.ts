@@ -108,15 +108,65 @@ export class TokenStorageService {
   }
 
   /**
-   * Check if a token exists in storage
+   * Validate a JWT token from storage.
    *
-   * Note: This only checks for token existence, not validity or expiration.
-   * The token may be expired or invalid even if this returns true.
+   * This performs a minimal validation by checking:
+   * - The token has three parts (header.payload.signature)
+   * - The payload is valid JSON
+   * - If an `exp` claim is present, it has not expired
    *
-   * @returns Promise that resolves with true if token exists, false otherwise
+   * Tokens without an `exp` claim are treated as valid.
+   *
+   * @param token The JWT token string to validate
+   * @returns true if the token appears structurally valid and not expired, false otherwise
+   */
+  private isTokenValid(token: string): boolean {
+    const parts = token.split('.');
+
+    if (parts.length !== 3) {
+      console.warn('[TokenStorageService] Invalid JWT format in storage');
+      return false;
+    }
+
+    const payloadPart = parts[1];
+
+    try {
+      // JWT payload is base64url-encoded; normalize to standard base64 before decoding.
+      const base64 = payloadPart.replace(/-/g, '+').replace(/_/g, '/');
+      const paddedBase64 = base64.padEnd(base64.length + ((4 - (base64.length % 4)) % 4), '=');
+      const payloadJson = atob(paddedBase64);
+      const payload = JSON.parse(payloadJson) as { exp?: number };
+
+      if (typeof payload.exp !== 'number') {
+        // No expiration claim present; treat as valid.
+        return true;
+      }
+
+      const nowInSeconds = Math.floor(Date.now() / 1000);
+      return payload.exp > nowInSeconds;
+    } catch (error) {
+      console.warn('[TokenStorageService] Failed to parse JWT from storage', error);
+      return false;
+    }
+  }
+
+  /**
+   * Check if a valid (non-expired) token exists in storage
+   *
+   * This validates that:
+   * - A token exists in storage
+   * - The token has a valid JWT structure
+   * - The token is not expired (if it has an exp claim)
+   *
+   * @returns Promise that resolves with true if a valid token exists, false otherwise
    */
   public async hasStoredToken(): Promise<boolean> {
     const token = await this.getToken();
-    return !!token;
+
+    if (!token) {
+      return false;
+    }
+
+    return this.isTokenValid(token);
   }
 }
