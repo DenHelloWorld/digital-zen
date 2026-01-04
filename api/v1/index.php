@@ -34,6 +34,17 @@ $tokenInfo = null;
 /**
  * Authentication Flow:
  * 
+ * NEW FLOW (JWT-based):
+ * 1. User authenticates with Google in the Chrome extension
+ * 2. Extension sends POST request to /auth/google with Google OAuth token
+ *    - This endpoint validates Google token and creates/gets user
+ *    - Returns JWT token for subsequent requests
+ * 3. Extension stores JWT token
+ * 4. Subsequent requests use JWT token in Authorization header
+ *    - JWT is validated without external API calls
+ *    - Fast and scalable
+ * 
+ * LEGACY FLOW (backward compatibility):
  * 1. User authenticates with Google in the Chrome extension
  * 2. Extension sends POST request to /users with Google OAuth token in Authorization header
  *    - This endpoint validates the token but does NOT require an existing user in DB
@@ -41,15 +52,24 @@ $tokenInfo = null;
  * 3. Subsequent requests to other endpoints require an existing user in DB
  *    - Token is validated AND user must exist in database
  * 
- * This two-step flow prevents chicken-and-egg problem while maintaining security.
+ * This allows gradual migration from Google tokens to JWT tokens.
  */
 
-// Для /users (создание) нужна валидация токена, но не требуется существующий user
-if (($pathParts[0] ?? '') === 'users' && $method === 'POST') {
+// Skip authentication for /auth endpoints (they provide authentication)
+// SECURITY NOTE: Auth endpoints are responsible for their own authentication validation.
+// Any methods added to AuthController MUST perform explicit authentication checks.
+if (($pathParts[0] ?? '') === 'auth') {
+    // Auth endpoints handle their own validation
+    $user = null;
+    $tokenInfo = null;
+}
+// For /users (creation) token validation is needed, but existing user is not required
+elseif (($pathParts[0] ?? '') === 'users' && $method === 'POST') {
     $authResult = $authMiddleware->authenticate(false);
+    $user = $authResult['user'] ?? null;
     $tokenInfo = $authResult['tokenInfo'];
 } elseif (($pathParts[0] ?? '') !== 'health') {
-    // Для всех остальных эндпоинтов требуется аутентификация
+    // For all other endpoints, authentication is required
     $authResult = $authMiddleware->authenticate(true);
     $user = $authResult['user'];
     $tokenInfo = $authResult['tokenInfo'] ?? null;
@@ -59,6 +79,17 @@ try {
     switch ($pathParts[0] ?? '') {
         case 'health':
             Response::success(['status' => 'ok']);
+            break;
+        
+        case 'auth':
+            // Authentication endpoints - no auth required (they provide auth)
+            $controller = new AuthController();
+            if ($method === 'POST' && ($pathParts[1] ?? '') === 'google') {
+                // POST /auth/google - Exchange Google OAuth token for JWT
+                $controller->loginWithGoogle();
+            } else {
+                Response::error('Endpoint not found', 404);
+            }
             break;
             
         case 'users':

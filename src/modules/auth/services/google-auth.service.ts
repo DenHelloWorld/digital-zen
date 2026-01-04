@@ -1,6 +1,7 @@
 import { computed, inject, Injectable, Signal, signal, WritableSignal } from '@angular/core';
 import { take } from 'rxjs';
-import { API_URLS, ApiService, UserService } from '../../common';
+import { API_URLS, ApiService } from '../../common';
+import { TokenStorageService, IJWTAuthResponse } from '../../common/services/token-storage.service';
 
 export interface IGoogleUserInfo {
   sub: string;
@@ -23,7 +24,7 @@ export class GoogleAuthService {
     !!chrome.identity &&
     typeof chrome.identity.getAuthToken === 'function';
   readonly #apiService: ApiService = inject(ApiService);
-  readonly #userService: UserService = inject(UserService);
+  readonly #tokenStorage: TokenStorageService = inject(TokenStorageService);
 
   readonly #isGoogleAuthenticated: WritableSignal<boolean> = signal(false);
   readonly #isPending: WritableSignal<boolean> = signal(false);
@@ -75,13 +76,13 @@ export class GoogleAuthService {
         this.#apiService.get(url).subscribe({
           next: () => {
             chrome.identity.removeCachedAuthToken({ token: result.token! }, () => {
-              this.#completeLogout();
+              void this.#completeLogout();
             });
           },
-          error: () => this.#completeLogout(),
+          error: () => void this.#completeLogout(),
         });
       } else {
-        this.#completeLogout();
+        void this.#completeLogout();
       }
     });
   }
@@ -116,21 +117,33 @@ export class GoogleAuthService {
           // Save user info to local state
           this.#userInfo.set(info);
 
-          // Create or get user in backend database
-          // The backend will identify the user by email and create only if not exists
-          this.#userService
-            .createUser()
+          // Exchange Google token for JWT token via backend
+          // The backend will create/get user and return JWT
+          this.#apiService
+            .post<{ success: boolean; data: IJWTAuthResponse }>(
+              `${API_URLS.BACKEND.BASE_URL}${API_URLS.BACKEND.AUTH_GOOGLE}`,
+              {}
+            )
             .pipe(take(1))
             .subscribe({
-              next: user => {
-                if (user) {
-                  console.log('User ensured in database:', user);
+              next: async response => {
+                if (response.success && response.data?.token) {
+                  // Store JWT token for future API requests
+                  await this.#tokenStorage.saveToken(response.data.token);
+                  console.log('[GoogleAuthService] JWT token obtained and stored');
+                  console.log('[GoogleAuthService] User authenticated:', response.data.user);
                 } else {
-                  console.error('Failed to ensure user in database');
+                  console.error('[GoogleAuthService] Failed to obtain JWT token');
+                  // Reset authentication state since we couldn't get a JWT
+                  this.#isGoogleAuthenticated.set(false);
+                  this.#userInfo.set(null);
                 }
               },
               error: (err: unknown) => {
-                console.error('Failed to create/get user in database', err);
+                console.error('[GoogleAuthService] Failed to exchange Google token for JWT', err);
+                // Reset authentication state since JWT exchange failed
+                this.#isGoogleAuthenticated.set(false);
+                this.#userInfo.set(null);
               },
             });
         },
@@ -144,5 +157,10 @@ export class GoogleAuthService {
     this.#isGoogleAuthenticated.set(false);
     this.#isPending.set(false);
     this.#userInfo.set(null);
+
+    // Remove JWT token from storage asynchronously
+    void this.#tokenStorage.removeToken().catch((err: unknown) => {
+      console.error('[GoogleAuthService] Failed to remove JWT token on logout', err);
+    });
   }
 }
