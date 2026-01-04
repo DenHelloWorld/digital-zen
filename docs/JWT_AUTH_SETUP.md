@@ -41,10 +41,15 @@ This generates a 64-character random secret suitable for production use.
 1. Log in to your Hostinger control panel
 2. Navigate to your website's file manager or hosting settings
 3. Look for "Environment Variables" or ".htaccess" configuration
-4. Add the environment variable:
-   ```
+4. Add the environment variable using one of these methods:
+
+   **Option 1: .htaccess (Apache SetEnv)**
+   ```apache
    SetEnv JWT_SECRET "your_generated_secret_here"
    ```
+   
+   **Option 2: PHP-FPM environment variables**
+   Set `JWT_SECRET` in your hosting control panel's environment variables section.
 
 Alternatively, if your hosting supports `.env` files, create one at `/api/v1/.env`:
 ```
@@ -144,7 +149,7 @@ This allows gradual migration without breaking existing deployments.
 ## Security Considerations
 
 1. **JWT Secret**: Must be strong and kept confidential
-2. **Token Storage**: Stored in chrome.storage.local (encrypted by Chrome)
+2. **Token Storage**: Stored in chrome.storage.local (browser-managed persistence; not encrypted by default—consider encrypting tokens before storage if required by your security model)
 3. **HTTPS**: Always use HTTPS for API communication
 4. **Token Expiration**: 7 days - adjust based on security requirements
 5. **Audience Validation**: JWT tokens include user_id to prevent token reuse

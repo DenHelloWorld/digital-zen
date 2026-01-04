@@ -56,18 +56,20 @@ $tokenInfo = null;
  */
 
 // Skip authentication for /auth endpoints (they provide authentication)
+// SECURITY NOTE: Auth endpoints are responsible for their own authentication validation.
+// Any methods added to AuthController MUST perform explicit authentication checks.
 if (($pathParts[0] ?? '') === 'auth') {
     // Auth endpoints handle their own validation
     $user = null;
     $tokenInfo = null;
 }
-// Для /users (создание) нужна валидация токена, но не требуется существующий user
+// For /users (creation) token validation is needed, but existing user is not required
 elseif (($pathParts[0] ?? '') === 'users' && $method === 'POST') {
     $authResult = $authMiddleware->authenticate(false);
     $user = $authResult['user'] ?? null;
     $tokenInfo = $authResult['tokenInfo'];
 } elseif (($pathParts[0] ?? '') !== 'health') {
-    // Для всех остальных эндпоинтов требуется аутентификация
+    // For all other endpoints, authentication is required
     $authResult = $authMiddleware->authenticate(true);
     $user = $authResult['user'];
     $tokenInfo = $authResult['tokenInfo'] ?? null;

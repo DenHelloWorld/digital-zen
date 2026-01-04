@@ -22,10 +22,20 @@ const isBackendApiUrl = (url: string, baseUrl: string): boolean => {
 };
 
 /**
- * Check if the URL is the auth/google endpoint which needs Google token
+ * Check if the URL is the exact /auth/google endpoint which needs Google token.
+ * Uses a boundary-aware check on the pathname to avoid matching similar routes
+ * like /auth/google-analytics.
  */
 const isAuthGoogleEndpoint = (url: string): boolean => {
-  return url.includes('/auth/google');
+  // Try to use the URL API for robust parsing
+  try {
+    const parsed = new URL(url, API_URLS.BACKEND.BASE_URL);
+    return parsed.pathname.endsWith('/auth/google');
+  } catch {
+    // Fallback for non-standard/relative URLs: strip query/hash and check the path
+    const path = url.split(/[?#]/)[0];
+    return path.endsWith('/auth/google');
+  }
 };
 
 /**

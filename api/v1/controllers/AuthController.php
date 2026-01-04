@@ -28,20 +28,20 @@ class AuthController {
         $authHeader = $headers['Authorization'] ?? $headers['authorization'] ?? '';
         
         if (empty($authHeader)) {
-            Response::error('Authorization header missing', 401);
+            Response::unauthorized('Authorization header missing');
             return;
         }
         
         // Check format "Bearer <token>"
         if (!preg_match('/^Bearer\s+(.+)$/i', $authHeader, $matches)) {
-            Response::error('Invalid authorization format', 401);
+            Response::unauthorized('Invalid authorization format');
             return;
         }
         
         $googleToken = trim($matches[1]);
         
         if (empty($googleToken)) {
-            Response::error('Empty bearer token', 401);
+            Response::unauthorized('Empty bearer token');
             return;
         }
         
@@ -51,7 +51,7 @@ class AuthController {
             $tokenInfo = $googleAuth->validateToken($googleToken);
             
             if (!$tokenInfo) {
-                Response::error('Invalid or expired Google token', 401);
+                Response::unauthorized('Invalid or expired Google token');
                 return;
             }
             

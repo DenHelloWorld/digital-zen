@@ -60,6 +60,17 @@ class AuthMiddleware {
                 Response::unauthorized('User account not found');
             }
             
+            // Update last_login_at for consistent activity tracking
+            if ($user) {
+                $updateStmt = $db->prepare("UPDATE users SET last_login_at = NOW() WHERE id = :id");
+                $updateStmt->execute(['id' => $userId]);
+                
+                // Keep returned user object in sync with the database
+                if (is_array($user)) {
+                    $user['last_login_at'] = date('Y-m-d H:i:s');
+                }
+            }
+            
             return ['user' => $user ?: null, 'tokenInfo' => null];
         }
         

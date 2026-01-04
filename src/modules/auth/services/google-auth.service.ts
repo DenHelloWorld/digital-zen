@@ -76,13 +76,13 @@ export class GoogleAuthService {
         this.#apiService.get(url).subscribe({
           next: () => {
             chrome.identity.removeCachedAuthToken({ token: result.token! }, () => {
-              this.#completeLogout();
+              void this.#completeLogout();
             });
           },
-          error: () => this.#completeLogout(),
+          error: () => void this.#completeLogout(),
         });
       } else {
-        this.#completeLogout();
+        void this.#completeLogout();
       }
     });
   }
@@ -134,10 +134,16 @@ export class GoogleAuthService {
                   console.log('[GoogleAuthService] User authenticated:', response.data.user);
                 } else {
                   console.error('[GoogleAuthService] Failed to obtain JWT token');
+                  // Reset authentication state since we couldn't get a JWT
+                  this.#isGoogleAuthenticated.set(false);
+                  this.#userInfo.set(null);
                 }
               },
               error: (err: unknown) => {
                 console.error('[GoogleAuthService] Failed to exchange Google token for JWT', err);
+                // Reset authentication state since JWT exchange failed
+                this.#isGoogleAuthenticated.set(false);
+                this.#userInfo.set(null);
               },
             });
         },
@@ -147,12 +153,14 @@ export class GoogleAuthService {
       });
   }
 
-  async #completeLogout(): Promise<void> {
+  #completeLogout(): void {
     this.#isGoogleAuthenticated.set(false);
     this.#isPending.set(false);
     this.#userInfo.set(null);
 
-    // Remove JWT token from storage
-    await this.#tokenStorage.removeToken();
+    // Remove JWT token from storage asynchronously
+    void this.#tokenStorage.removeToken().catch((err: unknown) => {
+      console.error('[GoogleAuthService] Failed to remove JWT token on logout', err);
+    });
   }
 }

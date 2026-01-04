@@ -75,6 +75,20 @@ class JWTService {
         
         list($headerEncoded, $payloadEncoded, $signatureProvided) = $parts;
         
+        // Decode and validate header
+        $header = json_decode($this->base64UrlDecode($headerEncoded), true);
+        
+        if (!$header) {
+            error_log('JWT validation failed: invalid header');
+            return false;
+        }
+        
+        // Validate algorithm in header matches expected algorithm
+        if (!isset($header['alg']) || $header['alg'] !== self::ALGORITHM) {
+            error_log('JWT validation failed: algorithm mismatch. Expected ' . self::ALGORITHM . ', got ' . ($header['alg'] ?? 'none'));
+            return false;
+        }
+        
         // Verify signature
         $signatureExpected = $this->sign($headerEncoded . '.' . $payloadEncoded, $secret);
         
@@ -91,9 +105,15 @@ class JWTService {
             return false;
         }
         
-        // Check expiration
-        if (isset($payload['exp']) && $payload['exp'] < time()) {
+        // Check expiration (strict comparison - token is invalid if exp <= current time)
+        if (isset($payload['exp']) && $payload['exp'] <= time()) {
             error_log('JWT validation failed: token expired');
+            return false;
+        }
+        
+        // Validate issuer claim
+        if (isset($payload['iss']) && $payload['iss'] !== 'digital-zen-api') {
+            error_log('JWT validation failed: invalid issuer. Expected digital-zen-api, got ' . $payload['iss']);
             return false;
         }
         
@@ -135,6 +155,13 @@ class JWTService {
      * @return string Decoded string
      */
     private function base64UrlDecode($data) {
-        return base64_decode(strtr($data, '-_', '+/'));
+        $base64 = strtr($data, '-_', '+/');
+        $padding = strlen($base64) % 4;
+        
+        if ($padding !== 0) {
+            $base64 .= str_repeat('=', 4 - $padding);
+        }
+        
+        return base64_decode($base64);
     }
 }

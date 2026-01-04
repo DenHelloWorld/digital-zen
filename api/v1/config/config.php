@@ -46,7 +46,10 @@ class Config {
      * @return string|null The JWT secret or null if not set
      */
     public static function getJWTSecret() {
-        $secret = $_ENV['JWT_SECRET'] ?? null;
+        // Support both $_ENV and $_SERVER for flexibility
+        // $_ENV works with PHP-FPM environment variables
+        // $_SERVER works with Apache SetEnv directive
+        $secret = $_ENV['JWT_SECRET'] ?? $_SERVER['JWT_SECRET'] ?? null;
         
         if ($secret === null) {
             error_log("WARNING: JWT_SECRET environment variable not set");
