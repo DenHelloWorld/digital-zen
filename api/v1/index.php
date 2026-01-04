@@ -31,6 +31,19 @@ $authMiddleware = new AuthMiddleware();
 $user = null;
 $tokenInfo = null;
 
+/**
+ * Authentication Flow:
+ * 
+ * 1. User authenticates with Google in the Chrome extension
+ * 2. Extension sends POST request to /users with Google OAuth token in Authorization header
+ *    - This endpoint validates the token but does NOT require an existing user in DB
+ *    - Creates a new user record or returns existing user
+ * 3. Subsequent requests to other endpoints require an existing user in DB
+ *    - Token is validated AND user must exist in database
+ * 
+ * This two-step flow prevents chicken-and-egg problem while maintaining security.
+ */
+
 // Для /users (создание) нужна валидация токена, но не требуется существующий user
 if (($pathParts[0] ?? '') === 'users' && $method === 'POST') {
     $authResult = $authMiddleware->authenticate(false);

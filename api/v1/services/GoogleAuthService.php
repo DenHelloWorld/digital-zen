@@ -8,9 +8,18 @@ class GoogleAuthService {
      * 
      * ВАЖНО: Бэкенд ДОЛЖЕН проверять токен на каждом запросе
      * для предотвращения подделки identity
+     * 
+     * Проверяет:
+     * 1. Валидность токена через Google API
+     * 2. Audience (aud) - токен должен быть выдан для нашего OAuth клиента
+     * 3. Issuer (iss) - токен должен быть выдан Google
+     * 
+     * @param string $token Google OAuth access token
+     * @return array|false Token info если валиден, false если нет
      */
     public function validateToken($token) {
         if (empty($token)) {
+            error_log("Token validation failed: empty token");
             return false;
         }
         
@@ -26,10 +35,42 @@ class GoogleAuthService {
         curl_close($ch);
         
         if ($httpCode !== 200) {
+            error_log("Token validation failed: Google API returned HTTP $httpCode");
             return false;
         }
         
         $tokenInfo = json_decode($response, true);
+        
+        if (!$tokenInfo) {
+            error_log("Token validation failed: invalid JSON response from Google");
+            return false;
+        }
+        
+        // Проверяем audience (aud) - токен должен быть выдан для нашего клиента
+        $expectedClientId = Config::getGoogleClientId();
+        if ($expectedClientId && isset($tokenInfo['aud'])) {
+            if ($tokenInfo['aud'] !== $expectedClientId) {
+                error_log("Token validation failed: audience mismatch. Expected: $expectedClientId, Got: " . $tokenInfo['aud']);
+                return false;
+            }
+        } else if ($expectedClientId && !isset($tokenInfo['aud'])) {
+            error_log("Token validation failed: no audience (aud) field in token");
+            return false;
+        }
+        // Если GOOGLE_CLIENT_ID не настроен, логируем предупреждение но продолжаем
+        // (для обратной совместимости с существующими установками)
+        else if (!$expectedClientId) {
+            error_log("WARNING: GOOGLE_CLIENT_ID not configured, skipping audience verification");
+        }
+        
+        // Проверяем issuer (iss) - токен должен быть выдан Google
+        if (isset($tokenInfo['iss'])) {
+            $validIssuers = Config::getValidIssuers();
+            if (!in_array($tokenInfo['iss'], $validIssuers, true)) {
+                error_log("Token validation failed: invalid issuer. Got: " . $tokenInfo['iss']);
+                return false;
+            }
+        }
         
         return $tokenInfo;
     }
