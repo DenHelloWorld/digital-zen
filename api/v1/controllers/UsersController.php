@@ -6,24 +6,30 @@ class UsersController {
      * Вызывается фронтендом при первом логине
      */
     public function create($tokenInfo) {
-        $googleAuth = new GoogleAuthService();
-        
-        // Создаём пользователя
-        $user = $googleAuth->createUser($tokenInfo);
-        
-        if (!$user) {
+        try {
+            $googleAuth = new GoogleAuthService();
+            
+            // Создаём пользователя (или получаем существующего)
+            $user = $googleAuth->createUser($tokenInfo);
+            
+            if (!$user) {
+                error_log("User creation failed: createUser returned empty result");
+                Response::error('User creation failed', 500);
+            }
+            
+            Response::success([
+                'id' => $user['id'],
+                'google_id' => $user['google_id'],
+                'email' => $user['email'],
+                'name' => $user['name'],
+                'picture_url' => $user['picture_url'],
+                'created_at' => $user['created_at'],
+                'last_login_at' => $user['last_login_at']
+            ]);
+        } catch (Exception $e) {
+            error_log("User creation error: " . $e->getMessage());
             Response::error('User creation failed', 500);
         }
-        
-        Response::success([
-            'id' => $user['id'],
-            'google_id' => $user['google_id'],
-            'email' => $user['email'],
-            'name' => $user['name'],
-            'picture_url' => $user['picture_url'],
-            'created_at' => $user['created_at'],
-            'last_login_at' => $user['last_login_at']
-        ]);
     }
     
     /**
