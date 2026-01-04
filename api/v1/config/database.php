@@ -8,7 +8,7 @@ class Database {
         $host = 'localhost';
         $dbname = 'u387418961_digital_zen_db';
         $username = 'u387418961_dz_user';
-        $password = ''; // Генерируй 20+ символов случайных
+        $password = 'CHANGE_ME_TO_A_STRONG_RANDOM_PASSWORD_24+CHARS'; // Генерируй 20+ символов случайных перед продакшеном
 
         try {
             $this->connection = new PDO(
