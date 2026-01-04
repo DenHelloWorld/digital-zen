@@ -30,10 +30,12 @@ class PeriodsController {
         // Validate required fields
         if (!isset($data['id']) || empty($data['id'])) {
             Response::error('Invalid request: period ID is required', 400);
+            return;
         }
         
         if (!isset($data['name']) || empty($data['name'])) {
             Response::error('Invalid request: period name is required', 400);
+            return;
         }
         
         $this->db->beginTransaction();
@@ -87,7 +89,7 @@ class PeriodsController {
                 $e->getMessage()
             ));
             Response::error(
-                'Unable to create period. Please try again later. Reference code: ' . $errorCode,
+                'Database error occurred while creating period. This may be a temporary issue. Please try again. If the problem persists, contact support with reference code: ' . $errorCode,
                 500
             );
         } catch (Exception $e) {
@@ -101,7 +103,7 @@ class PeriodsController {
                 $e->getMessage()
             ));
             Response::error(
-                'Unable to create period. Please try again later. Reference code: ' . $errorCode,
+                'An unexpected error occurred while creating period. Please try again. If the problem persists, contact support with reference code: ' . $errorCode,
                 500
             );
         }

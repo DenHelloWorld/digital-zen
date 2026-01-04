@@ -24,7 +24,7 @@ require_once __DIR__ . '/config/config.php';
 try {
     Config::validateStartupConfig();
 } catch (ConfigurationException $e) {
-    error_log("Application startup failed: " . $e->getMessage());
+    error_log("Application startup failed: " . $e->getMessage() . ". Please review the JWT_AUTH_SETUP.md documentation for configuration requirements.");
     http_response_code(500);
     header('Content-Type: application/json');
     echo json_encode([
