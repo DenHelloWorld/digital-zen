@@ -33,18 +33,14 @@ class JWTService {
         ];
         
         // Ensure additional claims cannot override critical JWT fields
-        $protectedClaims = [
-            'iss' => true,
-            'iat' => true,
-            'exp' => true,
-            'user_id' => true,
-        ];
+        $protectedClaims = ['iss', 'iat', 'exp', 'user_id'];
         
         if (!is_array($additionalClaims)) {
             $additionalClaims = [];
         }
         
-        $sanitizedAdditionalClaims = array_diff_key($additionalClaims, $protectedClaims);
+        // Remove any protected claims from additional claims
+        $sanitizedAdditionalClaims = array_diff_key($additionalClaims, array_flip($protectedClaims));
         
         $payload = array_merge([
             'iss' => 'digital-zen-api', // Fixed issuer for security

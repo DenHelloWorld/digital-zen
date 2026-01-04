@@ -13,7 +13,7 @@ trait UserResponseFormatter {
      * @return array Formatted user data
      */
     protected function formatUserResponse($user) {
-        return [
+        $response = [
             'id' => (int) $user['id'],
             'email' => $user['email'],
             'name' => $user['name'],
@@ -21,5 +21,12 @@ trait UserResponseFormatter {
             'created_at' => $user['created_at'],
             'last_login_at' => $user['last_login_at']
         ];
+        
+        // Include google_id if present (some endpoints expose it, others don't for security)
+        if (isset($user['google_id'])) {
+            $response['google_id'] = $user['google_id'];
+        }
+        
+        return $response;
     }
 }
