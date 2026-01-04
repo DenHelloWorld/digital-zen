@@ -52,14 +52,14 @@ class Config {
         $secret = $_ENV['JWT_SECRET'] ?? $_SERVER['JWT_SECRET'] ?? null;
 
         if ($secret === null) {
-            error_log("WARNING: JWT_SECRET environment variable not set or empty");
+            error_log("WARNING: JWT_SECRET environment variable not set");
             return null;
         }
 
         $trimmedSecret = trim($secret);
 
         if ($trimmedSecret === '') {
-            error_log("WARNING: JWT_SECRET environment variable not set or empty");
+            error_log("WARNING: JWT_SECRET environment variable is empty or contains only whitespace");
             return null;
         }
 

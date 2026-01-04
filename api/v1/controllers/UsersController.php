@@ -35,7 +35,7 @@ class UsersController {
                 $requiredFields = ['sub', 'email'];
                 $missingFields = [];
                 foreach ($requiredFields as $field) {
-                    if (!isset($tokenInfo[$field]) || $tokenInfo[$field] === '') {
+                    if (!isset($tokenInfo[$field]) || trim($tokenInfo[$field]) === '') {
                         $missingFields[] = $field;
                     }
                 }
