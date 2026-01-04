@@ -78,7 +78,7 @@ class PeriodsController {
             
         } catch (PDOException $e) {
             $this->db->rollBack();
-            $errorCode = 'PERIOD_CREATE_' . bin2hex(random_bytes(4));
+            $errorCode = 'PERIOD_CREATE_' . bin2hex(random_bytes(8));
             error_log(sprintf(
                 '[%s] Database error during period creation for user_id=%s, period_id=%s: %s',
                 $errorCode,
@@ -92,7 +92,7 @@ class PeriodsController {
             );
         } catch (Exception $e) {
             $this->db->rollBack();
-            $errorCode = 'PERIOD_CREATE_' . bin2hex(random_bytes(4));
+            $errorCode = 'PERIOD_CREATE_' . bin2hex(random_bytes(8));
             error_log(sprintf(
                 '[%s] Unexpected error during period creation for user_id=%s, period_id=%s: %s',
                 $errorCode,

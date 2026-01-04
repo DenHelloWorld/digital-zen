@@ -22,7 +22,9 @@ trait UserResponseFormatter {
             'last_login_at' => $user['last_login_at']
         ];
         
-        // Include google_id if present (some endpoints expose it, others don't for security)
+        // Include google_id if present
+        // Note: AuthController intentionally excludes google_id from JWT login responses
+        // to minimize data in JWT tokens. UsersController includes it for user profile endpoints.
         if (isset($user['google_id'])) {
             $response['google_id'] = $user['google_id'];
         }

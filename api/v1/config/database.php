@@ -16,7 +16,7 @@ class Database {
             $username === null || $username === '' ||
             $password === null || $password === ''
         ) {
-            error_log("DB Error: One or more required database environment variables (DB_HOST, DB_NAME, DB_USER, DB_PASSWORD) are not configured.");
+            error_log("DB Error: Required database environment variables (DB_HOST, DB_NAME, DB_USER, DB_PASSWORD) must all be configured.");
             header('Content-Type: application/json; charset=utf-8');
             http_response_code(500);
             echo json_encode(['success' => false, 'error' => 'Database configuration error']);
