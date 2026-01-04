@@ -67,6 +67,23 @@ class GoogleAuthService {
             }
         }
         
+        // Validate required fields are present and non-empty
+        if (!isset($tokenInfo['sub']) || empty($tokenInfo['sub'])) {
+            error_log("Token validation failed: missing or empty 'sub' field");
+            return false;
+        }
+        
+        if (!isset($tokenInfo['email']) || empty($tokenInfo['email'])) {
+            error_log("Token validation failed: missing or empty 'email' field");
+            return false;
+        }
+        
+        // Validate email format
+        if (!filter_var($tokenInfo['email'], FILTER_VALIDATE_EMAIL)) {
+            error_log("Token validation failed: invalid email format");
+            return false;
+        }
+        
         return $tokenInfo;
     }
     

@@ -10,6 +10,13 @@ class UsersController {
      * @param array $tokenInfo Information from Google OAuth token (sub, email, name, picture)
      */
     public function create($tokenInfo) {
+        // Validate that tokenInfo is provided (it can be null when using JWT authentication)
+        if ($tokenInfo === null) {
+            error_log("User creation failed: no token information provided");
+            Response::error('User creation requires valid authentication token', 400);
+            return;
+        }
+        
         try {
             $googleAuth = new GoogleAuthService();
             
@@ -40,6 +47,10 @@ class UsersController {
      * @param array $user Array with user data from the database
      */
     public function me($user) {
+        if (!$user || !is_array($user)) {
+            Response::error('User not found', 404);
+            return;
+        }
         Response::success($this->formatUserResponse($user));
     }
 }

@@ -1,5 +1,4 @@
-import { DestroyRef, inject, Injectable } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { inject, Injectable } from '@angular/core';
 import { map, Observable } from 'rxjs';
 import { ApiService } from './api.service';
 import { API_URLS } from '../constants';
@@ -36,7 +35,6 @@ export interface IUser {
 @Injectable({ providedIn: 'root' })
 export class UserService {
   readonly #apiService: ApiService = inject(ApiService);
-  readonly #destroyRef: DestroyRef = inject(DestroyRef);
 
   /**
    * Create or get existing user in the backend
@@ -46,30 +44,24 @@ export class UserService {
    * NOTE: The backend extracts user information (email, name, picture) from the Google OAuth token
    * sent in the Authorization header via the auth interceptor. No user data needs to be sent in the body.
    *
-   * @returns Observable that emits the user data
+   * @returns Observable that emits the user data (completes automatically after response)
    * @throws Will propagate HTTP errors for proper error handling by consumers
    */
   public createUser(): Observable<IUser | null> {
     return this.#apiService
       .post<IBackendResponse<IUser>>(`${API_URLS.BACKEND.BASE_URL}${API_URLS.BACKEND.USERS}`, {})
-      .pipe(
-        takeUntilDestroyed(this.#destroyRef),
-        map(response => (response.success && response.data ? response.data : null))
-      );
+      .pipe(map(response => (response.success && response.data ? response.data : null)));
   }
 
   /**
    * Get current user information from the backend
    *
-   * @returns Observable that emits the user data
+   * @returns Observable that emits the user data (completes automatically after response)
    * @throws Will propagate HTTP errors for proper error handling by consumers
    */
   public getCurrentUser(): Observable<IUser | null> {
     return this.#apiService
       .get<IBackendResponse<IUser>>(`${API_URLS.BACKEND.BASE_URL}${API_URLS.BACKEND.ME}`)
-      .pipe(
-        takeUntilDestroyed(this.#destroyRef),
-        map(response => (response.success && response.data ? response.data : null))
-      );
+      .pipe(map(response => (response.success && response.data ? response.data : null)));
   }
 }

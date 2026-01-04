@@ -22,9 +22,22 @@ const isBackendApiUrl = (url: string, baseUrl: string): boolean => {
 };
 
 /**
- * Check if the URL is the exact /auth/google endpoint which needs Google token.
- * Uses a boundary-aware check on the pathname to avoid matching similar routes
- * like /auth/google-analytics.
+ * Returns whether the given URL targets the `/auth/google` endpoint that
+ * exchanges a Google OAuth token for a JWT.
+ *
+ * The URL is parsed using the WHATWG `URL` API with `API_URLS.BACKEND.BASE_URL`
+ * as the base, so both absolute and relative URLs are supported. The check is
+ * based on the pathname only and requires that it ends with `/auth/google`.
+ *
+ * Examples (ignoring query string and hash):
+ * - Returns true:
+ *   - `https://api.example.com/auth/google`
+ *   - `/auth/google`
+ *   - `v1/auth/google`
+ * - Returns false:
+ *   - `https://api.example.com/auth/google-analytics`
+ *   - `/auth/google/callback`
+ *   - `/auth/google/` (extra trailing segment)
  */
 const isAuthGoogleEndpoint = (url: string): boolean => {
   // Try to use the URL API for robust parsing
