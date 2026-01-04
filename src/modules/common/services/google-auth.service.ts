@@ -8,7 +8,7 @@ import {
   WritableSignal,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { switchMap, catchError, tap, of } from 'rxjs';
+import { switchMap, catchError, tap, of, finalize } from 'rxjs';
 import { ApiService } from './api.service';
 import { BackendSyncService } from './backend-sync.service';
 import { API_URLS } from '../constants';
@@ -172,12 +172,13 @@ export class GoogleAuthService {
           if (periods) {
             console.log('[GoogleAuthService] Successfully pulled periods:', periods.length);
           }
-          this.#isSyncing.set(false);
         }),
         catchError((err: unknown) => {
           console.error('[GoogleAuthService] Backend sync error:', err);
-          this.#isSyncing.set(false);
           return of(null);
+        }),
+        finalize(() => {
+          this.#isSyncing.set(false);
         }),
         takeUntilDestroyed(this.#destroyRef)
       )
