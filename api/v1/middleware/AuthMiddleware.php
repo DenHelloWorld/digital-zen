@@ -47,7 +47,7 @@ class AuthMiddleware {
         $user = $googleAuth->getUser($tokenInfo);
         
         if (!$user) {
-            Response::unauthorized('Account not registered in this application. Please complete registration before signing in with Google.');
+            Response::unauthorized('User account not found. Please ensure you have completed the initial setup.');
         }
         
         return ['tokenInfo' => $tokenInfo, 'user' => $user];
