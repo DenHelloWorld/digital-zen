@@ -154,7 +154,7 @@ export class TokenStorageService {
       }
 
       // Token is valid if current time is strictly before expiration timestamp.
-      // This matches the backend validation logic (JWTService.php line 115).
+      // This matches the backend validation logic (JWTService.php line 117).
       const nowInSeconds = Math.floor(Date.now() / 1000);
       return nowInSeconds < payload.exp;
     } catch (error) {

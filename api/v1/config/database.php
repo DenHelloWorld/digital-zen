@@ -11,10 +11,10 @@ class Database {
         $password = $_ENV['DB_PASSWORD'] ?? null;
 
         if (
-            $host === null || $host === '' ||
-            $dbname === null || $dbname === '' ||
-            $username === null || $username === '' ||
-            $password === null || $password === ''
+            $host === null || trim($host) === '' ||
+            $dbname === null || trim($dbname) === '' ||
+            $username === null || trim($username) === '' ||
+            $password === null || trim($password) === ''
         ) {
             error_log("DB Error: Required database environment variables (DB_HOST, DB_NAME, DB_USER, DB_PASSWORD) must all be configured.");
             header('Content-Type: application/json; charset=utf-8');

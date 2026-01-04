@@ -14,10 +14,14 @@ class AuthMiddleware {
      * - Backend validates with Google API
      * - Supported for backward compatibility during migration
      * 
-     * @param bool $requireUser Whether an existing user is required
-     * @return array Array with keys 'user' and 'tokenInfo'; each value may be an array or null.
-     *               In the JWT flow, 'tokenInfo' is always null and 'user' may be null when $requireUser is false.
-     *               In the Google OAuth flow, both may be arrays or null depending on validation results.
+     * @param bool $requireUser Whether an existing user is required.
+     * @return array{user: array|null, tokenInfo: array|null} Associative array with keys 'user' and 'tokenInfo'.
+     *               JWT flow:
+     *               - On successful validation, 'tokenInfo' is always null.
+     *               - 'user' is an array when the user is found; if no user is found and $requireUser is false, 'user' is null.
+     *               Google OAuth flow:
+     *               - If $requireUser is false, 'tokenInfo' is an array with token data and 'user' is always null.
+     *               - If $requireUser is true and the linked user exists, both 'tokenInfo' and 'user' are arrays.
      */
     public function authenticate($requireUser = true) {
         $headers = getallheaders();

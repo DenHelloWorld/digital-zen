@@ -21,14 +21,41 @@ class UsersController {
             $googleAuth = new GoogleAuthService();
             
             // Create user (or get existing one)
-            // GoogleAuthService.createUser already validates required fields
+            // GoogleAuthService::createUser() validates required fields (e.g. 'sub', 'email').
+            // If validation fails it returns false (does not throw); the if (!$user) block below
+            // handles this case by logging and returning an error response.
             $user = $googleAuth->createUser($tokenInfo);
             
             if (!$user) {
                 // Log only google_id (not PII) for debugging
                 $googleId = $tokenInfo['sub'] ?? 'unknown';
-                error_log("User creation failed for google_id: $googleId");
-                Response::error('User creation failed: unable to create or retrieve user record', 500);
+                
+                // Check for missing required token fields to provide more specific feedback
+                $requiredFields = ['sub', 'email', 'name', 'picture'];
+                $missingFields = [];
+                foreach ($requiredFields as $field) {
+                    if (!isset($tokenInfo[$field]) || $tokenInfo[$field] === '') {
+                        $missingFields[] = $field;
+                    }
+                }
+                
+                if (!empty($missingFields)) {
+                    $missingList = implode(', ', $missingFields);
+                    error_log("User creation failed for google_id: $googleId; missing token fields: $missingList");
+                    Response::error(
+                        'User creation failed: missing required authentication data (' . $missingList . ')',
+                        400
+                    );
+                    return;
+                }
+                
+                // All required token fields are present; treat this as an internal error
+                error_log("User creation failed for google_id: $googleId; GoogleAuthService::createUser returned false");
+                Response::error(
+                    'User creation failed due to an internal error while creating your account',
+                    500
+                );
+                return;
             }
             
             Response::success($this->formatUserResponse($user));
