@@ -1,6 +1,5 @@
-import { inject, Injectable, DestroyRef } from '@angular/core';
-import { Subject, switchMap, catchError, of } from 'rxjs';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { computed, inject, Injectable, Signal, signal, WritableSignal } from '@angular/core';
+import { Subject, switchMap, catchError, of, Observable, finalize } from 'rxjs';
 import { ApiService } from './api.service';
 import { API_URLS } from '../constants/api-urls.const';
 import { IFocus, BackendResponse } from '../models';
@@ -8,12 +7,20 @@ import { IFocus, BackendResponse } from '../models';
 @Injectable({ providedIn: 'root' })
 export class BackendSyncService {
   readonly #apiService = inject(ApiService);
-  readonly #destroyRef = inject(DestroyRef);
 
   // Subjects for reactive operations
   readonly #checkHealthSubject = new Subject<void>();
   readonly #pushPeriodSubject = new Subject<IFocus.Period>();
   readonly #pullPeriodsSubject = new Subject<void>();
+
+  // Results subjects to emit operation results
+  readonly #healthCheckResult = new Subject<boolean>();
+  readonly #pushPeriodResult = new Subject<boolean>();
+  readonly #pullPeriodsResult = new Subject<IFocus.Period[] | null>();
+
+  // Pending state signal
+  readonly #isPending: WritableSignal<boolean> = signal(false);
+  public readonly isPending: Signal<boolean> = computed(() => this.#isPending());
 
   constructor() {
     this.#setupHealthCheck();
@@ -23,23 +30,42 @@ export class BackendSyncService {
 
   /**
    * Trigger a health check of the backend API
+   * @returns Observable that emits true if healthy, false otherwise
    */
-  checkHealth(): void {
+  public checkHealth(): Observable<boolean> {
     this.#checkHealthSubject.next();
+    return this.#healthCheckResult.asObservable();
   }
 
   /**
    * Trigger pushing a period to the backend
+   * @param period The period to push
+   * @returns Observable that emits true if successful, false otherwise
    */
-  pushPeriod(period: IFocus.Period): void {
+  public pushPeriod(period: IFocus.Period): Observable<boolean> {
     this.#pushPeriodSubject.next(period);
+    return this.#pushPeriodResult.asObservable();
   }
 
   /**
    * Trigger pulling periods from the backend
+   * @returns Observable that emits the array of periods or null on error
    */
-  pullPeriods(): void {
+  public pullPeriods(): Observable<IFocus.Period[] | null> {
     this.#pullPeriodsSubject.next();
+    return this.#pullPeriodsResult.asObservable();
+  }
+
+  /**
+   * Cleanup method to complete all subjects
+   */
+  public destroy(): void {
+    this.#checkHealthSubject.complete();
+    this.#pushPeriodSubject.complete();
+    this.#pullPeriodsSubject.complete();
+    this.#healthCheckResult.complete();
+    this.#pushPeriodResult.complete();
+    this.#pullPeriodsResult.complete();
   }
 
   /**
@@ -48,24 +74,29 @@ export class BackendSyncService {
   #setupHealthCheck(): void {
     this.#checkHealthSubject
       .pipe(
-        switchMap(() =>
-          this.#apiService.get<BackendResponse<{ status: string }>>(
-            `${API_URLS.BACKEND.BASE_URL}/health`
-          )
-        ),
-        catchError(error => {
-          console.error('Health check failed:', error);
-          return of({ success: false, error: 'Health check failed' } as BackendResponse<{
-            status: string;
-          }>);
-        }),
-        takeUntilDestroyed(this.#destroyRef)
+        switchMap(() => {
+          this.#isPending.set(true);
+          return this.#apiService
+            .get<BackendResponse<{ status: string }>>(`${API_URLS.BACKEND.BASE_URL}/health`)
+            .pipe(
+              catchError(error => {
+                console.error('Health check failed:', error);
+                return of<BackendResponse<{ status: string }>>({
+                  success: false,
+                  error: 'Health check failed',
+                });
+              }),
+              finalize(() => this.#isPending.set(false))
+            );
+        })
       )
       .subscribe((response: BackendResponse<{ status: string }>) => {
         if (response.success) {
           console.log('Backend health check successful:', response.data);
+          this.#healthCheckResult.next(true);
         } else {
           console.warn('Backend health check failed:', response.error);
+          this.#healthCheckResult.next(false);
         }
       });
   }
@@ -76,25 +107,31 @@ export class BackendSyncService {
   #setupPushPeriod(): void {
     this.#pushPeriodSubject
       .pipe(
-        switchMap(period =>
-          this.#apiService.post<BackendResponse<{ message: string }>>(
-            `${API_URLS.BACKEND.BASE_URL}/periods`,
-            period
-          )
-        ),
-        catchError(error => {
-          console.error('Push period failed:', error);
-          return of({ success: false, error: 'Push period failed' } as BackendResponse<{
-            message: string;
-          }>);
-        }),
-        takeUntilDestroyed(this.#destroyRef)
+        switchMap(period => {
+          this.#isPending.set(true);
+          return this.#apiService
+            .post<
+              BackendResponse<{ message: string }>
+            >(`${API_URLS.BACKEND.BASE_URL}/periods`, period)
+            .pipe(
+              catchError(error => {
+                console.error('Push period failed:', error);
+                return of<BackendResponse<{ message: string }>>({
+                  success: false,
+                  error: 'Push period failed',
+                });
+              }),
+              finalize(() => this.#isPending.set(false))
+            );
+        })
       )
       .subscribe((response: BackendResponse<{ message: string }>) => {
         if (response.success) {
           console.log('Period pushed successfully:', response.data);
+          this.#pushPeriodResult.next(true);
         } else {
           console.error('Failed to push period:', response.error);
+          this.#pushPeriodResult.next(false);
         }
       });
   }
@@ -105,24 +142,29 @@ export class BackendSyncService {
   #setupPullPeriods(): void {
     this.#pullPeriodsSubject
       .pipe(
-        switchMap(() =>
-          this.#apiService.get<BackendResponse<IFocus.Period[]>>(
-            `${API_URLS.BACKEND.BASE_URL}/periods`
-          )
-        ),
-        catchError(error => {
-          console.error('Pull periods failed:', error);
-          return of({ success: false, error: 'Pull periods failed' } as BackendResponse<
-            IFocus.Period[]
-          >);
-        }),
-        takeUntilDestroyed(this.#destroyRef)
+        switchMap(() => {
+          this.#isPending.set(true);
+          return this.#apiService
+            .get<BackendResponse<IFocus.Period[]>>(`${API_URLS.BACKEND.BASE_URL}/periods`)
+            .pipe(
+              catchError(error => {
+                console.error('Pull periods failed:', error);
+                return of<BackendResponse<IFocus.Period[]>>({
+                  success: false,
+                  error: 'Pull periods failed',
+                });
+              }),
+              finalize(() => this.#isPending.set(false))
+            );
+        })
       )
       .subscribe((response: BackendResponse<IFocus.Period[]>) => {
         if (response.success && response.data) {
           console.log('Periods pulled successfully:', response.data);
+          this.#pullPeriodsResult.next(response.data);
         } else {
           console.error('Failed to pull periods:', response.error);
+          this.#pullPeriodsResult.next(null);
         }
       });
   }
