@@ -36,7 +36,7 @@ class Database {
             );
         } catch (PDOException $e) {
             error_log("DB Error: " . $e->getMessage());
-            // Используем Response для последовательного формата ошибок API
+            // Use consistent JSON format for API errors
             header('Content-Type: application/json; charset=utf-8');
             http_response_code(500);
             echo json_encode(['success' => false, 'error' => 'Database connection failed']);

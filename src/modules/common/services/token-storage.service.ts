@@ -120,7 +120,7 @@ export class TokenStorageService {
    * @param token The JWT token string to validate
    * @returns true if the token appears structurally valid and not expired, false otherwise
    */
-  private isTokenValid(token: string): boolean {
+  public isTokenValid(token: string): boolean {
     const parts = token.split('.');
 
     if (parts.length !== 3) {

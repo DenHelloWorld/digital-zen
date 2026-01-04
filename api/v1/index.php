@@ -5,7 +5,7 @@ ini_set('display_errors', '0');
 ini_set('log_errors', '1');
 
 spl_autoload_register(function ($className) {
-    $dirs = ['controllers', 'services', 'middleware', 'utils', 'config', 'traits'];
+    $dirs = ['controllers', 'services', 'middleware', 'utils', 'config', 'traits', 'exceptions'];
     foreach ($dirs as $dir) {
         $file = __DIR__ . "/$dir/$className.php";
         if (file_exists($file)) {
@@ -23,7 +23,7 @@ require_once __DIR__ . '/config/config.php';
 // rather than causing runtime 500 errors
 try {
     Config::validateStartupConfig();
-} catch (RuntimeException $e) {
+} catch (ConfigurationException $e) {
     error_log("Application startup failed: " . $e->getMessage());
     http_response_code(500);
     header('Content-Type: application/json');
@@ -112,10 +112,10 @@ try {
         case 'users':
             $controller = new UsersController();
             if ($method === 'POST') {
-                // Создание пользователя при первом логине
+                // Create user on first login
                 $controller->create($tokenInfo);
             } elseif ($method === 'GET' && ($pathParts[1] ?? '') === 'me') {
-                // Получить информацию о текущем пользователе
+                // Get information about the current user
                 $controller->me($user);
             } else {
                 Response::error('Method not allowed', 405);
