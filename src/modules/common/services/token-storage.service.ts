@@ -52,8 +52,7 @@ export class TokenStorageService {
   public async saveToken(token: string): Promise<void> {
     if (!this.#isChromeStorage) {
       console.warn(
-        '[TokenStorageService] Chrome storage not available, using sessionStorage fallback. ' +
-          'This may expose tokens to XSS attacks in non-extension contexts.'
+        '[TokenStorageService] Primary storage is not available. Using a fallback storage mechanism.'
       );
       sessionStorage.setItem(this.TOKEN_KEY, token);
       return Promise.resolve();
@@ -144,7 +143,7 @@ export class TokenStorageService {
     try {
       // JWT payload is base64url-encoded; normalize to standard base64 before decoding.
       const base64 = payloadPart.replace(/-/g, '+').replace(/_/g, '/');
-      const paddedBase64 = base64.padEnd(base64.length + ((4 - (base64.length % 4)) % 4), '=');
+      const paddedBase64 = base64 + '='.repeat((4 - (base64.length % 4)) % 4);
       const payloadJson = atob(paddedBase64);
       const payload = JSON.parse(payloadJson) as { exp?: number };
 
@@ -153,10 +152,10 @@ export class TokenStorageService {
         return true;
       }
 
-      // Token is valid if current time is strictly before expiration timestamp.
-      // This matches the backend validation logic (JWTService.php line 117).
+      // Token is valid if current time is at or before the expiration timestamp.
+      // This ensures the frontend and backend treat the exp boundary consistently.
       const nowInSeconds = Math.floor(Date.now() / 1000);
-      return nowInSeconds < payload.exp;
+      return nowInSeconds <= payload.exp;
     } catch (error) {
       console.warn('[TokenStorageService] Failed to parse JWT from storage', error);
       return false;
