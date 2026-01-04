@@ -1,5 +1,4 @@
-import { DestroyRef, inject, Injectable, signal, WritableSignal } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { inject, Injectable, signal, WritableSignal } from '@angular/core';
 import { catchError, finalize, map, Observable, of, tap } from 'rxjs';
 import { ApiService } from './api.service';
 import { API_URLS } from '../constants/api-urls.const';
@@ -8,7 +7,6 @@ import { IFocus, BackendResponse } from '../models';
 @Injectable({ providedIn: 'root' })
 export class BackendSyncService {
   readonly #apiService = inject(ApiService);
-  readonly #destroyRef = inject(DestroyRef);
 
   // Pending counters for each operation type
   readonly #checkHealthCounter: WritableSignal<number> = signal(0);
@@ -51,8 +49,7 @@ export class BackendSyncService {
         map(response => response.success),
         finalize(() => {
           this.#decrementCounter(this.#checkHealthCounter, this.isCheckingHealth);
-        }),
-        takeUntilDestroyed(this.#destroyRef)
+        })
       );
   }
 
@@ -84,8 +81,7 @@ export class BackendSyncService {
         map(response => response.success),
         finalize(() => {
           this.#decrementCounter(this.#pushPeriodCounter, this.isPushingPeriod);
-        }),
-        takeUntilDestroyed(this.#destroyRef)
+        })
       );
   }
 
@@ -116,8 +112,7 @@ export class BackendSyncService {
         map(response => (response.success && response.data ? response.data : null)),
         finalize(() => {
           this.#decrementCounter(this.#pullPeriodsCounter, this.isPullingPeriods);
-        }),
-        takeUntilDestroyed(this.#destroyRef)
+        })
       );
   }
 
