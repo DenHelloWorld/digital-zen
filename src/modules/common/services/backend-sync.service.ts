@@ -4,6 +4,11 @@ import { ApiService } from './api.service';
 import { API_URLS } from '../constants';
 import { IFocus, IBackendResponse } from '../models';
 
+/**
+ * Service responsible for synchronizing focus period data with the backend API.
+ * Provides methods to perform health checks, push local periods, and pull
+ * periods from the server for the extension.
+ */
 @Injectable({ providedIn: 'root' })
 export class BackendSyncService {
   readonly #apiService: ApiService = inject(ApiService);
