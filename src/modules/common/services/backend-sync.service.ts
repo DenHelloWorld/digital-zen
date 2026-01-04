@@ -3,7 +3,6 @@ import { catchError, map, Observable, of, tap } from 'rxjs';
 import { ApiService } from './api.service';
 import { API_URLS } from '../constants';
 import { IFocus, IBackendResponse } from '../models';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Injectable({ providedIn: 'root' })
 export class BackendSyncService {
@@ -17,7 +16,7 @@ export class BackendSyncService {
     return this.#apiService
       .get<
         IBackendResponse<{ status: string }>
-      >(`${API_URLS.BACKEND.BASE_URL}+${API_URLS.BACKEND.HEALTH}`)
+      >(`${API_URLS.BACKEND.BASE_URL}${API_URLS.BACKEND.HEALTH}`)
       .pipe(
         catchError(error => {
           console.error('Health check failed:', error);
@@ -33,8 +32,7 @@ export class BackendSyncService {
             console.warn('Backend health check failed:', response.error);
           }
         }),
-        map(response => response.success),
-        takeUntilDestroyed()
+        map(response => response.success)
       );
   }
 
@@ -47,7 +45,7 @@ export class BackendSyncService {
     return this.#apiService
       .post<
         IBackendResponse<{ message: string }>
-      >(`${API_URLS.BACKEND.BASE_URL}+${API_URLS.BACKEND.PERIODS}`, period)
+      >(`${API_URLS.BACKEND.BASE_URL}${API_URLS.BACKEND.PERIODS}`, period)
       .pipe(
         catchError(error => {
           console.error('Push period failed:', error);
@@ -63,8 +61,7 @@ export class BackendSyncService {
             console.error('Failed to push period:', response.error);
           }
         }),
-        map(response => response.success),
-        takeUntilDestroyed()
+        map(response => response.success)
       );
   }
 
@@ -76,7 +73,7 @@ export class BackendSyncService {
     return this.#apiService
       .get<
         IBackendResponse<IFocus.Period[]>
-      >(`${API_URLS.BACKEND.BASE_URL}+${API_URLS.BACKEND.PERIODS}`)
+      >(`${API_URLS.BACKEND.BASE_URL}${API_URLS.BACKEND.PERIODS}`)
       .pipe(
         catchError(error => {
           console.error('Pull periods failed:', error);
@@ -92,8 +89,7 @@ export class BackendSyncService {
             console.error('Failed to pull periods:', response.error);
           }
         }),
-        map(response => (response.success && response.data ? response.data : null)),
-        takeUntilDestroyed()
+        map(response => (response.success && response.data ? response.data : null))
       );
   }
 }
