@@ -88,10 +88,8 @@ class GoogleAuthService {
             $updateStmt = $db->prepare("UPDATE users SET last_login_at = NOW() WHERE id = :id");
             $updateStmt->execute(['id' => $existingUser['id']]);
             
-            // Возвращаем обновленные данные пользователя
-            $stmt = $db->prepare("SELECT * FROM users WHERE google_id = :google_id");
-            $stmt->execute(['google_id' => $tokenInfo['sub']]);
-            return $stmt->fetch();
+            // Возвращаем данные существующего пользователя
+            return $existingUser;
         }
         
         // Создаём нового пользователя
