@@ -70,9 +70,14 @@ class GoogleAuthService {
      * @return array|false Данные пользователя (существующего или созданного) или false при ошибке
      */
     public function createUser($tokenInfo) {
-        // Валидация обязательного поля 'sub'
+        // Валидация обязательных полей 'sub' и 'email'
         if (!isset($tokenInfo['sub']) || empty($tokenInfo['sub'])) {
             error_log("createUser: missing or empty 'sub' field in tokenInfo");
+            return false;
+        }
+        
+        if (!isset($tokenInfo['email']) || empty($tokenInfo['email'])) {
+            error_log("createUser: missing or empty 'email' field in tokenInfo");
             return false;
         }
         
@@ -100,7 +105,7 @@ class GoogleAuthService {
         
         $stmt->execute([
             'google_id' => $tokenInfo['sub'],
-            'email' => $tokenInfo['email'] ?? '',
+            'email' => $tokenInfo['email'],
             'name' => $tokenInfo['name'] ?? '',
             'picture_url' => $tokenInfo['picture'] ?? ''
         ]);
