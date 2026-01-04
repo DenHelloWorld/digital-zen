@@ -41,21 +41,21 @@ const isBackendApiUrl = (url: string, baseUrl: string): boolean => {
  *   - `/v1/auth/google`
  */
 const isAuthGoogleEndpoint = (url: string): boolean => {
+  /**
+   * Normalize a path by removing trailing slashes.
+   * If the path is just '/', it becomes '' after replace, then '/' via fallback,
+   * which correctly does NOT match '/auth/google'.
+   */
+  const normalizePath = (path: string): string => path.replace(/\/+$/, '') || '/';
+
   // Try to use the URL API for robust parsing
   try {
     const parsed = new URL(url, API_URLS.BACKEND.BASE_URL);
-    // Remove trailing slashes, but preserve the leading slash.
-    // Note: If pathname is '/', it becomes '' after replace, then '/' via fallback,
-    // which correctly does NOT match '/auth/google'.
-    const normalizedPath = parsed.pathname.replace(/\/+$/, '') || '/';
-    return normalizedPath === '/auth/google';
+    return normalizePath(parsed.pathname) === '/auth/google';
   } catch {
     // Fallback for non-standard/relative URLs: strip query/hash and check the path
     const rawPath = url.split(/[?#]/)[0];
-    // Remove trailing slashes. If rawPath was '/', it becomes '' after replace,
-    // then '/' via fallback, which correctly does NOT match '/auth/google'.
-    const normalizedPath = rawPath.replace(/\/+$/, '') || '/';
-    return normalizedPath === '/auth/google';
+    return normalizePath(rawPath) === '/auth/google';
   }
 };
 
