@@ -53,13 +53,13 @@ class GoogleAuthService {
                 error_log("Token validation failed: audience mismatch. Expected: $expectedClientId, Got: " . $tokenInfo['aud']);
                 return false;
             }
-        } else if ($expectedClientId && !isset($tokenInfo['aud'])) {
+        } elseif ($expectedClientId && !isset($tokenInfo['aud'])) {
             error_log("Token validation failed: no audience (aud) field in token");
             return false;
         }
         // Если GOOGLE_CLIENT_ID не настроен, логируем предупреждение но продолжаем
         // (для обратной совместимости с существующими установками)
-        else if (!$expectedClientId) {
+        elseif (!$expectedClientId) {
             error_log("WARNING: GOOGLE_CLIENT_ID not configured, skipping audience verification");
         }
         

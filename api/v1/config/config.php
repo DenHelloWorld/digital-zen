@@ -14,10 +14,10 @@ class Config {
      * @return string|null The Google OAuth Client ID or null if not set
      */
     public static function getGoogleClientId() {
-        // Try to get from environment variable first
-        $clientId = getenv('GOOGLE_CLIENT_ID');
+        // Use $_ENV for better performance and consistency with modern PHP
+        $clientId = $_ENV['GOOGLE_CLIENT_ID'] ?? null;
         
-        if ($clientId === false) {
+        if ($clientId === null) {
             error_log("WARNING: GOOGLE_CLIENT_ID environment variable not set");
             return null;
         }
