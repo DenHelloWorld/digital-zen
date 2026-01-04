@@ -110,6 +110,7 @@ export class GoogleAuthService {
 
     this.#apiService
       .get<IGoogleUserInfo>(API_URLS.GOOGLE.USER_INFO, { access_token: token })
+      .pipe(take(1))
       .subscribe({
         next: info => {
           // Save user info to local state
