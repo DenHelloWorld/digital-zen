@@ -70,16 +70,21 @@ class Config {
     public static function validateStartupConfig() {
         $errors = [];
         
-        // Validate JWT secret - getJWTSecret already checks for null and empty
-        if (self::getJWTSecret() === null) {
-            $errors[] = 'JWT_SECRET environment variable is required but not set. Generate with: openssl rand -base64 64';
+        // Validate JWT secret
+        try {
+            $secret = self::getJWTSecret();
+            if ($secret === null) {
+                $errors[] = 'JWT_SECRET environment variable is required but not set. Generate with: openssl rand -base64 64';
+            }
+        } catch (ConfigurationException $e) {
+            $errors[] = $e->getMessage();
         }
         
-        // Validate Google Client ID - this will throw ConfigurationException if not set
+        // Validate Google Client ID
         try {
             self::getGoogleClientId();
         } catch (ConfigurationException $e) {
-            $errors[] = 'GOOGLE_CLIENT_ID environment variable is required but not set';
+            $errors[] = $e->getMessage();
         }
         
         if (!empty($errors)) {
