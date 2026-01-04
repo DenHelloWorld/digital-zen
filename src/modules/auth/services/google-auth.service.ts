@@ -1,5 +1,6 @@
 import { computed, inject, Injectable, Signal, signal, WritableSignal } from '@angular/core';
-import { API_URLS, ApiService } from '../../common';
+import { take } from 'rxjs';
+import { API_URLS, ApiService, UserService } from '../../common';
 
 export interface IGoogleUserInfo {
   sub: string;
@@ -22,6 +23,7 @@ export class GoogleAuthService {
     !!chrome.identity &&
     typeof chrome.identity.getAuthToken === 'function';
   readonly #apiService: ApiService = inject(ApiService);
+  readonly #userService: UserService = inject(UserService);
 
   readonly #isGoogleAuthenticated: WritableSignal<boolean> = signal(false);
   readonly #isPending: WritableSignal<boolean> = signal(false);
@@ -49,7 +51,7 @@ export class GoogleAuthService {
       .getAuthToken({ interactive: true })
       .then((result: chrome.identity.GetAuthTokenResult) => {
         this.#isGoogleAuthenticated.set(!!result?.token);
-        // this.#getUserInfo(result?.token);
+        this.#getUserInfo(result?.token);
       })
       .catch(() => {
         this.#isGoogleAuthenticated.set(false);
@@ -95,30 +97,48 @@ export class GoogleAuthService {
       .getAuthToken({ interactive: false })
       .then(result => {
         this.#isGoogleAuthenticated.set(!!result?.token);
-        // this.#getUserInfo(result?.token);
+        this.#getUserInfo(result?.token);
       })
       .catch(() => this.#isGoogleAuthenticated.set(false))
       .finally(() => this.#isPending.set(false));
   }
 
-  // #getUserInfo(token: string | undefined): void {
-  //   if (!token) {
-  //     return;
-  //   }
-  //
-  //   this.#apiService
-  //     .get<IGoogleUserInfo>(API_URLS.GOOGLE.USER_INFO, { access_token: token })
-  //     .subscribe({
-  //       next: info => {
-  //         // TODO: We can use this info later
-  //         // also we can save it in chrome storage
-  //         this.#userInfo.set(info);
-  //       },
-  //       error: (err: unknown) => {
-  //         console.error('Failed to fetch user info', err);
-  //       },
-  //     });
-  // }
+  #getUserInfo(token: string | undefined): void {
+    if (!token) {
+      return;
+    }
+
+    this.#apiService
+      .get<IGoogleUserInfo>(API_URLS.GOOGLE.USER_INFO, { access_token: token })
+      .pipe(take(1))
+      .subscribe({
+        next: info => {
+          // Save user info to local state
+          this.#userInfo.set(info);
+
+          // Create or get user in backend database
+          // The backend will identify the user by email and create only if not exists
+          this.#userService
+            .createUser()
+            .pipe(take(1))
+            .subscribe({
+              next: user => {
+                if (user) {
+                  console.log('User ensured in database:', user);
+                } else {
+                  console.error('Failed to ensure user in database');
+                }
+              },
+              error: (err: unknown) => {
+                console.error('Failed to create/get user in database', err);
+              },
+            });
+        },
+        error: (err: unknown) => {
+          console.error('Failed to fetch user info', err);
+        },
+      });
+  }
 
   #completeLogout(): void {
     this.#isGoogleAuthenticated.set(false);
