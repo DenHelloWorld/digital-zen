@@ -32,7 +32,7 @@ class Config {
         if ($clientId === null || trim($clientId) === '') {
             $errorMsg = "CRITICAL: GOOGLE_CLIENT_ID environment variable is not set. OAuth authentication will not work.";
             error_log($errorMsg);
-            throw new Exception($errorMsg);
+            throw new InvalidArgumentException($errorMsg);
         }
         
         return $clientId;

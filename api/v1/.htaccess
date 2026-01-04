@@ -5,7 +5,15 @@ RewriteEngine On
 # ID можно найти на chrome://extensions/ (включи режим разработчика) и указать в конфигурации сервера
 # При смене сборки (dev/prod) или переустановке расширения ID может измениться —
 # не забудь обновить значение в переменной окружения или использовать отдельные конфиги для разных окружений.
-Header always set Access-Control-Allow-Origin "chrome-extension://%{ENV:CHROME_EXTENSION_ID}"
+# ВАЖНО: ID расширения должен состоять только из 32 строчных букв (a-p) для безопасности
+# Валидный формат: ^[a-p]{32}$ (например: hoefdaddakfckhgbciobghhjlehnfdge)
+<If "%{ENV:CHROME_EXTENSION_ID} =~ /^[a-p]{32}$/">
+    Header always set Access-Control-Allow-Origin "chrome-extension://%{ENV:CHROME_EXTENSION_ID}"
+</If>
+<Else>
+    # Если переменная не задана или невалидна, логируем ошибку
+    # В продакшене ОБЯЗАТЕЛЬНО должна быть установлена корректная переменная окружения
+</Else>
 Header always set Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
 Header always set Access-Control-Allow-Headers "Content-Type, Authorization"
 Header always set Access-Control-Allow-Credentials "true"
