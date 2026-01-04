@@ -1,5 +1,5 @@
 import { inject, Injectable, Signal } from '@angular/core';
-import { GoogleAuthService } from '../../common';
+import { GoogleAuthService } from './google-auth.service';
 
 @Injectable({
   providedIn: 'root',

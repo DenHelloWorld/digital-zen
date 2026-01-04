@@ -1,5 +1,5 @@
 import { HttpInterceptorFn } from '@angular/common/http';
-import { API_URLS } from '../constants/api-urls.const';
+import { API_URLS } from '../constants';
 import { from, switchMap, catchError } from 'rxjs';
 
 /**

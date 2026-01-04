@@ -16,11 +16,13 @@ import {
   DEFAULT_PERIOD,
   ChromeStorageService,
   FOCUS_ERROR_ENUM,
+  cleanUrlHelper,
+  isImageIcon,
+  isSvgIcon,
+  CHROME_COMMAND_ENUM,
+  CHROME_STORAGE_KEY_ENUM,
+  DzToastService,
 } from '../../common';
-import { DzToastService } from '../../common/components/toast-container/toast.service';
-import { cleanUrlHelper, isImageIcon, isSvgIcon } from '../../common/helpers';
-import { CHROME_COMMAND_ENUM } from '../../common/enums/chrome-command.enum';
-import { CHROME_STORAGE_KEY_ENUM } from '../../common/enums/chrome-storage-key.enum';
 
 interface InitialStorageSchema {
   [CHROME_STORAGE_KEY_ENUM.CURRENT_PERIOD]: IFocus.Period;
