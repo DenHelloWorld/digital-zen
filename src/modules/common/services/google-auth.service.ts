@@ -1,5 +1,6 @@
 import { computed, inject, Injectable, Signal, signal, WritableSignal } from '@angular/core';
 import { ApiService } from './api.service';
+import { BackendSyncService } from './backend-sync.service';
 import { API_URLS } from '../constants';
 
 export interface IGoogleUserInfo {
@@ -23,6 +24,7 @@ export class GoogleAuthService {
     !!chrome.identity &&
     typeof chrome.identity.getAuthToken === 'function';
   readonly #apiService: ApiService = inject(ApiService);
+  readonly #backendSyncService: BackendSyncService = inject(BackendSyncService);
 
   readonly #isGoogleAuthenticated: WritableSignal<boolean> = signal(false);
   readonly #isPending: WritableSignal<boolean> = signal(false);
@@ -114,6 +116,7 @@ export class GoogleAuthService {
           // TODO: We can use this info later
           // also we can save it in chrome storage
           this.#userInfo.set(info);
+          this.#triggerBackendSync();
         },
         error: (err: unknown) => {
           console.error('Failed to fetch user info', err);
@@ -125,5 +128,36 @@ export class GoogleAuthService {
     this.#isGoogleAuthenticated.set(false);
     this.#isPending.set(false);
     this.#userInfo.set(null);
+  }
+
+  /**
+   * Trigger backend synchronization after successful authentication
+   * This method performs health check and pulls periods from the backend
+   */
+  #triggerBackendSync(): void {
+    this.#backendSyncService.checkHealth().subscribe({
+      next: isHealthy => {
+        if (isHealthy) {
+          console.log('[GoogleAuthService] Backend is healthy, pulling periods...');
+          this.#backendSyncService.pullPeriods().subscribe({
+            next: periods => {
+              if (periods) {
+                console.log('[GoogleAuthService] Successfully pulled periods:', periods.length);
+              } else {
+                console.warn('[GoogleAuthService] Failed to pull periods');
+              }
+            },
+            error: (err: unknown) => {
+              console.error('[GoogleAuthService] Error pulling periods:', err);
+            },
+          });
+        } else {
+          console.warn('[GoogleAuthService] Backend health check failed, skipping sync');
+        }
+      },
+      error: (err: unknown) => {
+        console.error('[GoogleAuthService] Backend health check error:', err);
+      },
+    });
   }
 }
