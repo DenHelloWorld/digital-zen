@@ -50,7 +50,15 @@ export class UserService {
   public createUser(): Observable<IUser | null> {
     return this.#apiService
       .post<IBackendResponse<IUser>>(`${API_URLS.BACKEND.BASE_URL}${API_URLS.BACKEND.USERS}`, {})
-      .pipe(map(response => (response.success && response.data ? response.data : null)));
+      .pipe(
+        map(response => {
+          if (!response || typeof response !== 'object' || Array.isArray(response)) {
+            console.error('[UserService] Invalid response structure from createUser:', response);
+            return null;
+          }
+          return response.success && response.data ? response.data : null;
+        })
+      );
   }
 
   /**
@@ -62,6 +70,17 @@ export class UserService {
   public getCurrentUser(): Observable<IUser | null> {
     return this.#apiService
       .get<IBackendResponse<IUser>>(`${API_URLS.BACKEND.BASE_URL}${API_URLS.BACKEND.ME}`)
-      .pipe(map(response => (response.success && response.data ? response.data : null)));
+      .pipe(
+        map(response => {
+          if (!response || typeof response !== 'object' || Array.isArray(response)) {
+            console.error(
+              '[UserService] Invalid response structure from getCurrentUser:',
+              response
+            );
+            return null;
+          }
+          return response.success && response.data ? response.data : null;
+        })
+      );
   }
 }

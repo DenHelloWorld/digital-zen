@@ -125,7 +125,15 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
       return next(authReq);
     }),
     catchError(error => {
-      console.error('[authInterceptor] Failed to retrieve JWT token from storage:', error);
+      // This path represents an unexpected storage failure, which is different
+      // from the normal "no JWT token present" case handled above. We log it
+      // explicitly for monitoring, but still proceed without an Authorization
+      // header so the request can continue as unauthenticated.
+      console.error(
+        '[authInterceptor] Unexpected error while retrieving JWT token from storage; ' +
+          'proceeding without Authorization header (this is different from a missing token):',
+        error
+      );
       return next(req);
     })
   );
