@@ -7,6 +7,7 @@ import {
   signal,
   WritableSignal,
 } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
   IFocus,
   QUICK_FOCUS_ID,
@@ -400,17 +401,30 @@ export class FocusService {
    * This method pushes the period to the backend API
    */
   #syncPeriodToBackend(period: IFocus.Period): void {
-    this.#backendSyncService.pushPeriod(period).subscribe({
-      next: success => {
-        if (success) {
-          console.log('[FocusService] Period synced to backend successfully');
-        } else {
-          console.warn('[FocusService] Failed to sync period to backend');
-        }
-      },
-      error: (err: unknown) => {
-        console.error('[FocusService] Error syncing period to backend:', err);
-      },
-    });
+    this.#backendSyncService
+      .pushPeriod(period)
+      .pipe(takeUntilDestroyed(this.#destroyRef))
+      .subscribe({
+        next: success => {
+          if (success) {
+            console.log('[FocusService] Period synced to backend successfully');
+          } else {
+            console.warn('[FocusService] Failed to sync period to backend');
+            this.#toastService.show({
+              message: 'Failed to sync period to backend',
+              type: TOAST_TYPE_ENUM.WARN,
+              position: POSITIONS_ENUM.BOTTOM_RIGHT,
+            });
+          }
+        },
+        error: (err: unknown) => {
+          console.error('[FocusService] Error syncing period to backend:', err);
+          this.#toastService.show({
+            message: 'Error syncing period to backend',
+            type: TOAST_TYPE_ENUM.ERROR,
+            position: POSITIONS_ENUM.BOTTOM_RIGHT,
+          });
+        },
+      });
   }
 }
