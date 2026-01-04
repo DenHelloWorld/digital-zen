@@ -27,34 +27,26 @@ class UsersController {
      */
     public function create($tokenInfo) {
         try {
-            // Defense-in-depth: валидация обязательных полей на входе в контроллер
-            // даже если GoogleAuthService.createUser тоже это проверяет
-            if (!isset($tokenInfo['sub']) || empty($tokenInfo['sub'])) {
-                error_log("UsersController::create: missing or empty 'sub' field");
-                Response::error('Invalid token information: missing user identifier', 400);
-            }
-            
-            if (!isset($tokenInfo['email']) || empty($tokenInfo['email'])) {
-                error_log("UsersController::create: missing or empty 'email' field");
-                Response::error('Invalid token information: missing email', 400);
-            }
-            
             $googleAuth = new GoogleAuthService();
             
             // Создаём пользователя (или получаем существующего)
+            // GoogleAuthService.createUser уже валидирует обязательные поля
             $user = $googleAuth->createUser($tokenInfo);
             
             if (!$user) {
                 // Логируем только google_id (не PII) для отладки
                 $googleId = $tokenInfo['sub'] ?? 'unknown';
                 error_log("User creation failed for google_id: $googleId");
-                Response::error('User creation failed', 500);
+                Response::error('User creation failed: unable to create or retrieve user record', 500);
             }
             
             Response::success($this->formatUserResponse($user));
+        } catch (PDOException $e) {
+            error_log("User creation error (database): " . $e->getMessage());
+            Response::error('User creation failed due to a database error', 500);
         } catch (Exception $e) {
             error_log("User creation error: " . $e->getMessage());
-            Response::error('User creation failed', 500);
+            Response::error('User creation failed due to an internal server error', 500);
         }
     }
     

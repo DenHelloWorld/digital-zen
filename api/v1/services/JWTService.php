@@ -8,7 +8,8 @@
  */
 class JWTService {
     private const ALGORITHM = 'HS256';
-    private const TOKEN_EXPIRY = 7 * 24 * 60 * 60; // 7 days in seconds
+    private const DEFAULT_TOKEN_EXPIRY_DAYS = 7;
+    private const TOKEN_EXPIRY = self::DEFAULT_TOKEN_EXPIRY_DAYS * 24 * 60 * 60; // 7 days in seconds
     
     /**
      * Generate a JWT token for a user
@@ -105,8 +106,8 @@ class JWTService {
             return false;
         }
         
-        // Check expiration (strict comparison - token is invalid if exp <= current time)
-        if (isset($payload['exp']) && $payload['exp'] <= time()) {
+        // Check expiration: token is invalid only if exp < current time (valid through exp timestamp)
+        if (isset($payload['exp']) && $payload['exp'] < time()) {
             error_log('JWT validation failed: token expired');
             return false;
         }
