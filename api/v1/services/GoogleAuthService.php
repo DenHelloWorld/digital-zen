@@ -35,9 +35,18 @@ class GoogleAuthService {
     }
     
     /**
-     * Получить или создать пользователя по токену
+     * Получить пользователя по google_id из токена
+     * 
+     * @param array $tokenInfo Информация из Google OAuth токена (должен содержать 'sub')
+     * @return array|false Данные пользователя или false если не найден
      */
-    public function getOrCreateUser($tokenInfo) {
+    public function getUser($tokenInfo) {
+        // Валидация обязательного поля 'sub'
+        if (!isset($tokenInfo['sub']) || empty($tokenInfo['sub'])) {
+            error_log("getUser: missing or empty 'sub' field in tokenInfo");
+            return false;
+        }
+        
         $db = Database::getInstance()->getConnection();
         
         // Проверяем существует ли пользователь по google_id
@@ -49,7 +58,43 @@ class GoogleAuthService {
             // Обновляем время последнего входа
             $stmt = $db->prepare("UPDATE users SET last_login_at = NOW() WHERE id = :id");
             $stmt->execute(['id' => $user['id']]);
-            return $user;
+        }
+        
+        return $user;
+    }
+    
+    /**
+     * Создать нового пользователя
+     * 
+     * @param array $tokenInfo Информация из Google OAuth токена (sub, email, name, picture)
+     * @return array|false Данные пользователя (существующего или созданного) или false при ошибке
+     */
+    public function createUser($tokenInfo) {
+        // Валидация обязательных полей 'sub' и 'email'
+        if (!isset($tokenInfo['sub']) || empty($tokenInfo['sub'])) {
+            error_log("createUser: missing or empty 'sub' field in tokenInfo");
+            return false;
+        }
+        
+        if (!isset($tokenInfo['email']) || empty($tokenInfo['email'])) {
+            error_log("createUser: missing or empty 'email' field in tokenInfo");
+            return false;
+        }
+        
+        $db = Database::getInstance()->getConnection();
+        
+        // Проверяем, не существует ли уже пользователь
+        $stmt = $db->prepare("SELECT * FROM users WHERE google_id = :google_id");
+        $stmt->execute(['google_id' => $tokenInfo['sub']]);
+        $existingUser = $stmt->fetch();
+        
+        if ($existingUser) {
+            // Обновляем время последнего входа для существующего пользователя
+            $updateStmt = $db->prepare("UPDATE users SET last_login_at = NOW() WHERE id = :id");
+            $updateStmt->execute(['id' => $existingUser['id']]);
+            
+            // Возвращаем данные существующего пользователя
+            return $existingUser;
         }
         
         // Создаём нового пользователя
@@ -60,7 +105,7 @@ class GoogleAuthService {
         
         $stmt->execute([
             'google_id' => $tokenInfo['sub'],
-            'email' => $tokenInfo['email'] ?? '',
+            'email' => $tokenInfo['email'],
             'name' => $tokenInfo['name'] ?? '',
             'picture_url' => $tokenInfo['picture'] ?? ''
         ]);

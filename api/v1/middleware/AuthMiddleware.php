@@ -5,8 +5,11 @@ class AuthMiddleware {
      * Аутентификация пользователя по OAuth токену
      * 
      * ВАЖНО: Бэкенд проверяет токен на каждом запросе для безопасности
+     * 
+     * @param bool $requireUser Требуется ли существующий пользователь
+     * @return array Возвращает ['tokenInfo' => array, 'user' => array|null]
      */
-    public function authenticate() {
+    public function authenticate($requireUser = true) {
         $headers = getallheaders();
         
         // Получаем токен из заголовка Authorization
@@ -35,13 +38,18 @@ class AuthMiddleware {
             Response::unauthorized('Invalid or expired token');
         }
         
-        // Получаем или создаём пользователя
-        $user = $googleAuth->getOrCreateUser($tokenInfo);
-        
-        if (!$user) {
-            Response::error('User creation failed', 500);
+        if (!$requireUser) {
+            // Для создания пользователя возвращаем только tokenInfo
+            return ['tokenInfo' => $tokenInfo, 'user' => null];
         }
         
-        return $user;
+        // Получаем пользователя (НЕ создаём автоматически)
+        $user = $googleAuth->getUser($tokenInfo);
+        
+        if (!$user) {
+            Response::unauthorized('Account not registered in this application. Please complete registration before signing in with Google.');
+        }
+        
+        return ['tokenInfo' => $tokenInfo, 'user' => $user];
     }
 }
