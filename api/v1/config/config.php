@@ -71,13 +71,8 @@ class Config {
         $errors = [];
         
         // Validate JWT secret
-        try {
-            $secret = self::getJWTSecret();
-            if ($secret === null) {
-                $errors[] = 'JWT_SECRET environment variable is required but not set. Generate with: openssl rand -base64 64';
-            }
-        } catch (ConfigurationException $e) {
-            $errors[] = $e->getMessage();
+        if (self::getJWTSecret() === null) {
+            $errors[] = 'JWT_SECRET environment variable is required but not set. Generate with: openssl rand -base64 64';
         }
         
         // Validate Google Client ID
