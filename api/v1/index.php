@@ -18,6 +18,22 @@ spl_autoload_register(function ($className) {
 require_once __DIR__ . '/config/database.php';
 require_once __DIR__ . '/config/config.php';
 
+// Validate critical configuration at startup
+// This ensures deployment issues are caught early with clear error messages
+// rather than causing runtime 500 errors
+try {
+    Config::validateStartupConfig();
+} catch (RuntimeException $e) {
+    error_log("Application startup failed: " . $e->getMessage());
+    http_response_code(500);
+    header('Content-Type: application/json');
+    echo json_encode([
+        'error' => 'Application configuration error',
+        'message' => 'The application is not properly configured. Please check server logs for details.'
+    ]);
+    exit;
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(200);
     exit;

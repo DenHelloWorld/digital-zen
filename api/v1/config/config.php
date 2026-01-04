@@ -43,7 +43,7 @@ class Config {
      * CRITICAL: This must be a strong, random secret in production.
      * Generate with: openssl rand -base64 64
      * 
-     * @return string|null The JWT secret or null if not set
+     * @return string|null The JWT secret or null if not set or empty
      */
     public static function getJWTSecret() {
         // Support both $_ENV and $_SERVER for flexibility
@@ -51,11 +51,39 @@ class Config {
         // $_SERVER works with Apache SetEnv directive
         $secret = $_ENV['JWT_SECRET'] ?? $_SERVER['JWT_SECRET'] ?? null;
         
-        if ($secret === null) {
-            error_log("WARNING: JWT_SECRET environment variable not set");
+        if ($secret === null || trim($secret) === '') {
+            error_log("WARNING: JWT_SECRET environment variable not set or empty");
             return null;
         }
         
         return $secret;
+    }
+    
+    /**
+     * Validate critical configuration at application startup
+     * 
+     * This should be called during application bootstrap to ensure
+     * all required configuration is present before handling requests.
+     * 
+     * @throws RuntimeException if critical configuration is missing
+     */
+    public static function validateStartupConfig() {
+        $errors = [];
+        
+        // Validate JWT secret - getJWTSecret already checks for null and empty
+        if (self::getJWTSecret() === null) {
+            $errors[] = 'JWT_SECRET environment variable is required but not set. Generate with: openssl rand -base64 64';
+        }
+        
+        // Validate Google Client ID - getGoogleClientId already checks for null and empty
+        if (self::getGoogleClientId() === null) {
+            $errors[] = 'GOOGLE_CLIENT_ID environment variable is required but not set';
+        }
+        
+        if (!empty($errors)) {
+            $errorMessage = "Application configuration validation failed:\n" . implode("\n", $errors);
+            error_log($errorMessage);
+            throw new RuntimeException($errorMessage);
+        }
     }
 }
