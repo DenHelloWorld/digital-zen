@@ -22,6 +22,7 @@
 **Yes, Hostinger can be used as a PHP backend for Digital Zen Chrome Extension.**
 
 Hostinger provides all necessary features for implementing a backend API:
+
 - ✅ PHP 7.4+ support (preferably 8.x)
 - ✅ MySQL/MariaDB database
 - ✅ HTTPS/SSL certificates (Let's Encrypt)
@@ -30,6 +31,7 @@ Hostinger provides all necessary features for implementing a backend API:
 - ✅ cPanel for easy management
 
 The integration is feasible and can significantly enhance the extension's capabilities by:
+
 - Enabling cross-device synchronization
 - Providing data backup and recovery
 - Supporting analytics and insights
@@ -41,6 +43,7 @@ The integration is feasible and can significantly enhance the extension's capabi
 **Да, Hostinger можно использовать как PHP бэкенд для расширения Digital Zen.**
 
 Hostinger предоставляет все необходимые возможности для создания API бэкенда:
+
 - ✅ Поддержка PHP 7.4+ (желательно 8.x)
 - ✅ База данных MySQL/MariaDB
 - ✅ HTTPS/SSL сертификаты (Let's Encrypt)
@@ -49,6 +52,7 @@ Hostinger предоставляет все необходимые возмож�
 - ✅ cPanel для простого управления
 
 Интеграция возможна и может значительно расширить возможности расширения:
+
 - Синхронизация между устройствами
 - Резервное копирование и восстановление данных
 - Аналитика и статистика
@@ -64,6 +68,7 @@ Hostinger предоставляет все необходимые возмож�
 Digital Zen is currently a **client-side Chrome Extension** built with:
 
 **Technology Stack:**
+
 - **Frontend:** Angular 21 (Standalone Components, Signals)
 - **State Management:** Chrome Storage API + Angular Signals
 - **Authentication:** Google OAuth 2.0 (Chrome Identity API)
@@ -151,12 +156,14 @@ Hostinger shared hosting typically includes:
 ### Performance Considerations / Вопросы производительности
 
 **Shared Hosting Limitations:**
+
 - Shared resources (CPU, RAM, bandwidth)
 - Request rate limits (varies by plan)
 - Concurrent connection limits
 - No guaranteed uptime SLA on basic plans
 
 **Recommendations:**
+
 - Use Premium or Business plans for better performance
 - Implement caching strategies
 - Optimize database queries
@@ -510,13 +517,13 @@ RewriteRule ^(.*)$ index.php [QSA,L]
 class Database {
     private static $instance = null;
     private $connection;
-    
+
     private function __construct() {
         $host = getenv('DB_HOST') ?: 'localhost';
         $dbname = getenv('DB_NAME') ?: 'digital_zen';
         $username = getenv('DB_USER') ?: 'root';
         $password = getenv('DB_PASSWORD') ?: '';
-        
+
         try {
             $this->connection = new PDO(
                 "mysql:host=$host;dbname=$dbname;charset=utf8mb4",
@@ -533,14 +540,14 @@ class Database {
             throw new Exception("Database connection failed");
         }
     }
-    
+
     public static function getInstance() {
         if (self::$instance === null) {
             self::$instance = new self();
         }
         return self::$instance;
     }
-    
+
     public function getConnection() {
         return $this->connection;
     }
@@ -554,7 +561,7 @@ class Database {
 
 class GoogleAuthService {
     private const GOOGLE_TOKEN_INFO_URL = 'https://oauth2.googleapis.com/tokeninfo';
-    
+
     /**
      * Validate Google OAuth token
      */
@@ -562,67 +569,67 @@ class GoogleAuthService {
         if (empty($token)) {
             return false;
         }
-        
+
         $url = self::GOOGLE_TOKEN_INFO_URL . '?access_token=' . urlencode($token);
-        
+
         $ch = curl_init($url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
         curl_setopt($ch, CURLOPT_TIMEOUT, 10);
-        
+
         $response = curl_exec($ch);
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
-        
+
         if ($httpCode !== 200) {
             return false;
         }
-        
+
         $tokenInfo = json_decode($response, true);
-        
+
         // Validate token audience (your OAuth client ID)
         $expectedClientId = getenv('GOOGLE_CLIENT_ID');
         if (isset($tokenInfo['aud']) && $tokenInfo['aud'] === $expectedClientId) {
             return $tokenInfo;
         }
-        
+
         return false;
     }
-    
+
     /**
      * Get or create user from Google token info
      */
     public function getOrCreateUser($tokenInfo) {
         $db = Database::getInstance()->getConnection();
-        
+
         // Check if user exists
         $stmt = $db->prepare("SELECT * FROM users WHERE google_id = :google_id");
         $stmt->execute(['google_id' => $tokenInfo['sub']]);
         $user = $stmt->fetch();
-        
+
         if ($user) {
             // Update last login
             $stmt = $db->prepare("UPDATE users SET last_login_at = NOW() WHERE id = :id");
             $stmt->execute(['id' => $user['id']]);
             return $user;
         }
-        
+
         // Create new user
         $stmt = $db->prepare("
             INSERT INTO users (google_id, email, name, picture_url, last_login_at)
             VALUES (:google_id, :email, :name, :picture_url, NOW())
         ");
-        
+
         $stmt->execute([
             'google_id' => $tokenInfo['sub'],
             'email' => $tokenInfo['email'] ?? '',
             'name' => $tokenInfo['name'] ?? '',
             'picture_url' => $tokenInfo['picture'] ?? ''
         ]);
-        
+
         return $this->getUserByGoogleId($tokenInfo['sub']);
     }
-    
+
     private function getUserByGoogleId($googleId) {
         $db = Database::getInstance()->getConnection();
         $stmt = $db->prepare("SELECT * FROM users WHERE google_id = :google_id");
@@ -639,11 +646,11 @@ class GoogleAuthService {
 
 class AuthMiddleware {
     private $googleAuthService;
-    
+
     public function __construct() {
         $this->googleAuthService = new GoogleAuthService();
     }
-    
+
     /**
      * Validate request and return user
      */
@@ -651,36 +658,36 @@ class AuthMiddleware {
         // Get Authorization header
         $headers = getallheaders();
         $authHeader = $headers['Authorization'] ?? '';
-        
+
         if (empty($authHeader)) {
             Response::unauthorized('Authorization header missing');
             exit;
         }
-        
+
         // Extract Bearer token
         if (!preg_match('/Bearer\s+(.*)$/i', $authHeader, $matches)) {
             Response::unauthorized('Invalid authorization format');
             exit;
         }
-        
+
         $token = $matches[1];
-        
+
         // Validate token with Google
         $tokenInfo = $this->googleAuthService->validateToken($token);
-        
+
         if (!$tokenInfo) {
             Response::unauthorized('Invalid or expired token');
             exit;
         }
-        
+
         // Get or create user
         $user = $this->googleAuthService->getOrCreateUser($tokenInfo);
-        
+
         if (!$user) {
             Response::error('User creation failed', 500);
             exit;
         }
-        
+
         return $user;
     }
 }
@@ -693,17 +700,17 @@ class AuthMiddleware {
 
 class PeriodsController {
     private $db;
-    
+
     public function __construct() {
         $this->db = Database::getInstance()->getConnection();
     }
-    
+
     /**
      * Get all periods for user
      */
     public function index($userId) {
         $stmt = $this->db->prepare("
-            SELECT p.*, 
+            SELECT p.*,
                    GROUP_CONCAT(DISTINCT w.id) as website_ids
             FROM periods p
             LEFT JOIN websites w ON p.id = w.period_id
@@ -711,20 +718,20 @@ class PeriodsController {
             GROUP BY p.id
             ORDER BY p.created_at DESC
         ");
-        
+
         $stmt->execute(['user_id' => $userId]);
         $periods = $stmt->fetchAll();
-        
+
         // Load websites and focused times for each period
         foreach ($periods as &$period) {
             $period['webSites'] = $this->getWebsitesForPeriod($period['id']);
             $period['focusedTimes'] = $this->getFocusedTimesForPeriod($period['id']);
             $period['daysOfWeek'] = json_decode($period['days_of_week'], true) ?? [];
         }
-        
+
         Response::success($periods);
     }
-    
+
     /**
      * Create new period
      */
@@ -734,17 +741,17 @@ class PeriodsController {
             Response::badRequest('Period name is required');
             return;
         }
-        
+
         $this->db->beginTransaction();
-        
+
         try {
             // Insert period
             $periodId = $data['id'] ?? $this->generateUUID();
-            
+
             $stmt = $this->db->prepare("
                 INSERT INTO periods (
-                    id, user_id, name, description, 
-                    start_from, end_to, days_of_week, 
+                    id, user_id, name, description,
+                    start_from, end_to, days_of_week,
                     is_focused, session_start_time
                 )
                 VALUES (
@@ -753,7 +760,7 @@ class PeriodsController {
                     :is_focused, :session_start_time
                 )
             ");
-            
+
             $stmt->execute([
                 'id' => $periodId,
                 'user_id' => $userId,
@@ -765,34 +772,34 @@ class PeriodsController {
                 'is_focused' => $data['isFocused'] ?? false,
                 'session_start_time' => $data['sessionStartTime'] ?? null
             ]);
-            
+
             // Insert websites
             if (!empty($data['webSites'])) {
                 foreach ($data['webSites'] as $website) {
                     $this->createWebsite($periodId, $website);
                 }
             }
-            
+
             // Insert focused times
             if (!empty($data['focusedTimes'])) {
                 foreach ($data['focusedTimes'] as $time) {
                     $this->createFocusedTime($periodId, $time);
                 }
             }
-            
+
             $this->db->commit();
-            
+
             // Return created period
             $period = $this->getPeriodById($periodId, $userId);
             Response::created($period);
-            
+
         } catch (Exception $e) {
             $this->db->rollBack();
             error_log("Period creation failed: " . $e->getMessage());
             Response::error('Period creation failed', 500);
         }
     }
-    
+
     /**
      * Update period
      */
@@ -802,9 +809,9 @@ class PeriodsController {
             Response::forbidden('You do not have permission to update this period');
             return;
         }
-        
+
         $this->db->beginTransaction();
-        
+
         try {
             $stmt = $this->db->prepare("
                 UPDATE periods SET
@@ -817,7 +824,7 @@ class PeriodsController {
                     session_start_time = :session_start_time
                 WHERE id = :id AND user_id = :user_id
             ");
-            
+
             $stmt->execute([
                 'id' => $periodId,
                 'user_id' => $userId,
@@ -829,39 +836,39 @@ class PeriodsController {
                 'is_focused' => $data['isFocused'] ?? false,
                 'session_start_time' => $data['sessionStartTime'] ?? null
             ]);
-            
+
             // Update websites (delete and recreate for simplicity)
             $this->db->prepare("DELETE FROM websites WHERE period_id = :period_id")
                      ->execute(['period_id' => $periodId]);
-            
+
             if (!empty($data['webSites'])) {
                 foreach ($data['webSites'] as $website) {
                     $this->createWebsite($periodId, $website);
                 }
             }
-            
+
             // Update focused times
             $this->db->prepare("DELETE FROM focused_times WHERE period_id = :period_id")
                      ->execute(['period_id' => $periodId]);
-            
+
             if (!empty($data['focusedTimes'])) {
                 foreach ($data['focusedTimes'] as $time) {
                     $this->createFocusedTime($periodId, $time);
                 }
             }
-            
+
             $this->db->commit();
-            
+
             $period = $this->getPeriodById($periodId, $userId);
             Response::success($period);
-            
+
         } catch (Exception $e) {
             $this->db->rollBack();
             error_log("Period update failed: " . $e->getMessage());
             Response::error('Period update failed', 500);
         }
     }
-    
+
     /**
      * Delete period (soft delete)
      */
@@ -870,33 +877,33 @@ class PeriodsController {
             Response::forbidden('You do not have permission to delete this period');
             return;
         }
-        
+
         $stmt = $this->db->prepare("
             UPDATE periods SET deleted_at = NOW()
             WHERE id = :id AND user_id = :user_id
         ");
-        
+
         $stmt->execute([
             'id' => $periodId,
             'user_id' => $userId
         ]);
-        
+
         Response::success(['message' => 'Period deleted successfully']);
     }
-    
+
     // Helper methods
     private function getWebsitesForPeriod($periodId) {
         $stmt = $this->db->prepare("SELECT * FROM websites WHERE period_id = :period_id");
         $stmt->execute(['period_id' => $periodId]);
         return $stmt->fetchAll();
     }
-    
+
     private function getFocusedTimesForPeriod($periodId) {
         $stmt = $this->db->prepare("SELECT * FROM focused_times WHERE period_id = :period_id");
         $stmt->execute(['period_id' => $periodId]);
         return $stmt->fetchAll();
     }
-    
+
     private function createWebsite($periodId, $website) {
         $stmt = $this->db->prepare("
             INSERT INTO websites (
@@ -908,7 +915,7 @@ class PeriodsController {
                 :image_url, :icon_url, :type, :is_blocked
             )
         ");
-        
+
         $stmt->execute([
             'id' => $website['id'] ?? $this->generateUUID(),
             'period_id' => $periodId,
@@ -921,13 +928,13 @@ class PeriodsController {
             'is_blocked' => $website['isBlocked'] ?? false
         ]);
     }
-    
+
     private function createFocusedTime($periodId, $time) {
         $stmt = $this->db->prepare("
             INSERT INTO focused_times (id, period_id, start_from, end_to)
             VALUES (:id, :period_id, :start_from, :end_to)
         ");
-        
+
         $stmt->execute([
             'id' => $time['id'] ?? $this->generateUUID(),
             'period_id' => $periodId,
@@ -935,33 +942,33 @@ class PeriodsController {
             'end_to' => $time['endTo'] ?? null
         ]);
     }
-    
+
     private function getPeriodById($periodId, $userId) {
         $stmt = $this->db->prepare("
-            SELECT * FROM periods 
+            SELECT * FROM periods
             WHERE id = :id AND user_id = :user_id AND deleted_at IS NULL
         ");
         $stmt->execute(['id' => $periodId, 'user_id' => $userId]);
         $period = $stmt->fetch();
-        
+
         if ($period) {
             $period['webSites'] = $this->getWebsitesForPeriod($period['id']);
             $period['focusedTimes'] = $this->getFocusedTimesForPeriod($period['id']);
             $period['daysOfWeek'] = json_decode($period['days_of_week'], true) ?? [];
         }
-        
+
         return $period;
     }
-    
+
     private function verifyPeriodOwnership($periodId, $userId) {
         $stmt = $this->db->prepare("
-            SELECT id FROM periods 
+            SELECT id FROM periods
             WHERE id = :id AND user_id = :user_id AND deleted_at IS NULL
         ");
         $stmt->execute(['id' => $periodId, 'user_id' => $userId]);
         return $stmt->fetch() !== false;
     }
-    
+
     private function generateUUID() {
         // IMPORTANT: For production use, install ramsey/uuid via Composer:
         //   $ composer require ramsey/uuid
@@ -970,7 +977,7 @@ class PeriodsController {
         // On basic shared hosting where Composer may not be available,
         // we generate a RFC 4122 version 4 UUID using cryptographically
         // secure random bytes.
-        
+
         // Prefer PHP's built-in CSPRNG if available
         if (function_exists('random_bytes')) {
             $data = random_bytes(16);
@@ -981,12 +988,12 @@ class PeriodsController {
             // generating predictable identifiers.
             throw new RuntimeException('No secure random source available for UUID generation');
         }
-        
+
         // Set version to 0100 (version 4)
         $data[6] = chr((ord($data[6]) & 0x0f) | 0x40);
         // Set variant to 10xxxxxx
         $data[8] = chr((ord($data[8]) & 0x3f) | 0x80);
-        
+
         // Format as 8-4-4-4-12 hex digits
         return vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex($data), 4));
     }
@@ -1005,7 +1012,7 @@ class Response {
         echo json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
         exit;
     }
-    
+
     public static function success($data, $message = 'Success') {
         self::json([
             'success' => true,
@@ -1013,7 +1020,7 @@ class Response {
             'data' => $data
         ], 200);
     }
-    
+
     public static function created($data, $message = 'Created successfully') {
         self::json([
             'success' => true,
@@ -1021,26 +1028,26 @@ class Response {
             'data' => $data
         ], 201);
     }
-    
+
     public static function error($message, $statusCode = 500) {
         self::json([
             'success' => false,
             'error' => $message
         ], $statusCode);
     }
-    
+
     public static function badRequest($message = 'Bad request') {
         self::error($message, 400);
     }
-    
+
     public static function unauthorized($message = 'Unauthorized') {
         self::error($message, 401);
     }
-    
+
     public static function forbidden($message = 'Forbidden') {
         self::error($message, 403);
     }
-    
+
     public static function notFound($message = 'Not found') {
         self::error($message, 404);
     }
@@ -1100,7 +1107,7 @@ try {
         case 'health':
             Response::success(['status' => 'healthy', 'timestamp' => time()]);
             break;
-            
+
         case 'auth':
             $authController = new AuthController();
             switch ($pathParts[1] ?? '') {
@@ -1114,7 +1121,7 @@ try {
                     Response::notFound('Auth endpoint not found');
             }
             break;
-            
+
         case 'periods':
             $periodsController = new PeriodsController();
             if (!isset($pathParts[1])) {
@@ -1138,7 +1145,7 @@ try {
                 }
             }
             break;
-            
+
         case 'sessions':
             $sessionsController = new SessionsController();
             switch ($pathParts[1] ?? '') {
@@ -1165,7 +1172,7 @@ try {
                     }
             }
             break;
-            
+
         case 'sync':
             $syncController = new SyncController();
             switch ($pathParts[1] ?? '') {
@@ -1184,11 +1191,11 @@ try {
                     Response::notFound('Sync endpoint not found');
             }
             break;
-            
+
         default:
             Response::notFound('Endpoint not found');
     }
-    
+
 } catch (Exception $e) {
     error_log("API Error: " . $e->getMessage());
     Response::error('Internal server error', 500);
@@ -1224,7 +1231,7 @@ try {
 
 5. **CORS Configuration**
    - ✅ Whitelist only your extension ID
-   - ✅ Do not use wildcard (*) for Access-Control-Allow-Origin
+   - ✅ Do not use wildcard (\*) for Access-Control-Allow-Origin
    - ✅ Validate Origin header
 
 6. **Rate Limiting**
@@ -1260,7 +1267,7 @@ ENVIRONMENT=production
 // Rate limiting example (file-based implementation for shared hosting)
 class RateLimitMiddleware {
     private $cacheDir;
-    
+
     public function __construct() {
         // Store rate limit data in temporary directory
         $this->cacheDir = sys_get_temp_dir() . '/rate_limits/';
@@ -1268,19 +1275,19 @@ class RateLimitMiddleware {
             mkdir($this->cacheDir, 0700, true);
         }
     }
-    
+
     public function check($userId, $limit = 100, $window = 60) {
         $key = "rate_limit:$userId:" . floor(time() / $window);
         $count = $this->getCount($key);
-        
+
         if ($count >= $limit) {
             Response::error('Rate limit exceeded', 429);
             exit;
         }
-        
+
         $this->increment($key, $window);
     }
-    
+
     private function getCount($key) {
         $file = $this->cacheDir . md5($key) . '.txt';
         if (!file_exists($file)) {
@@ -1289,16 +1296,16 @@ class RateLimitMiddleware {
         $data = file_get_contents($file);
         return (int) $data;
     }
-    
+
     private function increment($key, $ttl) {
         $file = $this->cacheDir . md5($key) . '.txt';
         $count = $this->getCount($key) + 1;
         file_put_contents($file, $count);
-        
+
         // Clean up old files (basic implementation)
         $this->cleanupOldFiles($ttl);
     }
-    
+
     private function cleanupOldFiles($maxAge) {
         $files = glob($this->cacheDir . '*.txt');
         $now = time();
@@ -1336,82 +1343,78 @@ class RateLimitMiddleware {
 ### Phase 2: Extension Integration (Week 3-4) / Фаза 2: Интеграция с расширением
 
 1. **Create Sync Service**
+
    ```typescript
    // src/modules/common/services/sync.service.ts
    @Injectable({ providedIn: 'root' })
    export class SyncService {
      readonly #chromeStorage = inject(ChromeStorageService);
      readonly #http = inject(HttpClient);
-     
+
      readonly #baseUrl = 'https://your-domain.com/api/v1';
-     
+
      async syncPeriods(): Promise<void> {
        const token = await this.#getAuthToken();
-       
+
        // Pull data from backend
        // Note: Backend returns { success: boolean, data: T }
        const response = await firstValueFrom(
-         this.#http.get<{ success: boolean; data: IFocus.Period[] }>(
-           `${this.#baseUrl}/periods`,
-           { 
-             headers: new HttpHeaders({
-               'Authorization': `Bearer ${token}`
-             })
-           }
-         )
+         this.#http.get<{ success: boolean; data: IFocus.Period[] }>(`${this.#baseUrl}/periods`, {
+           headers: new HttpHeaders({
+             Authorization: `Bearer ${token}`,
+           }),
+         })
        );
-       
+
        // Update local storage with the data array
-       this.#chromeStorage.set(
-         ChromeStorageKeyType.PERIODS,
-         response.data
-       );
+       this.#chromeStorage.set(ChromeStorageKeyType.PERIODS, response.data);
      }
-     
+
      async pushChanges(periods: IFocus.Period[]): Promise<void> {
        const token = await this.#getAuthToken();
-       
+
        await firstValueFrom(
          this.#http.post(
            `${this.#baseUrl}/sync/push`,
            { periods },
-           { 
+           {
              headers: new HttpHeaders({
-               'Authorization': `Bearer ${token}`
-             })
+               Authorization: `Bearer ${token}`,
+             }),
            }
          )
        );
      }
-     
+
      async #getAuthToken(): Promise<string> {
        if (typeof chrome === 'undefined' || !chrome.identity) {
          throw new Error('Chrome identity API not available');
        }
-       
+
        const result = await chrome.identity.getAuthToken({ interactive: false });
-       
+
        if (!result?.token) {
          throw new Error('No token available');
        }
-       
+
        return result.token;
      }
    }
    ```
 
 2. **Update Environment Configuration**
+
    ```typescript
    // src/environments/environment.ts
    export const environment = {
      production: false,
-     apiUrl: 'http://localhost/api/v1' // for development
+     apiUrl: 'http://localhost/api/v1', // for development
    };
-   
+
    // src/environments/environment.prod.ts
    export const environment = {
      production: true,
-     apiUrl: 'https://your-domain.com/api/v1'
+     apiUrl: 'https://your-domain.com/api/v1',
    };
    ```
 
@@ -1460,12 +1463,12 @@ class RateLimitMiddleware {
 
 ### Hostinger Pricing (Approximate) / Цены Hostinger (приблизительно)
 
-| Plan | Price | Features | Suitable For |
-|------|-------|----------|--------------|
-| **Single Shared** | $2-3/month | 1 website, 30GB storage, 100GB bandwidth | Small testing |
-| **Premium Shared** | $3-4/month | 100 websites, 100GB storage, unlimited bandwidth | **Recommended** |
-| **Business Shared** | $4-5/month | 200GB storage, daily backups, CDN | Growing user base |
-| **VPS** | $8-20/month | Dedicated resources, root access | High traffic |
+| Plan                | Price       | Features                                         | Suitable For      |
+| ------------------- | ----------- | ------------------------------------------------ | ----------------- |
+| **Single Shared**   | $2-3/month  | 1 website, 30GB storage, 100GB bandwidth         | Small testing     |
+| **Premium Shared**  | $3-4/month  | 100 websites, 100GB storage, unlimited bandwidth | **Recommended**   |
+| **Business Shared** | $4-5/month  | 200GB storage, daily backups, CDN                | Growing user base |
+| **VPS**             | $8-20/month | Dedicated resources, root access                 | High traffic      |
 
 **Recommendation:** Start with **Premium Shared** plan (~$3-4/month)
 
@@ -1566,6 +1569,7 @@ Yes, you can absolutely use your Hostinger account as a PHP backend for Digital 
 The implementation is straightforward using PHP with PDO for database access, following MVC architecture patterns. The key is to start simple with core sync functionality and gradually add features as your user base grows.
 
 **Next Steps:**
+
 1. Set up Hostinger database and deploy initial PHP code
 2. Implement authentication endpoint
 3. Create periods sync endpoint
@@ -1584,6 +1588,7 @@ The implementation is straightforward using PHP with PDO for database access, fo
 Реализация проста с использованием PHP и PDO для доступа к базе данных, следуя паттернам MVC архитектуры. Ключевое - начать с простой функциональности синхронизации и постепенно добавлять возможности по мере роста базы пользователей.
 
 **Следующие шаги:**
+
 1. Настроить базу данных на Hostinger и развернуть начальный PHP код
 2. Реализовать эндпоинт аутентификации
 3. Создать эндпоинт синхронизации периодов
