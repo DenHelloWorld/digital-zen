@@ -27,27 +27,35 @@ const isBackendApiUrl = (url: string, baseUrl: string): boolean => {
  *
  * The URL is parsed using the WHATWG `URL` API with `API_URLS.BACKEND.BASE_URL`
  * as the base, so both absolute and relative URLs are supported. The check is
- * based on the pathname only and requires that it ends with `/auth/google`.
+ * based on the pathname only and requires that it matches `/auth/google`
+ * exactly (ignoring a trailing slash).
  *
  * Examples (ignoring query string and hash):
  * - Returns true:
  *   - `https://api.example.com/auth/google`
  *   - `/auth/google`
- *   - `v1/auth/google`
+ *   - `/auth/google/` (trailing slash is normalized)
  * - Returns false:
  *   - `https://api.example.com/auth/google-analytics`
  *   - `/auth/google/callback`
- *   - `/auth/google/` (extra trailing segment)
+ *   - `/v1/auth/google`
  */
 const isAuthGoogleEndpoint = (url: string): boolean => {
+  /**
+   * Normalize a path by removing trailing slashes.
+   * If the path is just '/', it becomes '' after replace, then '/' via fallback,
+   * which correctly does NOT match '/auth/google'.
+   */
+  const normalizePath = (path: string): string => path.replace(/\/+$/, '') || '/';
+
   // Try to use the URL API for robust parsing
   try {
     const parsed = new URL(url, API_URLS.BACKEND.BASE_URL);
-    return parsed.pathname.endsWith('/auth/google');
+    return normalizePath(parsed.pathname) === '/auth/google';
   } catch {
     // Fallback for non-standard/relative URLs: strip query/hash and check the path
-    const path = url.split(/[?#]/)[0];
-    return path.endsWith('/auth/google');
+    const rawPath = url.split(/[?#]/)[0];
+    return normalizePath(rawPath) === '/auth/google';
   }
 };
 
@@ -82,9 +90,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
       switchMap(result => {
         // Defensive checks for both result object and token property
         if (!result || !result.token || typeof result.token !== 'string') {
-          console.warn(
-            '[authInterceptor] No Google OAuth token available for /auth/google endpoint'
-          );
+          console.warn('[authInterceptor] Authentication token not available');
           return next(req);
         }
 
@@ -98,10 +104,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
       }),
       catchError(error => {
         // If token retrieval fails, log the error and continue without auth header
-        console.error(
-          '[authInterceptor] Failed to retrieve Google token via chrome.identity.getAuthToken:',
-          error
-        );
+        console.error('[authInterceptor] Failed to retrieve authentication token:', error);
         return next(req);
       })
     );
@@ -111,8 +114,8 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   return from(tokenStorage.getToken()).pipe(
     switchMap(jwtToken => {
       if (!jwtToken) {
-        // No JWT token available - log warning for protected endpoints
-        console.warn('[authInterceptor] No JWT token found in storage for request to:', req.url);
+        // No token available - proceed without authentication
+        console.warn('[authInterceptor] No authentication token found');
         return next(req);
       }
 
@@ -126,14 +129,10 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     }),
     catchError(error => {
       // This path represents an unexpected storage failure, which is different
-      // from the normal "no JWT token present" case handled above. We log it
+      // from the normal "no token present" case handled above. We log it
       // explicitly for monitoring, but still proceed without an Authorization
       // header so the request can continue as unauthenticated.
-      console.error(
-        '[authInterceptor] Unexpected error while retrieving JWT token from storage; ' +
-          'proceeding without Authorization header (this is different from a missing token):',
-        error
-      );
+      console.error('[authInterceptor] Unexpected storage error:', error);
       return next(req);
     })
   );

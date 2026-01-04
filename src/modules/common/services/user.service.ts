@@ -53,7 +53,6 @@ export class UserService {
       .pipe(
         map(response => {
           if (!response || typeof response !== 'object' || Array.isArray(response)) {
-            console.error('[UserService] Invalid response structure from createUser:', response);
             return null;
           }
           return response.success && response.data ? response.data : null;
@@ -73,10 +72,6 @@ export class UserService {
       .pipe(
         map(response => {
           if (!response || typeof response !== 'object' || Array.isArray(response)) {
-            console.error(
-              '[UserService] Invalid response structure from getCurrentUser:',
-              response
-            );
             return null;
           }
           return response.success && response.data ? response.data : null;

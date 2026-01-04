@@ -52,8 +52,7 @@ export class TokenStorageService {
   public async saveToken(token: string): Promise<void> {
     if (!this.#isChromeStorage) {
       console.warn(
-        '[TokenStorageService] Chrome storage not available, using sessionStorage fallback. ' +
-          'This may expose tokens to XSS attacks in non-extension contexts.'
+        '[TokenStorageService] Primary storage is not available. Using a fallback storage mechanism.'
       );
       sessionStorage.setItem(this.TOKEN_KEY, token);
       return Promise.resolve();
@@ -144,7 +143,8 @@ export class TokenStorageService {
     try {
       // JWT payload is base64url-encoded; normalize to standard base64 before decoding.
       const base64 = payloadPart.replace(/-/g, '+').replace(/_/g, '/');
-      const paddedBase64 = base64.padEnd(base64.length + ((4 - (base64.length % 4)) % 4), '=');
+      const paddingLength = (4 - (base64.length % 4)) % 4;
+      const paddedBase64 = base64 + '='.repeat(paddingLength);
       const payloadJson = atob(paddedBase64);
       const payload = JSON.parse(payloadJson) as { exp?: number };
 
