@@ -1,4 +1,13 @@
-import { computed, inject, Injectable, Signal, signal, WritableSignal } from '@angular/core';
+import {
+  computed,
+  DestroyRef,
+  inject,
+  Injectable,
+  Signal,
+  signal,
+  WritableSignal,
+} from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { switchMap, catchError, tap, of } from 'rxjs';
 import { ApiService } from './api.service';
 import { BackendSyncService } from './backend-sync.service';
@@ -26,10 +35,12 @@ export class GoogleAuthService {
     typeof chrome.identity.getAuthToken === 'function';
   readonly #apiService: ApiService = inject(ApiService);
   readonly #backendSyncService: BackendSyncService = inject(BackendSyncService);
+  readonly #destroyRef: DestroyRef = inject(DestroyRef);
 
   readonly #isGoogleAuthenticated: WritableSignal<boolean> = signal(false);
   readonly #isPending: WritableSignal<boolean> = signal(false);
   readonly #userInfo: WritableSignal<IGoogleUserInfo | null> = signal(null);
+  readonly #isSyncing: WritableSignal<boolean> = signal(false);
 
   public isGoogleAuthenticated: Signal<boolean> = computed(() => this.#isGoogleAuthenticated());
   public isPending: Signal<boolean> = computed(() => this.#isPending());
@@ -134,8 +145,17 @@ export class GoogleAuthService {
   /**
    * Trigger backend synchronization after successful authentication
    * This method performs health check and pulls periods from the backend
+   * Prevents concurrent sync operations
    */
   #triggerBackendSync(): void {
+    // Prevent concurrent sync operations
+    if (this.#isSyncing()) {
+      console.log('[GoogleAuthService] Sync already in progress, skipping');
+      return;
+    }
+
+    this.#isSyncing.set(true);
+
     this.#backendSyncService
       .checkHealth()
       .pipe(
@@ -152,11 +172,14 @@ export class GoogleAuthService {
           if (periods) {
             console.log('[GoogleAuthService] Successfully pulled periods:', periods.length);
           }
+          this.#isSyncing.set(false);
         }),
         catchError((err: unknown) => {
           console.error('[GoogleAuthService] Backend sync error:', err);
+          this.#isSyncing.set(false);
           return of(null);
-        })
+        }),
+        takeUntilDestroyed(this.#destroyRef)
       )
       .subscribe();
   }
