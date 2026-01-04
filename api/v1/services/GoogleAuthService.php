@@ -73,6 +73,10 @@ class GoogleAuthService {
     /**
      * Get user by google_id from token
      * 
+     * Note: This method only validates 'sub' (Google ID), unlike createUser() which also requires 'email'.
+     * This is intentional because getUser() retrieves existing users (email already in DB),
+     * while createUser() needs email to create new user records.
+     * 
      * @param array $tokenInfo Information from Google OAuth token (must contain 'sub')
      * @return array|false User data or false if not found
      */

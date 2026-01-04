@@ -91,7 +91,8 @@ class JWTService {
         
         // Validate algorithm in header matches expected algorithm
         if (!isset($header['alg']) || $header['alg'] !== self::ALGORITHM) {
-            error_log('JWT validation failed: algorithm mismatch. Expected ' . self::ALGORITHM . ', got ' . ($header['alg'] ?? 'none'));
+            // Use generic error message to avoid revealing implementation details
+            error_log('JWT validation failed: algorithm mismatch');
             return false;
         }
         
@@ -99,6 +100,7 @@ class JWTService {
         $signatureExpected = $this->sign($headerEncoded . '.' . $payloadEncoded, $secret);
         
         if (!hash_equals($signatureExpected, $signatureProvided)) {
+            // Use generic error message to avoid revealing signature validation details
             error_log('JWT validation failed: invalid signature');
             return false;
         }
@@ -119,7 +121,8 @@ class JWTService {
         
         // Validate issuer claim
         if (isset($payload['iss']) && $payload['iss'] !== 'digital-zen-api') {
-            error_log('JWT validation failed: invalid issuer. Expected digital-zen-api, got ' . $payload['iss']);
+            // Use generic error message to avoid revealing expected issuer value
+            error_log('JWT validation failed: invalid issuer');
             return false;
         }
         
