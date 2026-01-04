@@ -8,6 +8,6 @@ export const API_URLS = {
     PERIODS: '/periods',
     HEALTH: '/health',
     USERS: '/users',
-    USER_ME: '/users/me',
+    ME: '/users/me',
   },
 };
