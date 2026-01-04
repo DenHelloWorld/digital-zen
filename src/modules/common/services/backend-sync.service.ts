@@ -1,5 +1,5 @@
-import { computed, inject, Injectable, Signal, signal, WritableSignal } from '@angular/core';
-import { Subject, switchMap, catchError, of, Observable, finalize } from 'rxjs';
+import { inject, Injectable, signal, WritableSignal } from '@angular/core';
+import { Subject, switchMap, catchError, of, Observable, finalize, ReplaySubject } from 'rxjs';
 import { ApiService } from './api.service';
 import { API_URLS } from '../constants/api-urls.const';
 import { IFocus, BackendResponse } from '../models';
@@ -13,14 +13,14 @@ export class BackendSyncService {
   readonly #pushPeriodSubject = new Subject<IFocus.Period>();
   readonly #pullPeriodsSubject = new Subject<void>();
 
-  // Results subjects to emit operation results
-  readonly #healthCheckResult = new Subject<boolean>();
-  readonly #pushPeriodResult = new Subject<boolean>();
-  readonly #pullPeriodsResult = new Subject<IFocus.Period[] | null>();
+  // Results subjects to emit operation results (using ReplaySubject to avoid race conditions)
+  readonly #healthCheckResult = new ReplaySubject<boolean>(1);
+  readonly #pushPeriodResult = new ReplaySubject<boolean>(1);
+  readonly #pullPeriodsResult = new ReplaySubject<IFocus.Period[] | null>(1);
 
   // Pending state signal
   readonly #isPending: WritableSignal<boolean> = signal(false);
-  public readonly isPending: Signal<boolean> = computed(() => this.#isPending());
+  public readonly isPending = this.#isPending.asReadonly();
 
   constructor() {
     this.#setupHealthCheck();
