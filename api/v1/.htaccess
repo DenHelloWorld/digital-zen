@@ -1,9 +1,11 @@
 RewriteEngine On
 
 # CORS для Chrome Extension
-# ⚠️ ВАЖНО: Замени {YOUR_EXTENSION_ID} на реальный ID твоего расширения
-# ID можно найти на chrome://extensions/ (включи режим разработчика)
-Header always set Access-Control-Allow-Origin "chrome-extension://hoefdaddakfckhgbciobghhjlehnfdge"
+# ⚠️ ВАЖНО: ID расширения должен быть передан через переменную окружения CHROME_EXTENSION_ID
+# ID можно найти на chrome://extensions/ (включи режим разработчика) и указать в конфигурации сервера
+# При смене сборки (dev/prod) или переустановке расширения ID может измениться —
+# не забудь обновить значение в переменной окружения или использовать отдельные конфиги для разных окружений.
+Header always set Access-Control-Allow-Origin "chrome-extension://%{ENV:CHROME_EXTENSION_ID}"
 Header always set Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
 Header always set Access-Control-Allow-Headers "Content-Type, Authorization"
 Header always set Access-Control-Allow-Credentials "true"

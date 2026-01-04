@@ -119,7 +119,7 @@ export class GoogleAuthService {
           // Create or get user in backend database
           // The backend will identify the user by email and create only if not exists
           this.#userService
-            .createUser()
+            .ensureUser()
             .pipe(take(1))
             .subscribe({
               next: user => {

@@ -25,20 +25,30 @@ export class UserService {
   readonly #apiService: ApiService = inject(ApiService);
 
   /**
-   * Create or get existing user in the backend
-   * This is called after successful Google login to ensure the user exists in our database
-   * If the user already exists (identified by email), the existing user data is returned
+   * Ensure a user exists in the backend and return it.
+   *
+   * This is called after successful Google login to ensure the user exists in our database.
+   * If the user already exists (identified by email), the existing user data is returned.
    *
    * NOTE: The backend extracts user information (email, name, picture) from the Google OAuth token
    * sent in the Authorization header via the auth interceptor. No user data needs to be sent in the body.
    *
-   * @returns Observable that emits the user data
+   * @returns Observable that emits the user data, or null if the operation was not successful
    * @throws Will propagate HTTP errors for proper error handling by consumers
    */
-  public createUser(): Observable<IUser | null> {
+  public ensureUser(): Observable<IUser | null> {
     return this.#apiService
       .post<IBackendResponse<IUser>>(`${API_URLS.BACKEND.BASE_URL}${API_URLS.BACKEND.USERS}`, {})
       .pipe(map(response => (response.success && response.data ? response.data : null)));
+  }
+
+  /**
+   * @deprecated Method name is misleading. Use {@link ensureUser} instead,
+   * which more accurately reflects that this call will create the user if they
+   * do not exist, or return the existing user otherwise.
+   */
+  public createUser(): Observable<IUser | null> {
+    return this.ensureUser();
   }
 
   /**

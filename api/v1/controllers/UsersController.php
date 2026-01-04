@@ -48,13 +48,18 @@ class UsersController {
                 // Логируем только google_id (не PII) для отладки
                 $googleId = $tokenInfo['sub'] ?? 'unknown';
                 error_log("User creation failed for google_id: $googleId");
-                Response::error('User creation failed', 500);
+                Response::error('User creation failed: unable to create or retrieve user record', 500);
             }
             
             Response::success($this->formatUserResponse($user));
+        } catch (PDOException $e) {
+            // Database-specific errors
+            error_log("Database error during user creation: " . $e->getMessage());
+            Response::error('User creation failed due to a database error', 500);
         } catch (Exception $e) {
+            // General errors
             error_log("User creation error: " . $e->getMessage());
-            Response::error('User creation failed', 500);
+            Response::error('User creation failed due to an internal server error', 500);
         }
     }
     

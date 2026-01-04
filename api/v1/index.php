@@ -65,6 +65,10 @@ try {
             $controller = new UsersController();
             if ($method === 'POST') {
                 // Создание пользователя при первом логине
+                if ($tokenInfo === null || !is_array($tokenInfo)) {
+                    Response::error('Invalid or missing token information', 400);
+                    break;
+                }
                 $controller->create($tokenInfo);
             } elseif ($method === 'GET' && ($pathParts[1] ?? '') === 'me') {
                 // Получить информацию о текущем пользователе
