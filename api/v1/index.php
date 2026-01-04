@@ -29,8 +29,35 @@ $pathParts = array_values(array_filter(explode('/', $path)));
 
 $authMiddleware = new AuthMiddleware();
 $user = null;
+$tokenInfo = null;
 
-if (($pathParts[0] ?? '') !== 'health') {
+// Для /users (создание) нужна валидация токена, но не требуется существующий user
+if (($pathParts[0] ?? '') === 'users' && $method === 'POST') {
+    $headers = getallheaders();
+    $authHeader = $headers['Authorization'] ?? $headers['authorization'] ?? '';
+    
+    if (empty($authHeader)) {
+        Response::unauthorized('Authorization header missing');
+    }
+    
+    if (!preg_match('/^Bearer\s+(.+)$/i', $authHeader, $matches)) {
+        Response::unauthorized('Invalid authorization format');
+    }
+    
+    $token = trim($matches[1]);
+    
+    if (empty($token)) {
+        Response::unauthorized('Empty bearer token');
+    }
+    
+    $googleAuth = new GoogleAuthService();
+    $tokenInfo = $googleAuth->validateToken($token);
+    
+    if (!$tokenInfo) {
+        Response::unauthorized('Invalid or expired token');
+    }
+} elseif (($pathParts[0] ?? '') !== 'health') {
+    // Для всех остальных эндпоинтов требуется аутентификация
     $user = $authMiddleware->authenticate();
 }
 
@@ -38,6 +65,19 @@ try {
     switch ($pathParts[0] ?? '') {
         case 'health':
             Response::success(['status' => 'ok']);
+            break;
+            
+        case 'users':
+            $controller = new UsersController();
+            if ($method === 'POST') {
+                // Создание пользователя при первом логине
+                $controller->create($tokenInfo);
+            } elseif ($method === 'GET' && ($pathParts[1] ?? '') === 'me') {
+                // Получить информацию о текущем пользователе
+                $controller->me($user);
+            } else {
+                Response::error('Method not allowed', 405);
+            }
             break;
             
         case 'periods':

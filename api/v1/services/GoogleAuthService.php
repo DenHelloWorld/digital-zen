@@ -35,9 +35,9 @@ class GoogleAuthService {
     }
     
     /**
-     * Получить или создать пользователя по токену
+     * Получить пользователя по google_id из токена
      */
-    public function getOrCreateUser($tokenInfo) {
+    public function getUser($tokenInfo) {
         $db = Database::getInstance()->getConnection();
         
         // Проверяем существует ли пользователь по google_id
@@ -49,7 +49,24 @@ class GoogleAuthService {
             // Обновляем время последнего входа
             $stmt = $db->prepare("UPDATE users SET last_login_at = NOW() WHERE id = :id");
             $stmt->execute(['id' => $user['id']]);
-            return $user;
+        }
+        
+        return $user;
+    }
+    
+    /**
+     * Создать нового пользователя
+     */
+    public function createUser($tokenInfo) {
+        $db = Database::getInstance()->getConnection();
+        
+        // Проверяем, не существует ли уже пользователь
+        $stmt = $db->prepare("SELECT * FROM users WHERE google_id = :google_id");
+        $stmt->execute(['google_id' => $tokenInfo['sub']]);
+        $existingUser = $stmt->fetch();
+        
+        if ($existingUser) {
+            return $existingUser;
         }
         
         // Создаём нового пользователя

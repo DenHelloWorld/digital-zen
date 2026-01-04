@@ -35,11 +35,11 @@ class AuthMiddleware {
             Response::unauthorized('Invalid or expired token');
         }
         
-        // Получаем или создаём пользователя
-        $user = $googleAuth->getOrCreateUser($tokenInfo);
+        // Получаем пользователя (НЕ создаём автоматически)
+        $user = $googleAuth->getUser($tokenInfo);
         
         if (!$user) {
-            Response::error('User creation failed', 500);
+            Response::unauthorized('User not found. Please register first.');
         }
         
         return $user;
