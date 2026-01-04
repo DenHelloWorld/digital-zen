@@ -5,13 +5,18 @@ class Database {
     private $connection;
 
     private function __construct() {
-        $host = $_ENV['DB_HOST'] ?? 'localhost';
-        $dbname = $_ENV['DB_NAME'] ?? 'u387418961_digital_zen_db';
-        $username = $_ENV['DB_USER'] ?? 'u387418961_dz_user';
+        $host = $_ENV['DB_HOST'] ?? null;
+        $dbname = $_ENV['DB_NAME'] ?? null;
+        $username = $_ENV['DB_USER'] ?? null;
         $password = $_ENV['DB_PASSWORD'] ?? null;
 
-        if ($password === null || $password === '') {
-            error_log("DB Error: Database password is not configured (environment variable DB_PASSWORD is missing).");
+        if (
+            $host === null || $host === '' ||
+            $dbname === null || $dbname === '' ||
+            $username === null || $username === '' ||
+            $password === null || $password === ''
+        ) {
+            error_log("DB Error: Required database environment variables (DB_HOST, DB_NAME, DB_USER, DB_PASSWORD) must all be configured.");
             header('Content-Type: application/json; charset=utf-8');
             http_response_code(500);
             echo json_encode(['success' => false, 'error' => 'Database configuration error']);

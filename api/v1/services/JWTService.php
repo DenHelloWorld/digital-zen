@@ -8,8 +8,7 @@
  */
 class JWTService {
     private const ALGORITHM = 'HS256';
-    private const DEFAULT_TOKEN_EXPIRY_DAYS = 7;
-    private const TOKEN_EXPIRY = self::DEFAULT_TOKEN_EXPIRY_DAYS * 24 * 60 * 60; // 7 days in seconds
+    private const TOKEN_EXPIRY = 7 * 24 * 60 * 60; // 7 days in seconds
     
     /**
      * Generate a JWT token for a user
@@ -33,12 +32,22 @@ class JWTService {
             'alg' => self::ALGORITHM
         ];
         
+        // Ensure additional claims cannot override critical JWT fields
+        $protectedClaims = ['iss', 'iat', 'exp', 'user_id'];
+        
+        if (!is_array($additionalClaims)) {
+            $additionalClaims = [];
+        }
+        
+        // Remove any protected claims from additional claims
+        $sanitizedAdditionalClaims = array_diff_key($additionalClaims, array_flip($protectedClaims));
+        
         $payload = array_merge([
             'iss' => 'digital-zen-api', // Fixed issuer for security
             'iat' => $issuedAt,
             'exp' => $expiresAt,
             'user_id' => $userId
-        ], $additionalClaims);
+        ], $sanitizedAdditionalClaims);
         
         $headerEncoded = $this->base64UrlEncode(json_encode($header));
         $payloadEncoded = $this->base64UrlEncode(json_encode($payload));

@@ -9,11 +9,13 @@ The application now uses a JWT (JSON Web Token) based authentication system that
 ### Architecture
 
 **Old Flow (Google OAuth - deprecated):**
+
 ```
 Frontend → Google OAuth Token → Backend validates with Google API on every request
 ```
 
 **New Flow (JWT-based):**
+
 ```
 1. Login:  Frontend → Google Token → Backend (/auth/google) → Validates with Google → Creates/gets user → Returns JWT
 2. Requests: Frontend → JWT Token → Backend validates JWT locally (no external API calls)
@@ -30,6 +32,7 @@ JWT_SECRET=<your-secret-key-here>
 ```
 
 **Generate a secure secret:**
+
 ```bash
 openssl rand -base64 64
 ```
@@ -43,31 +46,40 @@ This generates a 64-character random secret suitable for production use.
 3. Look for "Environment Variables" or ".htaccess" configuration
 4. Add the environment variable using one of these methods:
 
-   **Option 1: .htaccess (Apache SetEnv)**
+   **Option 1: .htaccess (Apache SetEnv) - RECOMMENDED**
+
    ```apache
    SetEnv JWT_SECRET "your_generated_secret_here"
+   SetEnv DB_HOST "your_db_host"
+   SetEnv DB_NAME "your_db_name"
+   SetEnv DB_USER "your_db_user"
+   SetEnv DB_PASSWORD "your_db_password"
    ```
-   
-   **Option 2: PHP-FPM environment variables**
-   Set `JWT_SECRET` in your hosting control panel's environment variables section.
 
-Alternatively, if your hosting supports `.env` files, create one at `/api/v1/.env`:
-```
-JWT_SECRET=your_generated_secret_here
-```
+   **Option 2: PHP-FPM environment variables**
+   Set environment variables in your hosting control panel's environment variables section.
+
+**SECURITY WARNING:**
+
+- **DO NOT** store sensitive credentials (JWT_SECRET, database passwords) in `.env` files within the web root (`/api/v1/.env`).
+- Even though `.htaccess` now blocks direct access to `.env` files, it's safer to use server-side environment variables or store `.env` files outside the web root.
+- If you must use a `.env` file, place it **outside** the web-accessible directory (e.g., one level above `/api/v1/`) and load it from PHP using an absolute path.
 
 ### API Endpoints
 
 #### POST /auth/google
+
 Exchange Google OAuth token for JWT token.
 
 **Request:**
+
 ```http
 POST /api/v1/auth/google
 Authorization: Bearer <google_oauth_token>
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -148,11 +160,14 @@ This allows gradual migration without breaking existing deployments.
 
 ## Security Considerations
 
-1. **JWT Secret**: Must be strong and kept confidential
-2. **Token Storage**: Stored in chrome.storage.local (browser-managed persistence; not encrypted by default—consider encrypting tokens before storage if required by your security model)
-3. **HTTPS**: Always use HTTPS for API communication
-4. **Token Expiration**: 7 days - adjust based on security requirements
-5. **Audience Validation**: JWT tokens include user_id to prevent token reuse
+1. **JWT Secret**: Must be strong (use `openssl rand -base64 64`) and kept confidential
+2. **Environment Variables**: Store JWT_SECRET and database credentials as server-side environment variables, NOT in `.env` files within the web root
+3. **File Access Protection**: The `.htaccess` file blocks direct access to `.env` files, but storing sensitive data outside the web root is safer
+4. **Token Storage**: Stored in chrome.storage.local (browser-managed persistence; not encrypted by default—consider encrypting tokens before storage if required by your security model)
+5. **HTTPS**: Always use HTTPS for API communication to prevent token interception
+6. **Token Expiration**: 7 days - adjust based on security requirements
+7. **Audience Validation**: JWT tokens include user_id to prevent token reuse
+8. **Error Messages**: Generic error messages are shown to clients while detailed logs are kept server-side to prevent information disclosure
 
 ## Future Improvements
 
@@ -164,15 +179,18 @@ This allows gradual migration without breaking existing deployments.
 ## Troubleshooting
 
 ### "JWT_SECRET not configured" error
+
 - Ensure JWT_SECRET environment variable is set on the server
 - Check server error logs for configuration issues
 
 ### "Invalid or expired token" error
+
 - Token may have expired (7 days)
 - User needs to re-login
 - Check token expiration in payload
 
 ### "Authorization header missing" error
+
 - Token may not be stored in chrome.storage.local
 - Check if user completed login flow
 - Verify auth interceptor is working
@@ -182,12 +200,10 @@ This allows gradual migration without breaking existing deployments.
 1. **Phase 1**: Deploy JWT system (current)
    - Both JWT and Google tokens supported
    - New logins use JWT flow
-   
 2. **Phase 2**: Monitor and test
    - Monitor error logs
    - Verify user authentication works
    - Test edge cases
-   
 3. **Phase 3**: Full migration
    - All users migrated to JWT
    - Remove Google OAuth token support
@@ -196,6 +212,7 @@ This allows gradual migration without breaking existing deployments.
 ## Support
 
 For issues or questions, check:
+
 - Server error logs: `/api/v1/error.log`
 - Browser console: Developer Tools → Console
 - Network tab: Developer Tools → Network

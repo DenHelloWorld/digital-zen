@@ -78,30 +78,30 @@ class PeriodsController {
             
         } catch (PDOException $e) {
             $this->db->rollBack();
-            $errorCode = 'PERIOD_CREATE_DB_ERROR';
+            $errorCode = 'PERIOD_CREATE_' . bin2hex(random_bytes(8));
             error_log(sprintf(
-                '[%s] Failed to create period (database error) for user_id=%s, period_id=%s: %s',
+                '[%s] Database error during period creation for user_id=%s, period_id=%s: %s',
                 $errorCode,
                 (string) $userId,
                 isset($data['id']) ? (string) $data['id'] : 'unknown',
                 $e->getMessage()
             ));
             Response::error(
-                'Failed to create period due to a database error. Please try again later. (code: ' . $errorCode . ')',
+                'Unable to create period. Please try again later. Reference code: ' . $errorCode,
                 500
             );
         } catch (Exception $e) {
             $this->db->rollBack();
-            $errorCode = 'PERIOD_CREATE_UNEXPECTED_ERROR';
+            $errorCode = 'PERIOD_CREATE_' . bin2hex(random_bytes(8));
             error_log(sprintf(
-                '[%s] Failed to create period (unexpected error) for user_id=%s, period_id=%s: %s',
+                '[%s] Unexpected error during period creation for user_id=%s, period_id=%s: %s',
                 $errorCode,
                 (string) $userId,
                 isset($data['id']) ? (string) $data['id'] : 'unknown',
                 $e->getMessage()
             ));
             Response::error(
-                'Failed to create period due to an unexpected error. Please try again later. (code: ' . $errorCode . ')',
+                'Unable to create period. Please try again later. Reference code: ' . $errorCode,
                 500
             );
         }
