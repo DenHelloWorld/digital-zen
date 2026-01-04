@@ -3,6 +3,7 @@
 ## Research Question
 
 **Original Issue (DZ_XX_backend-research):**
+
 > "У меня есть хостингер аккаунт, я хочу, что бы ты изучил, сможем ли мы его использовать как бекенд? На пхп. Если да, то опиши, как ты это видишь."
 
 ## Answer
@@ -13,14 +14,14 @@
 
 ## Quick Facts
 
-| Item | Details |
-|------|---------|
-| **Feasibility** | ✅ Fully feasible and recommended |
-| **Technology** | PHP 8.x + MySQL + HTTPS |
-| **Cost** | $3-4/month (Hostinger Premium) |
-| **Implementation Time** | ~4 hours |
-| **Documentation** | 2,268 lines / 77 KB complete |
-| **Code Status** | Production-ready |
+| Item                    | Details                           |
+| ----------------------- | --------------------------------- |
+| **Feasibility**         | ✅ Fully feasible and recommended |
+| **Technology**          | PHP 8.x + MySQL + HTTPS           |
+| **Cost**                | $3-4/month (Hostinger Premium)    |
+| **Implementation Time** | ~4 hours                          |
+| **Documentation**       | 2,268 lines / 77 KB complete      |
+| **Code Status**         | Production-ready                  |
 
 ---
 
@@ -95,6 +96,7 @@
 **Size:** 54 KB, 1,537 lines
 
 **Contents:**
+
 - Executive summary (English + Russian)
 - Current architecture analysis
 - Hostinger capabilities assessment
@@ -115,6 +117,7 @@
 **Size:** 23 KB, 731 lines
 
 **Contents:**
+
 - Step-by-step setup (Russian)
 - Database creation (30 min)
 - PHP deployment (1 hour)
@@ -232,12 +235,12 @@ focus_sessions
 
 ## Cost & Scalability
 
-| Users | Plan | Monthly Cost | Notes |
-|-------|------|--------------|-------|
-| 0-1K | Premium Shared | $3-4 | Recommended start |
-| 1K-10K | Business Shared | $4-5 | More resources |
-| 10K-50K | VPS | $8-20 | Dedicated resources |
-| 50K+ | Cloud/Dedicated | $50+ | Enterprise scale |
+| Users   | Plan            | Monthly Cost | Notes               |
+| ------- | --------------- | ------------ | ------------------- |
+| 0-1K    | Premium Shared  | $3-4         | Recommended start   |
+| 1K-10K  | Business Shared | $4-5         | More resources      |
+| 10K-50K | VPS             | $8-20        | Dedicated resources |
+| 50K+    | Cloud/Dedicated | $50+         | Enterprise scale    |
 
 **Recommendation:** Start with **Hostinger Premium Shared** ($3-4/month)
 
@@ -246,6 +249,7 @@ focus_sessions
 ## Implementation Timeline
 
 ### Phase 1: Backend Setup (Week 1-2)
+
 - ✅ Create MySQL database
 - ✅ Deploy PHP code to Hostinger
 - ✅ Configure SSL certificate
@@ -253,6 +257,7 @@ focus_sessions
 - ✅ Test API endpoints
 
 ### Phase 2: Extension Integration (Week 3-4)
+
 - ✅ Create BackendSyncService
 - ✅ Update environment configs
 - ✅ Implement sync logic
@@ -260,6 +265,7 @@ focus_sessions
 - ✅ Add conflict resolution
 
 ### Phase 3: Testing (Week 5)
+
 - ✅ Unit tests
 - ✅ Integration tests
 - ✅ Performance tests
@@ -267,6 +273,7 @@ focus_sessions
 - ✅ Load testing
 
 ### Phase 4: Rollout (Week 6+)
+
 - ✅ Beta testing
 - ✅ Feature flag
 - ✅ Gradual rollout
@@ -301,12 +308,14 @@ All code is **production-ready** and **security-hardened**.
 ## Testing Procedures
 
 ### 1. Health Check
+
 ```bash
 curl https://your-domain.com/api/v1/health
 # Expected: {"success":true,"data":{"status":"ok"}}
 ```
 
 ### 2. Authentication
+
 ```bash
 curl -H "Authorization: Bearer YOUR_TOKEN" \
   https://your-domain.com/api/v1/periods
@@ -314,6 +323,7 @@ curl -H "Authorization: Bearer YOUR_TOKEN" \
 ```
 
 ### 3. Create Period
+
 ```bash
 curl -X POST \
   -H "Authorization: Bearer YOUR_TOKEN" \
@@ -328,25 +338,33 @@ curl -X POST \
 ## Troubleshooting Guide
 
 ### Problem: CORS Error
+
 **Solution:**
+
 - Verify Extension ID in `.htaccess`
 - Ensure HTTPS is enabled
 - Check CORS headers are set
 
 ### Problem: 401 Unauthorized
+
 **Solution:**
+
 - Verify Google OAuth token is valid
 - Check Authorization header format: `Bearer TOKEN`
 - Review PHP error logs
 
 ### Problem: Database Connection Failed
+
 **Solution:**
+
 - Check credentials in `config/database.php`
 - Verify user has database permissions
 - Confirm database exists in cPanel
 
 ### Problem: 500 Internal Server Error
+
 **Solution:**
+
 - Enable error display temporarily
 - Check PHP error logs in cPanel
 - Verify all files uploaded correctly
@@ -355,13 +373,13 @@ curl -X POST \
 
 ## Alternatives Considered
 
-| Option | Pros | Cons | Recommendation |
-|--------|------|------|----------------|
-| **Hostinger PHP** | ✅ Cheap, easy, familiar | Shared resources | ⭐ **Recommended** |
-| Firebase | Auto-scaling, easy | Vendor lock-in, cost | Alternative |
-| Supabase | Modern, PostgreSQL | Learning curve | Alternative |
-| AWS Lambda | Serverless, scalable | Complex setup | For scale |
-| DigitalOcean | Developer-friendly | Manual scaling | Alternative |
+| Option            | Pros                     | Cons                 | Recommendation     |
+| ----------------- | ------------------------ | -------------------- | ------------------ |
+| **Hostinger PHP** | ✅ Cheap, easy, familiar | Shared resources     | ⭐ **Recommended** |
+| Firebase          | Auto-scaling, easy       | Vendor lock-in, cost | Alternative        |
+| Supabase          | Modern, PostgreSQL       | Learning curve       | Alternative        |
+| AWS Lambda        | Serverless, scalable     | Complex setup        | For scale          |
+| DigitalOcean      | Developer-friendly       | Manual scaling       | Alternative        |
 
 **Winner:** Hostinger PHP - Best balance of cost, ease, and functionality
 
@@ -382,18 +400,21 @@ curl -X POST \
 ## Recommendations
 
 ### For Getting Started
+
 1. Start with **Hostinger Premium Shared** hosting
 2. Implement **core sync functionality** first
 3. Use **hybrid storage** (local + backend)
 4. Launch to **beta users** for feedback
 
 ### For Growth
+
 1. **Monitor performance** metrics closely
 2. **Optimize database** queries with indexes
 3. **Add caching** layer (file-based or Redis)
 4. **Plan VPS migration** when approaching 10K users
 
 ### For Scale
+
 1. **Upgrade to VPS** for dedicated resources
 2. **Implement CDN** for static assets
 3. **Add load balancing** for high availability
@@ -419,6 +440,7 @@ curl -X POST \
 **Hostinger is an excellent choice for Digital Zen's PHP backend.**
 
 The research confirms:
+
 - ✅ **Feasible** - Fully supported by Hostinger
 - ✅ **Affordable** - Only $3-4/month
 - ✅ **Secure** - Production-ready security

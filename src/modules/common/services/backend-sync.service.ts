@@ -1,12 +1,13 @@
 import { inject, Injectable } from '@angular/core';
 import { catchError, map, Observable, of, tap } from 'rxjs';
 import { ApiService } from './api.service';
-import { API_URLS } from '../constants/api-urls.const';
+import { API_URLS } from '../constants';
 import { IFocus, IBackendResponse } from '../models';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Injectable({ providedIn: 'root' })
 export class BackendSyncService {
-  readonly #apiService = inject(ApiService);
+  readonly #apiService: ApiService = inject(ApiService);
 
   /**
    * Trigger a health check of the backend API
@@ -14,7 +15,9 @@ export class BackendSyncService {
    */
   public checkHealth(): Observable<boolean> {
     return this.#apiService
-      .get<IBackendResponse<{ status: string }>>(`${API_URLS.BACKEND.BASE_URL}/health`)
+      .get<
+        IBackendResponse<{ status: string }>
+      >(`${API_URLS.BACKEND.BASE_URL}+${API_URLS.BACKEND.HEALTH}`)
       .pipe(
         catchError(error => {
           console.error('Health check failed:', error);
@@ -30,7 +33,8 @@ export class BackendSyncService {
             console.warn('Backend health check failed:', response.error);
           }
         }),
-        map(response => response.success)
+        map(response => response.success),
+        takeUntilDestroyed()
       );
   }
 
@@ -41,7 +45,9 @@ export class BackendSyncService {
    */
   public pushPeriod(period: IFocus.Period): Observable<boolean> {
     return this.#apiService
-      .post<IBackendResponse<{ message: string }>>(`${API_URLS.BACKEND.BASE_URL}/periods`, period)
+      .post<
+        IBackendResponse<{ message: string }>
+      >(`${API_URLS.BACKEND.BASE_URL}+${API_URLS.BACKEND.PERIODS}`, period)
       .pipe(
         catchError(error => {
           console.error('Push period failed:', error);
@@ -57,7 +63,8 @@ export class BackendSyncService {
             console.error('Failed to push period:', response.error);
           }
         }),
-        map(response => response.success)
+        map(response => response.success),
+        takeUntilDestroyed()
       );
   }
 
@@ -67,7 +74,9 @@ export class BackendSyncService {
    */
   public pullPeriods(): Observable<IFocus.Period[] | null> {
     return this.#apiService
-      .get<IBackendResponse<IFocus.Period[]>>(`${API_URLS.BACKEND.BASE_URL}/periods`)
+      .get<
+        IBackendResponse<IFocus.Period[]>
+      >(`${API_URLS.BACKEND.BASE_URL}+${API_URLS.BACKEND.PERIODS}`)
       .pipe(
         catchError(error => {
           console.error('Pull periods failed:', error);
@@ -83,7 +92,8 @@ export class BackendSyncService {
             console.error('Failed to pull periods:', response.error);
           }
         }),
-        map(response => (response.success && response.data ? response.data : null))
+        map(response => (response.success && response.data ? response.data : null)),
+        takeUntilDestroyed()
       );
   }
 }

@@ -5,5 +5,7 @@ export const API_URLS = {
   },
   BACKEND: {
     BASE_URL: 'https://digital-zen.csmpoint.com/api/v1',
+    PERIODS: '/periods',
+    HEALTH: '/health',
   },
 };
