@@ -146,7 +146,7 @@ class GoogleAuthService {
             'picture_url' => $tokenInfo['picture'] ?? ''
         ]);
         
-        // Возвращаем созданного пользователя
+        // Return the newly created user
         $stmt = $db->prepare("SELECT * FROM users WHERE google_id = :google_id");
         $stmt->execute(['google_id' => $tokenInfo['sub']]);
         return $stmt->fetch();
