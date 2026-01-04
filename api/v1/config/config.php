@@ -65,7 +65,7 @@ class Config {
      * This should be called during application bootstrap to ensure
      * all required configuration is present before handling requests.
      * 
-     * @throws Exception if critical configuration is missing
+     * @throws RuntimeException if critical configuration is missing
      */
     public static function validateStartupConfig() {
         $errors = [];
@@ -83,7 +83,7 @@ class Config {
         if (!empty($errors)) {
             $errorMessage = "Application configuration validation failed:\n" . implode("\n", $errors);
             error_log($errorMessage);
-            throw new Exception($errorMessage);
+            throw new RuntimeException($errorMessage);
         }
     }
 }

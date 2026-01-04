@@ -23,7 +23,7 @@ require_once __DIR__ . '/config/config.php';
 // rather than causing runtime 500 errors
 try {
     Config::validateStartupConfig();
-} catch (Exception $e) {
+} catch (RuntimeException $e) {
     error_log("Application startup failed: " . $e->getMessage());
     http_response_code(500);
     header('Content-Type: application/json');
