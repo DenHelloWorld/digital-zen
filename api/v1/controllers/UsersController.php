@@ -3,6 +3,9 @@
 class UsersController {
     /**
      * Форматировать данные пользователя для ответа
+     * 
+     * @param array $user Массив с данными пользователя из БД
+     * @return array Отформатированные данные пользователя
      */
     private function formatUserResponse($user) {
         return [
@@ -19,6 +22,8 @@ class UsersController {
     /**
      * Создать нового пользователя
      * Вызывается фронтендом при первом логине
+     * 
+     * @param array $tokenInfo Информация из Google OAuth токена (sub, email, name, picture)
      */
     public function create($tokenInfo) {
         try {
@@ -41,6 +46,8 @@ class UsersController {
     
     /**
      * Получить информацию о текущем пользователе
+     * 
+     * @param array $user Массив с данными пользователя из БД
      */
     public function me($user) {
         Response::success($this->formatUserResponse($user));

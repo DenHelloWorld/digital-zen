@@ -36,6 +36,9 @@ class GoogleAuthService {
     
     /**
      * Получить пользователя по google_id из токена
+     * 
+     * @param array $tokenInfo Информация из Google OAuth токена (должен содержать 'sub')
+     * @return array|false Данные пользователя или false если не найден
      */
     public function getUser($tokenInfo) {
         $db = Database::getInstance()->getConnection();
@@ -56,6 +59,9 @@ class GoogleAuthService {
     
     /**
      * Создать нового пользователя
+     * 
+     * @param array $tokenInfo Информация из Google OAuth токена (sub, email, name, picture)
+     * @return array Данные пользователя (существующего или созданного)
      */
     public function createUser($tokenInfo) {
         $db = Database::getInstance()->getConnection();
