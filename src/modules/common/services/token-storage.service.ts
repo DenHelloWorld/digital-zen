@@ -44,17 +44,17 @@ export class TokenStorageService {
    * @param token JWT token to store
    * @returns Promise that resolves when token is saved
    *
-   * ⚠️ SECURITY WARNING: When Chrome storage is not available, tokens are stored in sessionStorage
-   * as a fallback. Unlike chrome.storage.local which has some isolation, sessionStorage can be
+   * ⚠️ SECURITY WARNING: When Chrome storage is not available, tokens are stored in localStorage
+   * as a fallback. Unlike chrome.storage.local which has some isolation, localStorage can be
    * accessed by any script on the page, making tokens vulnerable to XSS attacks in non-extension
-   * environments. Ensure this service is only used in trusted contexts.
+   * environments. Ensure this service is only used in trusted contexts where this persistence is acceptable.
    */
   public async saveToken(token: string): Promise<void> {
     if (!this.#isChromeStorage) {
       console.warn(
         '[TokenStorageService] Primary storage is not available. Using a fallback storage mechanism.'
       );
-      sessionStorage.setItem(this.TOKEN_KEY, token);
+      localStorage.setItem(this.TOKEN_KEY, token);
       return Promise.resolve();
     }
 
@@ -77,7 +77,7 @@ export class TokenStorageService {
    */
   public async getToken(): Promise<string | null> {
     if (!this.#isChromeStorage) {
-      const token = sessionStorage.getItem(this.TOKEN_KEY);
+      const token = localStorage.getItem(this.TOKEN_KEY);
       return Promise.resolve(token);
     }
 
@@ -101,7 +101,7 @@ export class TokenStorageService {
    */
   public async removeToken(): Promise<void> {
     if (!this.#isChromeStorage) {
-      sessionStorage.removeItem(this.TOKEN_KEY);
+      localStorage.removeItem(this.TOKEN_KEY);
       return Promise.resolve();
     }
 

@@ -53,8 +53,16 @@ const isAuthGoogleEndpoint = (url: string): boolean => {
     const parsed = new URL(url, API_URLS.BACKEND.BASE_URL);
     return normalizePath(parsed.pathname) === '/auth/google';
   } catch {
-    // Fallback for non-standard/relative URLs: strip query/hash and check the path
+    // Fallback for non-standard/relative URLs: strip query/hash and, if the
+    // remaining string looks like a pathname, check it against `/auth/google`.
     const rawPath = url.split(/[?#]/)[0];
+
+    // Be conservative: only treat clearly path-like values as paths.
+    // - Must start with '/'
+    // - Must not contain '://' (to avoid misinterpreting full URLs)
+    if (!rawPath.startsWith('/') || rawPath.includes('://')) {
+      return false;
+    }
     return normalizePath(rawPath) === '/auth/google';
   }
 };
@@ -128,11 +136,21 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
       return next(authReq);
     }),
     catchError(error => {
-      // This path represents an unexpected storage failure, which is different
-      // from the normal "no token present" case handled above. We log it
-      // explicitly for monitoring, but still proceed without an Authorization
-      // header so the request can continue as unauthenticated.
-      console.error('[authInterceptor] Unexpected storage error:', error);
+      // This path represents an unexpected storage failure in TokenStorageService,
+      // which is different from the normal "no token present" case handled above.
+      // We log detailed context for monitoring, but still proceed without an
+      // Authorization header so the request can continue as unauthenticated.
+      const errorDetails =
+        error instanceof Error
+          ? { name: error.name, message: error.message, stack: error.stack }
+          : { value: error };
+      console.error(
+        '[authInterceptor] Unexpected storage error while calling TokenStorageService.getToken()',
+        {
+          request: { url: req.url, method: req.method },
+          error: errorDetails,
+        }
+      );
       return next(req);
     })
   );

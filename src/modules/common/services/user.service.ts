@@ -37,27 +37,44 @@ export class UserService {
   readonly #apiService: ApiService = inject(ApiService);
 
   /**
+   * Validate and extract user data from backend response
+   * @param response Raw response from backend API
+   * @returns User data if response is valid and successful
+   * @throws Error if response format is invalid or response indicates failure
+   */
+  private validateAndExtractData(response: unknown): IUser {
+    if (!response || typeof response !== 'object' || Array.isArray(response)) {
+      throw new Error('Invalid response format: expected object, received ' + typeof response);
+    }
+
+    const typedResponse = response as IBackendResponse<IUser>;
+
+    if (!typedResponse.success || !typedResponse.data) {
+      throw new Error('Backend response indicates failure or missing data');
+    }
+
+    return typedResponse.data;
+  }
+
+  /**
    * Create or get existing user in the backend
    * This is called after successful Google login to ensure the user exists in our database
    * If the user already exists (identified by their Google account `google_id`), the existing user data is returned
    *
    * NOTE: The backend extracts user information (email, name, picture) from the Google OAuth token
-   * sent in the Authorization header via the auth interceptor. No user data needs to be sent in the body.
+   * sent in the Authorization header via the auth interceptor.
+   *
+   * The POST body is intentionally an empty object (`{}`):
+   * - No user data is read from the request body; the backend relies solely on the OAuth token.
+   * - The empty object is just a placeholder to satisfy the POST request shape and may safely be ignored by the backend.
    *
    * @returns Observable that emits the user data (completes automatically after response)
    * @throws Will propagate HTTP errors for proper error handling by consumers
    */
-  public createUser(): Observable<IUser | null> {
+  public createUser(): Observable<IUser> {
     return this.#apiService
       .post<IBackendResponse<IUser>>(`${API_URLS.BACKEND.BASE_URL}${API_URLS.BACKEND.USERS}`, {})
-      .pipe(
-        map(response => {
-          if (!response || typeof response !== 'object' || Array.isArray(response)) {
-            return null;
-          }
-          return response.success && response.data ? response.data : null;
-        })
-      );
+      .pipe(map(response => this.validateAndExtractData(response)));
   }
 
   /**
@@ -66,16 +83,9 @@ export class UserService {
    * @returns Observable that emits the user data (completes automatically after response)
    * @throws Will propagate HTTP errors for proper error handling by consumers
    */
-  public getCurrentUser(): Observable<IUser | null> {
+  public getCurrentUser(): Observable<IUser> {
     return this.#apiService
       .get<IBackendResponse<IUser>>(`${API_URLS.BACKEND.BASE_URL}${API_URLS.BACKEND.ME}`)
-      .pipe(
-        map(response => {
-          if (!response || typeof response !== 'object' || Array.isArray(response)) {
-            return null;
-          }
-          return response.success && response.data ? response.data : null;
-        })
-      );
+      .pipe(map(response => this.validateAndExtractData(response)));
   }
 }

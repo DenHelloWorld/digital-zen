@@ -62,7 +62,7 @@ class GoogleAuthService {
         if (isset($tokenInfo['iss'])) {
             $validIssuers = Config::getValidIssuers();
             if (!in_array($tokenInfo['iss'], $validIssuers, true)) {
-                error_log("Token validation failed: invalid issuer. Got: " . $tokenInfo['iss']);
+                error_log("Token validation failed: invalid issuer (issuer mismatch)");
                 return false;
             }
         }
@@ -150,8 +150,10 @@ class GoogleAuthService {
             $updateStmt = $db->prepare("UPDATE users SET last_login_at = NOW() WHERE id = :id");
             $updateStmt->execute(['id' => $existingUser['id']]);
             
-            // Return existing user data
-            return $existingUser;
+            // Fetch and return updated user data to ensure last_login_at is current
+            $stmt = $db->prepare("SELECT * FROM users WHERE id = :id");
+            $stmt->execute(['id' => $existingUser['id']]);
+            return $stmt->fetch();
         }
         
         // Create new user

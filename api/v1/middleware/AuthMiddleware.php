@@ -66,7 +66,7 @@ class AuthMiddleware {
                 Response::unauthorized('User account not found');
             }
             
-            return ['user' => $user ?: null, 'tokenInfo' => null];
+            return ['user' => $user !== false ? $user : null, 'tokenInfo' => null];
         }
         
         // Fallback to Google OAuth validation (legacy flow)
@@ -87,7 +87,7 @@ class AuthMiddleware {
         $user = $googleAuth->getUser($tokenInfo);
         
         if (!$user) {
-            Response::unauthorized('User account not found. Please contact support or try logging in again.');
+            Response::unauthorized('User account not found. Please ensure you have registered or contact support if this issue persists.');
         }
         
         return ['tokenInfo' => $tokenInfo, 'user' => $user];

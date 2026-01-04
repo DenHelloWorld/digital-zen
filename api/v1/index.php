@@ -72,11 +72,13 @@ $tokenInfo = null;
  * This allows gradual migration from Google tokens to JWT tokens.
  */
 
-// Skip authentication for /auth endpoints (they provide authentication)
-// SECURITY NOTE: Auth endpoints are responsible for their own authentication validation.
-// Any methods added to AuthController MUST perform explicit authentication checks.
-if (($pathParts[0] ?? '') === 'auth') {
-    // Auth endpoints handle their own validation
+// Skip authentication for specific public endpoints
+// SECURITY NOTE: Using explicit whitelist to prevent accidental exposure of new endpoints
+$publicEndpoints = ['auth/google'];
+$currentEndpoint = implode('/', array_slice($pathParts, 0, 2));
+
+if (in_array($currentEndpoint, $publicEndpoints, true)) {
+    // Public endpoint - no auth required
     $user = null;
     $tokenInfo = null;
 }
@@ -113,9 +115,19 @@ try {
             $controller = new UsersController();
             if ($method === 'POST') {
                 // Create user on first login
+                // Validate that tokenInfo is set (should be set by authentication on line 86-89)
+                if ($tokenInfo === null) {
+                    Response::error('Authentication required', 401);
+                    break;
+                }
                 $controller->create($tokenInfo);
             } elseif ($method === 'GET' && ($pathParts[1] ?? '') === 'me') {
                 // Get information about the current user
+                // Validate that user is set (should be set by authentication on line 90-94)
+                if ($user === null) {
+                    Response::error('Authentication required', 401);
+                    break;
+                }
                 $controller->me($user);
             } else {
                 Response::error('Method not allowed', 405);

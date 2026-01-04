@@ -78,7 +78,7 @@ class PeriodsController {
             
         } catch (PDOException $e) {
             $this->db->rollBack();
-            $errorCode = 'PERIOD_CREATE_' . bin2hex(random_bytes(8));
+            $errorCode = 'PERIOD_CREATE_' . time() . '_' . bin2hex(random_bytes(4));
             error_log(sprintf(
                 '[%s] Database error during period creation for user_id=%s, period_id=%s: %s',
                 $errorCode,
@@ -92,7 +92,7 @@ class PeriodsController {
             );
         } catch (Exception $e) {
             $this->db->rollBack();
-            $errorCode = 'PERIOD_CREATE_' . bin2hex(random_bytes(8));
+            $errorCode = 'PERIOD_CREATE_' . time() . '_' . bin2hex(random_bytes(4));
             error_log(sprintf(
                 '[%s] Unexpected error during period creation for user_id=%s, period_id=%s: %s',
                 $errorCode,
@@ -122,9 +122,9 @@ class PeriodsController {
     private function createWebsite($periodId, $site) {
         // Validate required fields
         if (
-            !isset($site['id']) || trim((string)$site['id']) === '' ||
-            !isset($site['name']) || trim((string)$site['name']) === '' ||
-            !isset($site['url']) || trim((string)$site['url']) === ''
+            !isset($site['id']) || !is_string($site['id']) || trim($site['id']) === '' ||
+            !isset($site['name']) || !is_string($site['name']) || trim($site['name']) === '' ||
+            !isset($site['url']) || !is_string($site['url']) || trim($site['url']) === ''
         ) {
             error_log("createWebsite: Missing or empty required fields (id, name, or url) in website data");
             throw new Exception('Invalid website data: missing or empty required fields');
@@ -149,7 +149,7 @@ class PeriodsController {
     
     private function createFocusedTime($periodId, $time) {
         // Validate required fields
-        if (!isset($time['id']) || trim((string)$time['id']) === '') {
+        if (!isset($time['id']) || !is_string($time['id']) || trim($time['id']) === '') {
             error_log("createFocusedTime: Missing or empty required field 'id' in focused time data");
             throw new Exception('Invalid focused time data: missing or empty required field id');
         }
