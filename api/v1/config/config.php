@@ -58,4 +58,34 @@ class Config {
         
         return $secret;
     }
+    
+    /**
+     * Validate critical configuration at application startup
+     * 
+     * This should be called during application bootstrap to ensure
+     * all required configuration is present before handling requests.
+     * 
+     * @throws Exception if critical configuration is missing
+     */
+    public static function validateStartupConfig() {
+        $errors = [];
+        
+        // Validate JWT secret
+        $jwtSecret = self::getJWTSecret();
+        if ($jwtSecret === null || trim($jwtSecret) === '') {
+            $errors[] = 'JWT_SECRET environment variable is required but not set. Generate with: openssl rand -base64 64';
+        }
+        
+        // Validate Google Client ID
+        $googleClientId = self::getGoogleClientId();
+        if ($googleClientId === null || trim($googleClientId) === '') {
+            $errors[] = 'GOOGLE_CLIENT_ID environment variable is required but not set';
+        }
+        
+        if (!empty($errors)) {
+            $errorMessage = "Application configuration validation failed:\n" . implode("\n", $errors);
+            error_log($errorMessage);
+            throw new Exception($errorMessage);
+        }
+    }
 }
