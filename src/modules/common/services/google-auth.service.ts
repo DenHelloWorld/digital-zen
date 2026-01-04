@@ -1,4 +1,5 @@
 import { computed, inject, Injectable, Signal, signal, WritableSignal } from '@angular/core';
+import { switchMap, catchError, tap, of } from 'rxjs';
 import { ApiService } from './api.service';
 import { BackendSyncService } from './backend-sync.service';
 import { API_URLS } from '../constants';
@@ -135,29 +136,28 @@ export class GoogleAuthService {
    * This method performs health check and pulls periods from the backend
    */
   #triggerBackendSync(): void {
-    this.#backendSyncService.checkHealth().subscribe({
-      next: isHealthy => {
-        if (isHealthy) {
-          console.log('[GoogleAuthService] Backend is healthy, pulling periods...');
-          this.#backendSyncService.pullPeriods().subscribe({
-            next: periods => {
-              if (periods) {
-                console.log('[GoogleAuthService] Successfully pulled periods:', periods.length);
-              } else {
-                console.warn('[GoogleAuthService] Failed to pull periods');
-              }
-            },
-            error: (err: unknown) => {
-              console.error('[GoogleAuthService] Error pulling periods:', err);
-            },
-          });
-        } else {
-          console.warn('[GoogleAuthService] Backend health check failed, skipping sync');
-        }
-      },
-      error: (err: unknown) => {
-        console.error('[GoogleAuthService] Backend health check error:', err);
-      },
-    });
+    this.#backendSyncService
+      .checkHealth()
+      .pipe(
+        switchMap(isHealthy => {
+          if (isHealthy) {
+            console.log('[GoogleAuthService] Backend is healthy, pulling periods...');
+            return this.#backendSyncService.pullPeriods();
+          } else {
+            console.warn('[GoogleAuthService] Backend health check failed, skipping sync');
+            return of(null);
+          }
+        }),
+        tap(periods => {
+          if (periods) {
+            console.log('[GoogleAuthService] Successfully pulled periods:', periods.length);
+          }
+        }),
+        catchError((err: unknown) => {
+          console.error('[GoogleAuthService] Backend sync error:', err);
+          return of(null);
+        })
+      )
+      .subscribe();
   }
 }
