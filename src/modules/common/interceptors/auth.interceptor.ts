@@ -13,7 +13,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   }
 
   // Check if Chrome runtime is available
-  if (typeof chrome === 'undefined' || !chrome.identity) {
+  if (typeof chrome === 'undefined' || !chrome?.identity) {
     return next(req);
   }
 
