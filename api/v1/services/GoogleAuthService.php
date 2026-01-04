@@ -41,6 +41,12 @@ class GoogleAuthService {
      * @return array|false Данные пользователя или false если не найден
      */
     public function getUser($tokenInfo) {
+        // Валидация обязательного поля 'sub'
+        if (!isset($tokenInfo['sub']) || empty($tokenInfo['sub'])) {
+            error_log("getUser: missing or empty 'sub' field in tokenInfo");
+            return false;
+        }
+        
         $db = Database::getInstance()->getConnection();
         
         // Проверяем существует ли пользователь по google_id
@@ -61,9 +67,15 @@ class GoogleAuthService {
      * Создать нового пользователя
      * 
      * @param array $tokenInfo Информация из Google OAuth токена (sub, email, name, picture)
-     * @return array Данные пользователя (существующего или созданного)
+     * @return array|false Данные пользователя (существующего или созданного) или false при ошибке
      */
     public function createUser($tokenInfo) {
+        // Валидация обязательного поля 'sub'
+        if (!isset($tokenInfo['sub']) || empty($tokenInfo['sub'])) {
+            error_log("createUser: missing or empty 'sub' field in tokenInfo");
+            return false;
+        }
+        
         $db = Database::getInstance()->getConnection();
         
         // Проверяем, не существует ли уже пользователь
@@ -72,7 +84,14 @@ class GoogleAuthService {
         $existingUser = $stmt->fetch();
         
         if ($existingUser) {
-            return $existingUser;
+            // Обновляем время последнего входа для существующего пользователя
+            $updateStmt = $db->prepare("UPDATE users SET last_login_at = NOW() WHERE id = :id");
+            $updateStmt->execute(['id' => $existingUser['id']]);
+            
+            // Возвращаем обновленные данные пользователя
+            $stmt = $db->prepare("SELECT * FROM users WHERE google_id = :google_id");
+            $stmt->execute(['google_id' => $tokenInfo['sub']]);
+            return $stmt->fetch();
         }
         
         // Создаём нового пользователя

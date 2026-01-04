@@ -39,6 +39,7 @@ if (($pathParts[0] ?? '') === 'users' && $method === 'POST') {
     // Для всех остальных эндпоинтов требуется аутентификация
     $authResult = $authMiddleware->authenticate(true);
     $user = $authResult['user'];
+    $tokenInfo = $authResult['tokenInfo'] ?? null;
 }
 
 try {

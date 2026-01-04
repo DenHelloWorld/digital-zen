@@ -27,6 +27,12 @@ class UsersController {
      */
     public function create($tokenInfo) {
         try {
+            // Валидация обязательного поля 'sub'
+            if (!isset($tokenInfo['sub']) || empty($tokenInfo['sub'])) {
+                error_log("UsersController::create: missing or empty 'sub' field in tokenInfo");
+                Response::error('Invalid token information', 400);
+            }
+            
             $googleAuth = new GoogleAuthService();
             
             // Создаём пользователя (или получаем существующего)
