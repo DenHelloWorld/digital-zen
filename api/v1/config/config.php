@@ -50,13 +50,20 @@ class Config {
         // $_ENV works with PHP-FPM environment variables
         // $_SERVER works with Apache SetEnv directive
         $secret = $_ENV['JWT_SECRET'] ?? $_SERVER['JWT_SECRET'] ?? null;
-        
-        if ($secret === null || trim($secret) === '') {
-            error_log("WARNING: JWT_SECRET environment variable not set or empty");
+
+        if ($secret === null) {
+            error_log("WARNING: JWT_SECRET environment variable not set");
             return null;
         }
-        
-        return $secret;
+
+        $trimmedSecret = trim($secret);
+
+        if ($trimmedSecret === '') {
+            error_log("WARNING: JWT_SECRET environment variable is empty or contains only whitespace");
+            return null;
+        }
+
+        return $trimmedSecret;
     }
     
     /**
