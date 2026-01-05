@@ -275,6 +275,7 @@ function getUserPeriods($database, $userId) {
 
 /**
  * Save periods for user
+ * This function uses database transaction to ensure data consistency
  * 
  * @param PDO $database Database connection
  * @param int $userId User ID
@@ -282,104 +283,120 @@ function getUserPeriods($database, $userId) {
  * @return void
  */
 function saveUserPeriods($database, $userId, $periods) {
-    // Delete all existing periods for this user first
-    $deleteQuery = "DELETE FROM periods WHERE user_id = :user_id";
-    $deleteStatement = $database->prepare($deleteQuery);
-    $deleteStatement->bindParam(':user_id', $userId);
-    $deleteStatement->execute();
+    // Start database transaction for data consistency
+    // If any operation fails, all changes will be rolled back
+    $database->beginTransaction();
     
-    // Insert each period
-    foreach ($periods as $period) {
-        // Insert period
-        $periodQuery = "INSERT INTO periods (
-            id, user_id, period_name, period_description, 
-            start_from, end_to, days_of_week, is_focused, session_start_time
-        ) VALUES (
-            :id, :user_id, :name, :description, 
-            :start_from, :end_to, :days_of_week, :is_focused, :session_start_time
-        )";
+    try {
+        // Delete all existing periods for this user first
+        $deleteQuery = "DELETE FROM periods WHERE user_id = :user_id";
+        $deleteStatement = $database->prepare($deleteQuery);
+        $deleteStatement->bindParam(':user_id', $userId);
+        $deleteStatement->execute();
         
-        $periodStatement = $database->prepare($periodQuery);
-        
-        $periodId = $period['id'];
-        $periodName = $period['name'];
-        $periodDescription = $period['description'] ?? '';
-        $startFrom = $period['startFrom'] ?? null;
-        $endTo = $period['endTo'] ?? null;
-        $daysOfWeek = json_encode($period['daysOfWeek'] ?? []);
-        $isFocused = isset($period['isFocused']) ? (int)$period['isFocused'] : 0;
-        $sessionStartTime = $period['sessionStartTime'] ?? null;
-        
-        $periodStatement->bindParam(':id', $periodId);
-        $periodStatement->bindParam(':user_id', $userId);
-        $periodStatement->bindParam(':name', $periodName);
-        $periodStatement->bindParam(':description', $periodDescription);
-        $periodStatement->bindParam(':start_from', $startFrom);
-        $periodStatement->bindParam(':end_to', $endTo);
-        $periodStatement->bindParam(':days_of_week', $daysOfWeek);
-        $periodStatement->bindParam(':is_focused', $isFocused);
-        $periodStatement->bindParam(':session_start_time', $sessionStartTime);
-        
-        $periodStatement->execute();
-        
-        // Insert websites for this period
-        if (isset($period['webSites']) && is_array($period['webSites'])) {
-            foreach ($period['webSites'] as $website) {
-                $websiteQuery = "INSERT INTO websites (
-                    id, period_id, website_name, website_description,
-                    website_url, image_url, icon_url, website_type, is_blocked
-                ) VALUES (
-                    :id, :period_id, :name, :description,
-                    :url, :image_url, :icon_url, :type, :is_blocked
-                )";
-                
-                $websiteStatement = $database->prepare($websiteQuery);
-                
-                $websiteId = $website['id'];
-                $websiteName = $website['name'];
-                $websiteDescription = $website['description'] ?? '';
-                $websiteUrl = $website['url'];
-                $imageUrl = $website['imageUrl'] ?? '';
-                $iconUrl = $website['iconUrl'] ?? '';
-                $websiteType = $website['type'] ?? 'Default';
-                $isBlocked = isset($website['isBlocked']) ? (int)$website['isBlocked'] : 0;
-                
-                $websiteStatement->bindParam(':id', $websiteId);
-                $websiteStatement->bindParam(':period_id', $periodId);
-                $websiteStatement->bindParam(':name', $websiteName);
-                $websiteStatement->bindParam(':description', $websiteDescription);
-                $websiteStatement->bindParam(':url', $websiteUrl);
-                $websiteStatement->bindParam(':image_url', $imageUrl);
-                $websiteStatement->bindParam(':icon_url', $iconUrl);
-                $websiteStatement->bindParam(':type', $websiteType);
-                $websiteStatement->bindParam(':is_blocked', $isBlocked);
-                
-                $websiteStatement->execute();
+        // Insert each period
+        foreach ($periods as $period) {
+            // Insert period
+            $periodQuery = "INSERT INTO periods (
+                id, user_id, period_name, period_description, 
+                start_from, end_to, days_of_week, is_focused, session_start_time
+            ) VALUES (
+                :id, :user_id, :name, :description, 
+                :start_from, :end_to, :days_of_week, :is_focused, :session_start_time
+            )";
+            
+            $periodStatement = $database->prepare($periodQuery);
+            
+            $periodId = $period['id'];
+            $periodName = $period['name'];
+            $periodDescription = $period['description'] ?? '';
+            $startFrom = $period['startFrom'] ?? null;
+            $endTo = $period['endTo'] ?? null;
+            $daysOfWeek = json_encode($period['daysOfWeek'] ?? []);
+            $isFocused = isset($period['isFocused']) ? (int)$period['isFocused'] : 0;
+            $sessionStartTime = $period['sessionStartTime'] ?? null;
+            
+            $periodStatement->bindParam(':id', $periodId);
+            $periodStatement->bindParam(':user_id', $userId);
+            $periodStatement->bindParam(':name', $periodName);
+            $periodStatement->bindParam(':description', $periodDescription);
+            $periodStatement->bindParam(':start_from', $startFrom);
+            $periodStatement->bindParam(':end_to', $endTo);
+            $periodStatement->bindParam(':days_of_week', $daysOfWeek);
+            $periodStatement->bindParam(':is_focused', $isFocused);
+            $periodStatement->bindParam(':session_start_time', $sessionStartTime);
+            
+            $periodStatement->execute();
+            
+            // Insert websites for this period
+            if (isset($period['webSites']) && is_array($period['webSites'])) {
+                foreach ($period['webSites'] as $website) {
+                    $websiteQuery = "INSERT INTO websites (
+                        id, period_id, website_name, website_description,
+                        website_url, image_url, icon_url, website_type, is_blocked
+                    ) VALUES (
+                        :id, :period_id, :name, :description,
+                        :url, :image_url, :icon_url, :type, :is_blocked
+                    )";
+                    
+                    $websiteStatement = $database->prepare($websiteQuery);
+                    
+                    $websiteId = $website['id'];
+                    $websiteName = $website['name'];
+                    $websiteDescription = $website['description'] ?? '';
+                    $websiteUrl = $website['url'];
+                    $imageUrl = $website['imageUrl'] ?? '';
+                    $iconUrl = $website['iconUrl'] ?? '';
+                    $websiteType = $website['type'] ?? 'Default';
+                    $isBlocked = isset($website['isBlocked']) ? (int)$website['isBlocked'] : 0;
+                    
+                    $websiteStatement->bindParam(':id', $websiteId);
+                    $websiteStatement->bindParam(':period_id', $periodId);
+                    $websiteStatement->bindParam(':name', $websiteName);
+                    $websiteStatement->bindParam(':description', $websiteDescription);
+                    $websiteStatement->bindParam(':url', $websiteUrl);
+                    $websiteStatement->bindParam(':image_url', $imageUrl);
+                    $websiteStatement->bindParam(':icon_url', $iconUrl);
+                    $websiteStatement->bindParam(':type', $websiteType);
+                    $websiteStatement->bindParam(':is_blocked', $isBlocked);
+                    
+                    $websiteStatement->execute();
+                }
+            }
+            
+            // Insert focused times for this period
+            if (isset($period['focusedTimes']) && is_array($period['focusedTimes'])) {
+                foreach ($period['focusedTimes'] as $time) {
+                    $timeQuery = "INSERT INTO focused_times (
+                        id, period_id, start_from, end_to
+                    ) VALUES (
+                        :id, :period_id, :start_from, :end_to
+                    )";
+                    
+                    $timeStatement = $database->prepare($timeQuery);
+                    
+                    $timeId = $time['id'];
+                    $timeStartFrom = $time['startFrom'] ?? null;
+                    $timeEndTo = $time['endTo'] ?? null;
+                    
+                    $timeStatement->bindParam(':id', $timeId);
+                    $timeStatement->bindParam(':period_id', $periodId);
+                    $timeStatement->bindParam(':start_from', $timeStartFrom);
+                    $timeStatement->bindParam(':end_to', $timeEndTo);
+                    
+                    $timeStatement->execute();
+                }
             }
         }
         
-        // Insert focused times for this period
-        if (isset($period['focusedTimes']) && is_array($period['focusedTimes'])) {
-            foreach ($period['focusedTimes'] as $time) {
-                $timeQuery = "INSERT INTO focused_times (
-                    id, period_id, start_from, end_to
-                ) VALUES (
-                    :id, :period_id, :start_from, :end_to
-                )";
-                
-                $timeStatement = $database->prepare($timeQuery);
-                
-                $timeId = $time['id'];
-                $timeStartFrom = $time['startFrom'] ?? null;
-                $timeEndTo = $time['endTo'] ?? null;
-                
-                $timeStatement->bindParam(':id', $timeId);
-                $timeStatement->bindParam(':period_id', $periodId);
-                $timeStatement->bindParam(':start_from', $timeStartFrom);
-                $timeStatement->bindParam(':end_to', $timeEndTo);
-                
-                $timeStatement->execute();
-            }
-        }
+        // All operations successful - commit transaction
+        $database->commit();
+        
+    } catch (Exception $error) {
+        // Something went wrong - rollback all changes
+        $database->rollBack();
+        
+        // Re-throw the error to be handled by caller
+        throw $error;
     }
 }

@@ -83,6 +83,8 @@ function setupCorsHeaders() {
     }
     
     // Allow requests only from Chrome extension
+    // TODO: For production, consider restricting to specific extension ID
+    // Example: if ($origin === 'chrome-extension://YOUR_EXTENSION_ID_HERE')
     if (strpos($origin, 'chrome-extension://') === 0) {
         header("Access-Control-Allow-Origin: $origin");
         header("Access-Control-Allow-Credentials: true");
