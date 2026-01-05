@@ -374,6 +374,36 @@ The privacy policy is available in English and Russian versions in the `docs/` f
 
 To host the privacy policy publicly (required for Chrome Web Store), see the [Privacy Policy Hosting Guide](./docs/PRIVACY_POLICY_HOSTING.md) for free hosting options that keep your source code private.
 
+## Backend API
+
+Digital Zen includes a PHP backend API for storing user data (periods and websites) on a server. This allows users to sync their data across devices.
+
+### Quick Links
+
+- 🚀 **[Quick Start (Russian)](./docs/API_QUICK_START_RU.md)** - Fastest way to deploy the API
+- 📖 **[Deployment Guide](./docs/API_DEPLOYMENT.md)** - Detailed step-by-step instructions
+- 🔑 **[API Key Generation](./docs/API_KEY_GENERATION.md)** - Security best practices
+- 💻 **[Usage Examples](./docs/API_USAGE_EXAMPLE.md)** - How to use the API in Angular
+- 📚 **[API Documentation](./api/README.md)** - Full API reference
+
+### Features
+
+- ✅ Secure API key authentication
+- ✅ MySQL database for data persistence
+- ✅ CORS protection (Chrome extension only)
+- ✅ Simple PHP code (easy to understand and modify)
+- ✅ No password storage (only email and user ID)
+
+### Setup Summary
+
+1. Generate API secret key
+2. Configure `api/config.php` with database credentials and API key
+3. Upload API files to hosting server
+4. Create database tables using `api/database.sql`
+5. Configure extension with API URL and key in `api-config.const.ts`
+
+See [API Quick Start Guide](./docs/API_QUICK_START_RU.md) for complete instructions.
+
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
