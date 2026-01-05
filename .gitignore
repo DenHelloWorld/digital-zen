@@ -41,3 +41,17 @@ testem.log
 Thumbs.db
 
 *.env
+
+# Laravel Backend
+backend/vendor/
+backend/node_modules/
+backend/storage/*.key
+backend/.phpunit.result.cache
+backend/Homestead.json
+backend/Homestead.yaml
+backend/auth.json
+backend/npm-debug.log
+backend/yarn-error.log
+backend/.fleet
+backend/.idea
+backend/.vscode

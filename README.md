@@ -11,14 +11,21 @@ Digital Zen is a productivity browser extension built with Angular that helps yo
 
 ## Technology Stack
 
-This project is built with modern web technologies and follows best practices for code quality:
+This project consists of two parts: a Chrome extension frontend and a Laravel backend API.
 
-### Core Technologies
+### Frontend (Chrome Extension)
 
 - **Framework:** [Angular](https://angular.dev/)
 - **Language:** [TypeScript](https://www.typescriptlang.org/)
 - **State Management:** Angular Signals + [RxJS](https://rxjs.dev/)
 - **Extension API:** Chrome Extension Manifest V3
+
+### Backend API
+
+- **Framework:** [Laravel 11](https://laravel.com/)
+- **Language:** PHP 8.2+
+- **Database:** MySQL 5.7+ / MariaDB 10.3+
+- **Package Manager:** Composer
 
 ### Development Tools
 
@@ -35,14 +42,20 @@ This project is built with modern web technologies and follows best practices fo
 
 ## Getting Started
 
+This project has two components: the frontend Chrome extension and the backend API.
+
 ### Prerequisites
 
-Ensure you have the following installed on your machine:
-
+**For Frontend:**
 - [Node.js](https://nodejs.org/) (version 18 or higher recommended)
 - npm (comes with Node.js) or [pnpm](https://pnpm.io/)
 
-### Installation
+**For Backend:**
+- PHP 8.2 or higher
+- [Composer](https://getcomposer.org/)
+- MySQL 5.7+ or MariaDB 10.3+
+
+### Frontend Installation
 
 1. **Clone the repository**
 
@@ -99,6 +112,65 @@ npm start
 ```
 
 This starts the Angular development server at `http://localhost:4200/`. While this is useful for rapid development with hot reload, remember that for testing the actual Chrome extension functionality, you'll need to rebuild using `npm run build` and reload the extension in Chrome.
+
+### Backend Installation
+
+The backend API is built with Laravel and provides data persistence and synchronization capabilities.
+
+1. **Navigate to the backend directory**
+
+```bash
+cd backend
+```
+
+2. **Install PHP dependencies**
+
+```bash
+composer install
+```
+
+3. **Configure environment**
+
+Copy the `.env.example` file and update it with your database credentials:
+
+```bash
+cp .env.example .env
+```
+
+Edit `.env` and configure your MySQL database:
+
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=digital_zen
+DB_USERNAME=your_database_user
+DB_PASSWORD=your_database_password
+```
+
+4. **Generate application key**
+
+```bash
+php artisan key:generate
+```
+
+5. **Run database migrations**
+
+```bash
+php artisan migrate
+```
+
+6. **Start the development server**
+
+```bash
+php artisan serve
+```
+
+The backend API will be available at `http://127.0.0.1:8000`
+
+**Health Check Endpoint:** Test that the backend is running by visiting `http://127.0.0.1:8000/api/health`
+
+For detailed backend setup, deployment instructions, and API documentation, see [backend/README_BACKEND.md](backend/README_BACKEND.md).
 
 ## Build and Deployment
 
@@ -229,7 +301,7 @@ If you encounter errors related to missing environment variables during producti
 
 ```
 digital-zen/
-├── src/
+├── src/                  # Frontend Chrome Extension
 │   ├── app/              # Angular application components
 │   ├── background/       # Background service worker scripts
 │   ├── modules/          # Shared Angular modules
@@ -245,6 +317,17 @@ digital-zen/
 │   ├── styles/           # Global styles
 │   ├── manifest.json     # Chrome extension manifest
 │   └── main.ts           # Application entry point
+├── backend/              # Laravel Backend API
+│   ├── app/              # Laravel application code
+│   ├── config/           # Configuration files
+│   ├── database/         # Migrations and seeders
+│   ├── routes/           # API and web routes
+│   │   ├── api.php       # API routes (includes /api/health)
+│   │   └── web.php       # Web routes
+│   ├── public/           # Public assets
+│   ├── storage/          # File storage
+│   ├── .env.example      # Environment template
+│   └── composer.json     # PHP dependencies
 ├── scripts/              # Build and utility scripts
 │   └── patch-manifest.js # Script to patch manifest.json with env variables
 ├── public/               # Static assets
