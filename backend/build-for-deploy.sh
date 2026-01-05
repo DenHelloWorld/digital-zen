@@ -43,8 +43,15 @@ echo -e "${YELLOW}Step 3: Creating deployment package...${NC}"
 
 # Create a temporary directory for deployment files
 DEPLOY_DIR="../backend-deploy"
-rm -rf $DEPLOY_DIR
-mkdir -p $DEPLOY_DIR
+
+# Safety check before rm -rf
+if [ -z "$DEPLOY_DIR" ] || [ "$DEPLOY_DIR" = "/" ] || [ "$DEPLOY_DIR" = "." ]; then
+    echo "Error: Invalid DEPLOY_DIR value"
+    exit 1
+fi
+
+rm -rf "$DEPLOY_DIR"
+mkdir -p "$DEPLOY_DIR"
 
 # Copy necessary files (excluding vendor since it will be reinstalled on server)
 echo "Copying files..."
@@ -74,8 +81,17 @@ echo -e "${GREEN}✓ Files copied${NC}"
 echo ""
 
 echo -e "${YELLOW}Step 4: Creating zip archive...${NC}"
-cd ..
-zip -r backend-hostinger.zip backend-deploy/ -q
+
+# Change to parent directory and create zip
+if ! cd ..; then
+    echo "Error: Failed to change to parent directory"
+    exit 1
+fi
+
+if ! zip -r backend-hostinger.zip backend-deploy/ -q; then
+    echo "Error: Failed to create zip archive"
+    exit 1
+fi
 
 echo -e "${GREEN}✓ Deployment package created: backend-hostinger.zip${NC}"
 echo ""
