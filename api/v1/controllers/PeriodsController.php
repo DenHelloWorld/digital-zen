@@ -80,12 +80,22 @@ class PeriodsController {
             
         } catch (PDOException $e) {
             $this->db->rollBack();
-            $errorCode = 'PERIOD_CREATE_' . time() . '_' . bin2hex(random_bytes(4));
+            // Generate error code with fallback if random_bytes() fails
+            try {
+                $randomPart = bin2hex(random_bytes(4));
+            } catch (Exception $randomException) {
+                error_log("Failed to generate random bytes for error code: " . $randomException->getMessage());
+                $randomPart = uniqid('', true); // Fallback to uniqid
+            }
+            $errorCode = 'PERIOD_CREATE_' . time() . '_' . $randomPart;
+            // Sanitize user-controlled values to prevent log injection
+            $sanitizedUserId = filter_var((string) $userId, FILTER_SANITIZE_NUMBER_INT);
+            $sanitizedPeriodId = isset($data['id']) ? preg_replace('/[^a-zA-Z0-9_-]/', '', (string) $data['id']) : 'unknown';
             error_log(sprintf(
                 '[%s] Database error during period creation for user_id=%s, period_id=%s: %s',
                 $errorCode,
-                (string) $userId,
-                isset($data['id']) ? (string) $data['id'] : 'unknown',
+                $sanitizedUserId,
+                $sanitizedPeriodId,
                 $e->getMessage()
             ));
             Response::error(
@@ -94,12 +104,22 @@ class PeriodsController {
             );
         } catch (Exception $e) {
             $this->db->rollBack();
-            $errorCode = 'PERIOD_CREATE_' . time() . '_' . bin2hex(random_bytes(4));
+            // Generate error code with fallback if random_bytes() fails
+            try {
+                $randomPart = bin2hex(random_bytes(4));
+            } catch (Exception $randomException) {
+                error_log("Failed to generate random bytes for error code: " . $randomException->getMessage());
+                $randomPart = uniqid('', true); // Fallback to uniqid
+            }
+            $errorCode = 'PERIOD_CREATE_' . time() . '_' . $randomPart;
+            // Sanitize user-controlled values to prevent log injection
+            $sanitizedUserId = filter_var((string) $userId, FILTER_SANITIZE_NUMBER_INT);
+            $sanitizedPeriodId = isset($data['id']) ? preg_replace('/[^a-zA-Z0-9_-]/', '', (string) $data['id']) : 'unknown';
             error_log(sprintf(
                 '[%s] Unexpected error during period creation for user_id=%s, period_id=%s: %s',
                 $errorCode,
-                (string) $userId,
-                isset($data['id']) ? (string) $data['id'] : 'unknown',
+                $sanitizedUserId,
+                $sanitizedPeriodId,
                 $e->getMessage()
             ));
             Response::error(
@@ -130,6 +150,12 @@ class PeriodsController {
         ) {
             error_log("createWebsite: Missing or empty required fields (id, name, or url) in website data");
             throw new Exception('Invalid website data: missing or empty required fields');
+        }
+
+        // Validate URL format
+        if (filter_var($site['url'], FILTER_VALIDATE_URL) === false) {
+            error_log("createWebsite: Invalid URL format in website data: " . $site['url']);
+            throw new Exception('Invalid website data: url must be a valid URL');
         }
         
         $stmt = $this->db->prepare("

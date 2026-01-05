@@ -41,6 +41,11 @@ const isBackendApiUrl = (url: string, baseUrl: string): boolean => {
  *   - `/v1/auth/google`
  */
 const isAuthGoogleEndpoint = (url: string): boolean => {
+  // Validate input
+  if (!url || typeof url !== 'string') {
+    return false;
+  }
+
   /**
    * Normalize a path by removing trailing slashes.
    * If the path is just '/', it becomes '' after replace, then '/' via fallback,

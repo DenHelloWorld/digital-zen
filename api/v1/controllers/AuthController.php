@@ -19,6 +19,11 @@ class AuthController {
      * 4. Backend generates JWT token with user_id
      * 5. Backend returns JWT token to client
      * 
+     * SECURITY NOTE: This endpoint should have rate limiting implemented at the
+     * infrastructure level (e.g., via web server configuration, reverse proxy, or
+     * API gateway) to prevent brute force attacks or token validation abuse.
+     * Consider implementing rate limiting based on IP address and/or user identifier.
+     * 
      * POST /auth/google
      * Headers: Authorization: Bearer <google_oauth_token>
      * Response: { "success": true, "data": { "token": "jwt_token", "user": {...} } }

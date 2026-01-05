@@ -69,18 +69,36 @@ class GoogleAuthService {
         
         // Validate required fields are present and non-empty
         if (!isset($tokenInfo['sub']) || empty($tokenInfo['sub'])) {
-            error_log("Token validation failed: missing or empty 'sub' field");
+            error_log("Token validation failed: missing required user identifier");
             return false;
         }
         
         if (!isset($tokenInfo['email']) || empty($tokenInfo['email'])) {
-            error_log("Token validation failed: missing or empty 'email' field");
+            error_log("Token validation failed: missing required email field");
             return false;
         }
         
         // Validate email format
         if (!filter_var($tokenInfo['email'], FILTER_VALIDATE_EMAIL)) {
             error_log("Token validation failed: invalid email format");
+            return false;
+        }
+        
+        // Validate that the email has been verified by Google
+        // This prevents account takeover via unverified emails
+        if (!isset($tokenInfo['email_verified'])) {
+            error_log("Token validation failed: missing email verification status");
+            return false;
+        }
+
+        // Google may return email_verified as a boolean or string ("true"/"false", "1"/"0")
+        $emailVerifiedRaw = $tokenInfo['email_verified'];
+        $emailVerified = is_bool($emailVerifiedRaw)
+            ? $emailVerifiedRaw
+            : filter_var($emailVerifiedRaw, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
+
+        if ($emailVerified !== true) {
+            error_log("Token validation failed: email is not verified");
             return false;
         }
         
@@ -98,9 +116,9 @@ class GoogleAuthService {
      * @return array|false User data or false if not found
      */
     public function getUser($tokenInfo) {
-        // Validate required 'sub' field
+        // Validate required user identifier field
         if (!isset($tokenInfo['sub']) || empty($tokenInfo['sub'])) {
-            error_log("getUser: missing or empty 'sub' field in tokenInfo");
+            error_log("getUser: missing required user identifier in token");
             return false;
         }
         
@@ -127,14 +145,14 @@ class GoogleAuthService {
      * @return array|false User data (existing or newly created) or false on error
      */
     public function createUser($tokenInfo) {
-        // Validate required fields 'sub' and 'email'
+        // Validate required fields
         if (!isset($tokenInfo['sub']) || empty($tokenInfo['sub'])) {
-            error_log("createUser: missing or empty 'sub' field in tokenInfo");
+            error_log("createUser: missing required user identifier in token");
             return false;
         }
         
         if (!isset($tokenInfo['email']) || empty($tokenInfo['email'])) {
-            error_log("createUser: missing or empty 'email' field in tokenInfo");
+            error_log("createUser: missing required email field in token");
             return false;
         }
         
