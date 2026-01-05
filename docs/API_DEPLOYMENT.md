@@ -21,8 +21,14 @@ Example: `k8jH#mP9$nQ2*rT5&vW7@xY0!zA3^bC6`
 
 ## Step 2: Configure Backend API
 
-1. Open file `api/config.php`
-2. Find this line:
+1. On your local computer, go to `api/` folder
+2. Copy `config.example.php` to `config.php`:
+   ```bash
+   cp config.example.php config.php
+   ```
+
+3. Open file `config.php`
+4. Find this line:
    ```php
    define('DB_PASS', '');
    ```

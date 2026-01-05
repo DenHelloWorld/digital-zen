@@ -40,4 +40,8 @@ testem.log
 .DS_Store
 Thumbs.db
 
+# Environment files
 *.env
+
+# API files (do not commit backend files with real credentials)
+api/config.php

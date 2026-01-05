@@ -13,7 +13,7 @@ This is a simple PHP API for Digital Zen Chrome extension to store user data on 
 
 ```
 api/
-├── config.php         # Database and security settings
+├── config.example.php # Example configuration (copy to config.php)
 ├── helpers.php        # Helper functions
 ├── user-data.php      # Main API endpoint
 ├── database.sql       # Database schema
@@ -43,7 +43,12 @@ digital-zen.csmpoint.com/api/user-data.php
 
 ### 3. Configure API
 
-Edit `config.php` file and fill in these values:
+1. Copy `config.example.php` to `config.php`:
+   ```bash
+   cp config.example.php config.php
+   ```
+
+2. Edit `config.php` file and fill in these values:
 
 ```php
 // Database password (get it from your hosting provider)
