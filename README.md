@@ -174,7 +174,11 @@ The backend API will be available at `http://127.0.0.1:8000`
 
 **Health Check Endpoint:** Test that the backend is running by visiting `http://127.0.0.1:8000/api/v1/health`
 
-For detailed backend setup, deployment instructions, and API documentation, see [backend/README_BACKEND.md](backend/README_BACKEND.md).
+### Backend Documentation
+
+- **[Backend README](backend/README_BACKEND.md)** - Complete backend setup and API documentation
+- **[Hostinger Deployment Guide](backend/HOSTINGER_DEPLOYMENT.md)** - Step-by-step deployment to Hostinger
+- **Build Script:** Run `cd backend && ./build-for-deploy.sh` to create deployment package
 
 ## Build and Deployment
 

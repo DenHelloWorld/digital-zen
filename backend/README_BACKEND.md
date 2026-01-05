@@ -2,6 +2,13 @@
 
 This is the Laravel backend API for the Digital Zen Chrome extension. It provides a REST API for data persistence and synchronization.
 
+> **Note about Frontend Files:** Laravel includes frontend build tools (Vite, Tailwind, package.json) by default, but these are **NOT needed for API-only usage**. You can safely ignore `package.json`, `vite.config.js`, `tailwind.config.js`, and the `resources/css` and `resources/js` directories. **Do not run `npm install`** - the backend API works without them.
+
+## Quick Links
+
+- 📦 **[Hostinger Deployment Guide](./HOSTINGER_DEPLOYMENT.md)** - Step-by-step guide for deploying to Hostinger
+- 🚀 **Build for Deploy:** Run `./build-for-deploy.sh` to create a deployment package
+
 ## Requirements
 
 - PHP 8.2 or higher
@@ -84,6 +91,37 @@ Check if the backend is running:
 Returns an HTML page indicating the application status.
 
 ## Deployment to Hostinger
+
+> **📦 For detailed step-by-step instructions, see [HOSTINGER_DEPLOYMENT.md](./HOSTINGER_DEPLOYMENT.md)**
+
+### Quick Build & Deploy
+
+1. **Build deployment package:**
+   ```bash
+   cd backend
+   ./build-for-deploy.sh
+   ```
+   This creates `backend-hostinger.zip` ready for upload.
+
+2. **Upload to Hostinger:**
+   - Use File Manager in hPanel to upload the zip file
+   - Extract it to `public_html/api/`
+
+3. **Configure on server:**
+   ```bash
+   cd public_html/api
+   composer install --optimize-autoloader --no-dev
+   cp .env.example .env
+   nano .env  # Add your database credentials
+   php artisan key:generate
+   chmod -R 755 storage bootstrap/cache
+   ```
+
+4. **Test:** Visit `https://your-domain.com/api/v1/health`
+
+### Full Deployment Guide
+
+For complete instructions including troubleshooting, see **[HOSTINGER_DEPLOYMENT.md](./HOSTINGER_DEPLOYMENT.md)**
 
 ### Prerequisites
 
