@@ -40,7 +40,7 @@ class UsersController {
                 return;
             }
             
-            Response::success($this->formatUserResponse($user));
+            Response::success($this->formatUserResponse($user, false));
         } catch (PDOException $e) {
             error_log("User creation error (database): " . $e->getMessage());
             Response::error('User creation failed due to a database error', 500);
@@ -60,6 +60,6 @@ class UsersController {
             Response::error('User not found', 404);
             return;
         }
-        Response::success($this->formatUserResponse($user));
+        Response::success($this->formatUserResponse($user, false));
     }
 }

@@ -76,9 +76,11 @@ class AuthController {
             $jwtToken = $jwtService->generateToken($user['id']);
             
             // Return JWT token and user data
+            // Note: We explicitly pass false for includeGoogleId to avoid exposing
+            // the google_id in the response. The JWT token contains user_id which is sufficient.
             Response::success([
                 'token' => $jwtToken,
-                'user' => $this->formatUserResponse($user)
+                'user' => $this->formatUserResponse($user, false)
             ]);
             
         } catch (Exception $e) {

@@ -154,7 +154,9 @@ class PeriodsController {
 
         // Validate URL format
         if (filter_var($site['url'], FILTER_VALIDATE_URL) === false) {
-            error_log("createWebsite: Invalid URL format in website data: " . $site['url']);
+            // Sanitize URL for logging to prevent log injection
+            $sanitizedUrl = preg_replace('/[\r\n]/', '', substr($site['url'], 0, 100));
+            error_log("createWebsite: Invalid URL format in website data: " . $sanitizedUrl);
             throw new Exception('Invalid website data: url must be a valid URL');
         }
         
