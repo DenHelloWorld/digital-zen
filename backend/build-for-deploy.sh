@@ -1,4 +1,6 @@
 #!/bin/bash
+set -e  # Exit on error
+set -u  # Exit on undefined variable
 
 # Digital Zen Backend - Deployment Package Builder
 # This script creates a deployment-ready package for Hostinger
@@ -45,9 +47,10 @@ DEPLOY_DIR="../backend-deploy"
 rm -rf $DEPLOY_DIR
 mkdir -p $DEPLOY_DIR
 
-# Copy necessary files
+# Copy necessary files (excluding vendor since it will be reinstalled on server)
 echo "Copying files..."
 rsync -av \
+    --exclude='vendor' \
     --exclude='node_modules' \
     --exclude='.git' \
     --exclude='.env' \

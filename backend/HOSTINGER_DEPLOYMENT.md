@@ -2,34 +2,27 @@
 
 ## Quick Deployment Steps
 
-### Step 1: Prepare Your Files
+### Step 1: Build Deployment Package
 
-Before uploading to Hostinger, you need to prepare your backend files:
+Use the automated build script to create a deployment-ready package:
 
 ```bash
 # Navigate to the backend directory
 cd backend
 
-# Install dependencies locally (if not already done)
-composer install --optimize-autoloader --no-dev
+# Run the build script
+./build-for-deploy.sh
 ```
 
-### Step 2: Create a Deployment Package
+This will:
+- Install production dependencies
+- Clear caches
+- Create a deployment package at `../backend-hostinger.zip`
+- Exclude unnecessary files (vendor, node_modules, .env, tests, etc.)
 
-Create a zip file with only the necessary files (excluding vendor and node_modules):
+> **Note:** The vendor directory is excluded and will be reinstalled on the server to match the server's PHP version.
 
-```bash
-# From the backend directory, create a zip excluding unnecessary files
-cd ..
-zip -r backend-deploy.zip backend/ \
-  -x "backend/vendor/*" \
-  -x "backend/node_modules/*" \
-  -x "backend/.git/*" \
-  -x "backend/storage/logs/*" \
-  -x "backend/.env"
-```
-
-### Step 3: Upload to Hostinger
+### Step 2: Upload to Hostinger
 
 **Option A: Using File Manager (Recommended for beginners)**
 
@@ -53,7 +46,7 @@ zip -r backend-deploy.zip backend/ \
 scp -r backend/ your-username@your-domain.com:~/public_html/api/
 ```
 
-### Step 4: Configure on Hostinger
+### Step 3: Configure on Hostinger
 
 Connect to your server via **SSH** (enable in hPanel if not already):
 
@@ -62,7 +55,7 @@ ssh your-username@your-domain.com
 cd public_html/api
 ```
 
-### Step 5: Install Dependencies on Server
+### Step 4: Install Dependencies on Server
 
 ```bash
 # Install PHP dependencies
@@ -72,7 +65,16 @@ composer install --optimize-autoloader --no-dev
 php artisan --version
 ```
 
-### Step 6: Configure Environment
+### Step 5: Configure Environment
+
+First, get your database credentials from Hostinger:
+
+1. Log in to **hPanel**
+2. Go to **Databases** → **MySQL Databases**
+3. **If using existing database:** Note the database name, username, and password
+4. **If creating new database:** Click **Create Database**, note the credentials
+
+Now configure your backend:
 
 ```bash
 # Copy environment template
@@ -92,27 +94,30 @@ APP_URL=https://your-domain.com
 DB_CONNECTION=mysql
 DB_HOST=localhost
 DB_PORT=3306
-DB_DATABASE=your_existing_db_name
-DB_USERNAME=your_db_username
-DB_PASSWORD=your_db_password
+DB_DATABASE=your_database_name     # From hPanel → Databases
+DB_USERNAME=your_database_user     # From hPanel → Databases
+DB_PASSWORD=your_database_password # From hPanel → Databases
 ```
 
-**Important:** Use your existing Hostinger MySQL database credentials (from hPanel → Databases)
+> **Important:** 
+> - Use your **existing** database if you already have one (as mentioned by the user)
+> - Or create a **new** database in hPanel → Databases if needed
+> - Double-check database credentials from hPanel
 
-### Step 7: Generate Application Key
+### Step 6: Generate Application Key
 
 ```bash
 php artisan key:generate
 ```
 
-### Step 8: Set Permissions
+### Step 7: Set Permissions
 
 ```bash
 chmod -R 755 storage bootstrap/cache
 chown -R your-username:your-username storage bootstrap/cache
 ```
 
-### Step 9: Configure Web Server
+### Step 8: Configure Web Server
 
 In Hostinger hPanel:
 
@@ -130,7 +135,7 @@ Set up your domain to point to the `public` directory:
 - Create a subdomain in hPanel
 - Point it to `/public_html/api/public`
 
-### Step 10: Optimize for Production
+### Step 9: Optimize for Production
 
 ```bash
 php artisan config:cache
@@ -138,7 +143,7 @@ php artisan route:cache
 php artisan view:cache
 ```
 
-### Step 11: Test Your API
+### Step 10: Test Your API
 
 Visit: `https://your-domain.com/api/v1/health`
 
