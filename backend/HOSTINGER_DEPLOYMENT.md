@@ -29,24 +29,19 @@ This will:
 1. Log in to your Hostinger control panel (hPanel)
 2. Go to **Files** → **File Manager**
 3. Navigate to `public_html` (or your desired directory)
-4. Upload `backend-deploy.zip`
+4. Upload `backend-hostinger.zip`
 5. Right-click the zip file and select **Extract**
-6. Rename the extracted `backend` folder to `api` (or your preferred name)
+6. Rename the extracted `backend-deploy` folder to `api` (or your preferred name)
 
 **Option B: Using FTP**
 
 1. Use an FTP client (FileZilla, etc.)
 2. Connect to your Hostinger account
-3. Upload the entire `backend` folder to `public_html/api/`
+3. Upload `backend-hostinger.zip` to `public_html/`
+4. Extract it via hPanel File Manager
+5. Rename `backend-deploy` to `api`
 
-**Option C: Using SSH (Advanced)**
-
-```bash
-# From your local machine
-scp -r backend/ your-username@your-domain.com:~/public_html/api/
-```
-
-### Step 3: Configure on Hostinger
+### Step 3: Connect to Server
 
 Connect to your server via **SSH** (enable in hPanel if not already):
 

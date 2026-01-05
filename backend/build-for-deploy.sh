@@ -1,6 +1,7 @@
 #!/bin/bash
 set -e  # Exit on error
 set -u  # Exit on undefined variable
+set -o pipefail  # Catch failures in pipelines
 
 # Digital Zen Backend - Deployment Package Builder
 # This script creates a deployment-ready package for Hostinger
@@ -22,9 +23,7 @@ if [ ! -f "artisan" ]; then
 fi
 
 echo -e "${YELLOW}Step 1: Installing production dependencies...${NC}"
-composer install --optimize-autoloader --no-dev --no-interaction
-
-if [ $? -ne 0 ]; then
+if ! composer install --optimize-autoloader --no-dev --no-interaction; then
     echo "Error: Composer install failed"
     exit 1
 fi
