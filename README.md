@@ -154,11 +154,15 @@ DB_PASSWORD=your_database_password
 php artisan key:generate
 ```
 
-5. **Run database migrations**
+5. **Run database migrations (Optional)**
+
+If setting up a new database, run:
 
 ```bash
 php artisan migrate
 ```
+
+> **Note:** Skip this step if you're connecting to an existing database.
 
 6. **Start the development server**
 
@@ -168,7 +172,7 @@ php artisan serve
 
 The backend API will be available at `http://127.0.0.1:8000`
 
-**Health Check Endpoint:** Test that the backend is running by visiting `http://127.0.0.1:8000/api/health`
+**Health Check Endpoint:** Test that the backend is running by visiting `http://127.0.0.1:8000/api/v1/health`
 
 For detailed backend setup, deployment instructions, and API documentation, see [backend/README_BACKEND.md](backend/README_BACKEND.md).
 
@@ -322,7 +326,7 @@ digital-zen/
 │   ├── config/           # Configuration files
 │   ├── database/         # Migrations and seeders
 │   ├── routes/           # API and web routes
-│   │   ├── api.php       # API routes (includes /api/health)
+│   │   ├── api.php       # API routes (includes /api/v1/health)
 │   │   └── web.php       # Web routes
 │   ├── public/           # Public assets
 │   ├── storage/          # File storage

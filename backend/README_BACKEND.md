@@ -42,13 +42,15 @@ DB_PASSWORD=your_database_password
 php artisan key:generate
 ```
 
-### 4. Run Migrations
+### 4. Run Migrations (Optional)
 
-Create the database tables:
+If you need to create the default Laravel tables, run migrations:
 
 ```bash
 php artisan migrate
 ```
+
+> **Note:** If you already have an existing database with tables, you can skip this step or selectively run only the migrations you need.
 
 ## Running the Development Server
 
@@ -66,7 +68,7 @@ The backend will be available at `http://127.0.0.1:8000`
 
 Check if the backend is running:
 
-**GET** `/api/health`
+**GET** `/api/v1/health`
 
 **Response:**
 ```json
@@ -146,11 +148,15 @@ chmod -R 755 storage bootstrap/cache
 php artisan key:generate
 ```
 
-#### 6. Run Migrations
+#### 6. Run Migrations (Optional)
+
+If you need to set up the default Laravel tables, run:
 
 ```bash
 php artisan migrate --force
 ```
+
+> **Note:** Skip this step if you're connecting to an existing database with tables already created.
 
 #### 7. Configure Web Server
 
