@@ -63,19 +63,19 @@ rsync -av \
     --exclude='storage/logs/*' \
     --exclude='.phpunit.result.cache' \
     --exclude='tests' \
-    . $DEPLOY_DIR/
+    ./ "$DEPLOY_DIR/"
 
 # Create necessary directories in storage
-mkdir -p $DEPLOY_DIR/storage/framework/cache/data
-mkdir -p $DEPLOY_DIR/storage/framework/sessions
-mkdir -p $DEPLOY_DIR/storage/framework/views
-mkdir -p $DEPLOY_DIR/storage/logs
+mkdir -p "$DEPLOY_DIR/storage/framework/cache/data"
+mkdir -p "$DEPLOY_DIR/storage/framework/sessions"
+mkdir -p "$DEPLOY_DIR/storage/framework/views"
+mkdir -p "$DEPLOY_DIR/storage/logs"
 
 # Create .gitkeep files
-touch $DEPLOY_DIR/storage/framework/cache/data/.gitkeep
-touch $DEPLOY_DIR/storage/framework/sessions/.gitkeep
-touch $DEPLOY_DIR/storage/framework/views/.gitkeep
-touch $DEPLOY_DIR/storage/logs/.gitkeep
+touch "$DEPLOY_DIR/storage/framework/cache/data/.gitkeep"
+touch "$DEPLOY_DIR/storage/framework/sessions/.gitkeep"
+touch "$DEPLOY_DIR/storage/framework/views/.gitkeep"
+touch "$DEPLOY_DIR/storage/logs/.gitkeep"
 
 echo -e "${GREEN}✓ Files copied${NC}"
 echo ""
