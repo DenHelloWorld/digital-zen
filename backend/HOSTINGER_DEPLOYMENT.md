@@ -16,9 +16,11 @@ cd backend
 
 This will:
 - Install production dependencies
-- Clear caches
+- Clear local cache files
 - Create a deployment package at `../backend-hostinger.zip`
 - Exclude unnecessary files (vendor, node_modules, .env, tests, etc.)
+
+> **Note:** The build script does NOT require database access. It runs without connecting to MySQL.
 
 > **Note:** The vendor directory is excluded and will be reinstalled on the server to match the server's PHP version.
 

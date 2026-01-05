@@ -23,7 +23,8 @@ if [ ! -f "artisan" ]; then
 fi
 
 echo -e "${YELLOW}Step 1: Installing production dependencies...${NC}"
-if ! composer install --optimize-autoloader --no-dev --no-interaction; then
+# Skip scripts to avoid database connection attempts during build
+if ! composer install --optimize-autoloader --no-dev --no-interaction --no-scripts; then
     echo "Error: Composer install failed"
     exit 1
 fi
@@ -31,10 +32,11 @@ fi
 echo -e "${GREEN}✓ Dependencies installed${NC}"
 echo ""
 
-echo -e "${YELLOW}Step 2: Clearing cache and config...${NC}"
-php artisan config:clear
-php artisan cache:clear
-php artisan view:clear
+echo -e "${YELLOW}Step 2: Clearing local cache files...${NC}"
+# Clear cache directories manually (no database access needed)
+rm -rf storage/framework/cache/data/*
+rm -rf storage/framework/views/*
+rm -rf bootstrap/cache/*.php
 
 echo -e "${GREEN}✓ Cache cleared${NC}"
 echo ""

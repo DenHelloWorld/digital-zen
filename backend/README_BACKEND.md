@@ -7,7 +7,7 @@ This is the Laravel backend API for the Digital Zen Chrome extension. It provide
 ## Quick Links
 
 - 📦 **[Hostinger Deployment Guide](./HOSTINGER_DEPLOYMENT.md)** - Step-by-step guide for deploying to Hostinger
-- 🚀 **Build for Deploy:** Run `./build-for-deploy.sh` to create a deployment package
+- 🚀 **Build for Deploy:** Run `./build-for-deploy.sh` to create a deployment package (no database needed)
 
 ## Requirements
 
