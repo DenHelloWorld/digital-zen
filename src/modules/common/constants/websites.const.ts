@@ -108,8 +108,8 @@ export const WEBSITE_PINTEREST: Readonly<IFocus.WebSite> = {
 
 export const WEBSITE_YOUTUBE: Readonly<IFocus.WebSite> = {
   id: 'youtube',
-  name: 'Youtube',
-  description: 'Youtube',
+  name: 'YouTube',
+  description: 'YouTube',
   url: 'https://www.youtube.com',
   imageUrl: '',
   iconUrl: ICONS.YOUTUBE,
