@@ -1,0 +1,22 @@
+# Allow access to API directory
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+</IfModule>
+
+# Allow access to PHP files
+<Files ~ "\.php$">
+    Order allow,deny
+    Allow from all
+</Files>
+
+# Prevent access to config.php from browser
+<Files "config.php">
+    Order deny,allow
+    Deny from all
+</Files>
+
+# Prevent directory listing
+Options -Indexes
+
+# Set proper content type for PHP files
+AddType application/x-httpd-php .php

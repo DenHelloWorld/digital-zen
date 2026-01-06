@@ -26,10 +26,19 @@
 
 ```
 digital-zen.csmpoint.com/api/
+├── .htaccess
 ├── config.php
 ├── helpers.php
 └── user-data.php
 ```
+
+**ВАЖНО: Установи правильные права доступа!**
+
+После загрузки файлов через FTP или File Manager:
+- Папка `api/`: права `755`
+- Файлы `.php`: права `644`
+
+Без этого получишь ошибку 403 Forbidden!
 
 ### 4. Создание таблиц в базе
 
@@ -94,6 +103,28 @@ npm run build
 1. Проверь `api/config.php` - скопируй ключ
 2. Проверь `api-config.const.ts` - вставь ТОЧНО такой же ключ
 3. Пересобери: `npm run build`
+
+### 403 Forbidden (HTML ошибка)
+
+**Это самая частая проблема!** Сервер блокирует доступ к PHP файлам.
+
+**Быстрое решение:**
+1. **Проверь права доступа** (самая частая причина):
+   - Папка: `755`
+   - PHP файлы: `644`
+
+2. **Загрузи файл `.htaccess`** в папку api
+
+3. **Используй полный путь к файлу**:
+   - ✅ `https://digital-zen.csmpoint.com/api/user-data.php`
+   - ❌ `https://digital-zen.csmpoint.com/api/`
+
+**Подробное руководство:** [TROUBLESHOOTING_403.md](./TROUBLESHOOTING_403.md)
+
+**Другие причины:**
+- ModSecurity блокирует (свяжись с техподдержкой хостинга)
+- Старая версия PHP (нужна 7.4+)
+- Сервер не разрешает .htaccess (свяжись с техподдержкой)
 
 ### "Failed to connect to database"
 

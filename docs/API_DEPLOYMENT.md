@@ -53,6 +53,7 @@ Upload these files to your hosting server:
 ```
 digital-zen.csmpoint.com/
 └── api/
+    ├── .htaccess
     ├── config.php
     ├── helpers.php
     ├── user-data.php
@@ -63,6 +64,28 @@ You can use:
 - **FTP client** (FileZilla, WinSCP)
 - **cPanel File Manager**
 - **SSH/SFTP** if available
+
+### Important: Set File Permissions
+
+After uploading, set correct permissions:
+
+**Using FTP Client (FileZilla):**
+1. Right-click on `api` folder → Properties
+2. Set permissions to `755` (drwxr-xr-x)
+3. Right-click each `.php` file → Properties  
+4. Set permissions to `644` (-rw-r--r--)
+
+**Using cPanel File Manager:**
+1. Select `api` folder → Permissions
+2. Set to `755`
+3. Select all `.php` files → Permissions
+4. Set to `644`
+
+**Using SSH:**
+```bash
+chmod 755 api/
+chmod 644 api/*.php
+```
 
 ## Step 4: Create Database Tables
 
@@ -154,6 +177,29 @@ This means API is working! (It rejects request because no API key was sent)
 - API is configured to only accept requests from Chrome extensions
 - Make sure you're using the extension, not testing from browser console
 - Check that request is coming from `chrome-extension://` URL
+
+### Error: 403 Forbidden (HTML response)
+
+**This is the most common issue!** The 403 error means the web server is blocking access to the PHP files.
+
+**Quick fixes:**
+1. **Check file permissions** (most common cause):
+   - Directory: `755`
+   - PHP files: `644`
+
+2. **Make sure `.htaccess` file is uploaded** to the api folder
+
+3. **Access the full file path**: 
+   - ✅ `https://digital-zen.csmpoint.com/api/user-data.php`
+   - ❌ `https://digital-zen.csmpoint.com/api/`
+
+**See detailed troubleshooting guide:** [TROUBLESHOOTING_403.md](./TROUBLESHOOTING_403.md)
+
+**Common causes:**
+- File permissions are incorrect (need 644 for .php files)
+- ModSecurity is blocking requests (contact hosting support)
+- PHP version is too old (need PHP 7.4+)
+- Server doesn't allow .htaccess (contact hosting support)
 
 ### Tables Not Created
 
