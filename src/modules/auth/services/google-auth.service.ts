@@ -1,5 +1,5 @@
 import { computed, inject, Injectable, Signal, signal, WritableSignal } from '@angular/core';
-import { ApiService, API_URLS, LoggerService } from '../../common';
+import { ApiService, API_URLS, logger } from '../../common';
 
 export interface IGoogleUserInfo {
   sub: string;
@@ -22,7 +22,7 @@ export class GoogleAuthService {
     !!chrome.identity &&
     typeof chrome.identity.getAuthToken === 'function';
   readonly #apiService = inject(ApiService);
-  readonly #logger = inject(LoggerService);
+  readonly #logger = logger.createLogger('GoogleAuthService');
 
   readonly #isGoogleAuthenticated: WritableSignal<boolean> = signal(false);
   readonly #isPending: WritableSignal<boolean> = signal(false);
@@ -116,7 +116,7 @@ export class GoogleAuthService {
           this.#userInfo.set(info);
         },
         error: (err: unknown) => {
-          this.#logger.error('GoogleAuthService', 'Failed to fetch user info', err);
+          this.#logger.error('Failed to fetch user info', err);
         },
       });
   }

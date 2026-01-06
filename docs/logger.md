@@ -7,34 +7,53 @@
 - ✅ Работает в Angular компонентах и сервисах
 - ✅ Работает в background script (Chrome Extension Service Worker)
 - ✅ Поддержка уровней логирования (DEBUG, INFO, WARN, ERROR)
-- ✅ Настройка префиксов для модулей
+- ✅ Настройка префиксов для модулей через `createLogger()`
 - ✅ Опциональные timestamp в логах
 - ✅ Конфигурируемый минимальный уровень логирования
 - ✅ TypeScript strict mode совместимость
+- ✅ Единый API для всех контекстов (без отдельного Angular сервиса)
 
 ## Использование
 
 ### В Angular компонентах и сервисах
 
-Используйте `LoggerService` через dependency injection:
+Импортируйте `logger` напрямую из common/helpers:
 
 ```typescript
-import { Component, inject } from '@angular/core';
-import { LoggerService } from '../common';
+import { Component } from '@angular/core';
+import { logger } from '../common';
 
 @Component({
   selector: 'dz-my-component',
   templateUrl: './my-component.html',
 })
 export class MyComponent {
-  readonly #logger = inject(LoggerService);
+  readonly #logger = logger.createLogger('MyComponent');
 
   ngOnInit(): void {
-    this.#logger.info('MyComponent', 'Component initialized');
+    this.#logger.info('Component initialized');
   }
 
   handleAction(): void {
-    this.#logger.debug('MyComponent', 'Action triggered');
+    this.#logger.debug('Action triggered');
+  }
+}
+```
+
+### В Angular сервисах
+
+```typescript
+import { Injectable } from '@angular/core';
+import { logger } from '../common';
+
+@Injectable({
+  providedIn: 'root',
+})
+export class MyService {
+  readonly #logger = logger.createLogger('MyService');
+
+  performAction(): void {
+    this.#logger.info('Performing action...');
   }
 }
 ```
@@ -66,33 +85,27 @@ export class BackgroundService {
 
 ## API
 
-### LoggerService (Angular)
-
-```typescript
-class LoggerService {
-  // Прямые методы логирования
-  public debug(prefix: string, ...args: unknown[]): void;
-  public info(prefix: string, ...args: unknown[]): void;
-  public warn(prefix: string, ...args: unknown[]): void;
-  public error(prefix: string, ...args: unknown[]): void;
-
-  // Создать именованный логгер для модуля
-  public createLogger(prefix: string): {
-    debug: (...args: unknown[]) => void;
-    info: (...args: unknown[]) => void;
-    warn: (...args: unknown[]) => void;
-    error: (...args: unknown[]) => void;
-  };
-
-  // Конфигурация
-  public configure(config: Partial<LoggerConfig>): void;
-  public getConfig(): LoggerConfig;
-}
-```
-
 ### logger (Universal)
 
-Те же методы, что и у `LoggerService`, но без Angular DI.
+```typescript
+// Прямые методы логирования (с префиксом)
+logger.debug(prefix: string, ...args: unknown[]): void;
+logger.info(prefix: string, ...args: unknown[]): void;
+logger.warn(prefix: string, ...args: unknown[]): void;
+logger.error(prefix: string, ...args: unknown[]): void;
+
+// Создать именованный логгер для модуля (рекомендуется)
+logger.createLogger(prefix: string): {
+  debug: (...args: unknown[]) => void;
+  info: (...args: unknown[]) => void;
+  warn: (...args: unknown[]) => void;
+  error: (...args: unknown[]) => void;
+};
+
+// Конфигурация
+logger.configure(config: Partial<LoggerConfig>): void;
+logger.getConfig(): LoggerConfig;
+```
 
 ## Конфигурация
 
@@ -111,24 +124,18 @@ enum LogLevel {
 ### Настройка уровня логирования
 
 ```typescript
-import { LoggerService, LogLevel } from '../common';
+import { logger, LogLevel } from '../common';
 
-export class AppComponent {
-  readonly #logger = inject(LoggerService);
-
-  constructor() {
-    // Показывать только WARNING и ERROR
-    this.#logger.configure({
-      level: LogLevel.WARN,
-    });
-  }
-}
+// Показывать только WARNING и ERROR
+logger.configure({
+  level: LogLevel.WARN,
+});
 ```
 
 ### Отключение timestamp
 
 ```typescript
-this.#logger.configure({
+logger.configure({
   enableTimestamp: false,
 });
 ```
@@ -157,14 +164,14 @@ this.#logger.configure({
 
 ```typescript
 // ❌ Не рекомендуется
-this.#logger.info('AuthService', 'User logged in');
-this.#logger.info('AuthService', 'Token refreshed');
+logger.info('AuthService', 'User logged in');
+logger.info('AuthService', 'Token refreshed');
 
 // ✅ Рекомендуется
-readonly #moduleLogger = this.#logger.createLogger('AuthService');
+readonly #logger = logger.createLogger('AuthService');
 
-this.#moduleLogger.info('User logged in');
-this.#moduleLogger.info('Token refreshed');
+this.#logger.info('User logged in');
+this.#logger.info('Token refreshed');
 ```
 
 ### 2. Используйте подходящие уровни
@@ -179,8 +186,6 @@ this.#moduleLogger.info('Token refreshed');
 Всегда объявляйте logger как `readonly`:
 
 ```typescript
-readonly #logger = inject(LoggerService);
-// или
 readonly #logger = logger.createLogger('ModuleName');
 ```
 
@@ -189,8 +194,8 @@ readonly #logger = logger.createLogger('ModuleName');
 Следуйте соглашениям проекта:
 
 ```typescript
-readonly #logger = inject(LoggerService);  // ✅
-readonly logger = inject(LoggerService);   // ❌
+readonly #logger = logger.createLogger('ModuleName');  // ✅
+readonly logger = logger.createLogger('ModuleName');   // ❌
 ```
 
 ## Замена console.log/console.error
@@ -203,6 +208,7 @@ console.log('[MyService] Action completed');
 console.error('[MyService] Error:', error);
 
 // ✅ Новый способ
+readonly #logger = logger.createLogger('MyService');
 this.#logger.info('Action completed');
 this.#logger.error('Error:', error);
 ```
@@ -222,15 +228,17 @@ Logger уже интегрирован в:
 
 ```
 src/modules/common/
-├── helpers/
-│   └── logger.ts              # Универсальная реализация
-└── services/
-    └── logger.service.ts      # Angular wrapper
+└── helpers/
+    └── logger.ts              # Универсальная реализация для всех контекстов
 
 src/background/
 ├── background-service-MV3.ts  # Использует logger напрямую
 ├── storage-adapter.ts         # Использует logger напрямую
 └── user-data-sync-adapter.ts  # Использует logger напрямую
+
+src/modules/auth/services/
+├── auth.service.ts            # Использует logger напрямую
+└── google-auth.service.ts     # Использует logger напрямую
 ```
 
 ## TypeScript типы
@@ -247,4 +255,16 @@ type ModuleLogger = {
   warn: (...args: unknown[]) => void;
   error: (...args: unknown[]) => void;
 };
+```
+
+## Импорты
+
+```typescript
+// Из любого модуля в src/modules/
+import { logger, LogLevel } from '../common';
+// или более специфично
+import { logger, LogLevel } from '../common/helpers/logger';
+
+// Из background script
+import { logger } from '../modules/common/helpers/logger';
 ```
