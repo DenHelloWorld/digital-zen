@@ -28,12 +28,15 @@ try {
   // Read the api-config file
   let content = fs.readFileSync(apiConfigPath, 'utf8');
 
+  // Escape special characters in the API key for use in regex replacement
+  // In regex replacement strings, $ has special meaning (backreferences)
+  // We need to escape it by replacing $ with $$
+  // This ensures the API key is inserted literally, not interpreted as regex syntax
+  const escapedApiKey = process.env.API_SECRET_KEY.replace(/\$/g, '$$$$');
+
   // Replace empty apiKey with actual value
   // The pattern looks for: apiKey: '' or apiKey: ""
-  content = content.replace(
-    /(apiKey:\s*['"])(['"])/g,
-    `$1${process.env.API_SECRET_KEY}$2`
-  );
+  content = content.replace(/(apiKey:\s*['"])(['"])/g, `$1${escapedApiKey}$2`);
 
   // Write the patched content back
   fs.writeFileSync(apiConfigPath, content);

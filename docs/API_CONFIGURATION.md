@@ -21,10 +21,23 @@ Edit the `.env` file and set the `API_SECRET_KEY`:
 ```env
 # API Secret Key (must match the key in api/config.php on the server)
 # Generate a strong random string (at least 32 characters)
-API_SECRET_KEY=your_random_secret_key_here
+# IMPORTANT: Use quotes if the key contains special characters like # or $
+API_SECRET_KEY='your_random_secret_key_here'
 ```
 
-**Important:** This key must match the `API_SECRET_KEY` defined in `api/config.php` on your backend server.
+**Important Notes:**
+- This key must match the `API_SECRET_KEY` defined in `api/config.php` on your backend server
+- **Always use quotes** around the value if it contains special characters (`#`, `$`, `{`, `}`, etc.)
+- Without quotes, characters like `#` will be treated as comments and truncate the key
+
+**Example:**
+```env
+# WRONG - will be truncated at #
+API_SECRET_KEY=4vJxag1ilzIX6B#}H{hmYzVoQuLGu1+8
+
+# CORRECT - quotes preserve special characters
+API_SECRET_KEY='4vJxag1ilzIX6B#}H{hmYzVoQuLGu1+8'
+```
 
 ### 3. Generate a Secure Key
 
