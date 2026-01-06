@@ -73,7 +73,7 @@ export class UserDataSyncAdapter {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        'x-api-key': API_CONFIG.apiKey,
+        'X-API-Key': API_CONFIG.apiKey,
       },
     });
 
@@ -105,7 +105,7 @@ export class UserDataSyncAdapter {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-api-key': API_CONFIG.apiKey,
+        'X-API-Key': API_CONFIG.apiKey,
       },
       body: JSON.stringify(requestBody),
     });
@@ -143,7 +143,7 @@ export class UserDataSyncAdapter {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-api-key': API_CONFIG.apiKey,
+        'X-API-Key': API_CONFIG.apiKey,
       },
       body: JSON.stringify(requestBody),
     });
