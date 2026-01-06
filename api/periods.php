@@ -398,37 +398,56 @@ function updatePeriod($database, $periodId, $periodData) {
     $database->beginTransaction();
     
     try {
-        // Update period
-        $periodQuery = "UPDATE periods SET 
-            period_name = :name,
-            period_description = :description,
-            start_from = :start_from,
-            end_to = :end_to,
-            days_of_week = :days_of_week,
-            is_focused = :is_focused,
-            session_start_time = :session_start_time
-        WHERE id = :id";
+        // Build dynamic update query based on provided fields
+        $updateFields = [];
+        $params = [':id' => $periodId];
         
-        $periodStatement = $database->prepare($periodQuery);
+        if (isset($periodData['name'])) {
+            $updateFields[] = "period_name = :name";
+            $params[':name'] = $periodData['name'];
+        }
         
-        $periodName = $periodData['name'] ?? '';
-        $periodDescription = $periodData['description'] ?? '';
-        $startFrom = $periodData['startFrom'] ?? null;
-        $endTo = $periodData['endTo'] ?? null;
-        $daysOfWeek = json_encode($periodData['daysOfWeek'] ?? []);
-        $isFocused = isset($periodData['isFocused']) ? (int)$periodData['isFocused'] : 0;
-        $sessionStartTime = $periodData['sessionStartTime'] ?? null;
+        if (isset($periodData['description'])) {
+            $updateFields[] = "period_description = :description";
+            $params[':description'] = $periodData['description'];
+        }
         
-        $periodStatement->bindParam(':id', $periodId);
-        $periodStatement->bindParam(':name', $periodName);
-        $periodStatement->bindParam(':description', $periodDescription);
-        $periodStatement->bindParam(':start_from', $startFrom);
-        $periodStatement->bindParam(':end_to', $endTo);
-        $periodStatement->bindParam(':days_of_week', $daysOfWeek);
-        $periodStatement->bindParam(':is_focused', $isFocused);
-        $periodStatement->bindParam(':session_start_time', $sessionStartTime);
+        if (isset($periodData['startFrom'])) {
+            $updateFields[] = "start_from = :start_from";
+            $params[':start_from'] = $periodData['startFrom'];
+        }
         
-        $periodStatement->execute();
+        if (isset($periodData['endTo'])) {
+            $updateFields[] = "end_to = :end_to";
+            $params[':end_to'] = $periodData['endTo'];
+        }
+        
+        if (isset($periodData['daysOfWeek'])) {
+            $updateFields[] = "days_of_week = :days_of_week";
+            $params[':days_of_week'] = json_encode($periodData['daysOfWeek']);
+        }
+        
+        if (isset($periodData['isFocused'])) {
+            $updateFields[] = "is_focused = :is_focused";
+            $params[':is_focused'] = (int)$periodData['isFocused'];
+        }
+        
+        if (isset($periodData['sessionStartTime'])) {
+            $updateFields[] = "session_start_time = :session_start_time";
+            $params[':session_start_time'] = $periodData['sessionStartTime'];
+        }
+        
+        // Only update if there are fields to update
+        if (!empty($updateFields)) {
+            $periodQuery = "UPDATE periods SET " . implode(', ', $updateFields) . " WHERE id = :id";
+            $periodStatement = $database->prepare($periodQuery);
+            
+            foreach ($params as $key => $value) {
+                $periodStatement->bindValue($key, $value);
+            }
+            
+            $periodStatement->execute();
+        }
         
         // Delete existing websites and focused times
         $deleteWebsitesQuery = "DELETE FROM websites WHERE period_id = :period_id";
