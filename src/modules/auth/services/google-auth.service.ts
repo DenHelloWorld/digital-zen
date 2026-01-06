@@ -11,23 +11,44 @@ export interface IGoogleUserInfo {
   email_verified: boolean;
 }
 
+/**
+ * Google authentication service for Chrome Extension
+ * Handles Google OAuth authentication flow and user info retrieval
+ * 
+ * @guidelines
+ * - DZ_02: Dependency injection using inject() function
+ * - DZ_04: Angular Signals for reactive state (signal, computed)
+ * - DZ_05: RxJS in ApiService for HTTP requests (valid use case)
+ * - DZ_08: Private fields with # prefix
+ * - DZ_09: Readonly for injected dependencies
+ * - DZ_11: Universal Logger usage
+ * 
+ * @see /docs/CODING_GUIDELINES.md
+ * @see https://angular.dev/guide/signals (Signals)
+ * @see https://developer.chrome.com/docs/extensions/reference/api/identity (Chrome Identity API)
+ */
 @Injectable({
   providedIn: 'root',
 })
 export class GoogleAuthService {
+  /** @guideline DZ_08 - Private readonly field for runtime check */
   readonly #isChromeRuntime: boolean =
     typeof chrome !== 'undefined' &&
     !!chrome.runtime &&
     !!chrome.runtime.id &&
     !!chrome.identity &&
     typeof chrome.identity.getAuthToken === 'function';
+  /** @guideline DZ_02, DZ_09 - Dependency injection with inject(), readonly */
   readonly #apiService = inject(ApiService);
+  /** @guideline DZ_11 - Universal Logger usage */
   readonly #logger = logger.createLogger('GoogleAuthService');
 
+  /** @guideline DZ_04, DZ_08 - Private writable signals for internal state */
   readonly #isGoogleAuthenticated: WritableSignal<boolean> = signal(false);
   readonly #isPending: WritableSignal<boolean> = signal(false);
   readonly #userInfo: WritableSignal<IGoogleUserInfo | null> = signal(null);
 
+  /** @guideline DZ_04 - Public readonly computed signals for consumers */
   public isGoogleAuthenticated: Signal<boolean> = computed(() => this.#isGoogleAuthenticated());
   public isPending: Signal<boolean> = computed(() => this.#isPending());
   public userInfo: Signal<IGoogleUserInfo | null> = computed(() => this.#userInfo());

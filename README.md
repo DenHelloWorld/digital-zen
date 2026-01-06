@@ -410,7 +410,12 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Additional Resources
 
-- [Angular Documentation](https://angular.dev/)
+**Official Documentation:**
+- [Angular Documentation](https://angular.dev/) - Primary source for Angular patterns
 - [Chrome Extension Documentation](https://developer.chrome.com/docs/extensions/)
 - [Angular CLI Command Reference](https://angular.dev/tools/cli)
 - [TypeScript Documentation](https://www.typescriptlang.org/docs/)
+
+**Project Guidelines:**
+- [Digital Zen Coding Guidelines](./docs/CODING_GUIDELINES.md) - Complete reference for development patterns
+- [Logger Documentation](./docs/logger.md) - Universal logger usage guide

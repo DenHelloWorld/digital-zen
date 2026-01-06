@@ -11,6 +11,21 @@ import {
 } from '../common';
 import { PeriodComponent } from './components/period/period.component';
 
+/**
+ * Focus management component
+ * Main component for managing focus sessions and periods
+ * 
+ * @guidelines
+ * - DZ_01: Standalone component with imports array
+ * - DZ_02: Dependency injection using inject() function
+ * - DZ_03: OnPush change detection strategy
+ * - DZ_04: Angular Signals for reactive state (signal, computed)
+ * - DZ_08: Private fields with # prefix
+ * - DZ_09: Readonly for injected dependencies
+ * - DZ_10: UI text constants usage
+ * 
+ * @see /docs/CODING_GUIDELINES.md
+ */
 @Component({
   selector: 'dz-focus',
   templateUrl: './focus.component.html',
@@ -23,17 +38,25 @@ import { PeriodComponent } from './components/period/period.component';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FocusComponent {
+  /** @guideline DZ_02, DZ_08, DZ_09 - Dependency injection with inject(), private #, readonly */
   readonly #focusService: FocusService = inject(FocusService);
 
+  /** @guideline DZ_04 - Signals for reactive state */
   protected readonly activeTab: Signal<chrome.tabs.Tab | undefined> = this.#focusService.activeTab;
+  /** @guideline DZ_04 - Signals for reactive state */
   protected readonly currentPeriod: Signal<IFocus.Period | null> = this.#focusService.currentPeriod;
+  /** @guideline DZ_04 - Signals for reactive state */
   protected readonly periods: Signal<IFocus.Period[] | null> = this.#focusService.periods;
+  /** @guideline DZ_04 - Computed signal (derived state) */
   protected readonly periodsCount: Signal<number> = computed(() => this.periods()?.length ?? 0);
+  /** @guideline DZ_04 - Signals for reactive state */
   protected readonly focusElapsedTimeFormatted: Signal<string> =
     this.#focusService.focusElapsedTimeFormatted;
+  /** @guideline DZ_04 - Computed signal (derived state) */
   protected readonly isFocusActive: Signal<boolean> = computed(
     () => this.currentPeriod()?.isFocused ?? false
   );
+  /** @guideline DZ_04 - Computed signal (derived state) */
   protected readonly displayedPeriods: Signal<IFocus.Period[]> = computed(() => {
     const current = this.currentPeriod();
     const all = this.periods();
@@ -59,6 +82,7 @@ export class FocusComponent {
   protected readonly isSvgIcon: (url: string | null | undefined) => boolean = isSvgIcon;
   protected readonly isImageIcon: (url: string | null | undefined) => boolean = isImageIcon;
   protected readonly isHttpUrl: (url: string | null | undefined) => boolean = isHttpUrl;
+  /** @guideline DZ_10 - UI text constants */
   protected readonly uiText = UI_TEXT;
   protected readonly icons = ICONS;
 

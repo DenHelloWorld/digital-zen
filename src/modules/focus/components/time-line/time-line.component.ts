@@ -46,9 +46,12 @@ export class TimeLineComponent implements OnInit, OnDestroy {
 
     return ((nowTime - startTime) / (endTime - startTime)) * 100;
   });
+  /** @guideline DZ_04 - Computed signal (derived state) */
   readonly nowTime: Signal<Date> = computed(() => new Date(this.#now()));
+  /** @guideline DZ_10 - UI text constants */
   protected readonly uiText = UI_TEXT;
 
+  /** @guideline DZ_04 - InputSignal for component inputs */
   public readonly startFrom: InputSignal<Date> = input.required<Date>();
   public readonly endTo: InputSignal<Date> = input.required<Date>();
 
