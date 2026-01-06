@@ -1,10 +1,12 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  computed,
   input,
   InputSignal,
   model,
   ModelSignal,
+  Signal,
 } from '@angular/core';
 import { TitleCasePipe } from '@angular/common';
 
@@ -27,6 +29,20 @@ export class MultiSelectorComponent<T> {
   public readonly highlightedId: InputSignal<T[keyof T] | null> = input<T[keyof T] | null>(null);
 
   public readonly selectedEntities: ModelSignal<T[] | undefined> = model<T[]>();
+
+  // In read-only mode, show only selected entities
+  protected readonly displayedEntities: Signal<T[]> = computed(() => {
+    const entities = this.entities();
+    if (!this.isSelectable()) {
+      const selected = this.selectedEntities() ?? [];
+      if (selected.length === 0) {
+        return entities;
+      }
+      const selectedIds = selected.map(e => e[this.idKey()]);
+      return entities.filter(e => selectedIds.includes(e[this.idKey()]));
+    }
+    return entities;
+  });
 
   protected isSelected = (item: T): boolean => {
     const selected = this.selectedEntities() ?? [];

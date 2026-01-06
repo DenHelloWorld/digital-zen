@@ -3,13 +3,13 @@
   [class.dz-list--horizontal]="orientation() === 'horizontal'"
   [class.dz-list--vertical]="orientation() === 'vertical'"
 >
-  @for (entity of entities(); track entity[this.idKey()]) {
-    <li>
+  @for (entity of displayedEntities(); track entity[this.idKey()]) {
+    <li [class.dz-multi-selector__highlighted-item]="isHighlighted(entity)">
       <button
         [disabled]="isReadonly(entity)"
         class="dz-button dz-button--sm"
         [class.dz-button--activated]="isSelected(entity)"
-        [class.shadow--activated]="isHighlighted(entity)"
+        [class.dz-button--highlighted]="isHighlighted(entity)"
         (click)="toggle(entity)"
       >
         {{ getLabel(entity) | titlecase }}

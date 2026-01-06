@@ -1,0 +1,11 @@
+.dz-multi-selector__highlighted-item {
+  padding: var(--spacing-xs);
+  border: 2px solid var(--color-zen-accent);
+  border-radius: var(--radius);
+  background-color: var(--color-component-bg-light);
+}
+
+.dz-button--highlighted {
+  box-shadow: 0 0 8px var(--color-zen-accent);
+  border: 2px solid var(--color-zen-accent);
+}
