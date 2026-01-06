@@ -1,30 +1,9 @@
 import { inject, Injectable } from '@angular/core';
 import { ApiService } from './api.service';
 import { API_CONFIG } from '../constants';
-import { IFocus } from '../models';
+import { IFocus, IUserDataResponse, ISaveUserDataRequest } from '../models';
 import { map, Observable } from 'rxjs';
 import { GoogleAuthService, IGoogleUserInfo } from './google-auth.service';
-
-/**
- * Response from user data API
- */
-export interface UserDataResponse {
-  user: {
-    id: number;
-    email: string;
-    user_id: string;
-  } | null;
-  periods: IFocus.Period[];
-}
-
-/**
- * Request to save user data
- */
-export interface SaveUserDataRequest {
-  user_email: string;
-  user_id: string;
-  periods: IFocus.Period[];
-}
 
 /**
  * User Data Sync Service
@@ -45,7 +24,7 @@ export class UserDataSyncService {
    * @returns Observable with user data
    * @throws Error if both userEmail and userId are empty
    */
-  getUserData(userEmail: string, userId: string): Observable<UserDataResponse> {
+  public getUserData(userEmail: string, userId: string): Observable<IUserDataResponse> {
     // Validate that at least one parameter is provided
     if (!userEmail && !userId) {
       throw new Error('At least one of userEmail or userId must be provided');
@@ -63,7 +42,7 @@ export class UserDataSyncService {
     }
 
     return this.#apiService
-      .get<{ success: boolean; data: UserDataResponse }>(url, params)
+      .get<{ success: boolean; data: IUserDataResponse }>(url, params)
       .pipe(map(response => response.data));
   }
 
@@ -75,7 +54,7 @@ export class UserDataSyncService {
    * @returns Observable with user data
    * @throws Error if both userEmail and userId are empty
    */
-  getUserDataWithBody(userEmail: string, userId: string): Observable<UserDataResponse> {
+  public getUserDataWithBody(userEmail: string, userId: string): Observable<IUserDataResponse> {
     // Validate that at least one parameter is provided
     if (!userEmail && !userId) {
       throw new Error('At least one of userEmail or userId must be provided');
@@ -93,7 +72,7 @@ export class UserDataSyncService {
     }
 
     return this.#apiService
-      .get<{ success: boolean; data: UserDataResponse }>(url, {}, body)
+      .get<{ success: boolean; data: IUserDataResponse }>(url, {}, body)
       .pipe(map(response => response.data));
   }
 
@@ -105,14 +84,14 @@ export class UserDataSyncService {
    * @param periods Array of periods to save
    * @returns Observable with save result
    */
-  saveUserData(
+  public saveUserData(
     userEmail: string,
     userId: string,
     periods: IFocus.Period[]
   ): Observable<{ message: string; user_id: number }> {
     const url = `${API_CONFIG.apiUrl}/user`;
 
-    const requestBody: SaveUserDataRequest = {
+    const requestBody: ISaveUserDataRequest = {
       user_email: userEmail,
       user_id: userId,
       periods: periods,
@@ -129,7 +108,7 @@ export class UserDataSyncService {
    *
    * @returns Object with email and userId or null
    */
-  getCurrentUserInfo(): { email: string; userId: string } | null {
+  public getCurrentUserInfo(): { email: string; userId: string } | null {
     const userInfo: IGoogleUserInfo | null = this.#googleAuthService.userInfo();
 
     if (!userInfo || !userInfo.email) {
