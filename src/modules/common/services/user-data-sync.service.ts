@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { ApiService } from './api.service';
 import { API_CONFIG } from '../constants';
-import { IFocus, IUserDataResponse, ISaveUserDataRequest } from '../models';
+import { IFocus, IUserDataSync } from '../models';
 import { map, Observable } from 'rxjs';
 import { GoogleAuthService, IGoogleUserInfo } from './google-auth.service';
 
@@ -24,7 +24,7 @@ export class UserDataSyncService {
    * @returns Observable with user data
    * @throws Error if both userEmail and userId are empty
    */
-  public getUserData(userEmail: string, userId: string): Observable<IUserDataResponse> {
+  public getUserData(userEmail: string, userId: string): Observable<IUserDataSync.Response> {
     // Validate that at least one parameter is provided
     if (!userEmail && !userId) {
       throw new Error('At least one of userEmail or userId must be provided');
@@ -42,7 +42,7 @@ export class UserDataSyncService {
     }
 
     return this.#apiService
-      .get<{ success: boolean; data: IUserDataResponse }>(url, params)
+      .get<{ success: boolean; data: IUserDataSync.Response }>(url, params)
       .pipe(map(response => response.data));
   }
 
@@ -54,7 +54,7 @@ export class UserDataSyncService {
    * @returns Observable with user data
    * @throws Error if both userEmail and userId are empty
    */
-  public getUserDataWithBody(userEmail: string, userId: string): Observable<IUserDataResponse> {
+  public getUserDataWithBody(userEmail: string, userId: string): Observable<IUserDataSync.Response> {
     // Validate that at least one parameter is provided
     if (!userEmail && !userId) {
       throw new Error('At least one of userEmail or userId must be provided');
@@ -72,7 +72,7 @@ export class UserDataSyncService {
     }
 
     return this.#apiService
-      .get<{ success: boolean; data: IUserDataResponse }>(url, {}, body)
+      .get<{ success: boolean; data: IUserDataSync.Response }>(url, {}, body)
       .pipe(map(response => response.data));
   }
 
@@ -91,7 +91,7 @@ export class UserDataSyncService {
   ): Observable<{ message: string; user_id: number }> {
     const url = `${API_CONFIG.apiUrl}/user`;
 
-    const requestBody: ISaveUserDataRequest = {
+    const requestBody: IUserDataSync.SaveRequest = {
       user_email: userEmail,
       user_id: userId,
       periods: periods,
