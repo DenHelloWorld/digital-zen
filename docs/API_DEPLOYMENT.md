@@ -23,6 +23,7 @@ Example: `k8jH#mP9$nQ2*rT5&vW7@xY0!zA3^bC6`
 
 1. On your local computer, go to `api/` folder
 2. Copy `config.example.php` to `config.php`:
+
    ```bash
    cp config.example.php config.php
    ```
@@ -32,16 +33,17 @@ Example: `k8jH#mP9$nQ2*rT5&vW7@xY0!zA3^bC6`
    ```php
    define('DB_PASS', '');
    ```
-3. Replace with your database password:
+5. Replace with your database password:
+
    ```php
    define('DB_PASS', 'your_actual_database_password');
    ```
 
-4. Find this line:
+6. Find this line:
    ```php
    define('API_SECRET_KEY', '');
    ```
-5. Replace with the secret key you generated in Step 1:
+7. Replace with the secret key you generated in Step 1:
    ```php
    define('API_SECRET_KEY', 'k8jH#mP9$nQ2*rT5&vW7@xY0!zA3^bC6');
    ```
@@ -61,6 +63,7 @@ digital-zen.csmpoint.com/
 ```
 
 You can use:
+
 - **FTP client** (FileZilla, WinSCP)
 - **cPanel File Manager**
 - **SSH/SFTP** if available
@@ -70,18 +73,21 @@ You can use:
 After uploading, set correct permissions:
 
 **Using FTP Client (FileZilla):**
+
 1. Right-click on `api` folder → Properties
 2. Set permissions to `755` (drwxr-xr-x)
-3. Right-click each `.php` file → Properties  
+3. Right-click each `.php` file → Properties
 4. Set permissions to `644` (-rw-r--r--)
 
 **Using cPanel File Manager:**
+
 1. Select `api` folder → Permissions
 2. Set to `755`
 3. Select all `.php` files → Permissions
 4. Set to `644`
 
 **Using SSH:**
+
 ```bash
 chmod 755 api/
 chmod 644 api/*.php
@@ -156,6 +162,7 @@ This means API is working! (It rejects request because no API key was sent)
 ## Step 7: Build and Test Extension
 
 1. Build the extension:
+
    ```bash
    npm run build
    ```
@@ -175,6 +182,7 @@ This means API is working! (It rejects request because no API key was sent)
 **Problem**: Error "Failed to connect to database"
 
 **Solution**:
+
 - Check database password in `api/config.php`
 - Verify database exists in phpMyAdmin
 - Check database name and username are correct
@@ -184,6 +192,7 @@ This means API is working! (It rejects request because no API key was sent)
 **Problem**: Extension cannot save data to API
 
 **Solution**:
+
 - Make sure API key in `api-config.const.ts` matches `API_SECRET_KEY` in `api/config.php`
 - Both keys must be EXACTLY the same (including case)
 - Rebuild extension after changing the key
@@ -193,6 +202,7 @@ This means API is working! (It rejects request because no API key was sent)
 **Problem**: Browser shows CORS errors in console
 
 **Solution**:
+
 - API is configured to only accept requests from Chrome extensions
 - Make sure you're using the extension, not testing from browser console
 - Check that request is coming from `chrome-extension://` URL
@@ -202,19 +212,21 @@ This means API is working! (It rejects request because no API key was sent)
 **This is the most common issue!** The 403 error means the web server is blocking access to the PHP files.
 
 **Quick fixes:**
+
 1. **Check file permissions** (most common cause):
    - Directory: `755`
    - PHP files: `644`
 
 2. **Make sure `.htaccess` file is uploaded** to the api folder
 
-3. **Access the full file path**: 
+3. **Access the full file path**:
    - ✅ `https://digital-zen.csmpoint.com/api/user`
    - ❌ `https://digital-zen.csmpoint.com/api/`
 
 **See detailed troubleshooting guide:** [TROUBLESHOOTING_403.md](./TROUBLESHOOTING_403.md)
 
 **Common causes:**
+
 - File permissions are incorrect (need 644 for .php files)
 - ModSecurity is blocking requests (contact hosting support)
 - PHP version is too old (need PHP 7.4+)
@@ -225,6 +237,7 @@ This means API is working! (It rejects request because no API key was sent)
 **Problem**: phpMyAdmin shows no tables
 
 **Solution**:
+
 - Make sure you selected correct database before running SQL
 - Check if there were any error messages in phpMyAdmin
 - Try running SQL statements one by one
@@ -247,6 +260,7 @@ This means API is working! (It rejects request because no API key was sent)
 ## Next Steps
 
 After successful deployment:
+
 1. Test saving and loading user data
 2. Monitor database size
 3. Set up regular backups
@@ -255,6 +269,7 @@ After successful deployment:
 ## Support
 
 If you have issues:
+
 1. Check browser console for errors
 2. Check PHP error logs on server
 3. Test API endpoint directly in browser

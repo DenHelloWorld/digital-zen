@@ -7,6 +7,7 @@ If you're getting a **403 Forbidden** error when accessing the API, this is a **
 If you get 403 when accessing `https://digital-zen.csmpoint.com/api/` (the root), but `/api/user` works:
 
 **Solution:**
+
 1. Make sure `index.php` is uploaded to the api folder
 2. Check that `.htaccess` has `DirectoryIndex index.php`
 3. Verify `index.php` has 644 permissions
@@ -21,6 +22,7 @@ If you get 403 when accessing `https://digital-zen.csmpoint.com/api/` (the root)
 The server needs to be able to read the PHP files.
 
 **Solution:**
+
 ```bash
 # Set correct permissions for API files
 chmod 644 api/*.php
@@ -28,6 +30,7 @@ chmod 755 api/
 ```
 
 Or through FTP/File Manager:
+
 - API directory: `755` (drwxr-xr-x)
 - PHP files: `644` (-rw-r--r--)
 
@@ -37,6 +40,7 @@ Some servers don't allow directory browsing and might block access.
 
 **Solution:**
 Make sure you're accessing the file directly:
+
 - ✅ `https://digital-zen.csmpoint.com/api/user`
 - ❌ `https://digital-zen.csmpoint.com/api/`
 
@@ -46,6 +50,7 @@ Some hosting providers have ModSecurity that blocks certain requests.
 
 **Solution:**
 Contact your hosting support and ask them to:
+
 - Check ModSecurity logs
 - Whitelist your API directory
 - Or disable ModSecurity for the API folder
@@ -55,6 +60,7 @@ Contact your hosting support and ask them to:
 Existing `.htaccess` rules might block access.
 
 **Solution:**
+
 1. Check if there's a `.htaccess` file in the parent directory
 2. The API directory now has its own `.htaccess` file
 3. If issues persist, try temporarily renaming parent `.htaccess` to test
@@ -64,6 +70,7 @@ Existing `.htaccess` rules might block access.
 Some servers require PHP 7.4+ for the code to work properly.
 
 **Solution:**
+
 - Check PHP version in hosting control panel
 - Set PHP version to 7.4 or higher for the `api/` directory
 
@@ -73,6 +80,7 @@ Server might not allow `.htaccess` overrides.
 
 **Solution:**
 Contact hosting support and ask them to check:
+
 ```apache
 <Directory /path/to/digital-zen.csmpoint.com/api>
     AllowOverride All
@@ -82,7 +90,9 @@ Contact hosting support and ask them to check:
 ## Testing Steps
 
 ### Step 1: Test Simple PHP
+
 Create `test.php` in the api directory:
+
 ```php
 <?php
 echo "PHP is working!";
@@ -98,11 +108,13 @@ Access: `https://digital-zen.csmpoint.com/api/test.php`
 ### Step 2: Check Error Logs
 
 In cPanel or hosting control panel:
+
 1. Go to **Error Logs**
 2. Look for recent 403 errors
 3. The log will show the exact reason
 
 Common messages:
+
 - "Permission denied" → File permissions issue
 - "ModSecurity" → Security module blocking
 - "htaccess" → .htaccess configuration issue
@@ -112,6 +124,7 @@ Common messages:
 The API should return a JSON error, not HTML 403:
 
 Expected response (without API key):
+
 ```json
 {
   "success": false,
@@ -165,6 +178,7 @@ The 403 error only occurs on the hosting server, not locally. To test locally:
 ## Alternative: Test with Simple Script
 
 Replace contents of `user-data.php` temporarily with:
+
 ```php
 <?php
 header('Content-Type: application/json');

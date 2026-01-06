@@ -47,9 +47,10 @@
 
   .dz-footer {
     width: 100%;
+    display: flex;
+    justify-content: space-between;
     height: var(--footer-height);
     padding: var(--spacing);
-    text-align: center;
     font-size: 0.75rem;
     background-color: var(--color-background);
     color: var(--color-text);
@@ -65,6 +66,10 @@
         opacity: 1;
         text-decoration: underline;
       }
+    }
+
+    &__sync {
+      font-size: 0.8em;
     }
   }
 }
