@@ -1,0 +1,14 @@
+:host {
+  .dz-list {
+    &--horizontal {
+      align-items: center;
+    }
+
+    &__item--highlighted {
+      &--highlighted {
+        padding: var(--spacing-xs);
+        border: 2px solid var(--color-zen-error);
+      }
+    }
+  }
+}
