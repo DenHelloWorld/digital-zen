@@ -1,0 +1,66 @@
+# REST API Configuration
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /api/
+    
+    # Redirect directory to index.php
+    DirectoryIndex index.php
+    
+    # Remove .php extension for clean URLs
+    # /api/user will route to user.php
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_FILENAME}.php -f
+    RewriteRule ^(.+)$ $1.php [L,QSA]
+    
+    # Redirect old user-data.php to /user for backwards compatibility
+    RewriteRule ^user-data\.php$ user.php [L,QSA]
+</IfModule>
+
+# Allow access to test.php (no auth required)
+<Files "test.php">
+    Order allow,deny
+    Allow from all
+</Files>
+
+# Allow access to index.php explicitly
+<Files "index.php">
+    Order allow,deny
+    Allow from all
+</Files>
+
+# Allow access to user.php
+<Files "user.php">
+    Order allow,deny
+    Allow from all
+</Files>
+
+# Prevent access to config.php from browser
+<Files "config.php">
+    Order deny,allow
+    Deny from all
+</Files>
+
+# Prevent access to helpers.php from browser
+<Files "helpers.php">
+    Order deny,allow
+    Deny from all
+</Files>
+
+# Prevent access to config.example.php from browser
+<Files "config.example.php">
+    Order deny,allow
+    Deny from all
+</Files>
+
+# Allow .htaccess itself
+<Files ".htaccess">
+    Order allow,deny
+    Allow from all
+</Files>
+
+# Prevent directory listing but allow index.php
+Options -Indexes +FollowSymLinks
+
+# Set proper content type for PHP files
+AddType application/x-httpd-php .php

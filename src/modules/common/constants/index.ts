@@ -1,5 +1,6 @@
 export * from './quick-focus-id.const';
 export * from './api-urls.const';
+export * from './api-config.const';
 export * from './ui-text.const';
 export * from './icons.const';
 
