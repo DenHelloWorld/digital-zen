@@ -4,7 +4,7 @@
       align-items: center;
     }
 
-    &__item--highlighted {
+    &__item {
       &--highlighted {
         padding: var(--spacing-xs);
         border: 2px solid var(--color-zen-error);
