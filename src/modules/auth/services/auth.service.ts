@@ -1,12 +1,13 @@
 import { effect, inject, Injectable, Signal } from '@angular/core';
 import { GoogleAuthService } from './google-auth.service';
-import { CHROME_COMMAND_ENUM } from '../../common';
+import { CHROME_COMMAND_ENUM, LoggerService } from '../../common';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  readonly #googleAuthService: GoogleAuthService = inject(GoogleAuthService);
+  readonly #googleAuthService = inject(GoogleAuthService);
+  readonly #logger = inject(LoggerService);
   readonly #isChromeRuntime: boolean = typeof chrome !== 'undefined' && !!chrome.runtime;
 
   public isGoogleAuthenticated: Signal<boolean> = this.#googleAuthService.isGoogleAuthenticated;
@@ -46,12 +47,12 @@ export class AuthService {
         },
         response => {
           if (chrome.runtime.lastError) {
-            console.error('[AuthService] Background sync failed:', chrome.runtime.lastError);
+            this.#logger.error('AuthService', 'Background sync failed:', chrome.runtime.lastError);
           } else if (response?.success) {
-            console.log('[AuthService] Background sync completed successfully');
+            this.#logger.info('AuthService', 'Background sync completed successfully');
           } else {
             const errorMessage = response?.error ?? 'Unknown error during background sync';
-            console.error('[AuthService] Background sync returned error:', errorMessage);
+            this.#logger.error('AuthService', 'Background sync returned error:', errorMessage);
           }
         }
       );

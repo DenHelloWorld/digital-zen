@@ -27,21 +27,26 @@ class UniversalLogger {
   /**
    * Configure the logger
    */
-  configure(config: Partial<LoggerConfig>): void {
+  public configure(config: Partial<LoggerConfig>): void {
     this.#config = { ...this.#config, ...config };
   }
 
   /**
    * Get current configuration
    */
-  getConfig(): LoggerConfig {
+  public getConfig(): LoggerConfig {
     return { ...this.#config };
   }
 
   /**
    * Create a prefixed logger for a specific module
    */
-  createLogger(prefix: string) {
+  public createLogger(prefix: string): {
+    debug: (...args: unknown[]) => void;
+    info: (...args: unknown[]) => void;
+    warn: (...args: unknown[]) => void;
+    error: (...args: unknown[]) => void;
+  } {
     return {
       debug: (...args: unknown[]) => this.#log(LogLevel.DEBUG, prefix, ...args),
       info: (...args: unknown[]) => this.#log(LogLevel.INFO, prefix, ...args),
@@ -53,28 +58,28 @@ class UniversalLogger {
   /**
    * Log at DEBUG level
    */
-  debug(prefix: string, ...args: unknown[]): void {
+  public debug(prefix: string, ...args: unknown[]): void {
     this.#log(LogLevel.DEBUG, prefix, ...args);
   }
 
   /**
    * Log at INFO level
    */
-  info(prefix: string, ...args: unknown[]): void {
+  public info(prefix: string, ...args: unknown[]): void {
     this.#log(LogLevel.INFO, prefix, ...args);
   }
 
   /**
    * Log at WARN level
    */
-  warn(prefix: string, ...args: unknown[]): void {
+  public warn(prefix: string, ...args: unknown[]): void {
     this.#log(LogLevel.WARN, prefix, ...args);
   }
 
   /**
    * Log at ERROR level
    */
-  error(prefix: string, ...args: unknown[]): void {
+  public error(prefix: string, ...args: unknown[]): void {
     this.#log(LogLevel.ERROR, prefix, ...args);
   }
 

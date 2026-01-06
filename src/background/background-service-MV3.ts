@@ -10,6 +10,7 @@ import {
 import { CHROME_ALARM_ENUM } from '../modules/common/enums/chrome-alarm-name.enum';
 import { FOCUS_ERROR_ENUM } from '../modules/common/enums/focus-error.enum';
 import { isCurrentTimeAfter } from '../modules/common/helpers/time.helper';
+import { logger } from '../modules/common/helpers/logger';
 
 type FocusOperationResult = { success: true } | { success: false; error: FOCUS_ERROR_ENUM };
 
@@ -20,6 +21,7 @@ type FocusOperationResult = { success: true } | { success: false; error: FOCUS_E
 export class BackgroundServiceMV3 {
   #currentPeriod: IFocus.Period | null = null;
   #sessionStartTime: Date | null = null;
+  readonly #logger = logger.createLogger('BackgroundService');
 
   constructor() {
     this.initializeListeners();
@@ -107,7 +109,7 @@ export class BackgroundServiceMV3 {
               sendResponse({ success: false, error: FOCUS_ERROR_ENUM.UNKNOWN_COMMAND });
           }
         } catch (error) {
-          console.error('Background error:', error);
+          this.#logger.error('Error handling message:', error);
           sendResponse({ success: false, error: FOCUS_ERROR_ENUM.GENERIC_ERROR });
         }
       })();
@@ -417,7 +419,7 @@ export class BackgroundServiceMV3 {
       await UserDataSyncAdapter.syncUserData(userEmail, userId);
       return { success: true };
     } catch (error) {
-      console.error('[BackgroundService] User data sync failed:', error);
+      this.#logger.error('User data sync failed:', error);
       return { success: false, error: FOCUS_ERROR_ENUM.GENERIC_ERROR };
     }
   }

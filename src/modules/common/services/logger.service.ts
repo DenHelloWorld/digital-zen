@@ -25,14 +25,14 @@ export class LoggerService {
   /**
    * Configure the logger
    */
-  configure(config: Partial<LoggerConfig>): void {
+  public configure(config: Partial<LoggerConfig>): void {
     logger.configure(config);
   }
 
   /**
    * Get current configuration
    */
-  getConfig(): LoggerConfig {
+  public getConfig(): LoggerConfig {
     return logger.getConfig();
   }
 
@@ -45,35 +45,40 @@ export class LoggerService {
    * moduleLogger.info('User logged in');
    * ```
    */
-  createLogger(prefix: string) {
+  public createLogger(prefix: string): {
+    debug: (...args: unknown[]) => void;
+    info: (...args: unknown[]) => void;
+    warn: (...args: unknown[]) => void;
+    error: (...args: unknown[]) => void;
+  } {
     return logger.createLogger(prefix);
   }
 
   /**
    * Log at DEBUG level
    */
-  debug(prefix: string, ...args: unknown[]): void {
+  public debug(prefix: string, ...args: unknown[]): void {
     logger.debug(prefix, ...args);
   }
 
   /**
    * Log at INFO level
    */
-  info(prefix: string, ...args: unknown[]): void {
+  public info(prefix: string, ...args: unknown[]): void {
     logger.info(prefix, ...args);
   }
 
   /**
    * Log at WARN level
    */
-  warn(prefix: string, ...args: unknown[]): void {
+  public warn(prefix: string, ...args: unknown[]): void {
     logger.warn(prefix, ...args);
   }
 
   /**
    * Log at ERROR level
    */
-  error(prefix: string, ...args: unknown[]): void {
+  public error(prefix: string, ...args: unknown[]): void {
     logger.error(prefix, ...args);
   }
 }

@@ -4,21 +4,23 @@ import { API_CONFIG } from '../modules/common/constants/api-config.const';
 import { IUserDataSync } from '../modules/common/models/user-data-sync.model';
 import { IFocus } from '../modules/common/models/focus.model';
 import { StorageAdapter } from './storage-adapter';
+import { logger } from '../modules/common/helpers/logger';
 
 /**
  * User Data Sync Adapter for Background Service
  * Handles synchronization of user data with backend API in background context
  */
 export class UserDataSyncAdapter {
+  private static readonly logger = logger.createLogger('UserDataSyncAdapter');
   /**
    * Check if API key is configured
    * @private
    */
   private static checkApiKey(): void {
     if (!API_CONFIG.apiKey) {
-      console.error('[UserDataSyncAdapter] API key is not configured!');
-      console.error(
-        '[UserDataSyncAdapter] Ensure API_SECRET_KEY is set in your .env file and rebuild with: npm run build:prod'
+      this.logger.error('API key is not configured!');
+      this.logger.error(
+        'Ensure API_SECRET_KEY is set in your .env file and rebuild with: npm run build:prod'
       );
       throw new Error(
         'API key not configured. Ensure API_SECRET_KEY is set in your .env file and rebuild with: npm run build:prod'
@@ -36,27 +38,27 @@ export class UserDataSyncAdapter {
    */
   static async syncUserData(userEmail: string, userId: string): Promise<void> {
     try {
-      console.log('[UserDataSyncAdapter] Starting sync for:', userEmail);
+      this.logger.info('Starting sync for:', userEmail);
 
       // Get user data from API
       const userData = await this.getUserData(userEmail, userId);
 
       // If user doesn't exist, create new user
       if (!userData.user) {
-        console.log('[UserDataSyncAdapter] User not found, creating new user');
+        this.logger.info('User not found, creating new user');
         await this.createUser(userEmail, userId);
       } else {
-        console.log('[UserDataSyncAdapter] User found, sync complete');
+        this.logger.info('User found, sync complete');
       }
 
       // Sync periods if needed
       if (userData.periods && userData.periods.length > 0) {
-        console.log('[UserDataSyncAdapter] Syncing periods from backend');
+        this.logger.info('Syncing periods from backend');
         // Store all periods in local storage, awaiting each save
         await Promise.all(userData.periods.map(period => StorageAdapter.savePeriod(period)));
       }
     } catch (error) {
-      console.error('[UserDataSyncAdapter] Sync failed:', error);
+      this.logger.error('Sync failed:', error);
       throw error;
     }
   }
@@ -97,7 +99,7 @@ export class UserDataSyncAdapter {
     });
 
     if (!response.ok) {
-      console.error('[UserDataSyncAdapter] API request failed:', {
+      this.logger.error('API request failed:', {
         status: response.status,
         statusText: response.statusText,
         url: url.toString(),
@@ -141,7 +143,7 @@ export class UserDataSyncAdapter {
     });
 
     if (!response.ok) {
-      console.error('[UserDataSyncAdapter] Create user failed:', {
+      this.logger.error('Create user failed:', {
         status: response.status,
         statusText: response.statusText,
         hasApiKey: !!API_CONFIG.apiKey,
@@ -150,7 +152,7 @@ export class UserDataSyncAdapter {
     }
 
     await response.json();
-    console.log('[UserDataSyncAdapter] User created successfully');
+    this.logger.info('User created successfully');
   }
 
   /**
@@ -191,6 +193,6 @@ export class UserDataSyncAdapter {
     }
 
     await response.json();
-    console.log('[UserDataSyncAdapter] User data saved successfully');
+    this.logger.info('User data saved successfully');
   }
 }
