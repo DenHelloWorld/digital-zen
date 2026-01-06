@@ -1,6 +1,5 @@
-import { DestroyRef, inject, Injectable, Injector, Signal } from '@angular/core';
+import { effect, inject, Injectable, Signal } from '@angular/core';
 import { GoogleAuthService } from './google-auth.service';
-import { toObservable, takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CHROME_COMMAND_ENUM } from '../../common';
 
 @Injectable({
@@ -8,8 +7,6 @@ import { CHROME_COMMAND_ENUM } from '../../common';
 })
 export class AuthService {
   readonly #googleAuthService: GoogleAuthService = inject(GoogleAuthService);
-  readonly #injector = inject(Injector);
-  readonly #destroyRef = inject(DestroyRef);
   readonly #isChromeRuntime: boolean = typeof chrome !== 'undefined' && !!chrome.runtime;
 
   public isGoogleAuthenticated: Signal<boolean> = this.#googleAuthService.isGoogleAuthenticated;
@@ -17,13 +14,12 @@ export class AuthService {
 
   constructor() {
     // Trigger background sync when user info changes
-    toObservable(this.#googleAuthService.userInfo, { injector: this.#injector })
-      .pipe(takeUntilDestroyed(this.#destroyRef))
-      .subscribe(userInfo => {
-        if (userInfo && userInfo.email && userInfo.sub) {
-          this.#triggerBackgroundSync(userInfo.email, userInfo.sub);
-        }
-      });
+    effect(() => {
+      const userInfo = this.#googleAuthService.userInfo();
+      if (userInfo && userInfo.email && userInfo.sub) {
+        this.#triggerBackgroundSync(userInfo.email, userInfo.sub);
+      }
+    });
   }
 
   public loginWithGoogle(): void {
@@ -54,7 +50,8 @@ export class AuthService {
           } else if (response?.success) {
             console.log('[AuthService] Background sync completed successfully');
           } else {
-            console.error('[AuthService] Background sync returned error:', response);
+            const errorMessage = response?.error ?? 'Unknown error during background sync';
+            console.error('[AuthService] Background sync returned error:', errorMessage);
           }
         }
       );

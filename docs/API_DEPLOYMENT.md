@@ -71,18 +71,25 @@ Make sure to upload the updated `helpers.php` to your server.
 
 ### Testing API Key Matching
 
-Create a test script to verify keys match:
+**IMPORTANT SECURITY WARNING:** Never create scripts that expose your API key in web-accessible locations.
 
-**test-key.php** (upload to server, then delete after testing):
-```php
-<?php
-require_once 'config.php';
+For debugging key mismatch issues:
 
-echo "API_SECRET_KEY is configured: " . (!empty(API_SECRET_KEY) ? 'Yes' : 'No') . "\n";
-echo "API_SECRET_KEY length: " . strlen(API_SECRET_KEY) . "\n";
-echo "First 10 chars: " . substr(API_SECRET_KEY, 0, 10) . "...\n";
-echo "Last 10 chars: ..." . substr(API_SECRET_KEY, -10) . "\n";
-?>
+1. **Check frontend key length** (in browser console after build:prod):
+```javascript
+// This will show if the key was properly injected
+console.log('API Key length:', API_CONFIG.apiKey?.length);
 ```
 
-Compare this output with your frontend key to ensure they match.
+2. **Check backend key length** (via SSH on your server):
+```bash
+# Connect to your server via SSH and run:
+php -r "require 'api/config.php'; echo 'Key length: ' . strlen(API_SECRET_KEY) . PHP_EOL;"
+```
+
+3. **Verify both lengths match** - if the lengths differ, check:
+   - Frontend: Ensure you used quotes in `.env` file
+   - Backend: Ensure you used quotes in `api/config.php`
+   - Both: Check for invisible characters (copy-paste issues)
+
+**Never** create web-accessible test scripts that expose API key material, as this creates a severe security vulnerability.

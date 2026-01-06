@@ -77,10 +77,6 @@ function checkSecretKey() {
     
     if (!$isKeyValid) {
         // If key is invalid, return 401 error (Unauthorized)
-        // Log debug info (remove in production)
-        error_log('API Key validation failed. Received: ' . substr($receivedKey, 0, 10) . '... (length: ' . strlen($receivedKey) . ')');
-        error_log('Expected length: ' . strlen(API_SECRET_KEY));
-        
         http_response_code(401);
         echo json_encode([
             'success' => false,
