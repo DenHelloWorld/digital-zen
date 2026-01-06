@@ -59,6 +59,15 @@ export class UserDataSyncAdapter {
       throw new Error('At least one of userEmail or userId must be provided');
     }
 
+    // Check if API key is configured
+    if (!API_CONFIG.apiKey) {
+      console.error('[UserDataSyncAdapter] API key is not configured!');
+      console.error('[UserDataSyncAdapter] Set API_SECRET_KEY in .env and run: npm run build:prod');
+      throw new Error(
+        'API key not configured. Please set API_SECRET_KEY in .env file and rebuild with: npm run build:prod'
+      );
+    }
+
     const url = new URL(API_URLS.USER);
 
     if (userEmail) {
@@ -69,6 +78,9 @@ export class UserDataSyncAdapter {
       url.searchParams.append('user_id', userId);
     }
 
+    console.log('[UserDataSyncAdapter] Fetching user data from:', url.toString());
+    console.log('[UserDataSyncAdapter] API key configured:', API_CONFIG.apiKey ? 'Yes' : 'No');
+
     const response = await fetch(url.toString(), {
       method: 'GET',
       headers: {
@@ -78,6 +90,14 @@ export class UserDataSyncAdapter {
     });
 
     if (!response.ok) {
+      const errorText = await response.text().catch(() => 'Unable to read error response');
+      console.error('[UserDataSyncAdapter] API request failed:', {
+        status: response.status,
+        statusText: response.statusText,
+        url: url.toString(),
+        hasApiKey: !!API_CONFIG.apiKey,
+        errorBody: errorText,
+      });
       throw new Error(`Failed to get user data: ${response.status} ${response.statusText}`);
     }
 
@@ -93,6 +113,14 @@ export class UserDataSyncAdapter {
    * @returns Promise that resolves when user is created
    */
   static async createUser(userEmail: string, userId: string): Promise<void> {
+    // Check if API key is configured
+    if (!API_CONFIG.apiKey) {
+      console.error('[UserDataSyncAdapter] API key is not configured!');
+      throw new Error(
+        'API key not configured. Please set API_SECRET_KEY in .env file and rebuild with: npm run build:prod'
+      );
+    }
+
     const url = API_URLS.USER;
 
     const requestBody: IUserDataSync.SaveRequest = {
@@ -100,6 +128,8 @@ export class UserDataSyncAdapter {
       user_id: userId,
       periods: [],
     };
+
+    console.log('[UserDataSyncAdapter] Creating user:', userEmail);
 
     const response = await fetch(url, {
       method: 'POST',
@@ -111,6 +141,13 @@ export class UserDataSyncAdapter {
     });
 
     if (!response.ok) {
+      const errorText = await response.text().catch(() => 'Unable to read error response');
+      console.error('[UserDataSyncAdapter] Create user failed:', {
+        status: response.status,
+        statusText: response.statusText,
+        hasApiKey: !!API_CONFIG.apiKey,
+        errorBody: errorText,
+      });
       throw new Error(`Failed to create user: ${response.status} ${response.statusText}`);
     }
 
