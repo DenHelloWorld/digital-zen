@@ -21,9 +21,6 @@ export class YourComponent {
 
 ### 3. Load User Data
 
-The API supports two methods for GET requests:
-
-**Method 1: Query Parameters (Standard REST approach)**
 ```typescript
 loadDataFromServer(): void {
   const userInfo = this.#userDataSync.getCurrentUserInfo();
@@ -36,30 +33,6 @@ loadDataFromServer(): void {
   // Uses query parameters: GET /api/user?user_email=...&user_id=...
   this.#userDataSync
     .getUserData(userInfo.email, userInfo.userId)
-    .subscribe({
-      next: (response) => {
-        console.log('User data loaded:', response);
-      },
-      error: (error) => {
-        console.error('Failed to load data:', error);
-      }
-    });
-}
-```
-
-**Method 2: Request Body (Alternative)**
-```typescript
-loadDataFromServerWithBody(): void {
-  const userInfo = this.#userDataSync.getCurrentUserInfo();
-  
-  if (!userInfo) {
-    console.error('User not authenticated');
-    return;
-  }
-  
-  // Uses request body: GET /api/user with body: { user_email, user_id }
-  this.#userDataSync
-    .getUserDataWithBody(userInfo.email, userInfo.userId)
     .subscribe({
       next: (response) => {
         console.log('User data loaded:', response);
@@ -105,40 +78,7 @@ saveDataToServer(): void {
 }
 ```
 
-### 4. Load User Data
 
-```typescript
-loadDataFromServer(): void {
-  // Get current user info
-  const userInfo = this.#userDataSync.getCurrentUserInfo();
-  
-  if (!userInfo) {
-    console.error('User not authenticated');
-    return;
-  }
-  
-  // Load from API
-  this.#userDataSync
-    .getUserData(userInfo.email, userInfo.userId)
-    .subscribe({
-      next: (response) => {
-        console.log('User data loaded:', response);
-        
-        if (response.user) {
-          console.log('User email:', response.user.email);
-        }
-        
-        if (response.periods.length > 0) {
-          console.log('Loaded periods:', response.periods);
-          // Update your local state with loaded periods
-        }
-      },
-      error: (error) => {
-        console.error('Failed to load data:', error);
-      }
-    });
-}
-```
 
 ## Complete Example Component
 

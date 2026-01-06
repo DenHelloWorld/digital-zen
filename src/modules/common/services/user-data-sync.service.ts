@@ -47,36 +47,6 @@ export class UserDataSyncService {
   }
 
   /**
-   * Get user data from API using request body instead of query parameters
-   *
-   * @param userEmail User email
-   * @param userId User ID
-   * @returns Observable with user data
-   * @throws Error if both userEmail and userId are empty
-   */
-  public getUserDataWithBody(userEmail: string, userId: string): Observable<IUserDataSync.Response> {
-    // Validate that at least one parameter is provided
-    if (!userEmail && !userId) {
-      throw new Error('At least one of userEmail or userId must be provided');
-    }
-
-    const url = `${API_CONFIG.apiUrl}/user`;
-    const body: Record<string, string> = {};
-
-    if (userEmail) {
-      body['user_email'] = userEmail;
-    }
-
-    if (userId) {
-      body['user_id'] = userId;
-    }
-
-    return this.#apiService
-      .get<{ success: boolean; data: IUserDataSync.Response }>(url, {}, body)
-      .pipe(map(response => response.data));
-  }
-
-  /**
    * Save user data to API
    *
    * @param userEmail User email

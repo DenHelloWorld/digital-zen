@@ -95,20 +95,12 @@ X-API-Key: your_secret_key
 Content-Type: application/json
 ```
 
-**Method 1: Query Parameters (Standard)**
+**Query Parameters:**
 ```
 GET /api/user?user_email=user@example.com
 ```
 
-**Method 2: Request Body (Alternative)**
-```
-GET /api/user
-Body: {
-  "user_email": "user@example.com"
-}
-```
-
-**Note:** Both methods are supported. Query parameters are the standard REST approach, but request body is also accepted for flexibility.
+**Note:** Use query parameters to specify user email or user ID.
 
 **Response:**
 ```json
