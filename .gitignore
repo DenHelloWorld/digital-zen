@@ -45,3 +45,5 @@ Thumbs.db
 
 # API files (do not commit backend files with real credentials)
 api/config.php
+test-logger.js
+test-logger*.js

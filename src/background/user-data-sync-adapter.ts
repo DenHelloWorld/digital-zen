@@ -4,21 +4,23 @@ import { API_CONFIG } from '../modules/common/constants/api-config.const';
 import { IUserDataSync } from '../modules/common/models/user-data-sync.model';
 import { IFocus } from '../modules/common/models/focus.model';
 import { StorageAdapter } from './storage-adapter';
+import { logger } from '../modules/common/helpers/logger';
 
 /**
  * User Data Sync Adapter for Background Service
  * Handles synchronization of user data with backend API in background context
  */
 export class UserDataSyncAdapter {
+  private static readonly logger = logger.createLogger('UserDataSyncAdapter');
   /**
    * Check if API key is configured
    * @private
    */
   private static checkApiKey(): void {
     if (!API_CONFIG.apiKey) {
-      console.error('[UserDataSyncAdapter] API key is not configured!');
-      console.error(
-        '[UserDataSyncAdapter] Ensure API_SECRET_KEY is set in your .env file and rebuild with: npm run build:prod'
+      UserDataSyncAdapter.logger.error('API key is not configured!');
+      UserDataSyncAdapter.logger.error(
+        'Ensure API_SECRET_KEY is set in your .env file and rebuild with: npm run build:prod'
       );
       throw new Error(
         'API key not configured. Ensure API_SECRET_KEY is set in your .env file and rebuild with: npm run build:prod'
@@ -36,27 +38,27 @@ export class UserDataSyncAdapter {
    */
   static async syncUserData(userEmail: string, userId: string): Promise<void> {
     try {
-      console.log('[UserDataSyncAdapter] Starting sync for:', userEmail);
+      UserDataSyncAdapter.logger.info('Starting sync for:', userEmail);
 
       // Get user data from API
       const userData = await this.getUserData(userEmail, userId);
 
       // If user doesn't exist, create new user
       if (!userData.user) {
-        console.log('[UserDataSyncAdapter] User not found, creating new user');
+        UserDataSyncAdapter.logger.info('User not found, creating new user');
         await this.createUser(userEmail, userId);
       } else {
-        console.log('[UserDataSyncAdapter] User found, sync complete');
+        UserDataSyncAdapter.logger.info('User found, sync complete');
       }
 
       // Sync periods if needed
       if (userData.periods && userData.periods.length > 0) {
-        console.log('[UserDataSyncAdapter] Syncing periods from backend');
+        UserDataSyncAdapter.logger.info('Syncing periods from backend');
         // Store all periods in local storage, awaiting each save
         await Promise.all(userData.periods.map(period => StorageAdapter.savePeriod(period)));
       }
     } catch (error) {
-      console.error('[UserDataSyncAdapter] Sync failed:', error);
+      UserDataSyncAdapter.logger.error('Sync failed:', error);
       throw error;
     }
   }
@@ -86,7 +88,7 @@ export class UserDataSyncAdapter {
       url.searchParams.append('user_id', userId);
     }
 
-    console.log('[UserDataSyncAdapter] Fetching user data from:', url.toString());
+    UserDataSyncAdapter.logger.debug('Fetching user data from:', url.toString());
 
     const response = await fetch(url.toString(), {
       method: 'GET',
@@ -97,7 +99,7 @@ export class UserDataSyncAdapter {
     });
 
     if (!response.ok) {
-      console.error('[UserDataSyncAdapter] API request failed:', {
+      UserDataSyncAdapter.logger.error('API request failed:', {
         status: response.status,
         statusText: response.statusText,
         url: url.toString(),
@@ -129,7 +131,7 @@ export class UserDataSyncAdapter {
       periods: [],
     };
 
-    console.log('[UserDataSyncAdapter] Creating user:', userEmail);
+    UserDataSyncAdapter.logger.debug('Creating user:', userEmail);
 
     const response = await fetch(url, {
       method: 'POST',
@@ -141,7 +143,7 @@ export class UserDataSyncAdapter {
     });
 
     if (!response.ok) {
-      console.error('[UserDataSyncAdapter] Create user failed:', {
+      UserDataSyncAdapter.logger.error('Create user failed:', {
         status: response.status,
         statusText: response.statusText,
         hasApiKey: !!API_CONFIG.apiKey,
@@ -150,7 +152,7 @@ export class UserDataSyncAdapter {
     }
 
     await response.json();
-    console.log('[UserDataSyncAdapter] User created successfully');
+    UserDataSyncAdapter.logger.info('User created successfully');
   }
 
   /**
@@ -191,6 +193,6 @@ export class UserDataSyncAdapter {
     }
 
     await response.json();
-    console.log('[UserDataSyncAdapter] User data saved successfully');
+    UserDataSyncAdapter.logger.info('User data saved successfully');
   }
 }

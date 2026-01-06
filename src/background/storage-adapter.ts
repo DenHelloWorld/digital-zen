@@ -1,5 +1,6 @@
 import { IFocus } from '../modules/common/models/focus.model';
 import { CHROME_STORAGE_KEY_ENUM } from '../modules/common/enums/chrome-storage-key.enum';
+import { logger } from '../modules/common/helpers/logger';
 
 /**
  * The type of data that is actually stored in storage (ISO strings instead of Date)
@@ -20,6 +21,7 @@ interface StoredFocusedTime extends Omit<IFocus.FocusedTime, 'startFrom' | 'endT
 }
 
 export class StorageAdapter {
+  private static readonly logger = logger.createLogger('StorageAdapter');
   private static writeQueue: Promise<unknown> = Promise.resolve();
 
   // === Public API ===
@@ -96,7 +98,7 @@ export class StorageAdapter {
       if (d instanceof Date) {
         // Check if the Date is valid before converting to ISO string
         if (isNaN(d.getTime())) {
-          console.warn('Invalid Date detected in period, skipping:', d);
+          StorageAdapter.logger.warn('Invalid Date detected in period, skipping:', d);
           return null;
         }
         return d.toISOString();
@@ -123,7 +125,7 @@ export class StorageAdapter {
       const date = new Date(s);
       // Return null if the date is invalid
       if (isNaN(date.getTime())) {
-        console.warn('Invalid date string detected in storage, skipping:', s);
+        StorageAdapter.logger.warn('Invalid date string detected in storage, skipping:', s);
         return null;
       }
       return date;
