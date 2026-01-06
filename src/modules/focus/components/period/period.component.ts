@@ -17,6 +17,21 @@ import { WeekdaysSelectorComponent } from '../../../common/components/weekdays-s
 import { PeriodFormComponent } from '../../../menu/components/period-form';
 import { FocusService } from '../../services';
 
+/**
+ * Period display and management component
+ * Displays a single focus period with its details, blocked websites, and controls
+ * 
+ * @guidelines
+ * - DZ_01: Standalone component with imports array
+ * - DZ_02: Dependency injection using inject() function
+ * - DZ_03: OnPush change detection strategy
+ * - DZ_04: Angular Signals for reactive state (signal, computed, InputSignal)
+ * - DZ_08: Private fields with # prefix
+ * - DZ_09: Readonly for injected dependencies
+ * - DZ_10: UI text constants usage
+ * 
+ * @see /docs/CODING_GUIDELINES.md
+ */
 @Component({
   selector: 'dz-period',
   templateUrl: './period.component.html',
@@ -30,19 +45,25 @@ import { FocusService } from '../../services';
   ],
 })
 export class PeriodComponent {
+  /** @guideline DZ_02, DZ_08, DZ_09 - Dependency injection with inject(), private #, readonly */
   readonly #focusService: FocusService = inject(FocusService);
 
   protected readonly allDays: Readonly<IFocus.DayOfWeek>[] = [...ALL_DAYS_OF_WEEK];
+  /** @guideline DZ_04 - Computed signal (derived state) */
   protected readonly selectedDays: Signal<IFocus.DayOfWeek[]> = computed(() => {
     const selected = this.period().daysOfWeek;
     return this.allDays.filter(day => selected.includes(day.day));
   });
 
+  /** @guideline DZ_04 - Writable signal for local state */
   protected readonly isEditing: WritableSignal<boolean> = signal(false);
+  /** @guideline DZ_04 - Writable signal for local state */
   protected readonly isConfirmingDelete: WritableSignal<boolean> = signal(false);
+  /** @guideline DZ_10 - UI text constants */
   protected readonly uiText = UI_TEXT;
   protected readonly icons = ICONS;
 
+  /** @guideline DZ_04 - InputSignal for component inputs */
   public readonly period: InputSignal<IFocus.Period> = input.required<IFocus.Period>();
   public readonly totalPeriodsCount: InputSignal<number> = input.required<number>();
   public readonly isCurrent: InputSignal<boolean> = input.required<boolean>();

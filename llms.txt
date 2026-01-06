@@ -10,24 +10,36 @@ Modern Angular project (v21+) - Chrome Extension for productivity and focus mana
 - **State Management:** Angular Signals (primary), RxJS (for async streams)
 - **Build:** Angular CLI with custom Chrome extension build pipeline
 
+## Coding Guidelines
+
+**Primary Source:** We follow [official Angular documentation](https://angular.dev/) for standard patterns.
+
+**Project Guidelines:** See `/docs/CODING_GUIDELINES.md` for complete reference.
+
+**Quick Reference:**
+- DZ_01-DZ_09, DZ_13-DZ_16: Follow official Angular docs (Standalone Components, Signals, Control Flow, etc.)
+- DZ_10: UI Text Constants (project-specific)
+- DZ_11: Universal Logger (project-specific)
+- DZ_12: BEM with dz- prefix (project-specific)
+
 ## Key Angular Patterns
 
 ### Component Architecture
-- **Standalone Components** (no NgModules)
-- `ChangeDetectionStrategy.OnPush` by default
-- Dependency injection via `inject()` function (not constructor)
+- **Standalone Components** - [Angular Docs](https://angular.dev/guide/components/importing)
+- `ChangeDetectionStrategy.OnPush` by default - [Angular Docs](https://angular.dev/best-practices/skipping-subtrees)
+- Dependency injection via `inject()` function - [Angular Docs](https://angular.dev/api/core/inject)
 
 ### Reactivity
-- **Signals** for local and shared state (`signal()`, `computed()`)
-- **RxJS** only for HTTP requests and complex async operations
+- **Signals** for local and shared state - [Angular Docs](https://angular.dev/guide/signals)
+- **RxJS** only for HTTP requests and complex async operations - [Angular Docs](https://angular.dev/guide/rx)
 
 ### Template Syntax
-- New control flow: `@if`, `@for`, `@switch`, `@defer`
+- New control flow: `@if`, `@for`, `@switch`, `@defer` - [Angular Docs](https://angular.dev/guide/templates/control-flow)
 - No legacy directives: `*ngIf`, `*ngFor`, `*ngSwitch`
 
 ### Functional Patterns
-- Functional interceptors (`HttpInterceptorFn`)
-- Functional guards (`CanActivateFn`)
+- Functional interceptors (`HttpInterceptorFn`) - [Angular Docs](https://angular.dev/guide/http/interceptors)
+- Functional guards (`CanActivateFn`) - [Angular Docs](https://angular.dev/guide/routing/common-router-tasks#preventing-unauthorized-access)
 
 ## Project Structure
 ```
@@ -51,6 +63,8 @@ src/
 ## UI Text Management
 
 **All hardcoded text must be extracted to constants:**
+
+**Guideline:** DZ_10 - See `/docs/CODING_GUIDELINES.md#dz_10-ui-text-constants`
 
 Location: `src/modules/common/constants/ui-text.const.ts`
 

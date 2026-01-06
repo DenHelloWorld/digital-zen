@@ -2,8 +2,22 @@
 
 This document describes all coding patterns, conventions, and best practices used in the Digital Zen Chrome Extension project. These guidelines reflect the actual implementation in the codebase and serve as a reference for all development work.
 
-**Version:** 1.0.0  
+**Primary Source:** We follow official Angular documentation for standard patterns. Custom guidelines (DZ_10-DZ_16) are project-specific conventions.
+
+**Version:** 1.0.1  
 **Last Updated:** January 6, 2026
+
+---
+
+## Quick Links to Official Angular Documentation
+
+- **[Angular Official Documentation](https://angular.dev/)** - Main documentation
+- **[Standalone Components](https://angular.dev/guide/components/importing)** - Official guide for standalone components
+- **[Dependency Injection](https://angular.dev/guide/di/dependency-injection)** - Official DI guide
+- **[Signals](https://angular.dev/guide/signals)** - Official Signals guide
+- **[Built-in Control Flow](https://angular.dev/guide/templates/control-flow)** - Official control flow syntax guide
+- **[Change Detection](https://angular.dev/best-practices/skipping-subtrees)** - Official OnPush strategy guide
+- **[Reactive Forms](https://angular.dev/guide/forms/typed-forms)** - Official typed forms guide
 
 ---
 
@@ -44,6 +58,8 @@ This document describes all coding patterns, conventions, and best practices use
 
 **Guideline:** Always use Standalone Components (Angular 21+ feature). Never use NgModules.
 
+**Official Documentation:** [Angular Standalone Components](https://angular.dev/guide/components/importing)
+
 **Rationale:** Standalone components are the modern Angular approach, providing better tree-shaking, simpler dependencies, and improved developer experience.
 
 **Implementation:**
@@ -74,6 +90,8 @@ export class ExampleComponent {
 ### DZ_02: Dependency Injection with inject()
 
 **Guideline:** Use the `inject()` function for dependency injection. Never use constructor-based injection.
+
+**Official Documentation:** [Angular Dependency Injection](https://angular.dev/guide/di/dependency-injection) and [inject() function](https://angular.dev/api/core/inject)
 
 **Rationale:** The `inject()` function is the modern Angular approach that allows for more flexible and testable code. It works better with functional programming patterns and allows dependency injection outside of constructors.
 
@@ -114,6 +132,8 @@ export class ExampleComponent {
 
 **Guideline:** Always use `ChangeDetectionStrategy.OnPush` for all components.
 
+**Official Documentation:** [Angular Change Detection](https://angular.dev/best-practices/skipping-subtrees) and [OnPush Strategy](https://angular.dev/api/core/ChangeDetectionStrategy)
+
 **Rationale:** OnPush change detection improves performance by reducing unnecessary change detection cycles. It works well with immutable data patterns and Angular Signals.
 
 **Implementation:**
@@ -148,6 +168,8 @@ export class ExampleComponent {
 ### DZ_04: Angular Signals for State
 
 **Guideline:** Use Angular Signals as the primary state management solution. Prefer Signals over RxJS for local and shared state.
+
+**Official Documentation:** [Angular Signals](https://angular.dev/guide/signals) and [Signals API Reference](https://angular.dev/api/core/signal)
 
 **Rationale:** Signals provide a simpler, more intuitive API for reactive state management with better performance and automatic change detection integration.
 
@@ -188,6 +210,8 @@ export class ExampleComponent {
 ### DZ_05: RxJS Usage Guidelines
 
 **Guideline:** Use RxJS only for specific use cases: HTTP requests, complex asynchronous streams, and event handling requiring operators like `debounceTime`, `switchMap`, etc.
+
+**Official Documentation:** [RxJS in Angular](https://angular.dev/guide/rx) and [RxJS Official Docs](https://rxjs.dev/)
 
 **Rationale:** While RxJS is powerful, Signals provide a simpler solution for most state management needs. RxJS should be reserved for cases where its stream operators provide clear benefits.
 
@@ -242,6 +266,8 @@ fromEvent(element, 'input')
 ### DZ_06: Built-in Control Flow
 
 **Guideline:** Always use Angular's new built-in control flow syntax (`@if`, `@for`, `@switch`, `@defer`). Never use legacy structural directives (`*ngIf`, `*ngFor`, `*ngSwitch`).
+
+**Official Documentation:** [Angular Built-in Control Flow](https://angular.dev/guide/templates/control-flow)
 
 **Rationale:** The new control flow syntax is more performant, type-safe, and easier to read. It's the recommended approach in Angular 17+.
 
@@ -306,6 +332,8 @@ fromEvent(element, 'input')
 
 **Guideline:** Use strict TypeScript mode. Avoid `any` type. Prefer `unknown` if the type is truly unknown.
 
+**Official Documentation:** [TypeScript Strict Mode](https://www.typescriptlang.org/tsconfig#strict) and [Angular TypeScript Configuration](https://angular.dev/reference/configs/file-structure#typescript-configuration)
+
 **Rationale:** Strict typing catches errors at compile time and improves code quality and maintainability.
 
 **Implementation:**
@@ -342,6 +370,8 @@ function processData(data: any): any {
 ### DZ_08: Private Fields with # Prefix
 
 **Guideline:** Use native JavaScript private fields with `#` prefix for all private class members.
+
+**Official Documentation:** [JavaScript Private Fields](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes/Private_properties) and [TypeScript Private Fields](https://www.typescriptlang.org/docs/handbook/2/classes.html#private)
 
 **Rationale:** Native private fields provide true privacy at runtime and better encapsulation compared to TypeScript's `private` keyword.
 
@@ -557,6 +587,8 @@ export class ExampleService {
 
 **Guideline:** Use functional interceptors (`HttpInterceptorFn`) instead of class-based interceptors.
 
+**Official Documentation:** [Angular HTTP Interceptors](https://angular.dev/guide/http/interceptors)
+
 **Rationale:** Functional interceptors are simpler, more testable, and align with Angular's modern functional approach.
 
 **Implementation:**
@@ -610,6 +642,8 @@ export const appConfig: ApplicationConfig = {
 
 **Guideline:** Use functional guards (`CanActivateFn`, etc.) instead of class-based guards.
 
+**Official Documentation:** [Angular Route Guards](https://angular.dev/guide/routing/common-router-tasks#preventing-unauthorized-access)
+
 **Rationale:** Functional guards are simpler, more composable, and align with Angular's modern functional approach.
 
 **Implementation:**
@@ -656,6 +690,8 @@ const routes: Routes = [
 
 **Guideline:** Use typed Reactive Forms with explicit type annotations.
 
+**Official Documentation:** [Angular Typed Forms](https://angular.dev/guide/forms/typed-forms)
+
 **Rationale:** Typed forms provide type safety and better IDE support, catching errors at compile time.
 
 **Implementation:**
@@ -693,6 +729,8 @@ export class UserFormComponent {
 
 **Guideline:** Create reusable, well-typed custom validators for common validation logic.
 
+**Official Documentation:** [Angular Form Validation](https://angular.dev/guide/forms/form-validation) and [Custom Validators](https://angular.dev/guide/forms/form-validation#defining-custom-validators)
+
 **Rationale:** Custom validators promote code reuse and maintain type safety.
 
 **Implementation:**
@@ -727,12 +765,43 @@ export function requiredTrimmedValidator(control: AbstractControl): ValidationEr
 
 ## Summary
 
-This document covers all major coding patterns used in Digital Zen. When writing code:
+This document covers all major coding patterns used in Digital Zen:
 
-1. Follow all guidelines marked with `DZ_XX` identifiers
-2. Reference guidelines in JSDoc comments
-3. Keep documentation synchronized with code
-4. Update this document when introducing new patterns
+**Standard Angular Patterns (DZ_01-DZ_09, DZ_13-DZ_16):**
+- Follow official Angular documentation as primary source
+- See links to official docs at the top of this document
+
+**Project-Specific Conventions (DZ_10-DZ_12):**
+- UI Text Management (DZ_10) - Digital Zen specific
+- Universal Logger (DZ_11) - Digital Zen specific
+- BEM with dz- prefix (DZ_12) - Digital Zen specific
+
+### When writing code:
+
+1. **Reference official Angular docs** for standard patterns (Components, Signals, Forms, etc.)
+2. **Follow project-specific guidelines** (DZ_10-DZ_12) for UI text, logging, and styling
+3. **Add JSDoc comments** with guideline references (e.g., `@guideline DZ_01, DZ_04`)
+4. **Keep documentation synchronized** with actual code implementation
+
+### Quick Reference for JSDoc
+
+```typescript
+/**
+ * Component description
+ * 
+ * @guidelines
+ * - DZ_01: Standalone component - https://angular.dev/guide/components/importing
+ * - DZ_03: OnPush change detection - https://angular.dev/best-practices/skipping-subtrees
+ * - DZ_04: Angular Signals - https://angular.dev/guide/signals
+ * - DZ_10: UI text constants (project-specific)
+ * 
+ * @see /docs/CODING_GUIDELINES.md
+ * @see https://angular.dev/ (official docs)
+ */
+```
+
+---
 
 **Last Updated:** January 6, 2026  
-**Maintained by:** Digital Zen Development Team
+**Maintained by:** Digital Zen Development Team  
+**Primary Source:** [Angular Official Documentation](https://angular.dev/)

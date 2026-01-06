@@ -3,6 +3,18 @@ import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { TOAST_TYPE_ENUM, POSITIONS_ENUM } from '../../enums';
 import { UI_TEXT } from '../../constants';
 
+/**
+ * Toast notification container component
+ * Manages and displays toast notifications in various positions
+ * 
+ * @guidelines
+ * - DZ_01: Standalone component
+ * - DZ_02: Dependency injection using inject() function
+ * - DZ_03: OnPush change detection strategy
+ * - DZ_10: UI text constants usage
+ * 
+ * @see /docs/CODING_GUIDELINES.md
+ */
 @Component({
   selector: 'dz-toast-container',
   styleUrls: ['./toast-container.scss'],
@@ -10,6 +22,7 @@ import { UI_TEXT } from '../../constants';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DzToastContainerComponent {
+  /** @guideline DZ_02 - Dependency injection with inject() */
   protected toastService: DzToastService = inject(DzToastService);
 
   protected positions: POSITIONS_ENUM[] = [
@@ -22,6 +35,7 @@ export class DzToastContainerComponent {
   ];
 
   protected messageTypes: typeof TOAST_TYPE_ENUM = TOAST_TYPE_ENUM;
+  /** @guideline DZ_10 - UI text constants */
   protected readonly uiText = UI_TEXT;
 
   protected getToastsByPosition(pos: POSITIONS_ENUM) {

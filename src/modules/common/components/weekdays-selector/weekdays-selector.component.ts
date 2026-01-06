@@ -10,6 +10,16 @@ import { IFocus } from '../../models';
 import { MultiSelectorComponent } from '../multi-selector/multi-selector.component';
 import { ALL_DAYS_OF_WEEK } from '../../constants';
 
+/**
+ * Weekdays selector component for choosing days of the week
+ * 
+ * @guidelines
+ * - DZ_01: Standalone component with imports array
+ * - DZ_03: OnPush change detection strategy
+ * - DZ_04: Using Angular Signals (InputSignal, ModelSignal)
+ * 
+ * @see /docs/CODING_GUIDELINES.md
+ */
 @Component({
   selector: 'dz-weekdays-selector',
   templateUrl: './weekdays-selector.component.html',
