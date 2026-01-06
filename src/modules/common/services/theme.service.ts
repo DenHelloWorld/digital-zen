@@ -3,13 +3,29 @@ import { COLOR_SCHEMA_ENUM, ColorSchemaType } from '../enums';
 import { ChromeStorageService } from './chrome-storage.service';
 import { CHROME_STORAGE_KEY_ENUM } from '../enums/chrome-storage-key.enum';
 
+/**
+ * Theme service for managing light/dark theme state
+ * Persists theme preference to Chrome storage and listens to system theme changes
+ * 
+ * @guidelines
+ * - DZ_02: Dependency injection using inject() function
+ * - DZ_04: Angular Signals for reactive state
+ * - DZ_08: Private fields with # prefix
+ * - DZ_09: Readonly for injected dependencies
+ * 
+ * @see /docs/CODING_GUIDELINES.md
+ * @see https://angular.dev/guide/signals (Signals)
+ */
 @Injectable({
   providedIn: 'root',
 })
 export class ThemeService {
+  /** @guideline DZ_02, DZ_08, DZ_09 - Dependency injection with inject(), private #, readonly */
   readonly #chromeStorageService: ChromeStorageService = inject(ChromeStorageService);
 
+  /** @guideline DZ_04, DZ_08 - Private writable signal for internal state */
   readonly #theme: WritableSignal<ColorSchemaType> = signal(COLOR_SCHEMA_ENUM.LIGHT);
+  /** @guideline DZ_04 - Public readonly signal for consumers */
   public readonly theme: Signal<ColorSchemaType> = this.#theme.asReadonly();
 
   constructor() {

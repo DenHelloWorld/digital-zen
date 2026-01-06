@@ -29,24 +29,44 @@ interface InitialStorageSchema {
   [CHROME_STORAGE_KEY_ENUM.ALL_BLOCKED_WEBSITES]: IFocus.WebSite[];
 }
 
+/**
+ * Focus service for managing focus periods and blocked websites
+ * Handles focus session state, Chrome tab tracking, and period management
+ * 
+ * @guidelines
+ * - DZ_02: Dependency injection using inject() function
+ * - DZ_04: Angular Signals for reactive state (signal, computed)
+ * - DZ_08: Private fields with # prefix
+ * - DZ_09: Readonly for injected dependencies
+ * - DZ_11: Universal Logger usage
+ * 
+ * @see /docs/CODING_GUIDELINES.md
+ * @see https://angular.dev/guide/signals (Signals)
+ */
 @Injectable({
   providedIn: 'root',
 })
 export class FocusService {
+  /** @guideline DZ_08 - Private readonly field for runtime check */
   readonly #isChromeRuntime: boolean = !!chrome.runtime;
+  /** @guideline DZ_02, DZ_08, DZ_09 - Dependency injection with inject(), private #, readonly */
   readonly #toastService: DzToastService = inject(DzToastService);
   readonly #chromeStorageService: ChromeStorageService = inject(ChromeStorageService);
   readonly #destroyRef: DestroyRef = inject(DestroyRef);
+  /** @guideline DZ_11 - Universal Logger usage */
   readonly #logger = logger.createLogger('FocusService');
 
+  /** @guideline DZ_04, DZ_08 - Private writable signals for internal state */
   readonly #currentPeriod: WritableSignal<IFocus.Period | null> = signal<IFocus.Period | null>(
     null
   );
   readonly #periods: WritableSignal<IFocus.Period[] | null> = signal(null);
   readonly #activeTab: WritableSignal<chrome.tabs.Tab | undefined> = signal(undefined);
   readonly #currentTime: WritableSignal<number> = signal(Date.now());
+  /** @guideline DZ_08 - Private field */
   #timerIntervalId: ReturnType<typeof setInterval> | null = null;
 
+  /** @guideline DZ_04 - Public computed signals for consumers */
   public readonly currentPeriod: Signal<IFocus.Period | null> = computed(() => {
     return this.#currentPeriod();
   });

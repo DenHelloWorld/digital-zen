@@ -34,6 +34,27 @@ import { WeekdaysSelectorComponent } from '../../../common/components/weekdays-s
 import { FocusService } from '../../../focus/services';
 import { DynamicInputComponent } from '../../../common/components/dynamic-input/dynamic-input.component';
 
+/**
+ * Period form component for creating and editing focus periods
+ * Handles form validation, data binding, and period persistence
+ * 
+ * @guidelines
+ * - DZ_01: Standalone component with imports array
+ * - DZ_02: Dependency injection using inject() function
+ * - DZ_03: OnPush change detection strategy
+ * - DZ_04: Angular Signals (InputSignal, OutputEmitterRef, signal)
+ * - DZ_05: RxJS for form value changes (valid use case)
+ * - DZ_08: Private fields with # prefix
+ * - DZ_09: Readonly for injected dependencies
+ * - DZ_10: UI text constants usage
+ * - DZ_11: Universal Logger usage
+ * - DZ_15: Typed Reactive Forms
+ * - DZ_16: Custom validators
+ * 
+ * @see /docs/CODING_GUIDELINES.md
+ * @see https://angular.dev/guide/forms/typed-forms (Typed Forms)
+ * @see https://angular.dev/guide/forms/form-validation (Form Validation)
+ */
 @Component({
   selector: 'dz-period-form',
   templateUrl: 'period-form.component.html',
@@ -42,17 +63,22 @@ import { DynamicInputComponent } from '../../../common/components/dynamic-input/
   imports: [ReactiveFormsModule, WeekdaysSelectorComponent, DynamicInputComponent],
 })
 export class PeriodFormComponent implements OnInit {
+  /** @guideline DZ_02, DZ_08, DZ_09 - Dependency injection with inject(), private #, readonly */
   readonly #fb: FormBuilder = inject(FormBuilder);
   readonly #destroyRef: DestroyRef = inject(DestroyRef);
   readonly #injector: Injector = inject(Injector);
   readonly #focusService: FocusService = inject(FocusService);
+  /** @guideline DZ_11 - Universal Logger usage */
   readonly #logger = logger.createLogger('PeriodFormComponent');
 
+  /** @guideline DZ_04 - InputSignal for component inputs */
   public readonly mode: InputSignal<'create' | 'edit'> = input<'create' | 'edit'>('create');
   public readonly period: InputSignal<IFocus.Period | null> = input<IFocus.Period | null>(null);
   public readonly completed: OutputEmitterRef<void> = output<void>();
 
+  /** @guideline DZ_15 - Typed Reactive Form */
   protected form: FormGroup<IFocusForm.UpsertPeriod>;
+  /** @guideline DZ_10 - UI text constants */
   protected readonly uiText = UI_TEXT;
 
   protected excludedSiteKeysArray: (keyof IFocus.WebSite)[] = [

@@ -3,14 +3,21 @@ import { ChromeStorageKeyType } from '../enums/chrome-storage-key.enum';
 import { logger } from '../helpers/logger';
 
 /**
- * @class ChromeStorageService
- * @description Provides an injectable service to easily interact with the chrome.storage.local API using callbacks.
- * This class is designed to be injected into other Angular services or components.
+ * Chrome Storage service for interacting with chrome.storage.local API
+ * Provides type-safe wrapper around Chrome Extension storage
+ * 
+ * @guidelines
+ * - DZ_08: Private fields with # prefix
+ * - DZ_11: Universal Logger usage
+ * 
+ * @see /docs/CODING_GUIDELINES.md
+ * @see https://developer.chrome.com/docs/extensions/reference/api/storage (Chrome Storage API)
  */
 @Injectable({
   providedIn: 'root',
 })
 export class ChromeStorageService {
+  /** @guideline DZ_11 - Universal Logger usage */
   readonly #logger = logger.createLogger('ChromeStorageService');
   /**
    * Writes data to chrome.storage.local.
