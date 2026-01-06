@@ -1,14 +1,16 @@
-import { inject, Injectable, Injector, signal } from '@angular/core';
+import { inject, Injectable, Injector } from '@angular/core';
 import { ApiService } from './api.service';
-import { API_URLS, SYNC_DELAY_MS } from '../constants';
+import { API_URLS } from '../constants';
 import { IFocus, IUserDataSync } from '../models';
-import { delay, EMPTY, filter, finalize, map, Observable, switchMap, tap } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { GoogleAuthService, IGoogleUserInfo } from './google-auth.service';
 import { toObservable } from '@angular/core/rxjs-interop';
+import { CHROME_COMMAND_ENUM } from '../enums/chrome-command.enum';
 
 /**
  * User Data Sync Service
  * This service handles syncing user data with backend API
+ * Synchronization is delegated to background service for reliability
  */
 @Injectable({
   providedIn: 'root',
@@ -18,29 +20,45 @@ export class UserDataSyncService {
   readonly #apiService = inject(ApiService);
   readonly #googleAuthService = inject(GoogleAuthService);
 
-  readonly #isPending = signal(false);
-  public readonly isPending = this.#isPending.asReadonly();
-
   constructor() {
-    toObservable(this.#googleAuthService.userInfo, { injector: this.#injector })
-      .pipe(
-        filter((u): u is IGoogleUserInfo => !!u),
-        tap(() => this.#isPending.set(true)),
-        switchMap(userInfo =>
-          this.getUserData(userInfo.email, userInfo.sub).pipe(
-            /**
-             * Simulate network delay for better UX
-             * */
-            delay(SYNC_DELAY_MS),
-            /**
-             * If user does not exist, create new user
-             * */
-            switchMap(userData => (userData.user ? EMPTY : this.createUser(userInfo))),
-            finalize(() => this.#isPending.set(false))
-          )
-        )
-      )
-      .subscribe();
+    // Trigger sync in background when user logs in
+    toObservable(this.#googleAuthService.userInfo, { injector: this.#injector }).subscribe(
+      userInfo => {
+        if (userInfo && userInfo.email && userInfo.sub) {
+          this.#triggerBackgroundSync(userInfo.email, userInfo.sub);
+        }
+      }
+    );
+  }
+
+  /**
+   * Trigger synchronization in background service
+   *
+   * @param userEmail User email
+   * @param userId User ID
+   */
+  #triggerBackgroundSync(userEmail: string, userId: string): void {
+    if (chrome.runtime) {
+      chrome.runtime.sendMessage(
+        {
+          command: CHROME_COMMAND_ENUM.SYNC_USER_DATA,
+          userEmail,
+          userId,
+        },
+        response => {
+          if (chrome.runtime.lastError) {
+            console.error(
+              '[UserDataSyncService] Background sync failed:',
+              chrome.runtime.lastError
+            );
+          } else if (response?.success) {
+            console.log('[UserDataSyncService] Background sync completed successfully');
+          } else {
+            console.error('[UserDataSyncService] Background sync returned error:', response);
+          }
+        }
+      );
+    }
   }
 
   /**

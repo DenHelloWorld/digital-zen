@@ -1,5 +1,6 @@
 /// <reference types="chrome"/>
 import { StorageAdapter } from './storage-adapter';
+import { UserDataSyncAdapter } from './user-data-sync-adapter';
 import { IFocus } from '../modules/common/models/focus.model';
 import { QUICK_FOCUS_ID } from '../modules/common/constants/quick-focus-id.const';
 import {
@@ -95,6 +96,11 @@ export class BackgroundServiceMV3 {
             case CHROME_COMMAND_ENUM.SET_CURRENT_PERIOD: {
               const result = await this.setCurrentPeriod(message.periodId);
               sendResponse(result);
+              break;
+            }
+            case CHROME_COMMAND_ENUM.SYNC_USER_DATA: {
+              const syncResult = await this.syncUserData(message.userEmail, message.userId);
+              sendResponse(syncResult);
               break;
             }
             default:
@@ -401,5 +407,18 @@ export class BackgroundServiceMV3 {
     }
 
     return { success: true };
+  }
+
+  /**
+   * Synchronize user data with backend
+   */
+  private async syncUserData(userEmail: string, userId: string): Promise<FocusOperationResult> {
+    try {
+      await UserDataSyncAdapter.syncUserData(userEmail, userId);
+      return { success: true };
+    } catch (error) {
+      console.error('[BackgroundService] User data sync failed:', error);
+      return { success: false, error: FOCUS_ERROR_ENUM.GENERIC_ERROR };
+    }
   }
 }
