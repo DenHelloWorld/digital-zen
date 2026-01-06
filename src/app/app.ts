@@ -17,7 +17,6 @@ import {
   UI_TEXT,
   VIEW_ENUM,
   ViewType,
-  UserDataSyncService,
 } from '../modules/common';
 import { FocusComponent } from '../modules/focus/focus.component';
 import { DzToastContainerComponent } from '../modules/common/components/toast-container/toast-container';
@@ -43,14 +42,12 @@ import { PeriodFormComponent } from '../modules/menu/components/period-form';
 export class App {
   readonly #themeService: ThemeService = inject(ThemeService);
   readonly #authService: AuthService = inject(AuthService);
-  readonly #userDataSyncService: UserDataSyncService = inject(UserDataSyncService);
 
   protected readonly theme: Signal<ColorSchemaType> = this.#themeService.theme;
   protected readonly currentViewType: WritableSignal<ViewType> = signal(VIEW_ENUM.FOCUS);
   protected readonly isGoogleAuthenticated: Signal<boolean> =
     this.#authService.isGoogleAuthenticated;
   protected readonly isGoogleAuthPending: Signal<boolean> = this.#authService.isGoogleAuthPending;
-  protected readonly isSyncingData: Signal<boolean> = this.#userDataSyncService.isPending;
 
   protected readonly colorSchemes: typeof COLOR_SCHEMA_ENUM = COLOR_SCHEMA_ENUM;
   protected readonly viewTypes: typeof VIEW_ENUM = VIEW_ENUM;

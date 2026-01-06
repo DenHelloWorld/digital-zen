@@ -1,6 +1,5 @@
 import { computed, inject, Injectable, Signal, signal, WritableSignal } from '@angular/core';
-import { ApiService } from './api.service';
-import { API_URLS } from '../constants';
+import { ApiService, API_URLS } from '../../common';
 
 export interface IGoogleUserInfo {
   sub: string;

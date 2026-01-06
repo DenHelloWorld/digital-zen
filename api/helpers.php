@@ -49,11 +49,28 @@ function checkSecretKey() {
     // Get all request headers
     $headers = getallheaders();
     
-    // Get key from X-API-Key header
+    // Get key from X-API-Key header (case-insensitive)
     $receivedKey = '';
+    
+    // Try different case variations since some servers normalize headers
     if (isset($headers['X-API-Key'])) {
         $receivedKey = $headers['X-API-Key'];
+    } elseif (isset($headers['x-api-key'])) {
+        $receivedKey = $headers['x-api-key'];
+    } elseif (isset($headers['X-Api-Key'])) {
+        $receivedKey = $headers['X-Api-Key'];
+    } else {
+        // Fallback: search case-insensitively
+        foreach ($headers as $name => $value) {
+            if (strtolower($name) === 'x-api-key') {
+                $receivedKey = $value;
+                break;
+            }
+        }
     }
+    
+    // Trim whitespace from received key
+    $receivedKey = trim($receivedKey);
     
     // Check that key is not empty and matches our key
     $isKeyValid = !empty(API_SECRET_KEY) && $receivedKey === API_SECRET_KEY;
