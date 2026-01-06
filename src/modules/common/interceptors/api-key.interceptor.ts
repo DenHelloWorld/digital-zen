@@ -1,5 +1,8 @@
 import { HttpInterceptorFn } from '@angular/common/http';
 import { API_CONFIG } from '../constants';
+import { logger } from '../helpers/logger';
+
+const interceptorLogger = logger.createLogger('ApiKeyInterceptor');
 
 /**
  * API Key Interceptor
@@ -13,7 +16,7 @@ export const apiKeyInterceptor: HttpInterceptorFn = (req, next) => {
   }
 
   if (!API_CONFIG.apiKey) {
-    console.warn('API key is not configured');
+    interceptorLogger.warn('API key is not configured');
     return next(req);
   }
 

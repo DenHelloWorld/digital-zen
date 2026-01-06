@@ -88,7 +88,7 @@ export class UserDataSyncAdapter {
       url.searchParams.append('user_id', userId);
     }
 
-    console.log('[UserDataSyncAdapter] Fetching user data from:', url.toString());
+    UserDataSyncAdapter.logger.debug('Fetching user data from:', url.toString());
 
     const response = await fetch(url.toString(), {
       method: 'GET',
@@ -131,7 +131,7 @@ export class UserDataSyncAdapter {
       periods: [],
     };
 
-    console.log('[UserDataSyncAdapter] Creating user:', userEmail);
+    UserDataSyncAdapter.logger.debug('Creating user:', userEmail);
 
     const response = await fetch(url, {
       method: 'POST',

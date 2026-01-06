@@ -22,6 +22,7 @@ import {
   arrayMinLengthValidator,
   IFocus,
   IFocusForm,
+  logger,
   requiredTrimmedValidator,
   timeRangeValidator,
   UI_TEXT,
@@ -45,6 +46,7 @@ export class PeriodFormComponent implements OnInit {
   readonly #destroyRef: DestroyRef = inject(DestroyRef);
   readonly #injector: Injector = inject(Injector);
   readonly #focusService: FocusService = inject(FocusService);
+  readonly #logger = logger.createLogger('PeriodFormComponent');
 
   public readonly mode: InputSignal<'create' | 'edit'> = input<'create' | 'edit'>('create');
   public readonly period: InputSignal<IFocus.Period | null> = input<IFocus.Period | null>(null);
@@ -79,7 +81,7 @@ export class PeriodFormComponent implements OnInit {
         takeUntilDestroyed(this.#destroyRef)
       )
       .subscribe(value => {
-        console.log(value);
+        this.#logger.debug('Form value changed:', value);
       });
 
     toObservable(this.selectedDays, { injector: this.#injector })
@@ -142,7 +144,7 @@ export class PeriodFormComponent implements OnInit {
    */
   #timeStringToDate(timeString: string | null): Date | null {
     if (!timeString || typeof timeString !== 'string' || !timeString.includes(':')) {
-      console.warn('Invalid time string provided to timeStringToDate:', timeString);
+      this.#logger.warn('Invalid time string provided to timeStringToDate:', timeString);
       return null;
     }
 
@@ -151,7 +153,7 @@ export class PeriodFormComponent implements OnInit {
     const minutes = Number(minutesStr);
 
     if (isNaN(hours) || isNaN(minutes)) {
-      console.warn('Invalid hours/minutes in time string:', timeString);
+      this.#logger.warn('Invalid hours/minutes in time string:', timeString);
       return null;
     }
 
@@ -160,7 +162,7 @@ export class PeriodFormComponent implements OnInit {
 
     // Verify the date is valid after setting
     if (isNaN(date.getTime())) {
-      console.warn('Created invalid date from time string:', timeString);
+      this.#logger.warn('Created invalid date from time string:', timeString);
       return null;
     }
 

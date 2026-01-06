@@ -16,6 +16,7 @@ import {
   DEFAULT_PERIOD,
   ChromeStorageService,
   FOCUS_ERROR_ENUM,
+  logger,
 } from '../../common';
 import { DzToastService } from '../../common/components/toast-container/toast.service';
 import { cleanUrlHelper, isImageIcon, isSvgIcon } from '../../common/helpers';
@@ -36,6 +37,7 @@ export class FocusService {
   readonly #toastService: DzToastService = inject(DzToastService);
   readonly #chromeStorageService: ChromeStorageService = inject(ChromeStorageService);
   readonly #destroyRef: DestroyRef = inject(DestroyRef);
+  readonly #logger = logger.createLogger('FocusService');
 
   readonly #currentPeriod: WritableSignal<IFocus.Period | null> = signal<IFocus.Period | null>(
     null
@@ -188,7 +190,7 @@ export class FocusService {
       const date = d instanceof Date ? d : new Date(d);
       // Return null if the date is invalid
       if (isNaN(date.getTime())) {
-        console.warn('Invalid date detected, skipping:', d);
+        this.#logger.warn('Invalid date detected, skipping:', d);
         return null;
       }
       return date;
@@ -240,7 +242,7 @@ export class FocusService {
 
       chrome.runtime.sendMessage({ command: CHROME_COMMAND_ENUM.TOGGLE_FOCUS }, response => {
         if (chrome.runtime.lastError) {
-          console.error('Error sending message to background:', chrome.runtime.lastError);
+          this.#logger.error('Error sending message to background:', chrome.runtime.lastError);
           this.#toastService.show({
             message: 'Failed to communicate with background service.',
             type: TOAST_TYPE_ENUM.ERROR,
@@ -337,7 +339,7 @@ export class FocusService {
 
       return `https://s2.googleusercontent.com/s2/favicons?domain=${domain}&size=${size}`;
     } catch (e) {
-      console.error('Invalid URL provided:', siteUrl, e);
+      this.#logger.error('Invalid URL provided:', siteUrl, e);
       return 'favicon.ico';
     }
   }
@@ -360,7 +362,7 @@ export class FocusService {
         { command: CHROME_COMMAND_ENUM.SET_CURRENT_PERIOD, periodId },
         response => {
           if (chrome.runtime.lastError) {
-            console.error('Error switching period:', chrome.runtime.lastError);
+            this.#logger.error('Error switching period:', chrome.runtime.lastError);
             this.#toastService.show({
               message: TOAST_MESSAGES_ENUM.FAILED_TO_SWITCH_PERIOD,
               type: TOAST_TYPE_ENUM.ERROR,
