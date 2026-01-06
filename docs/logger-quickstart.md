@@ -27,13 +27,15 @@ export class MyService {
 ## Примеры использования
 
 ### Angular Component
+
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { logger } from '../common';
 
 @Component({
   selector: 'dz-my-component',
-  template: '...',
+  templateUrl: './my-component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MyComponent {
   readonly #logger = logger.createLogger('MyComponent');
@@ -45,6 +47,7 @@ export class MyComponent {
 ```
 
 ### Angular Service
+
 ```typescript
 import { Injectable } from '@angular/core';
 import { logger } from '../common';
@@ -60,6 +63,7 @@ export class DataService {
 ```
 
 ### Background Script
+
 ```typescript
 import { logger } from '../modules/common/helpers/logger';
 
@@ -87,8 +91,8 @@ logger.info('MyModule', 'Direct info message');
 
 // Конфигурация
 logger.configure({
-  level: LogLevel.WARN,      // Показывать только WARN и ERROR
-  enableTimestamp: false,    // Отключить timestamps
+  level: LogLevel.WARN, // Показывать только WARN и ERROR
+  enableTimestamp: false, // Отключить timestamps
 });
 ```
 
@@ -96,11 +100,11 @@ logger.configure({
 
 ```typescript
 enum LogLevel {
-  DEBUG = 0,  // Отладочная информация
-  INFO = 1,   // Общая информация
-  WARN = 2,   // Предупреждения
-  ERROR = 3,  // Ошибки
-  NONE = 4,   // Отключить все логи
+  DEBUG = 0, // Отладочная информация
+  INFO = 1, // Общая информация
+  WARN = 2, // Предупреждения
+  ERROR = 3, // Ошибки
+  NONE = 4, // Отключить все логи
 }
 ```
 

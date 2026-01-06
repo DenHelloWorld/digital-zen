@@ -18,6 +18,16 @@ export interface LoggerConfig {
   enableTimestamp: boolean;
 }
 
+/**
+ * Logger instance with prefixed methods
+ */
+export interface ModuleLogger {
+  debug: (...args: unknown[]) => void;
+  info: (...args: unknown[]) => void;
+  warn: (...args: unknown[]) => void;
+  error: (...args: unknown[]) => void;
+}
+
 class UniversalLogger {
   #config: LoggerConfig = {
     level: LogLevel.INFO,
@@ -41,12 +51,7 @@ class UniversalLogger {
   /**
    * Create a prefixed logger for a specific module
    */
-  public createLogger(prefix: string): {
-    debug: (...args: unknown[]) => void;
-    info: (...args: unknown[]) => void;
-    warn: (...args: unknown[]) => void;
-    error: (...args: unknown[]) => void;
-  } {
+  public createLogger(prefix: string): ModuleLogger {
     return {
       debug: (...args: unknown[]) => this.#log(LogLevel.DEBUG, prefix, ...args),
       info: (...args: unknown[]) => this.#log(LogLevel.INFO, prefix, ...args),

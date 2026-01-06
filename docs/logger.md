@@ -20,12 +20,13 @@
 Импортируйте `logger` напрямую из common/helpers:
 
 ```typescript
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { logger } from '../common';
 
 @Component({
   selector: 'dz-my-component',
   templateUrl: './my-component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MyComponent {
   readonly #logger = logger.createLogger('MyComponent');
@@ -95,12 +96,7 @@ logger.warn(prefix: string, ...args: unknown[]): void;
 logger.error(prefix: string, ...args: unknown[]): void;
 
 // Создать именованный логгер для модуля (рекомендуется)
-logger.createLogger(prefix: string): {
-  debug: (...args: unknown[]) => void;
-  info: (...args: unknown[]) => void;
-  warn: (...args: unknown[]) => void;
-  error: (...args: unknown[]) => void;
-};
+logger.createLogger(prefix: string): ModuleLogger;
 
 // Конфигурация
 logger.configure(config: Partial<LoggerConfig>): void;

@@ -26,11 +26,13 @@ API_SECRET_KEY='your_random_secret_key_here'
 ```
 
 **Important Notes:**
+
 - This key must match the `API_SECRET_KEY` defined in `api/config.php` on your backend server
 - **Always use quotes** around the value if it contains special characters (`#`, `$`, `{`, `}`, etc.)
 - Without quotes, characters like `#` will be treated as comments and truncate the key
 
 **Example:**
+
 ```env
 # WRONG - will be truncated at #
 API_SECRET_KEY=4vJxag1ilzIX6B#}H{hmYzVoQuLGu1+8
@@ -56,6 +58,7 @@ npm run build:prod
 ```
 
 This command will:
+
 1. Build the Angular application
 2. Compile the background scripts
 3. **Patch the API config** with your `API_SECRET_KEY` from `.env`
@@ -101,25 +104,30 @@ The backend API validates this header against the configured `API_SECRET_KEY` in
 ### 401 Unauthorized Error
 
 **Symptoms:**
+
 - Console shows: `Failed to get user data: 401 Unauthorized`
 - API key is visible in request headers but still fails
 
 **Solutions:**
 
 1. **Check API key is configured:**
+
    ```bash
    grep API_SECRET_KEY .env
    ```
 
 2. **Verify you used production build:**
+
    ```bash
    npm run build:prod
    ```
 
 3. **Check compiled config has the key:**
+
    ```bash
    grep apiKey dist/browser/modules/common/constants/api-config.const.js
    ```
+
    Should show: `apiKey: "your_actual_key_here"`
 
 4. **Verify backend config matches:**
@@ -149,6 +157,7 @@ The backend API validates this header against the configured `API_SECRET_KEY` in
 ## Next Steps
 
 For better security in production, consider:
+
 1. Implementing OAuth 2.0 flow
 2. Using JWT tokens with expiration
 3. Moving API key validation to server-side only
