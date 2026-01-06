@@ -1,276 +1,88 @@
 # API Deployment Guide
 
-This guide explains how to deploy Digital Zen API to your hosting server.
+## Common API Key Issues
 
-## Prerequisites
+If you're getting "Invalid API key" errors even though the key appears correct, check these potential issues:
 
-- Access to hosting control panel (cPanel or similar)
-- MySQL database already created:
-  - Database name: `u387418961_digital_zen_db`
-  - Database user: `u387418961_dz_user`
-  - Database password (you should have this from your hosting provider)
-- Domain: `digital-zen.csmpoint.com`
+### 1. Header Case Sensitivity
 
-## Step 1: Generate API Secret Key
+The API now checks for the `X-API-Key` header in a case-insensitive manner, but ensure your server is configured correctly.
 
-1. Go to https://randomkeygen.com/
-2. Copy one of the "Fort Knox Passwords" (long random string)
-3. Save this key - you will need it in multiple places
+### 2. Whitespace in API Key
 
-Example: `k8jH#mP9$nQ2*rT5&vW7@xY0!zA3^bC6`
+Make sure there's no whitespace before or after the API key in both:
+- Frontend `.env` file: `API_SECRET_KEY='your_key_here'`  
+- Backend `api/config.php`: `define('API_SECRET_KEY', 'your_key_here');`
 
-## Step 2: Configure Backend API
+### 3. Special Characters
 
-1. On your local computer, go to `api/` folder
-2. Copy `config.example.php` to `config.php`:
+If your API key contains special characters, ensure:
+- Frontend: Use quotes in `.env` file: `API_SECRET_KEY='key#with$pecial'`
+- Backend: Use quotes in PHP: `define('API_SECRET_KEY', 'key#with$pecial');`
 
-   ```bash
-   cp config.example.php config.php
-   ```
+### 4. Key Length Verification
 
-3. Open file `config.php`
-4. Find this line:
-   ```php
-   define('DB_PASS', '');
-   ```
-5. Replace with your database password:
+Both keys should have the exact same length. You can verify:
 
-   ```php
-   define('DB_PASS', 'your_actual_database_password');
-   ```
-
-6. Find this line:
-   ```php
-   define('API_SECRET_KEY', '');
-   ```
-7. Replace with the secret key you generated in Step 1:
-   ```php
-   define('API_SECRET_KEY', 'k8jH#mP9$nQ2*rT5&vW7@xY0!zA3^bC6');
-   ```
-
-## Step 3: Upload API Files to Server
-
-Upload these files to your hosting server:
-
-```
-digital-zen.csmpoint.com/
-└── api/
-    ├── .htaccess
-    ├── config.php
-    ├── helpers.php
-    ├── user.php
-    └── README.md
+**Frontend (in browser console after build:prod):**
+```javascript
+// Check in compiled background script
+console.log('API Key length:', API_CONFIG.apiKey.length);
 ```
 
-You can use:
-
-- **FTP client** (FileZilla, WinSCP)
-- **cPanel File Manager**
-- **SSH/SFTP** if available
-
-### Important: Set File Permissions
-
-After uploading, set correct permissions:
-
-**Using FTP Client (FileZilla):**
-
-1. Right-click on `api` folder → Properties
-2. Set permissions to `755` (drwxr-xr-x)
-3. Right-click each `.php` file → Properties
-4. Set permissions to `644` (-rw-r--r--)
-
-**Using cPanel File Manager:**
-
-1. Select `api` folder → Permissions
-2. Set to `755`
-3. Select all `.php` files → Permissions
-4. Set to `644`
-
-**Using SSH:**
-
-```bash
-chmod 755 api/
-chmod 644 api/*.php
+**Backend (add to helpers.php temporarily for debugging):**
+```php
+error_log('API_SECRET_KEY length: ' . strlen(API_SECRET_KEY));
+error_log('Received key length: ' . strlen($receivedKey));
 ```
 
-## Step 4: Create Database Tables
+### 5. Updated helpers.php
 
-1. Log in to your hosting control panel
-2. Open **phpMyAdmin**
-3. Select database `u387418961_digital_zen_db` from left sidebar
-4. Click on **SQL** tab at the top
-5. Open file `api/database.sql` from your computer
-6. Copy ALL content from that file
-7. Paste into SQL query box in phpMyAdmin
-8. Click **Go** button to execute
+The `helpers.php` file has been updated to:
+- Handle case-insensitive header lookup
+- Trim whitespace from received keys
+- Log debug information (key length comparison)
 
-You should see message: "4 rows affected" or similar.
+Make sure to upload the updated `helpers.php` to your server.
 
-## Step 5: Test API Connection
+### 6. Verify Server Configuration
 
-### Test 1: Verify PHP is Working
-
-1. Open browser
-2. Go to: `https://digital-zen.csmpoint.com/api/test.php`
-3. You should see JSON response:
-   ```json
-   {
-     "status": "OK",
-     "message": "PHP is working!",
-     "php_version": "8.x.x"
-   }
+1. **Check config.php exists and has the key:**
+   ```php
+   define('API_SECRET_KEY', '4vJxag1ilzIX6B#}H{hmYzVoQuLGu1+8');
    ```
 
-**If you see HTML 403 error here:** This means PHP files are blocked. See troubleshooting section below.
+2. **Verify file permissions:**
+   - `config.php` should be readable by PHP (644 or 600)
+   - Should NOT be publicly accessible (use .htaccess to protect it)
 
-**If this works:** PHP is configured correctly! Continue to next test.
+3. **Check error logs:**
+   - Look in your hosting panel's error logs
+   - The updated helpers.php logs key length mismatches
 
-### Test 2: Verify API Endpoint
+### 7. Common Mistakes
 
-1. Open browser
-2. Go to: `https://digital-zen.csmpoint.com/api/user`
-3. You should see JSON response:
-   ```json
-   {
-     "success": false,
-     "error": "Invalid API key"
-   }
-   ```
+❌ **Wrong**: Using `"` quotes in .env but `'` in PHP (or vice versa) - shouldn't matter but be consistent
+❌ **Wrong**: Copy-paste adding invisible characters
+❌ **Wrong**: Not running `npm run build:prod` after changing .env
+❌ **Wrong**: Not uploading updated helpers.php to server
 
-This means API is working! (It rejects request because no API key was sent)
+✅ **Correct**: Same exact string in both places with proper quotes
 
-## Step 6: Configure Chrome Extension
+### Testing API Key Matching
 
-1. Open file `src/modules/common/constants/api-config.const.ts`
-2. Find these lines:
-   ```typescript
-   export const API_CONFIG: ApiConfig = {
-     apiUrl: 'https://digital-zen.csmpoint.com/api',
-     apiKey: '',
-   };
-   ```
-3. Replace with the same secret key from Step 1:
-   ```typescript
-   export const API_CONFIG: ApiConfig = {
-     apiUrl: 'https://digital-zen.csmpoint.com/api',
-     apiKey: 'k8jH#mP9$nQ2*rT5&vW7@xY0!zA3^bC6',
-   };
-   ```
+Create a test script to verify keys match:
 
-**IMPORTANT**: The API key in Chrome extension MUST match the API_SECRET_KEY in `api/config.php`
+**test-key.php** (upload to server, then delete after testing):
+```php
+<?php
+require_once 'config.php';
 
-## Step 7: Build and Test Extension
+echo "API_SECRET_KEY is configured: " . (!empty(API_SECRET_KEY) ? 'Yes' : 'No') . "\n";
+echo "API_SECRET_KEY length: " . strlen(API_SECRET_KEY) . "\n";
+echo "First 10 chars: " . substr(API_SECRET_KEY, 0, 10) . "...\n";
+echo "Last 10 chars: ..." . substr(API_SECRET_KEY, -10) . "\n";
+?>
+```
 
-1. Build the extension:
-
-   ```bash
-   npm run build
-   ```
-
-2. Load extension in Chrome:
-   - Go to `chrome://extensions/`
-   - Enable "Developer mode"
-   - Click "Load unpacked"
-   - Select `dist/browser` folder
-
-3. Test the extension with API
-
-## Troubleshooting
-
-### Cannot Connect to Database
-
-**Problem**: Error "Failed to connect to database"
-
-**Solution**:
-
-- Check database password in `api/config.php`
-- Verify database exists in phpMyAdmin
-- Check database name and username are correct
-
-### Invalid API Key Error in Extension
-
-**Problem**: Extension cannot save data to API
-
-**Solution**:
-
-- Make sure API key in `api-config.const.ts` matches `API_SECRET_KEY` in `api/config.php`
-- Both keys must be EXACTLY the same (including case)
-- Rebuild extension after changing the key
-
-### CORS Errors
-
-**Problem**: Browser shows CORS errors in console
-
-**Solution**:
-
-- API is configured to only accept requests from Chrome extensions
-- Make sure you're using the extension, not testing from browser console
-- Check that request is coming from `chrome-extension://` URL
-
-### Error: 403 Forbidden (HTML response)
-
-**This is the most common issue!** The 403 error means the web server is blocking access to the PHP files.
-
-**Quick fixes:**
-
-1. **Check file permissions** (most common cause):
-   - Directory: `755`
-   - PHP files: `644`
-
-2. **Make sure `.htaccess` file is uploaded** to the api folder
-
-3. **Access the full file path**:
-   - ✅ `https://digital-zen.csmpoint.com/api/user`
-   - ❌ `https://digital-zen.csmpoint.com/api/`
-
-**See detailed troubleshooting guide:** [TROUBLESHOOTING_403.md](./TROUBLESHOOTING_403.md)
-
-**Common causes:**
-
-- File permissions are incorrect (need 644 for .php files)
-- ModSecurity is blocking requests (contact hosting support)
-- PHP version is too old (need PHP 7.4+)
-- Server doesn't allow .htaccess (contact hosting support)
-
-### Tables Not Created
-
-**Problem**: phpMyAdmin shows no tables
-
-**Solution**:
-
-- Make sure you selected correct database before running SQL
-- Check if there were any error messages in phpMyAdmin
-- Try running SQL statements one by one
-
-## Security Notes
-
-1. **Never commit API key to Git**
-   - The `.gitignore` file already excludes `.env` files
-   - Keep API key secure and private
-
-2. **Use strong API key**
-   - At least 32 characters
-   - Mix of letters, numbers, and symbols
-   - Generate new key for production
-
-3. **Backup your database**
-   - Regular backups through hosting control panel
-   - Save SQL dumps locally
-
-## Next Steps
-
-After successful deployment:
-
-1. Test saving and loading user data
-2. Monitor database size
-3. Set up regular backups
-4. Consider adding database cleanup for old data
-
-## Support
-
-If you have issues:
-
-1. Check browser console for errors
-2. Check PHP error logs on server
-3. Test API endpoint directly in browser
-4. Verify all configuration values are correct
+Compare this output with your frontend key to ensure they match.
