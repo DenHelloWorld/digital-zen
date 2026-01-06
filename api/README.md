@@ -17,6 +17,7 @@ api/
 ├── config.example.php # Example configuration (copy to config.php)
 ├── helpers.php        # Helper functions
 ├── user.php           # User data endpoint (accessed as /api/user)
+├── periods.php        # Periods CRUD endpoint (accessed as /api/periods)
 ├── database.sql       # Database schema
 └── README.md          # This file
 ```
@@ -194,6 +195,196 @@ Content-Type: application/json
   "data": {
     "message": "Data saved successfully",
     "user_id": 1
+  }
+}
+```
+
+## Periods API
+
+The Periods API provides CRUD (Create, Read, Update, Delete) operations for managing periods independently.
+
+### Get Periods
+
+**Endpoint:** `GET /api/periods`
+
+**Headers:**
+```
+X-API-Key: your_secret_key
+Content-Type: application/json
+```
+
+**Query Parameters:**
+```
+GET /api/periods?user_email=user@example.com
+```
+or
+```
+GET /api/periods?user_id=123456789
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "user": {
+      "id": 1,
+      "email": "user@example.com",
+      "user_id": "123456789"
+    },
+    "periods": [
+      {
+        "id": "period-1",
+        "name": "Work Time",
+        "description": "Focus on work",
+        "startFrom": "2024-01-01 09:00:00",
+        "endTo": "2024-01-01 17:00:00",
+        "daysOfWeek": ["Monday", "Tuesday"],
+        "isFocused": false,
+        "sessionStartTime": null,
+        "webSites": [],
+        "focusedTimes": []
+      }
+    ]
+  }
+}
+```
+
+### Create Period
+
+**Endpoint:** `POST /api/periods`
+
+**Headers:**
+```
+X-API-Key: your_secret_key
+Content-Type: application/json
+```
+
+**Body:**
+```json
+{
+  "user_email": "user@example.com",
+  "period": {
+    "id": "period-1",
+    "name": "Work Time",
+    "description": "Focus on work",
+    "startFrom": "2024-01-01T09:00:00Z",
+    "endTo": "2024-01-01T17:00:00Z",
+    "daysOfWeek": ["Monday", "Tuesday"],
+    "isFocused": false,
+    "sessionStartTime": null,
+    "webSites": [
+      {
+        "id": "site-1",
+        "name": "Facebook",
+        "description": "Social media",
+        "url": "facebook.com",
+        "imageUrl": "",
+        "iconUrl": "https://facebook.com/favicon.ico",
+        "type": "Social Media",
+        "isBlocked": true
+      }
+    ],
+    "focusedTimes": [
+      {
+        "id": "time-1",
+        "startFrom": "09:00:00",
+        "endTo": "17:00:00"
+      }
+    ]
+  }
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "message": "Period created successfully",
+    "period_id": "period-1"
+  }
+}
+```
+
+### Update Period
+
+**Endpoint:** `PUT /api/periods`
+
+**Headers:**
+```
+X-API-Key: your_secret_key
+Content-Type: application/json
+```
+
+**Body:**
+```json
+{
+  "period_id": "period-1",
+  "period": {
+    "name": "Updated Work Time",
+    "description": "Updated description",
+    "startFrom": "2024-01-01T08:00:00Z",
+    "endTo": "2024-01-01T18:00:00Z",
+    "daysOfWeek": ["Monday", "Tuesday", "Wednesday"],
+    "isFocused": true,
+    "sessionStartTime": "2024-01-01T09:00:00Z",
+    "webSites": [
+      {
+        "id": "site-1",
+        "name": "Facebook",
+        "description": "Social media",
+        "url": "facebook.com",
+        "imageUrl": "",
+        "iconUrl": "https://facebook.com/favicon.ico",
+        "type": "Social Media",
+        "isBlocked": true
+      }
+    ],
+    "focusedTimes": [
+      {
+        "id": "time-1",
+        "startFrom": "08:00:00",
+        "endTo": "18:00:00"
+      }
+    ]
+  }
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "message": "Period updated successfully",
+    "period_id": "period-1"
+  }
+}
+```
+
+### Delete Period
+
+**Endpoint:** `DELETE /api/periods`
+
+**Headers:**
+```
+X-API-Key: your_secret_key
+Content-Type: application/json
+```
+
+**Query Parameters:**
+```
+DELETE /api/periods?period_id=period-1
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "message": "Period deleted successfully",
+    "period_id": "period-1"
   }
 }
 ```

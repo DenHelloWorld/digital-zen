@@ -14,6 +14,11 @@ echo json_encode([
             'methods' => ['GET', 'POST'],
             'description' => 'User data management',
         ],
+        [
+            'path' => '/api/periods',
+            'methods' => ['GET', 'POST', 'PUT', 'DELETE'],
+            'description' => 'Periods CRUD operations',
+        ],
     ],
     'authentication' => 'X-API-Key header required',
     'documentation' => 'See README.md for details',

@@ -130,39 +130,6 @@ function handleSaveUserData($database) {
 }
 
 /**
- * Find user by email or user_id
- * 
- * @param PDO $database Database connection
- * @param string $email User email
- * @param string $userId User external ID
- * @return array|null User data or null if not found
- */
-function findUser($database, $email, $userId) {
-    // Prepare SQL query
-    $query = "SELECT * FROM users WHERE user_email = :email OR user_external_id = :user_id LIMIT 1";
-    
-    // Prepare statement
-    $statement = $database->prepare($query);
-    
-    // Bind parameters
-    $statement->bindParam(':email', $email);
-    $statement->bindParam(':user_id', $userId);
-    
-    // Execute query
-    $statement->execute();
-    
-    // Get result
-    $user = $statement->fetch();
-    
-    // Return user or null
-    if ($user) {
-        return $user;
-    }
-    
-    return null;
-}
-
-/**
  * Create new user
  * 
  * @param PDO $database Database connection
