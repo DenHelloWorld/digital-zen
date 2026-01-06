@@ -64,7 +64,7 @@ function handleGetPeriods($database) {
     }
     
     // Find user in database
-    $user = findUserByEmailOrId($database, $userEmail, $userId);
+    $user = findUser($database, $userEmail, $userId);
     
     if (!$user) {
         // User not found, return empty periods
@@ -118,7 +118,7 @@ function handleCreatePeriod($database) {
     }
     
     // Find user
-    $user = findUserByEmailOrId($database, $userEmail, $userId);
+    $user = findUser($database, $userEmail, $userId);
     
     if (!$user) {
         sendErrorResponse('User not found', 404);
@@ -214,39 +214,6 @@ function handleDeletePeriod($database) {
     } catch (Exception $error) {
         sendErrorResponse('Failed to delete period: ' . $error->getMessage(), 500);
     }
-}
-
-/**
- * Find user by email or user_id
- * 
- * @param PDO $database Database connection
- * @param string $email User email
- * @param string $userId User external ID
- * @return array|null User data or null if not found
- */
-function findUserByEmailOrId($database, $email, $userId) {
-    // Prepare SQL query
-    $query = "SELECT * FROM users WHERE user_email = :email OR user_external_id = :user_id LIMIT 1";
-    
-    // Prepare statement
-    $statement = $database->prepare($query);
-    
-    // Bind parameters
-    $statement->bindParam(':email', $email);
-    $statement->bindParam(':user_id', $userId);
-    
-    // Execute query
-    $statement->execute();
-    
-    // Get result
-    $user = $statement->fetch();
-    
-    // Return user or null
-    if ($user) {
-        return $user;
-    }
-    
-    return null;
 }
 
 /**
@@ -522,6 +489,17 @@ function deletePeriod($database, $periodId) {
  * @return void
  */
 function insertWebsite($database, $periodId, $website) {
+    // Validate required fields
+    if (!isset($website['id'])) {
+        throw new Exception('Website id is required');
+    }
+    if (!isset($website['name'])) {
+        throw new Exception('Website name is required');
+    }
+    if (!isset($website['url'])) {
+        throw new Exception('Website url is required');
+    }
+    
     $websiteQuery = "INSERT INTO websites (
         id, period_id, website_name, website_description,
         website_url, image_url, icon_url, website_type, is_blocked
@@ -563,6 +541,11 @@ function insertWebsite($database, $periodId, $website) {
  * @return void
  */
 function insertFocusedTime($database, $periodId, $time) {
+    // Validate required field
+    if (!isset($time['id'])) {
+        throw new Exception('Focused time id is required');
+    }
+    
     $timeQuery = "INSERT INTO focused_times (
         id, period_id, start_from, end_to
     ) VALUES (
