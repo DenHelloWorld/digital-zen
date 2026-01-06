@@ -20,9 +20,22 @@ export class ApiService {
    * @template T Expected response type.
    * @param {string} url Endpoint URL.
    * @param {Record<string, string | string[]>} [params={}] Query parameters (converted to HttpParams).
+   * @param {unknown} [body] Optional request body (for APIs that support GET with body).
    * @returns {Observable<T>} Observable emitting the response typed as T.
    */
-  public get<T>(url: string, params: Record<string, string | string[]> = {}): Observable<T> {
+  public get<T>(
+    url: string,
+    params: Record<string, string | string[]> = {},
+    body?: unknown
+  ): Observable<T> {
+    if (body) {
+      // GET request with body
+      return this.#http.request<T>('GET', url, {
+        params: new HttpParams({ fromObject: params }),
+        body: body,
+      });
+    }
+    // Standard GET request with query params only
     return this.#http.get<T>(url, { params: new HttpParams({ fromObject: params }) });
   }
 

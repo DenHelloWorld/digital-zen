@@ -39,7 +39,8 @@ if ($requestMethod === 'GET') {
  * @return void
  */
 function handleGetUserData($database) {
-    // Get user_email or user_id from query parameters
+    // Get user_email or user_id from query parameters OR request body
+    // First try query parameters (standard for GET)
     $userEmail = '';
     if (isset($_GET['user_email'])) {
         $userEmail = $_GET['user_email'];
@@ -48,6 +49,19 @@ function handleGetUserData($database) {
     $userId = '';
     if (isset($_GET['user_id'])) {
         $userId = $_GET['user_id'];
+    }
+    
+    // If not in query params, try to get from request body
+    if (empty($userEmail) && empty($userId)) {
+        $requestData = getRequestBody();
+        
+        if (isset($requestData['user_email'])) {
+            $userEmail = $requestData['user_email'];
+        }
+        
+        if (isset($requestData['user_id'])) {
+            $userId = $requestData['user_id'];
+        }
     }
     
     // Check that at least one parameter is provided

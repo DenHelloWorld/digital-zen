@@ -92,16 +92,23 @@ This means API is working (it rejects request without API key).
 **Headers:**
 ```
 X-API-Key: your_secret_key
+Content-Type: application/json
 ```
 
-**Query Parameters:**
-- `user_email` - User email (required if user_id not provided)
-- `user_id` - User ID (required if user_email not provided)
-
-**Example:**
+**Method 1: Query Parameters (Standard)**
 ```
 GET /api/user?user_email=user@example.com
 ```
+
+**Method 2: Request Body (Alternative)**
+```
+GET /api/user
+Body: {
+  "user_email": "user@example.com"
+}
+```
+
+**Note:** Both methods are supported. Query parameters are the standard REST approach, but request body is also accepted for flexibility.
 
 **Response:**
 ```json

@@ -19,7 +19,59 @@ export class YourComponent {
 }
 ```
 
-### 3. Save User Data
+### 3. Load User Data
+
+The API supports two methods for GET requests:
+
+**Method 1: Query Parameters (Standard REST approach)**
+```typescript
+loadDataFromServer(): void {
+  const userInfo = this.#userDataSync.getCurrentUserInfo();
+  
+  if (!userInfo) {
+    console.error('User not authenticated');
+    return;
+  }
+  
+  // Uses query parameters: GET /api/user?user_email=...&user_id=...
+  this.#userDataSync
+    .getUserData(userInfo.email, userInfo.userId)
+    .subscribe({
+      next: (response) => {
+        console.log('User data loaded:', response);
+      },
+      error: (error) => {
+        console.error('Failed to load data:', error);
+      }
+    });
+}
+```
+
+**Method 2: Request Body (Alternative)**
+```typescript
+loadDataFromServerWithBody(): void {
+  const userInfo = this.#userDataSync.getCurrentUserInfo();
+  
+  if (!userInfo) {
+    console.error('User not authenticated');
+    return;
+  }
+  
+  // Uses request body: GET /api/user with body: { user_email, user_id }
+  this.#userDataSync
+    .getUserDataWithBody(userInfo.email, userInfo.userId)
+    .subscribe({
+      next: (response) => {
+        console.log('User data loaded:', response);
+      },
+      error: (error) => {
+        console.error('Failed to load data:', error);
+      }
+    });
+}
+```
+
+### 4. Save User Data
 
 ```typescript
 saveDataToServer(): void {
