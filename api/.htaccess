@@ -35,6 +35,12 @@
     Allow from all
 </Files>
 
+# Allow access to periods.php
+<Files "periods.php">
+    Order allow,deny
+    Allow from all
+</Files>
+
 # Prevent access to config.php from browser
 <Files "config.php">
     Order deny,allow
