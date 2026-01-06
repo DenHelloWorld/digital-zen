@@ -21,6 +21,7 @@ node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 ```
 
 This will output something like:
+
 ```
 a7f9c8e2b1d4f6e9a3c5d7b2e4f8a1c3d5e7b9f1c3e5d7b9f2a4c6e8f0a2b4d6
 ```
@@ -101,25 +102,28 @@ export const API_CONFIG: ApiConfig = {
 After setting up the key, test it:
 
 1. **Backend test**: Visit your API in browser
+
    ```
    https://digital-zen.csmpoint.com/api/user
    ```
-   
+
    You should see:
+
    ```json
    {
      "success": false,
      "error": "Invalid API key"
    }
    ```
-   
+
    This means the API is working (it rejects requests without the key).
 
 2. **Frontend test**: Build and load the extension
+
    ```bash
    npm run build
    ```
-   
+
    The extension should be able to make API calls successfully.
 
 ## Troubleshooting
@@ -130,7 +134,8 @@ After setting up the key, test it:
 
 **Cause**: Keys don't match
 
-**Solution**: 
+**Solution**:
+
 1. Check `api/config.php` - copy the exact key
 2. Check `api-config.const.ts` - paste the exact same key
 3. Make sure there are no extra spaces
@@ -142,7 +147,8 @@ After setting up the key, test it:
 
 **Cause**: You forgot to set it
 
-**Solution**: 
+**Solution**:
+
 1. Generate a key (see above)
 2. Set it in `api/config.php`
 3. Set the same key in `api-config.const.ts`

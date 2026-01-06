@@ -24,12 +24,12 @@ export class YourComponent {
 ```typescript
 loadDataFromServer(): void {
   const userInfo = this.#userDataSync.getCurrentUserInfo();
-  
+
   if (!userInfo) {
     console.error('User not authenticated');
     return;
   }
-  
+
   // Uses query parameters: GET /api/user?user_email=...&user_id=...
   this.#userDataSync
     .getUserData(userInfo.email, userInfo.userId)
@@ -50,20 +50,20 @@ loadDataFromServer(): void {
 saveDataToServer(): void {
   // Get current user info
   const userInfo = this.#userDataSync.getCurrentUserInfo();
-  
+
   if (!userInfo) {
     console.error('User not authenticated');
     return;
   }
-  
+
   // Get periods from your service
   const periods = this.#focusService.periods();
-  
+
   if (!periods) {
     console.error('No periods to save');
     return;
   }
-  
+
   // Save to API
   this.#userDataSync
     .saveUserData(userInfo.email, userInfo.userId, periods)
@@ -78,8 +78,6 @@ saveDataToServer(): void {
 }
 ```
 
-
-
 ## Complete Example Component
 
 ```typescript
@@ -93,11 +91,11 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
     <div class="sync-controls">
       <button (click)="saveToServer()">Save to Server</button>
       <button (click)="loadFromServer()">Load from Server</button>
-      
+
       @if (isSyncing()) {
         <p>Syncing...</p>
       }
-      
+
       @if (syncMessage()) {
         <p>{{ syncMessage() }}</p>
       }
@@ -109,63 +107,63 @@ export class SyncExampleComponent {
   readonly #userDataSync = inject(UserDataSyncService);
   readonly #focusService = inject(FocusService);
   readonly #destroyRef = inject(DestroyRef);
-  
+
   protected readonly isSyncing = signal(false);
   protected readonly syncMessage = signal('');
-  
+
   saveToServer(): void {
     const userInfo = this.#userDataSync.getCurrentUserInfo();
-    
+
     if (!userInfo) {
       this.syncMessage.set('Please log in first');
       return;
     }
-    
+
     const periods = this.#focusService.periods();
-    
+
     if (!periods) {
       this.syncMessage.set('No data to save');
       return;
     }
-    
+
     this.isSyncing.set(true);
     this.syncMessage.set('Saving...');
-    
+
     this.#userDataSync
       .saveUserData(userInfo.email, userInfo.userId, periods)
       .pipe(takeUntilDestroyed(this.#destroyRef))
       .subscribe({
-        next: (result) => {
+        next: result => {
           this.isSyncing.set(false);
           this.syncMessage.set('✓ Data saved successfully');
           console.log('Saved:', result);
         },
-        error: (error) => {
+        error: error => {
           this.isSyncing.set(false);
           this.syncMessage.set('✗ Failed to save data');
           console.error('Error:', error);
-        }
+        },
       });
   }
-  
+
   loadFromServer(): void {
     const userInfo = this.#userDataSync.getCurrentUserInfo();
-    
+
     if (!userInfo) {
       this.syncMessage.set('Please log in first');
       return;
     }
-    
+
     this.isSyncing.set(true);
     this.syncMessage.set('Loading...');
-    
+
     this.#userDataSync
       .getUserData(userInfo.email, userInfo.userId)
       .pipe(takeUntilDestroyed(this.#destroyRef))
       .subscribe({
-        next: (response) => {
+        next: response => {
           this.isSyncing.set(false);
-          
+
           if (response.periods.length > 0) {
             this.syncMessage.set(`✓ Loaded ${response.periods.length} periods`);
             // Here you would update your local state with loaded periods
@@ -174,11 +172,11 @@ export class SyncExampleComponent {
             this.syncMessage.set('No data found on server');
           }
         },
-        error: (error) => {
+        error: error => {
           this.isSyncing.set(false);
           this.syncMessage.set('✗ Failed to load data');
           console.error('Error:', error);
-        }
+        },
       });
   }
 }
@@ -193,36 +191,36 @@ export class AppComponent {
   readonly #authService = inject(AuthService);
   readonly #userDataSync = inject(UserDataSyncService);
   readonly #destroyRef = inject(DestroyRef);
-  
+
   constructor() {
     // Watch for authentication changes
     effect(() => {
       const isAuthenticated = this.#authService.isGoogleAuthenticated();
-      
+
       if (isAuthenticated) {
         this.loadUserData();
       }
     });
   }
-  
+
   private loadUserData(): void {
     const userInfo = this.#userDataSync.getCurrentUserInfo();
-    
+
     if (!userInfo) {
       return;
     }
-    
+
     this.#userDataSync
       .getUserData(userInfo.email, userInfo.userId)
       .pipe(takeUntilDestroyed(this.#destroyRef))
       .subscribe({
-        next: (response) => {
+        next: response => {
           console.log('Auto-loaded user data:', response);
           // Update local state with server data
         },
-        error: (error) => {
+        error: error => {
           console.error('Auto-load failed:', error);
-        }
+        },
       });
   }
 }
@@ -237,11 +235,11 @@ export class AppComponent {
   readonly #userDataSync = inject(UserDataSyncService);
   readonly #focusService = inject(FocusService);
   readonly #destroyRef = inject(DestroyRef);
-  
+
   constructor() {
     this.startAutoSave();
   }
-  
+
   private startAutoSave(): void {
     // Auto-save every 5 minutes (300000 ms)
     interval(300000)
@@ -250,20 +248,20 @@ export class AppComponent {
         this.autoSaveData();
       });
   }
-  
+
   private autoSaveData(): void {
     const userInfo = this.#userDataSync.getCurrentUserInfo();
-    
+
     if (!userInfo) {
       return; // Not logged in, skip auto-save
     }
-    
+
     const periods = this.#focusService.periods();
-    
+
     if (!periods || periods.length === 0) {
       return; // No data to save
     }
-    
+
     this.#userDataSync
       .saveUserData(userInfo.email, userInfo.userId, periods)
       .pipe(takeUntilDestroyed(this.#destroyRef))
@@ -271,9 +269,9 @@ export class AppComponent {
         next: () => {
           console.log('Auto-save successful');
         },
-        error: (error) => {
+        error: error => {
           console.error('Auto-save failed:', error);
-        }
+        },
       });
   }
 }
@@ -284,25 +282,23 @@ export class AppComponent {
 Always handle errors properly:
 
 ```typescript
-this.#userDataSync
-  .saveUserData(email, userId, periods)
-  .subscribe({
-    next: (result) => {
-      // Success
-    },
-    error: (error) => {
-      if (error.status === 401) {
-        // Unauthorized - API key is wrong
-        console.error('Invalid API key');
-      } else if (error.status === 500) {
-        // Server error
-        console.error('Server error:', error.message);
-      } else {
-        // Other errors
-        console.error('Unknown error:', error);
-      }
+this.#userDataSync.saveUserData(email, userId, periods).subscribe({
+  next: result => {
+    // Success
+  },
+  error: error => {
+    if (error.status === 401) {
+      // Unauthorized - API key is wrong
+      console.error('Invalid API key');
+    } else if (error.status === 500) {
+      // Server error
+      console.error('Server error:', error.message);
+    } else {
+      // Other errors
+      console.error('Unknown error:', error);
     }
-  });
+  },
+});
 ```
 
 ## Notes

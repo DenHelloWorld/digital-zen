@@ -148,33 +148,40 @@ digital-zen/
 ## 📊 Database Tables
 
 ### users
+
 - Stores user identity (email, external_id)
 - No passwords, compatible with any auth provider
 
 ### periods
+
 - User's focus periods
 - Contains schedule info (dates, days, times)
 - JSON field for days of week
 
 ### websites
+
 - Blocked websites per period
 - URL, name, icon, block status
 
 ### focused_times
+
 - Time ranges when focus mode is active
 - Linked to periods
 
 ## 💻 API Endpoints
 
 ### GET /api/user
+
 **Purpose:** Retrieve user data
 
 **Auth:** X-API-Key header required
 
 **Params:**
+
 - `user_email` OR `user_id` (at least one required)
 
 **Returns:**
+
 ```json
 {
   "success": true,
@@ -186,11 +193,13 @@ digital-zen/
 ```
 
 ### POST /api/user
+
 **Purpose:** Save user data
 
 **Auth:** X-API-Key header required
 
 **Body:**
+
 ```json
 {
   "user_email": "user@example.com",
@@ -200,6 +209,7 @@ digital-zen/
 ```
 
 **Returns:**
+
 ```json
 {
   "success": true,
@@ -213,12 +223,14 @@ digital-zen/
 ## 🧪 Testing
 
 ### Backend
+
 - ✓ Build completes without errors
 - ✓ ESLint passes
 - ✓ Prettier formatting correct
 - ✓ TypeScript compilation successful
 
 ### Manual Testing Needed
+
 - [ ] Deploy API to hosting server
 - [ ] Create database tables
 - [ ] Test GET endpoint with real API
@@ -229,6 +241,7 @@ digital-zen/
 ## 📝 Code Style
 
 ### PHP
+
 - Simple, beginner-friendly code
 - No complex abstractions or patterns
 - Clear comments in English
@@ -236,6 +249,7 @@ digital-zen/
 - One function = one responsibility
 
 ### TypeScript/Angular
+
 - Modern Angular 21 patterns
 - Standalone components
 - Signals for state
@@ -284,7 +298,7 @@ All requirements from the issue have been met:
 ✅ No password storage  
 ✅ Independent of Google authentication  
 ✅ Simple, understandable code  
-✅ Comprehensive documentation  
+✅ Comprehensive documentation
 
 ## 🤝 Next Steps
 

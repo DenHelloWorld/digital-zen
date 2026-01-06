@@ -60,15 +60,23 @@
 </main>
 
 <footer class="dz-footer" [class.dark-theme]="theme() === colorSchemes.DARK">
-  <a
-    href="https://digital-zen-five.vercel.app/privacy-policy.html"
-    target="_blank"
-    rel="noopener noreferrer"
-    class="dz-footer__link"
-    [attr.aria-label]="uiText.FOOTER.PRIVACY_POLICY_ARIA_LABEL"
-  >
-    {{ uiText.FOOTER.PRIVACY_POLICY_LINK }}
-  </a>
+  <nav class="dz-footer__navigation">
+    <a
+      href="https://digital-zen-five.vercel.app/privacy-policy.html"
+      target="_blank"
+      rel="noopener noreferrer"
+      class="dz-footer__link"
+      [attr.aria-label]="uiText.FOOTER.PRIVACY_POLICY_ARIA_LABEL"
+    >
+      {{ uiText.FOOTER.PRIVACY_POLICY_LINK }}
+    </a>
+  </nav>
+
+  <div [class.hidden]="!isSyncingData()" class="dz-footer__sync pulse" aria-hidden="true">
+    <svg class="dz-icon" aria-hidden="true" focusable="false">
+      <use [attr.href]="icons.SAVE"></use>
+    </svg>
+  </div>
 </footer>
 
 <dz-toast-container />
