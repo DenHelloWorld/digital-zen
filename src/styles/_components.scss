@@ -362,3 +362,41 @@
     color: var(--color-on-accent);
   }
 }
+
+.dz-fieldset {
+  display: flex;
+  padding: var(--spacing-md);
+  border: none;
+  border-radius: var(--radius);
+  background-color: var(--color-component-bg-light);
+  color: var(--color-component-text-light);
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing);
+
+  &--fit {
+    max-width: max-content;
+  }
+
+  &.dz-fieldset--dark {
+    background-color: var(--color-component-bg-dark);
+    color: var(--color-component-text-dark);
+    border-color: var(--color-component-bg-light);
+  }
+
+  &__legend {
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    padding: 0 var(--spacing-sm);
+    color: var(--color-text);
+
+    &--error {
+      color: var(--color-zen-error);
+    }
+
+    &--accent {
+      color: var(--color-zen-accent);
+    }
+  }
+}
