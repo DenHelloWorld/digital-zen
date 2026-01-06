@@ -8,7 +8,7 @@
    - Simple, well-commented PHP code without complex business logic
    - `config.example.php` - Template for configuration
    - `helpers.php` - Reusable helper functions
-   - `user-data.php` - Main API endpoint
+   - `user` - Main API endpoint
    - All code is beginner-friendly and easy to understand
 
 2. **Database Schema** ✓
@@ -71,7 +71,7 @@ digital-zen/
 ├── api/                          # Backend API
 │   ├── config.example.php        # Configuration template
 │   ├── helpers.php               # Helper functions
-│   ├── user-data.php             # Main endpoint
+│   ├── user             # Main endpoint
 │   ├── database.sql              # Database schema
 │   ├── README.md                 # API documentation
 │   └── API_README.md             # Quick reference
@@ -137,7 +137,7 @@ digital-zen/
 3. Fill in database password and API key
 4. Upload files to `digital-zen.csmpoint.com/api/`
 5. Run `database.sql` in phpMyAdmin
-6. Test: visit `/api/user-data.php` (should reject without key)
+6. Test: visit `/api/user` (should reject without key)
 
 ### For Frontend (Extension)
 
@@ -166,7 +166,7 @@ digital-zen/
 
 ## 💻 API Endpoints
 
-### GET /api/user-data.php
+### GET /api/user
 **Purpose:** Retrieve user data
 
 **Auth:** X-API-Key header required
@@ -185,7 +185,7 @@ digital-zen/
 }
 ```
 
-### POST /api/user-data.php
+### POST /api/user
 **Purpose:** Save user data
 
 **Auth:** X-API-Key header required

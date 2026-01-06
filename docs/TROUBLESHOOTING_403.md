@@ -25,7 +25,7 @@ Some servers don't allow directory browsing and might block access.
 
 **Solution:**
 Make sure you're accessing the file directly:
-- ✅ `https://digital-zen.csmpoint.com/api/user-data.php`
+- ✅ `https://digital-zen.csmpoint.com/api/user`
 - ❌ `https://digital-zen.csmpoint.com/api/`
 
 ### 3. ModSecurity Rules
@@ -113,7 +113,7 @@ If you get HTML 403 instead, the PHP file isn't being executed at all.
 
 - [ ] File permissions set to 644 for `.php` files
 - [ ] Directory permission set to 755 for `api/` folder
-- [ ] Accessing full file path: `.../api/user-data.php`
+- [ ] Accessing full file path: `.../api/user`
 - [ ] PHP version is 7.4 or higher
 - [ ] `.htaccess` file is present in api directory
 - [ ] No parent `.htaccess` blocking access
@@ -127,7 +127,7 @@ If none of the above works, contact your hosting support with this information:
 Subject: 403 Forbidden Error on API Directory
 
 I'm getting a 403 Forbidden error when accessing:
-https://digital-zen.csmpoint.com/api/user-data.php
+https://digital-zen.csmpoint.com/api/user
 
 The file exists and has correct permissions (644).
 The directory has 755 permissions.
@@ -148,7 +148,7 @@ The 403 error only occurs on the hosting server, not locally. To test locally:
 1. Install local PHP server (XAMPP, MAMP, or similar)
 2. Copy API files to local server
 3. Update `config.php` with local database credentials
-4. Access via `http://localhost/api/user-data.php`
+4. Access via `http://localhost/api/user`
 
 ## Alternative: Test with Simple Script
 

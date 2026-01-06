@@ -13,9 +13,10 @@ This is a simple PHP API for Digital Zen Chrome extension to store user data on 
 
 ```
 api/
+├── .htaccess          # URL rewriting for clean REST endpoints
 ├── config.example.php # Example configuration (copy to config.php)
 ├── helpers.php        # Helper functions
-├── user-data.php      # Main API endpoint
+├── user.php           # User data endpoint (accessed as /api/user)
 ├── database.sql       # Database schema
 └── README.md          # This file
 ```
@@ -27,9 +28,10 @@ api/
 Upload all files from the `api/` folder to your hosting server at `digital-zen.csmpoint.com`:
 
 ```
+digital-zen.csmpoint.com/api/.htaccess
 digital-zen.csmpoint.com/api/config.php
 digital-zen.csmpoint.com/api/helpers.php
-digital-zen.csmpoint.com/api/user-data.php
+digital-zen.csmpoint.com/api/user.php
 ```
 
 ### 2. Setup Database
@@ -68,7 +70,7 @@ define('API_SECRET_KEY', 'your_random_secret_key_here');
 
 Test if API is working by visiting:
 ```
-https://digital-zen.csmpoint.com/api/user-data.php
+https://digital-zen.csmpoint.com/api/user
 ```
 
 You should see:
@@ -85,7 +87,7 @@ This means API is working (it rejects request without API key).
 
 ### Get User Data
 
-**Endpoint:** `GET /api/user-data.php`
+**Endpoint:** `GET /api/user`
 
 **Headers:**
 ```
@@ -98,7 +100,7 @@ X-API-Key: your_secret_key
 
 **Example:**
 ```
-GET /api/user-data.php?user_email=user@example.com
+GET /api/user?user_email=user@example.com
 ```
 
 **Response:**
@@ -138,7 +140,7 @@ GET /api/user-data.php?user_email=user@example.com
 
 ### Save User Data
 
-**Endpoint:** `POST /api/user-data.php`
+**Endpoint:** `POST /api/user`
 
 **Headers:**
 ```

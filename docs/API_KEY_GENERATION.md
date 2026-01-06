@@ -102,7 +102,7 @@ After setting up the key, test it:
 
 1. **Backend test**: Visit your API in browser
    ```
-   https://digital-zen.csmpoint.com/api/user-data.php
+   https://digital-zen.csmpoint.com/api/user
    ```
    
    You should see:

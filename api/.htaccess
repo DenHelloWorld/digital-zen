@@ -1,6 +1,17 @@
-# Allow access to API directory
+# REST API Configuration
 <IfModule mod_rewrite.c>
     RewriteEngine On
+    RewriteBase /api/
+    
+    # Remove .php extension for clean URLs
+    # /api/user will route to user.php
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_FILENAME}.php -f
+    RewriteRule ^(.+)$ $1.php [L,QSA]
+    
+    # Redirect old user-data.php to /user for backwards compatibility
+    RewriteRule ^user-data\.php$ user.php [L,QSA]
 </IfModule>
 
 # Allow access to PHP files
@@ -11,6 +22,12 @@
 
 # Prevent access to config.php from browser
 <Files "config.php">
+    Order deny,allow
+    Deny from all
+</Files>
+
+# Prevent access to helpers.php from browser
+<Files "helpers.php">
     Order deny,allow
     Deny from all
 </Files>

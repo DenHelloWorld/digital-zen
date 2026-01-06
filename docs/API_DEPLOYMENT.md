@@ -56,7 +56,7 @@ digital-zen.csmpoint.com/
     ├── .htaccess
     ├── config.php
     ├── helpers.php
-    ├── user-data.php
+    ├── user.php
     └── README.md
 ```
 
@@ -103,7 +103,7 @@ You should see message: "4 rows affected" or similar.
 ## Step 5: Test API Connection
 
 1. Open browser
-2. Go to: `https://digital-zen.csmpoint.com/api/user-data.php`
+2. Go to: `https://digital-zen.csmpoint.com/api/user`
 3. You should see JSON response:
    ```json
    {
@@ -190,7 +190,7 @@ This means API is working! (It rejects request because no API key was sent)
 2. **Make sure `.htaccess` file is uploaded** to the api folder
 
 3. **Access the full file path**: 
-   - ✅ `https://digital-zen.csmpoint.com/api/user-data.php`
+   - ✅ `https://digital-zen.csmpoint.com/api/user`
    - ❌ `https://digital-zen.csmpoint.com/api/`
 
 **See detailed troubleshooting guide:** [TROUBLESHOOTING_403.md](./TROUBLESHOOTING_403.md)

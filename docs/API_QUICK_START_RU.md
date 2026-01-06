@@ -29,7 +29,7 @@ digital-zen.csmpoint.com/api/
 ├── .htaccess
 ├── config.php
 ├── helpers.php
-└── user-data.php
+└── user
 ```
 
 **ВАЖНО: Установи правильные права доступа!**
@@ -62,7 +62,7 @@ export const API_CONFIG: ApiConfig = {
 ## ✅ Проверка
 
 ### Проверь API
-Открой в браузере: `https://digital-zen.csmpoint.com/api/user-data.php`
+Открой в браузере: `https://digital-zen.csmpoint.com/api/user`
 
 Должно показать:
 ```json
@@ -116,7 +116,7 @@ npm run build
 2. **Загрузи файл `.htaccess`** в папку api
 
 3. **Используй полный путь к файлу**:
-   - ✅ `https://digital-zen.csmpoint.com/api/user-data.php`
+   - ✅ `https://digital-zen.csmpoint.com/api/user`
    - ❌ `https://digital-zen.csmpoint.com/api/`
 
 **Подробное руководство:** [TROUBLESHOOTING_403.md](./TROUBLESHOOTING_403.md)
@@ -154,12 +154,12 @@ npm run build
 
 ## 🎯 Что умеет API
 
-### GET /api/user-data.php
+### GET /api/user
 Получить данные пользователя
 
 **Параметры**: `user_email` или `user_id`
 
-### POST /api/user-data.php
+### POST /api/user
 Сохранить данные пользователя
 
 **Тело запроса**:
@@ -187,7 +187,7 @@ API автоматически конвертирует данные между 
 - **Сайты** → таблица `websites`
 - **Время фокуса** → таблица `focused_times`
 
-Вся логика конвертации в `api/user-data.php` - код простой и понятный!
+Вся логика конвертации в `api/user` - код простой и понятный!
 
 ---
 

@@ -51,7 +51,7 @@ export class UserDataSyncService {
       throw new Error('At least one of userEmail or userId must be provided');
     }
 
-    const url = `${API_CONFIG.apiUrl}/user-data.php`;
+    const url = `${API_CONFIG.apiUrl}/user`;
     const params: Record<string, string> = {};
 
     if (userEmail) {
@@ -80,7 +80,7 @@ export class UserDataSyncService {
     userId: string,
     periods: IFocus.Period[]
   ): Observable<{ message: string; user_id: number }> {
-    const url = `${API_CONFIG.apiUrl}/user-data.php`;
+    const url = `${API_CONFIG.apiUrl}/user`;
 
     const requestBody: SaveUserDataRequest = {
       user_email: userEmail,

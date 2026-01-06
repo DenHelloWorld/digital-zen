@@ -16,7 +16,7 @@ Simple PHP backend for storing user data (periods and websites).
 api/
 ├── config.example.php  # Example configuration (copy to config.php)
 ├── helpers.php         # Helper functions
-├── user-data.php       # Main API endpoint
+├── user       # Main API endpoint
 └── database.sql        # Database schema
 ```
 
@@ -42,7 +42,7 @@ cp config.example.php config.php
 Upload these files to your hosting:
 - `config.php`
 - `helpers.php`
-- `user-data.php`
+- `user`
 
 ### 3. Create Database Tables
 
@@ -50,7 +50,7 @@ Run `database.sql` in phpMyAdmin
 
 ### 4. Test
 
-Visit: `https://digital-zen.csmpoint.com/api/user-data.php`
+Visit: `https://digital-zen.csmpoint.com/api/user`
 
 Should return:
 ```json
@@ -62,7 +62,7 @@ Should return:
 
 ## API Endpoints
 
-### GET /user-data.php
+### GET /user
 
 Get user data by email or user_id
 
@@ -88,7 +88,7 @@ Get user data by email or user_id
 }
 ```
 
-### POST /user-data.php
+### POST /user
 
 Save user data
 
