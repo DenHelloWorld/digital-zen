@@ -2,6 +2,18 @@
 
 If you're getting a **403 Forbidden** error when accessing the API, this is a **server configuration issue**, not a code problem. Here's how to fix it:
 
+## Special Case: Accessing /api/ Root
+
+If you get 403 when accessing `https://digital-zen.csmpoint.com/api/` (the root), but `/api/user` works:
+
+**Solution:**
+1. Make sure `index.php` is uploaded to the api folder
+2. Check that `.htaccess` has `DirectoryIndex index.php`
+3. Verify `index.php` has 644 permissions
+4. Some servers block directory access - this is normal if `/api/user` works
+
+**Note:** The root `/api/` endpoint is optional. If `/api/user` works, the API is functioning correctly.
+
 ## Common Causes and Solutions
 
 ### 1. File Permissions (Most Common)

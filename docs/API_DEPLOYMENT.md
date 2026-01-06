@@ -102,6 +102,25 @@ You should see message: "4 rows affected" or similar.
 
 ## Step 5: Test API Connection
 
+### Test 1: Verify PHP is Working
+
+1. Open browser
+2. Go to: `https://digital-zen.csmpoint.com/api/test.php`
+3. You should see JSON response:
+   ```json
+   {
+     "status": "OK",
+     "message": "PHP is working!",
+     "php_version": "8.x.x"
+   }
+   ```
+
+**If you see HTML 403 error here:** This means PHP files are blocked. See troubleshooting section below.
+
+**If this works:** PHP is configured correctly! Continue to next test.
+
+### Test 2: Verify API Endpoint
+
 1. Open browser
 2. Go to: `https://digital-zen.csmpoint.com/api/user`
 3. You should see JSON response:

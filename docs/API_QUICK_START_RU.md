@@ -61,6 +61,20 @@ export const API_CONFIG: ApiConfig = {
 
 ## ✅ Проверка
 
+### Проверь что PHP работает
+Открой в браузере: `https://digital-zen.csmpoint.com/api/test.php`
+
+Должно показать:
+```json
+{
+  "status": "OK",
+  "message": "PHP is working!",
+  "php_version": "8.x.x"
+}
+```
+
+✓ Если видишь это - PHP работает, можно продолжать!
+
 ### Проверь API
 Открой в браузере: `https://digital-zen.csmpoint.com/api/user`
 
