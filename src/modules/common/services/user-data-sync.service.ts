@@ -1,10 +1,10 @@
-import { inject, Injectable, Injector } from '@angular/core';
+import { inject, Injectable, Injector, DestroyRef } from '@angular/core';
 import { ApiService } from './api.service';
 import { API_URLS } from '../constants';
 import { IFocus, IUserDataSync } from '../models';
 import { map, Observable } from 'rxjs';
 import { GoogleAuthService, IGoogleUserInfo } from './google-auth.service';
-import { toObservable } from '@angular/core/rxjs-interop';
+import { toObservable, takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CHROME_COMMAND_ENUM } from '../enums/chrome-command.enum';
 
 /**
@@ -19,16 +19,17 @@ export class UserDataSyncService {
   readonly #injector = inject(Injector);
   readonly #apiService = inject(ApiService);
   readonly #googleAuthService = inject(GoogleAuthService);
+  readonly #destroyRef = inject(DestroyRef);
 
   constructor() {
     // Trigger sync in background when user logs in
-    toObservable(this.#googleAuthService.userInfo, { injector: this.#injector }).subscribe(
-      userInfo => {
+    toObservable(this.#googleAuthService.userInfo, { injector: this.#injector })
+      .pipe(takeUntilDestroyed(this.#destroyRef))
+      .subscribe(userInfo => {
         if (userInfo && userInfo.email && userInfo.sub) {
           this.#triggerBackgroundSync(userInfo.email, userInfo.sub);
         }
-      }
-    );
+      });
   }
 
   /**

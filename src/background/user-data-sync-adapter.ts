@@ -54,10 +54,7 @@ export class UserDataSyncAdapter {
    * @param userId User ID
    * @returns Promise with user data
    */
-  private static async getUserData(
-    userEmail: string,
-    userId: string
-  ): Promise<IUserDataSync.Response> {
+  static async getUserData(userEmail: string, userId: string): Promise<IUserDataSync.Response> {
     if (!userEmail && !userId) {
       throw new Error('At least one of userEmail or userId must be provided');
     }
@@ -95,7 +92,7 @@ export class UserDataSyncAdapter {
    * @param userId User ID
    * @returns Promise that resolves when user is created
    */
-  private static async createUser(userEmail: string, userId: string): Promise<void> {
+  static async createUser(userEmail: string, userId: string): Promise<void> {
     const url = API_URLS.USER;
 
     const requestBody: IUserDataSync.SaveRequest = {
