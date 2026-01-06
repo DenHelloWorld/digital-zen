@@ -18,8 +18,8 @@ export class UserDataSyncAdapter {
    */
   private static checkApiKey(): void {
     if (!API_CONFIG.apiKey) {
-      this.logger.error('API key is not configured!');
-      this.logger.error(
+      UserDataSyncAdapter.logger.error('API key is not configured!');
+      UserDataSyncAdapter.logger.error(
         'Ensure API_SECRET_KEY is set in your .env file and rebuild with: npm run build:prod'
       );
       throw new Error(
@@ -38,27 +38,27 @@ export class UserDataSyncAdapter {
    */
   static async syncUserData(userEmail: string, userId: string): Promise<void> {
     try {
-      this.logger.info('Starting sync for:', userEmail);
+      UserDataSyncAdapter.logger.info('Starting sync for:', userEmail);
 
       // Get user data from API
       const userData = await this.getUserData(userEmail, userId);
 
       // If user doesn't exist, create new user
       if (!userData.user) {
-        this.logger.info('User not found, creating new user');
+        UserDataSyncAdapter.logger.info('User not found, creating new user');
         await this.createUser(userEmail, userId);
       } else {
-        this.logger.info('User found, sync complete');
+        UserDataSyncAdapter.logger.info('User found, sync complete');
       }
 
       // Sync periods if needed
       if (userData.periods && userData.periods.length > 0) {
-        this.logger.info('Syncing periods from backend');
+        UserDataSyncAdapter.logger.info('Syncing periods from backend');
         // Store all periods in local storage, awaiting each save
         await Promise.all(userData.periods.map(period => StorageAdapter.savePeriod(period)));
       }
     } catch (error) {
-      this.logger.error('Sync failed:', error);
+      UserDataSyncAdapter.logger.error('Sync failed:', error);
       throw error;
     }
   }
@@ -99,7 +99,7 @@ export class UserDataSyncAdapter {
     });
 
     if (!response.ok) {
-      this.logger.error('API request failed:', {
+      UserDataSyncAdapter.logger.error('API request failed:', {
         status: response.status,
         statusText: response.statusText,
         url: url.toString(),
@@ -143,7 +143,7 @@ export class UserDataSyncAdapter {
     });
 
     if (!response.ok) {
-      this.logger.error('Create user failed:', {
+      UserDataSyncAdapter.logger.error('Create user failed:', {
         status: response.status,
         statusText: response.statusText,
         hasApiKey: !!API_CONFIG.apiKey,
@@ -152,7 +152,7 @@ export class UserDataSyncAdapter {
     }
 
     await response.json();
-    this.logger.info('User created successfully');
+    UserDataSyncAdapter.logger.info('User created successfully');
   }
 
   /**
@@ -193,6 +193,6 @@ export class UserDataSyncAdapter {
     }
 
     await response.json();
-    this.logger.info('User data saved successfully');
+    UserDataSyncAdapter.logger.info('User data saved successfully');
   }
 }

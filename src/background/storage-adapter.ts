@@ -98,7 +98,7 @@ export class StorageAdapter {
       if (d instanceof Date) {
         // Check if the Date is valid before converting to ISO string
         if (isNaN(d.getTime())) {
-          this.logger.warn('Invalid Date detected in period, skipping:', d);
+          StorageAdapter.logger.warn('Invalid Date detected in period, skipping:', d);
           return null;
         }
         return d.toISOString();
@@ -125,7 +125,7 @@ export class StorageAdapter {
       const date = new Date(s);
       // Return null if the date is invalid
       if (isNaN(date.getTime())) {
-        this.logger.warn('Invalid date string detected in storage, skipping:', s);
+        StorageAdapter.logger.warn('Invalid date string detected in storage, skipping:', s);
         return null;
       }
       return date;
