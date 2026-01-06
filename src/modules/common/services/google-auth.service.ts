@@ -1,6 +1,7 @@
 import { computed, inject, Injectable, Signal, signal, WritableSignal } from '@angular/core';
 import { ApiService } from './api.service';
 import { API_URLS } from '../constants';
+import { CHROME_COMMAND_ENUM } from '../enums/chrome-command.enum';
 
 export interface IGoogleUserInfo {
   sub: string;
@@ -114,11 +115,43 @@ export class GoogleAuthService {
           // TODO: We can use this info later
           // also we can save it in chrome storage
           this.#userInfo.set(info);
+
+          // Trigger background sync after setting user info
+          if (info && info.email && info.sub) {
+            this.#triggerBackgroundSync(info.email, info.sub);
+          }
         },
         error: (err: unknown) => {
           console.error('Failed to fetch user info', err);
         },
       });
+  }
+
+  /**
+   * Trigger synchronization in background service
+   *
+   * @param userEmail User email
+   * @param userId User ID
+   */
+  #triggerBackgroundSync(userEmail: string, userId: string): void {
+    if (this.#isChromeRuntime) {
+      chrome.runtime.sendMessage(
+        {
+          command: CHROME_COMMAND_ENUM.SYNC_USER_DATA,
+          userEmail,
+          userId,
+        },
+        response => {
+          if (chrome.runtime.lastError) {
+            console.error('[GoogleAuthService] Background sync failed:', chrome.runtime.lastError);
+          } else if (response?.success) {
+            console.log('[GoogleAuthService] Background sync completed successfully');
+          } else {
+            console.error('[GoogleAuthService] Background sync returned error:', response);
+          }
+        }
+      );
+    }
   }
 
   #completeLogout(): void {
