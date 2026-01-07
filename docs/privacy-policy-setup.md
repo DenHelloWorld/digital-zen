@@ -115,7 +115,7 @@ Visit the URL to verify changes:
 ### 404 Not Found
 
 - **Check:** File name is exactly `privacy-policy.php`
-- **Verify:** Files are in the correct `/api/` directory
+- **Verify:** File is in the correct `/api/` directory
 - **Ensure:** `.htaccess` is present and not corrupted
 
 ## Additional Resources
