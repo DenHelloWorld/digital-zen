@@ -9,7 +9,7 @@ import {
 } from '../modules/common/enums/chrome-command.enum';
 import { CHROME_ALARM_ENUM } from '../modules/common/enums/chrome-alarm-name.enum';
 import { FOCUS_ERROR_ENUM } from '../modules/common/enums/focus-error.enum';
-import { isCurrentTimeAfter } from '../modules/common/helpers/time.helper';
+import { isCurrentTimeAfter, isCurrentTimeInRange } from '../modules/common/helpers/time.helper';
 import { logger } from '../modules/common/helpers/logger';
 
 type FocusOperationResult = { success: true } | { success: false; error: FOCUS_ERROR_ENUM };
@@ -228,6 +228,12 @@ export class BackgroundServiceMV3 {
 
     if (period.daysOfWeek && !period.daysOfWeek.includes(today)) {
       return { success: false, error: FOCUS_ERROR_ENUM.PERIOD_NOT_SCHEDULED_TODAY };
+    }
+
+    // Check if current time is within the period's time range
+    const now = new Date();
+    if (!isCurrentTimeInRange(now, period.startFrom, period.endTo)) {
+      return { success: false, error: FOCUS_ERROR_ENUM.PERIOD_OUTSIDE_TIME_RANGE };
     }
 
     this.#currentPeriod = period;

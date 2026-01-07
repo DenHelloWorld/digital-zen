@@ -4,6 +4,7 @@ export enum TOAST_MESSAGES_ENUM {
   FOCUS_ACTIVE = 'Focus active.',
   NO_SITES_BLOCKED = 'No websites are in your block list.',
   PERIOD_NOT_SCHEDULED_TODAY = 'This period is not scheduled for today.',
+  PERIOD_OUTSIDE_TIME_RANGE = 'Current time is outside the period time range.',
   PERIOD_ACTIVATED = 'Period activated.',
   PERIOD_NOT_FOUND = 'Period not found.',
   FAILED_TO_SWITCH_PERIOD = 'Failed to switch period.',
@@ -16,6 +17,7 @@ export type ToastMessagesType =
   | TOAST_MESSAGES_ENUM.FOCUS_ACTIVE
   | TOAST_MESSAGES_ENUM.NO_SITES_BLOCKED
   | TOAST_MESSAGES_ENUM.PERIOD_NOT_SCHEDULED_TODAY
+  | TOAST_MESSAGES_ENUM.PERIOD_OUTSIDE_TIME_RANGE
   | TOAST_MESSAGES_ENUM.PERIOD_ACTIVATED
   | TOAST_MESSAGES_ENUM.PERIOD_NOT_FOUND
   | TOAST_MESSAGES_ENUM.FAILED_TO_SWITCH_PERIOD
