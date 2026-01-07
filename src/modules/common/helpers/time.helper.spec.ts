@@ -1,4 +1,4 @@
-import { getTimeInMilliseconds, isCurrentTimeAfter } from './time.helper';
+import { getTimeInMilliseconds, isCurrentTimeAfter, isCurrentTimeInRange } from './time.helper';
 
 describe('time.helper', () => {
   describe('getTimeInMilliseconds', () => {
@@ -297,6 +297,236 @@ describe('time.helper', () => {
 
       expect(typeof ms1).toBe('number');
       expect(typeof ms2).toBe('number');
+    });
+  });
+
+  describe('isCurrentTimeInRange', () => {
+    describe('Within range tests', () => {
+      it('should return true when current time is within range', () => {
+        const current = new Date('2024-01-01T14:30:00.000');
+        const start = new Date('2024-01-01T09:00:00.000');
+        const end = new Date('2024-01-01T17:00:00.000');
+        expect(isCurrentTimeInRange(current, start, end)).toBe(true);
+      });
+
+      it('should return true when current time equals start time', () => {
+        const current = new Date('2024-01-01T09:00:00.000');
+        const start = new Date('2024-01-01T09:00:00.000');
+        const end = new Date('2024-01-01T17:00:00.000');
+        expect(isCurrentTimeInRange(current, start, end)).toBe(true);
+      });
+
+      it('should return false when current time equals end time', () => {
+        const current = new Date('2024-01-01T17:00:00.000');
+        const start = new Date('2024-01-01T09:00:00.000');
+        const end = new Date('2024-01-01T17:00:00.000');
+        expect(isCurrentTimeInRange(current, start, end)).toBe(false);
+      });
+
+      it('should return false when current time is before range', () => {
+        const current = new Date('2024-01-01T08:30:00.000');
+        const start = new Date('2024-01-01T09:00:00.000');
+        const end = new Date('2024-01-01T17:00:00.000');
+        expect(isCurrentTimeInRange(current, start, end)).toBe(false);
+      });
+
+      it('should return false when current time is after range', () => {
+        const current = new Date('2024-01-01T18:00:00.000');
+        const start = new Date('2024-01-01T09:00:00.000');
+        const end = new Date('2024-01-01T17:00:00.000');
+        expect(isCurrentTimeInRange(current, start, end)).toBe(false);
+      });
+    });
+
+    describe('Null boundary tests', () => {
+      it('should return true when both start and end are null', () => {
+        const current = new Date('2024-01-01T14:30:00.000');
+        expect(isCurrentTimeInRange(current, null, null)).toBe(true);
+      });
+
+      it('should return true when start is null and current is before end', () => {
+        const current = new Date('2024-01-01T14:30:00.000');
+        const end = new Date('2024-01-01T17:00:00.000');
+        expect(isCurrentTimeInRange(current, null, end)).toBe(true);
+      });
+
+      it('should return false when start is null and current is after end', () => {
+        const current = new Date('2024-01-01T18:00:00.000');
+        const end = new Date('2024-01-01T17:00:00.000');
+        expect(isCurrentTimeInRange(current, null, end)).toBe(false);
+      });
+
+      it('should return true when end is null and current is after start', () => {
+        const current = new Date('2024-01-01T14:30:00.000');
+        const start = new Date('2024-01-01T09:00:00.000');
+        expect(isCurrentTimeInRange(current, start, null)).toBe(true);
+      });
+
+      it('should return false when end is null and current is before start', () => {
+        const current = new Date('2024-01-01T08:00:00.000');
+        const start = new Date('2024-01-01T09:00:00.000');
+        expect(isCurrentTimeInRange(current, start, null)).toBe(false);
+      });
+    });
+
+    describe('Edge cases', () => {
+      it('should handle midnight as start time', () => {
+        const current = new Date('2024-01-01T00:30:00.000');
+        const start = new Date('2024-01-01T00:00:00.000');
+        const end = new Date('2024-01-01T06:00:00.000');
+        expect(isCurrentTimeInRange(current, start, end)).toBe(true);
+      });
+
+      it('should handle near-midnight as end time', () => {
+        const current = new Date('2024-01-01T23:00:00.000');
+        const start = new Date('2024-01-01T20:00:00.000');
+        const end = new Date('2024-01-01T23:59:59.999');
+        expect(isCurrentTimeInRange(current, start, end)).toBe(true);
+      });
+
+      it('should handle millisecond precision', () => {
+        const current = new Date('2024-01-01T12:00:00.500');
+        const start = new Date('2024-01-01T12:00:00.000');
+        const end = new Date('2024-01-01T12:00:01.000');
+        expect(isCurrentTimeInRange(current, start, end)).toBe(true);
+      });
+
+      it('should return false for current time exactly at end boundary', () => {
+        const current = new Date('2024-01-01T12:00:00.000');
+        const start = new Date('2024-01-01T10:00:00.000');
+        const end = new Date('2024-01-01T12:00:00.000');
+        expect(isCurrentTimeInRange(current, start, end)).toBe(false);
+      });
+    });
+
+    describe('Different dates, same time', () => {
+      it('should compare time only, ignoring dates', () => {
+        const current = new Date('2024-12-31T14:30:00.000');
+        const start = new Date('2024-01-01T09:00:00.000');
+        const end = new Date('2024-01-01T17:00:00.000');
+        expect(isCurrentTimeInRange(current, start, end)).toBe(true);
+      });
+
+      it('should work across different years', () => {
+        const current = new Date('2025-06-15T10:30:00.000');
+        const start = new Date('2020-01-01T09:00:00.000');
+        const end = new Date('2030-12-31T17:00:00.000');
+        expect(isCurrentTimeInRange(current, start, end)).toBe(true);
+      });
+    });
+
+    describe('Common use cases', () => {
+      it('should work for work hours check (9-17)', () => {
+        const workStart = new Date('2024-01-01T09:00:00.000');
+        const workEnd = new Date('2024-01-01T17:00:00.000');
+
+        const duringWork = new Date('2024-01-01T14:30:00.000');
+        const beforeWork = new Date('2024-01-01T08:00:00.000');
+        const afterWork = new Date('2024-01-01T18:00:00.000');
+
+        expect(isCurrentTimeInRange(duringWork, workStart, workEnd)).toBe(true);
+        expect(isCurrentTimeInRange(beforeWork, workStart, workEnd)).toBe(false);
+        expect(isCurrentTimeInRange(afterWork, workStart, workEnd)).toBe(false);
+      });
+
+      it('should work for morning hours (6-9)', () => {
+        const start = new Date('2024-01-01T06:00:00.000');
+        const end = new Date('2024-01-01T09:00:00.000');
+
+        const morning = new Date('2024-01-01T07:30:00.000');
+        const earlyMorning = new Date('2024-01-01T05:00:00.000');
+        const lateafternoon = new Date('2024-01-01T15:00:00.000');
+
+        expect(isCurrentTimeInRange(morning, start, end)).toBe(true);
+        expect(isCurrentTimeInRange(earlyMorning, start, end)).toBe(false);
+        expect(isCurrentTimeInRange(lateafternoon, start, end)).toBe(false);
+      });
+
+      it('should work for evening hours (17-21)', () => {
+        const start = new Date('2024-01-01T17:00:00.000');
+        const end = new Date('2024-01-01T21:00:00.000');
+
+        const evening = new Date('2024-01-01T19:00:00.000');
+        const afternoon = new Date('2024-01-01T16:00:00.000');
+        const night = new Date('2024-01-01T22:00:00.000');
+
+        expect(isCurrentTimeInRange(evening, start, end)).toBe(true);
+        expect(isCurrentTimeInRange(afternoon, start, end)).toBe(false);
+        expect(isCurrentTimeInRange(night, start, end)).toBe(false);
+      });
+
+      it('should work for all day range (0-23:59)', () => {
+        const start = new Date('2024-01-01T00:00:00.000');
+        const end = new Date('2024-01-01T23:59:00.000');
+
+        const morning = new Date('2024-01-01T06:00:00.000');
+        const noon = new Date('2024-01-01T12:00:00.000');
+        const night = new Date('2024-01-01T23:00:00.000');
+
+        expect(isCurrentTimeInRange(morning, start, end)).toBe(true);
+        expect(isCurrentTimeInRange(noon, start, end)).toBe(true);
+        expect(isCurrentTimeInRange(night, start, end)).toBe(true);
+      });
+    });
+
+    describe('Integration with period time ranges', () => {
+      it('should validate morning hours period (6-9)', () => {
+        const morningStart = new Date('2024-01-01T06:00:00.000');
+        const morningEnd = new Date('2024-01-01T09:00:00.000');
+
+        // Times within morning period
+        expect(
+          isCurrentTimeInRange(new Date('2024-01-01T06:00:00.000'), morningStart, morningEnd)
+        ).toBe(true);
+        expect(
+          isCurrentTimeInRange(new Date('2024-01-01T07:30:00.000'), morningStart, morningEnd)
+        ).toBe(true);
+        expect(
+          isCurrentTimeInRange(new Date('2024-01-01T08:59:00.000'), morningStart, morningEnd)
+        ).toBe(true);
+
+        // Time exactly at end boundary should be excluded
+        expect(
+          isCurrentTimeInRange(new Date('2024-01-01T09:00:00.000'), morningStart, morningEnd)
+        ).toBe(false);
+
+        // Times outside morning period
+        expect(
+          isCurrentTimeInRange(new Date('2024-01-01T05:59:00.000'), morningStart, morningEnd)
+        ).toBe(false);
+        expect(
+          isCurrentTimeInRange(new Date('2024-01-01T14:00:00.000'), morningStart, morningEnd)
+        ).toBe(false);
+      });
+
+      it('should validate work hours period (9-17)', () => {
+        const workStart = new Date('2024-01-01T09:00:00.000');
+        const workEnd = new Date('2024-01-01T17:00:00.000');
+
+        // Times within work period
+        expect(isCurrentTimeInRange(new Date('2024-01-01T09:00:00.000'), workStart, workEnd)).toBe(
+          true
+        );
+        expect(isCurrentTimeInRange(new Date('2024-01-01T12:00:00.000'), workStart, workEnd)).toBe(
+          true
+        );
+        expect(isCurrentTimeInRange(new Date('2024-01-01T16:59:00.000'), workStart, workEnd)).toBe(
+          true
+        );
+
+        // Time exactly at end boundary should be excluded
+        expect(isCurrentTimeInRange(new Date('2024-01-01T17:00:00.000'), workStart, workEnd)).toBe(
+          false
+        );
+
+        // Times outside work period
+        expect(isCurrentTimeInRange(new Date('2024-01-01T08:59:00.000'), workStart, workEnd)).toBe(
+          false
+        );
+        expect(isCurrentTimeInRange(new Date('2024-01-01T17:01:00.000'), workStart, workEnd)).toBe(
+          false
+        );
+      });
     });
   });
 });

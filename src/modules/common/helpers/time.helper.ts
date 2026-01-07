@@ -54,3 +54,55 @@ export const isCurrentTimeAfter = (currentDate: Date, targetDate: Date): boolean
   const targetTimeMs = getTimeInMilliseconds(targetDate);
   return currentTimeMs > targetTimeMs;
 };
+
+/**
+ * Checks if the current time falls within a specified time range.
+ * Compares only the time portion of the dates, ignoring the date part.
+ *
+ * Note: This function does not handle time ranges that span midnight
+ * (e.g., 22:00 to 02:00). It assumes the time range is within a single day.
+ *
+ * @param currentDate - The current date/time to check
+ * @param startDate - The start of the time range (null means no lower bound)
+ * @param endDate - The end of the time range (null means no upper bound)
+ * @returns True if current time is within the range [start, end), false otherwise
+ *
+ * @example
+ * ```typescript
+ * const now = new Date('2024-01-15T14:30:00');
+ * const start = new Date('2024-01-01T09:00:00');
+ * const end = new Date('2024-01-01T17:00:00');
+ * isCurrentTimeInRange(now, start, end); // true (14:30 is between 09:00 and 17:00)
+ * ```
+ */
+export const isCurrentTimeInRange = (
+  currentDate: Date,
+  startDate: Date | null,
+  endDate: Date | null
+): boolean => {
+  // If both start and end are null, the time range is always valid
+  if (startDate === null && endDate === null) {
+    return true;
+  }
+
+  const currentTimeMs = getTimeInMilliseconds(currentDate);
+
+  // If only start is specified, check if current time is after or equal to start
+  if (startDate !== null && endDate === null) {
+    const startTimeMs = getTimeInMilliseconds(startDate);
+    return currentTimeMs >= startTimeMs;
+  }
+
+  // If only end is specified, check if current time is before end
+  if (startDate === null && endDate !== null) {
+    const endTimeMs = getTimeInMilliseconds(endDate);
+    return currentTimeMs < endTimeMs;
+  }
+
+  // Both start and end are specified
+  const startTimeMs = getTimeInMilliseconds(startDate!);
+  const endTimeMs = getTimeInMilliseconds(endDate!);
+
+  // Check if current time is within the range [start, end)
+  return currentTimeMs >= startTimeMs && currentTimeMs < endTimeMs;
+};

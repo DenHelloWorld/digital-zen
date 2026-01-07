@@ -271,16 +271,20 @@ export class FocusService {
           return;
         }
 
-        if (
-          response &&
-          !response.success &&
-          response.error === FOCUS_ERROR_ENUM.PERIOD_NOT_SCHEDULED_TODAY
-        ) {
-          this.#toastService.show({
-            message: TOAST_MESSAGES_ENUM.PERIOD_NOT_SCHEDULED_TODAY,
-            type: TOAST_TYPE_ENUM.WARN,
-            position: POSITIONS_ENUM.BOTTOM_RIGHT,
-          });
+        if (response && !response.success) {
+          if (response.error === FOCUS_ERROR_ENUM.PERIOD_NOT_SCHEDULED_TODAY) {
+            this.#toastService.show({
+              message: TOAST_MESSAGES_ENUM.PERIOD_NOT_SCHEDULED_TODAY,
+              type: TOAST_TYPE_ENUM.WARN,
+              position: POSITIONS_ENUM.BOTTOM_RIGHT,
+            });
+          } else if (response.error === FOCUS_ERROR_ENUM.PERIOD_OUTSIDE_TIME_RANGE) {
+            this.#toastService.show({
+              message: TOAST_MESSAGES_ENUM.PERIOD_OUTSIDE_TIME_RANGE,
+              type: TOAST_TYPE_ENUM.WARN,
+              position: POSITIONS_ENUM.BOTTOM_RIGHT,
+            });
+          }
         }
       });
     }
