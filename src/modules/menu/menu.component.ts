@@ -11,7 +11,7 @@ import { ICONS, UI_TEXT } from '../common';
  * - DZ_04: Writable signal for local state
  * - DZ_10: UI text constants usage
  * 
- * @see /docs/CODING_GUIDELINES.md
+ * @see /docs/coding-guidelines.md
  */
 @Component({
   selector: 'dz-menu',

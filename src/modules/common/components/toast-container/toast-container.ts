@@ -13,7 +13,7 @@ import { UI_TEXT } from '../../constants';
  * - DZ_03: OnPush change detection strategy
  * - DZ_10: UI text constants usage
  * 
- * @see /docs/CODING_GUIDELINES.md
+ * @see /docs/coding-guidelines.md
  */
 @Component({
   selector: 'dz-toast-container',

@@ -6,7 +6,7 @@ This directory contains documentation for the Digital Zen Chrome extension proje
 
 ### Development & Testing
 
-#### [Testing Guide](./TESTING_GUIDE.md) 🧪
+#### [Testing Guide](./testing-guide.md) 🧪
 
 **Purpose:** Complete guide to running and writing tests in the Digital Zen project.
 
@@ -27,7 +27,7 @@ This directory contains documentation for the Digital Zen Chrome extension proje
 - Understanding test commands and options
 - Looking for examples of how to write tests
 
-#### [Testing Best Practices](./TESTING_BEST_PRACTICES.md) 📋
+#### [Testing Best Practices](./testing-best-practices.md) 📋
 
 **Purpose:** Best practices and patterns for testing modern Angular 21+ code.
 
@@ -48,7 +48,7 @@ This directory contains documentation for the Digital Zen Chrome extension proje
 - Ensuring high code quality
 - Learning testing best practices
 
-#### [Coding Guidelines](./CODING_GUIDELINES.md) 📐
+#### [Coding Guidelines](./coding-guidelines.md) 📐
 
 **Purpose:** Complete coding standards and conventions for the Digital Zen project.
 
@@ -127,9 +127,9 @@ This directory contains documentation for the Digital Zen Chrome extension proje
 
 ### For Developers
 
-1. **Start with [CODING_GUIDELINES.md](./CODING_GUIDELINES.md)** to understand the coding patterns
-2. **Read [TESTING_GUIDE.md](./TESTING_GUIDE.md)** to learn how to run and write tests
-3. **Follow [TESTING_BEST_PRACTICES.md](./TESTING_BEST_PRACTICES.md)** when writing tests
+1. **Start with [coding-guidelines.md](./coding-guidelines.md)** to understand the coding patterns
+2. **Read [testing-guide.md](./testing-guide.md)** to learn how to run and write tests
+3. **Follow [testing-best-practices.md](./testing-best-practices.md)** when writing tests
 4. **Run `npm run test:ci`** before committing to ensure all tests pass
 
 ### For Publication

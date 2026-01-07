@@ -13,7 +13,7 @@
 
 ### 1. Created Comprehensive Coding Guidelines Document
 
-**File:** `/docs/CODING_GUIDELINES.md`
+**File:** `/docs/coding-guidelines.md`
 
 - 16 documented guidelines (DZ_01 through DZ_16)
 - Direct links to official Angular documentation for each standard pattern
@@ -78,7 +78,7 @@
 
 **Updated Files:**
 
-- ✅ `llms.txt` - Added references to CODING_GUIDELINES.md with Angular docs links
+- ✅ `llms.txt` - Added references to coding-guidelines.md with Angular docs links
 - ✅ `.github/copilot-instructions.md` - Added DZ_XX guideline references and Angular docs
 - ✅ `README.md` - Added Coding Guidelines section to documentation links
 
@@ -108,9 +108,9 @@
 
 | ID    | Guideline           | Documentation                                   |
 | ----- | ------------------- | ----------------------------------------------- |
-| DZ_10 | UI Text Constants   | `/docs/CODING_GUIDELINES.md#dz_10`              |
+| DZ_10 | UI Text Constants   | `/docs/coding-guidelines.md#dz_10`              |
 | DZ_11 | Universal Logger    | `/docs/logger.md`, `/docs/logger-quickstart.md` |
-| DZ_12 | BEM with dz- prefix | `/docs/CODING_GUIDELINES.md#dz_12`              |
+| DZ_12 | BEM with dz- prefix | `/docs/coding-guidelines.md#dz_12`              |
 
 ---
 
@@ -126,7 +126,7 @@ All code now includes JSDoc comments following this pattern:
  * - DZ_XX: Guideline name with link to official docs
  * - DZ_YY: Another applicable guideline
  *
- * @see /docs/CODING_GUIDELINES.md
+ * @see /docs/coding-guidelines.md
  * @see https://angular.dev/... (official Angular docs)
  */
 ```
@@ -180,7 +180,7 @@ readonly #service = inject(Service);
 
 When writing new code:
 
-1. **Check `/docs/CODING_GUIDELINES.md`** for the pattern you're implementing
+1. **Check `/docs/coding-guidelines.md`** for the pattern you're implementing
 2. **Follow official Angular docs** linked in each guideline
 3. **Add JSDoc** to new components/services referencing applicable DZ_XX guidelines
 4. **Use project-specific conventions** (DZ_10-DZ_12) for UI text, logging, and styling
@@ -191,7 +191,7 @@ When writing new code:
 
 ### Documentation Created
 
-- `docs/CODING_GUIDELINES.md` (NEW)
+- `docs/coding-guidelines.md` (NEW)
 - `docs/IMPLEMENTATION_SUMMARY.md` (NEW - this file)
 
 ### Documentation Updated

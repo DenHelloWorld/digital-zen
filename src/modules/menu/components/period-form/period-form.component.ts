@@ -51,7 +51,7 @@ import { DynamicInputComponent } from '../../../common/components/dynamic-input/
  * - DZ_15: Typed Reactive Forms
  * - DZ_16: Custom validators
  * 
- * @see /docs/CODING_GUIDELINES.md
+ * @see /docs/coding-guidelines.md
  * @see https://angular.dev/guide/forms/typed-forms (Typed Forms)
  * @see https://angular.dev/guide/forms/form-validation (Form Validation)
  */

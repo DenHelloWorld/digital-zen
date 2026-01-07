@@ -13,7 +13,7 @@ import { CHROME_COMMAND_ENUM, logger } from '../../common';
  * - DZ_09: Readonly for injected dependencies
  * - DZ_11: Universal Logger usage
  * 
- * @see /docs/CODING_GUIDELINES.md
+ * @see /docs/coding-guidelines.md
  * @see https://angular.dev/guide/signals (Signals)
  */
 @Injectable({

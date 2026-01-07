@@ -8,7 +8,7 @@ import { AbstractControl, ValidationErrors } from '@angular/forms';
  * - DZ_16: Custom validator pattern
  * - DZ_07: Strict TypeScript typing
  * 
- * @see /docs/CODING_GUIDELINES.md#dz_16-custom-validators
+ * @see /docs/coding-guidelines.md#dz_16-custom-validators
  * @see https://angular.dev/guide/forms/form-validation (Form Validation)
  * @see https://angular.dev/guide/forms/form-validation#defining-custom-validators (Custom Validators)
  *

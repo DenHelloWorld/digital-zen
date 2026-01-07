@@ -8,7 +8,7 @@ import { AbstractControl, ValidationErrors } from '@angular/forms';
  * - DZ_16: Custom validator pattern (factory function)
  * - DZ_07: Strict TypeScript typing
  * 
- * @see /docs/CODING_GUIDELINES.md#dz_16-custom-validators
+ * @see /docs/coding-guidelines.md#dz_16-custom-validators
  * @see https://angular.dev/guide/forms/form-validation#defining-custom-validators (Custom Validators)
  *
  * @param min - The minimum required length for the array (defaults to 1)

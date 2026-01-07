@@ -8,7 +8,7 @@ import { ICONS } from '../../constants';
  * - DZ_01: Standalone component
  * - DZ_03: OnPush change detection strategy
  * 
- * @see /docs/CODING_GUIDELINES.md
+ * @see /docs/coding-guidelines.md
  */
 @Component({
   selector: 'dz-loader',

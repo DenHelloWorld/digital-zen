@@ -48,13 +48,13 @@
 ### Documentation
 
 1. **Deployment Guides** ✓
-   - `API_DEPLOYMENT.md` - Comprehensive step-by-step guide (English)
-   - `API_QUICK_START_RU.md` - Quick start guide (Russian)
-   - `API_KEY_GENERATION.md` - Security best practices
+   - `api-deployment.md` - Comprehensive step-by-step guide (English)
+   - `api-quick-start-ru.md` - Quick start guide (Russian)
+   - `api-key-generation.md` - Security best practices
    - Clear instructions for non-technical users
 
 2. **Developer Documentation** ✓
-   - `API_USAGE_EXAMPLE.md` - Complete code examples
+   - `api-usage-example.md` - Complete code examples
    - `api/README.md` - Full API reference
    - `api/API_README.md` - Quick reference
    - Main `README.md` updated with API section
@@ -93,10 +93,10 @@ digital-zen/
 │           └── index.ts                   # Export all services
 │
 ├── docs/
-│   ├── API_DEPLOYMENT.md         # Deployment guide (English)
-│   ├── API_QUICK_START_RU.md     # Quick start (Russian)
-│   ├── API_KEY_GENERATION.md     # Security guide
-│   └── API_USAGE_EXAMPLE.md      # Code examples
+│   ├── api-deployment.md         # Deployment guide (English)
+│   ├── api-quick-start-ru.md     # Quick start (Russian)
+│   ├── api-key-generation.md     # Security guide
+│   └── api-usage-example.md      # Code examples
 │
 ├── .env.example                  # Environment variables template
 ├── .gitignore                    # Excludes config.php and .env
@@ -267,10 +267,10 @@ digital-zen/
 
 ## 📚 Documentation Links
 
-- [Quick Start (Russian)](../docs/API_QUICK_START_RU.md) - Fastest setup
-- [Deployment Guide](../docs/API_DEPLOYMENT.md) - Step-by-step
-- [API Key Generation](../docs/API_KEY_GENERATION.md) - Security
-- [Usage Examples](../docs/API_USAGE_EXAMPLE.md) - Code samples
+- [Quick Start (Russian)](../docs/api-quick-start-ru.md) - Fastest setup
+- [Deployment Guide](../docs/api-deployment.md) - Step-by-step
+- [API Key Generation](../docs/api-key-generation.md) - Security
+- [Usage Examples](../docs/api-usage-example.md) - Code samples
 - [API Reference](../api/README.md) - Full documentation
 
 ## ✨ Future Enhancements (Optional)

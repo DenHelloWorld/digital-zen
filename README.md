@@ -360,8 +360,8 @@ Planning to publish Digital Zen to the Chrome Web Store? Check out our comprehen
 - **[Chrome Web Store Readiness Report](./docs/chrome-web-store-readiness.md)** - Complete analysis and requirements
 - **[Publication Checklist](./docs/publication-checklist.md)** - Actionable task list
 - **[Отчёт о готовности (Russian)](./docs/chrome-web-store-readiness-ru.md)** - Краткое резюме на русском
-- **[Privacy Policy Setup](./docs/PRIVACY_POLICY_SETUP.md)** - Quick reference for hosting the privacy policy
-- **[Privacy Policy Hosting Guide](./docs/PRIVACY_POLICY_HOSTING.md)** - Complete guide for hosting options
+- **[Privacy Policy Setup](./docs/privacy-policy-setup.md)** - Quick reference for hosting the privacy policy
+- **[Privacy Policy Hosting Guide](./docs/privacy-policy-hosting.md)** - Complete guide for hosting options
 
 These documents provide detailed guidance on assets, legal requirements, testing, and the complete publication process.
 
@@ -372,7 +372,7 @@ The privacy policy is available in English and Russian versions in the `docs/` f
 - `docs/privacy-policy.html` - English version
 - `docs/privacy-policy-ru.html` - Russian version
 
-To host the privacy policy publicly (required for Chrome Web Store), see the [Privacy Policy Hosting Guide](./docs/PRIVACY_POLICY_HOSTING.md) for free hosting options that keep your source code private.
+To host the privacy policy publicly (required for Chrome Web Store), see the [Privacy Policy Hosting Guide](./docs/privacy-policy-hosting.md) for free hosting options that keep your source code private.
 
 ## Backend API
 
@@ -380,9 +380,9 @@ Digital Zen includes a PHP backend API for storing user data (periods and websit
 
 ### Quick Links
 
-- 🚀 **[Quick Start (Russian)](./docs/API_QUICK_START_RU.md)** - Fastest way to deploy the API
-- 📖 **[Deployment Guide](./docs/API_DEPLOYMENT.md)** - Detailed step-by-step instructions
-- 🔑 **[API Key Generation](./docs/API_KEY_GENERATION.md)** - Security best practices
+- 🚀 **[Quick Start (Russian)](./docs/api-quick-start-ru.md)** - Fastest way to deploy the API
+- 📖 **[Deployment Guide](./docs/api-deployment.md)** - Detailed step-by-step instructions
+- 🔑 **[API Key Generation](./docs/api-key-generation.md)** - Security best practices
 - 💻 **[Usage Examples](./docs/API_USAGE_EXAMPLE.md)** - How to use the API in Angular
 - 📚 **[API Documentation](./api/README.md)** - Full API reference
 
@@ -402,7 +402,7 @@ Digital Zen includes a PHP backend API for storing user data (periods and websit
 4. Create database tables using `api/database.sql`
 5. Configure extension with API URL and key in `api-config.const.ts`
 
-See [API Quick Start Guide](./docs/API_QUICK_START_RU.md) for complete instructions.
+See [API Quick Start Guide](./docs/api-quick-start-ru.md) for complete instructions.
 
 ## License
 
@@ -417,5 +417,5 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - [TypeScript Documentation](https://www.typescriptlang.org/docs/)
 
 **Project Guidelines:**
-- [Digital Zen Coding Guidelines](./docs/CODING_GUIDELINES.md) - Complete reference for development patterns
+- [Digital Zen Coding Guidelines](./docs/coding-guidelines.md) - Complete reference for development patterns
 - [Logger Documentation](./docs/logger.md) - Universal logger usage guide

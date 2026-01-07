@@ -820,7 +820,7 @@ import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 /**
  * Validator that checks if a string value is not empty or contains only whitespace.
  * @guideline DZ_16
- * @see /docs/CODING_GUIDELINES.md#dz_16-custom-validators
+ * @see /docs/coding-guidelines.md#dz_16-custom-validators
  */
 export function requiredTrimmedValidator(control: AbstractControl): ValidationErrors | null {
   const value: typeof control.value = control.value;
@@ -1217,8 +1217,8 @@ npm test -- --include='**/validators/*.spec.ts'
 
 _DZ_17 is a high-level summary of testing expectations for this project. For canonical and more detailed testing guidance, use the documents below as your primary references._
 
-- `/docs/TESTING_BEST_PRACTICES.md` - Canonical testing patterns and recommended practices
-- `/docs/TESTING_GUIDE.md` - Canonical testing setup, configuration, and tooling
+- `/docs/testing-best-practices.md` - Canonical testing patterns and recommended practices
+- `/docs/testing-guide.md` - Canonical testing setup, configuration, and tooling
 - [Angular Testing Guide](https://angular.dev/guide/testing) - Primary external reference for Angular testing
 
 ---
@@ -1257,7 +1257,7 @@ This document covers all major coding patterns used in Digital Zen:
  * - DZ_04: Angular Signals - https://angular.dev/guide/signals
  * - DZ_10: UI text constants (project-specific)
  *
- * @see /docs/CODING_GUIDELINES.md
+ * @see /docs/coding-guidelines.md
  * @see https://angular.dev/ (official docs)
  */
 ```

@@ -4,7 +4,7 @@
 
 This project uses **modern Angular (v21)** with the latest features and best practices. All code generation must follow these guidelines.
 
-**📚 Complete Guidelines:** See `/docs/CODING_GUIDELINES.md` for the full coding guidelines with references to official Angular documentation.
+**📚 Complete Guidelines:** See `/docs/coding-guidelines.md` for the full coding guidelines with references to official Angular documentation.
 
 **🔗 Primary Source:** We follow [official Angular documentation](https://angular.dev/) for standard patterns.
 
@@ -12,7 +12,7 @@ This project uses **modern Angular (v21)** with the latest features and best pra
 
 ## 🔧 Core Principles
 
-For detailed explanations and official Angular documentation links, refer to `/docs/CODING_GUIDELINES.md`.
+For detailed explanations and official Angular documentation links, refer to `/docs/coding-guidelines.md`.
 
 ### 1. Component Pattern (DZ_01, DZ_03)
 
@@ -200,7 +200,7 @@ export const authGuard: CanActivateFn = (route, state) => {
 
 ## 📚 Documentation & Guidelines
 
-**Complete Coding Guidelines:** `/docs/CODING_GUIDELINES.md`
+**Complete Coding Guidelines:** `/docs/coding-guidelines.md`
 - Comprehensive guide with all DZ_XX patterns
 - Direct links to official Angular documentation
 - Project-specific conventions (UI text, logger, BEM)
@@ -226,7 +226,7 @@ When generating code, ensure:
 - ✅ UI text extracted to UI_TEXT constants (DZ_10)
 - ✅ Universal logger usage instead of console (DZ_11)
 
-**For detailed explanations, see `/docs/CODING_GUIDELINES.md`**
+**For detailed explanations, see `/docs/coding-guidelines.md`**
 
 ---
 

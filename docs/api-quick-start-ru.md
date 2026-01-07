@@ -101,8 +101,8 @@ npm run build
 
 ## 📚 Подробные инструкции
 
-- **Полная инструкция по развертыванию**: `docs/API_DEPLOYMENT.md`
-- **Как генерировать ключ**: `docs/API_KEY_GENERATION.md`
+- **Полная инструкция по развертыванию**: `docs/api-deployment.md`
+- **Как генерировать ключ**: `docs/api-key-generation.md`
 - **Примеры использования в коде**: `docs/API_USAGE_EXAMPLE.md`
 - **Техническая документация API**: `api/README.md`
 

@@ -10,7 +10,7 @@ import { logger } from '../helpers/logger';
  * - DZ_08: Private fields with # prefix
  * - DZ_11: Universal Logger usage
  * 
- * @see /docs/CODING_GUIDELINES.md
+ * @see /docs/coding-guidelines.md
  * @see https://developer.chrome.com/docs/extensions/reference/api/storage (Chrome Storage API)
  */
 @Injectable({

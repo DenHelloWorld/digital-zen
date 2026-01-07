@@ -24,7 +24,7 @@ import { ICONS, UI_TEXT } from '../../constants';
  * - DZ_08: Private fields with # prefix
  * - DZ_10: UI text constants usage
  * 
- * @see /docs/CODING_GUIDELINES.md
+ * @see /docs/coding-guidelines.md
  * @see https://angular.dev/guide/signals (Signals)
  */
 @Component({

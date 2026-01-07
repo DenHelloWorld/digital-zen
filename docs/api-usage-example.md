@@ -311,7 +311,7 @@ this.#userDataSync.saveUserData(email, userId, periods).subscribe({
 
 ## Next Steps
 
-1. Deploy API to server (see `docs/API_DEPLOYMENT.md`)
+1. Deploy API to server (see `docs/api-deployment.md`)
 2. Configure API key in `api-config.const.ts`
 3. Test integration with real API
 4. Add sync buttons to your UI
