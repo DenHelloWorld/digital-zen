@@ -6,8 +6,8 @@ This document provides a quick reference for the privacy policy setup and hostin
 
 ### Privacy Policy Pages
 
-- **`docs/privacy-policy.html`** - English version of the privacy policy
-- **`docs/privacy-policy-ru.html`** - Russian version of the privacy policy
+- **`api/privacy-policy.php`** - English version of the privacy policy (hosted on PHP server)
+- **`api/privacy-policy-ru.php`** - Russian version of the privacy policy (hosted on PHP server)
 
 Both versions include:
 
@@ -21,77 +21,41 @@ Both versions include:
 ### Documentation
 
 - **`docs/privacy-policy-hosting.md`** - Complete guide for hosting the privacy policy
+- **`docs/privacy-policy.html`** - Original HTML version (kept for reference)
+- **`docs/privacy-policy-ru.html`** - Original Russian HTML version (kept for reference)
 
 ## Privacy Policy URLs
 
-Once you've chosen a hosting service and deployed, the privacy policy will be accessible at URLs like:
+The privacy policy is hosted on the same server as the backend API:
 
-- **Vercel:** `https://project-name.vercel.app/privacy-policy.html`
-- **GitLab Pages:** `https://username.gitlab.io/project-name/privacy-policy.html`
-- **Cloudflare Pages:** `https://project-name.pages.dev/privacy-policy.html`
+- **English:** `https://digital-zen.csmpoint.com/api/privacy-policy.php`
+- **Russian:** `https://digital-zen.csmpoint.com/api/privacy-policy-ru.php`
 
-## Hosting Strategy
+## Hosting Setup
 
-### Choose Your Hosting Service
+### Current Hosting Service
 
-The privacy policy must be publicly accessible for Chrome Web Store submission. You have several free options that keep your source code private:
+The privacy policy is hosted on **digital-zen.csmpoint.com** - the same PHP server used for the backend API.
 
-#### Option 1: Vercel (Recommended)
+**Benefits:**
+- ✅ Single hosting solution for both API and privacy policy
+- ✅ No dependency on third-party hosting services (no Vercel needed)
+- ✅ Easier to manage and update
+- ✅ Consistent domain and SSL certificate
 
-Best for automatic Git deployments with private repositories.
+### File Location
 
-- **Free tier:** Unlimited projects, 100GB bandwidth/month
-- **Pros:** Git integration, automatic deployments, fast CDN, works with private repos
-- **Cons:** Requires account
-- **Setup time:** ~5 minutes
+Privacy policy files are located in the `/api/` directory:
+```
+api/
+├── privacy-policy.php
+├── privacy-policy-ru.php
+└── .htaccess  # Configured to allow public access
+```
 
-#### Option 2: GitLab Pages
+### Access Configuration
 
-Unique feature: Works with **private repositories** on free tier.
-
-- **Free tier:** Unlimited projects
-- **Pros:** Keep repo completely private, Git-based, automatic deployment
-- **Cons:** Need to use GitLab instead of GitHub
-- **Setup time:** ~10 minutes
-
-#### Option 3: Cloudflare Pages
-
-Best for unlimited bandwidth and global CDN.
-
-- **Free tier:** Unlimited sites, unlimited bandwidth
-- **Pros:** Unlimited bandwidth, fast global CDN, Git integration
-- **Cons:** Requires account
-- **Setup time:** ~5 minutes
-
-#### Option 4: GitHub Gist
-
-Quick and simple, no additional platforms needed.
-
-- **Free tier:** Unlimited gists
-- **Pros:** Very simple, uses GitHub, doesn't affect repo visibility
-- **Cons:** Need to update URL when gist changes, raw HTML only
-- **Setup time:** ~2 minutes
-
-#### Option 5: Separate Public Docs Repository
-
-Keep main code private, create public docs repo.
-
-- **Free tier:** Unlimited public repos
-- **Pros:** Source code stays private, full control
-- **Cons:** Two repos to maintain
-- **Setup time:** ~10 minutes (+ choosing a hosting service from above)
-
-> **Recommendation:** Use **Vercel** or **GitLab Pages** for the best balance of features and ease of use. Both support automatic deployments and work with private repositories.
-
-## Quick Setup Steps
-
-1. **Choose a hosting service** from the options above
-2. **Upload or connect** your `docs/` folder containing the privacy policy files
-3. **Get the URL** for your privacy policy (e.g., `https://your-project.vercel.app/privacy-policy.html`)
-4. **Test the URL** in an incognito browser to ensure it's publicly accessible
-5. **Use this URL** in Chrome Web Store submission
-
-Your source code remains private ✅
+The `.htaccess` file in the `/api/` directory includes rules to allow public access to the privacy policy files while keeping other files (like `config.php`) protected.
 
 ## Using the Privacy Policy URL
 
@@ -99,59 +63,80 @@ When submitting Digital Zen to the Chrome Web Store:
 
 1. **Navigate to:** Chrome Web Store Developer Dashboard
 2. **Find:** Privacy practices section
-3. **Enter URL:** Use the privacy policy URL from your chosen hosting service
-   - English: `https://your-hosting-url/privacy-policy.html`
-   - Russian (optional): `https://your-hosting-url/privacy-policy-ru.html`
+3. **Enter URL:** `https://digital-zen.csmpoint.com/api/privacy-policy.php`
+
+The extension's footer also links to the privacy policy automatically.
 
 ## Updating the Privacy Policy
 
 To update the privacy policy in the future:
 
-### For Git-based hosting (Vercel, GitLab Pages, Cloudflare Pages):
+### 1. Edit Locally
 
-1. Edit `docs/privacy-policy.html` (or `docs/privacy-policy-ru.html` for Russian)
-2. Update the "Last Updated" date
-3. Commit and push changes
-4. Hosting service automatically redeploys within 1-2 minutes
+Edit the files:
+- `api/privacy-policy.php` (English)
+- `api/privacy-policy-ru.php` (Russian)
 
-### For GitHub Gist:
+Update the "Last Updated" date in both files.
 
-1. Edit the gist on GitHub
-2. Update the "Last Updated" date
-3. Save changes
-4. Get the new raw URL (hash changes) and update in Chrome Web Store
+### 2. Upload to Server
+
+Upload the updated files to the server using one of these methods:
+
+**FTP/SFTP:**
+1. Connect to `digital-zen.csmpoint.com`
+2. Navigate to `/api/`
+3. Upload the updated files
+
+**cPanel File Manager:**
+1. Log in to cPanel
+2. Open File Manager
+3. Navigate to `public_html/api/`
+4. Upload or edit files
+
+**SSH (if available):**
+```bash
+scp api/privacy-policy.php username@digital-zen.csmpoint.com:/path/to/api/
+scp api/privacy-policy-ru.php username@digital-zen.csmpoint.com:/path/to/api/
+```
+
+### 3. Verify
+
+Visit the URLs to verify changes:
+- `https://digital-zen.csmpoint.com/api/privacy-policy.php`
+- `https://digital-zen.csmpoint.com/api/privacy-policy-ru.php`
 
 ## Troubleshooting
 
-### Privacy policy not accessible
+### Privacy policy not accessible (403 Forbidden)
 
-- **Wait:** Deployment may take 1-2 minutes
-- **Check:** Deployment logs in hosting service dashboard
-- **Verify:** URL is correct (case-sensitive)
-- **Clear:** Browser cache
-
-### 404 Not Found
-
-- **Verify:** File exists in deployed folder
-- **Check:** File name matches exactly (`privacy-policy.html`)
-- **Ensure:** Deployment completed successfully
-- **Test:** URL in incognito browser
+- **Verify:** `.htaccess` includes allow rules for privacy policy files
+- **Check:** File permissions (should be 644)
+- **Ensure:** Files are in `/api/` directory
 
 ### Changes not showing
 
-- **Confirm:** Changes were pushed to repository
-- **Check:** Deployment logs show successful build
-- **Clear:** Browser cache
-- **Wait:** Hosting service may cache for a few minutes
+- **Clear:** Browser cache (Ctrl+Shift+R)
+- **Verify:** Files were uploaded successfully
+- **Try:** Incognito/private browsing window
+
+### 404 Not Found
+
+- **Check:** File names are exactly `privacy-policy.php` and `privacy-policy-ru.php`
+- **Verify:** Files are in the correct `/api/` directory
+- **Ensure:** `.htaccess` is present and not corrupted
 
 ## Additional Resources
 
 For detailed information, see:
 
 - [Privacy Policy Hosting Guide](./privacy-policy-hosting.md) - Complete hosting instructions
+- [API Deployment Guide](./api-deployment.md) - Server deployment instructions
 - [Chrome Web Store Readiness Report](./chrome-web-store-readiness.md) - Publication requirements
 
 ---
 
 **Created:** January 2, 2026  
-**Purpose:** Chrome Web Store publication requirement
+**Updated:** January 7, 2026  
+**Purpose:** Chrome Web Store publication requirement  
+**Hosting:** PHP server (digital-zen.csmpoint.com)
