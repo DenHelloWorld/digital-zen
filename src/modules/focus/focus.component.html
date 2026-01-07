@@ -10,7 +10,7 @@
         <use
           width="20"
           height="20"
-          [attr.href]="activeTab()?.favIconUrl ? activeTab()?.favIconUrl : '#icon-save'"
+          [attr.href]="activeTab()?.favIconUrl ? activeTab()?.favIconUrl : icons.SAVE"
         />
       </svg>
     } @else if (isImageIcon(activeTab()?.favIconUrl)) {
@@ -23,14 +23,14 @@
       />
     } @else {
       <svg class="dz-icon dz-icon--shadow" aria-hidden="true" focusable="false">
-        <use width="20" height="20" href="#icon-globe" />
+        <use width="20" height="20" [attr.href]="icons.GLOBE" />
       </svg>
     }
 
     {{ activeTab()?.url | cleanUrl }}
 
     <svg class="dz-icon dz-icon--shadow" aria-hidden="true" focusable="false">
-      <use width="20" height="20" href="#icon-plus" />
+      <use width="20" height="20" [attr.href]="icons.PLUS" />
     </svg>
   </button>
 
