@@ -494,14 +494,15 @@ describe('timeRangeValidator', () => {
       expect(validator(group)).toBeNull();
     });
 
-    it('should treat whitespace-only strings as falsy', () => {
+    it('should handle whitespace-only strings', () => {
       const validator = timeRangeValidator('startTime', 'endTime');
       const group = new FormGroup({
         startTime: new FormControl('   '),
         endTime: new FormControl('17:00'),
       });
-      // Whitespace is truthy in JavaScript, so it won't be caught by !start check
-      // But '   ' < '17:00' is true lexicographically
+      // Whitespace-only strings are truthy in JavaScript, so they pass the !start check
+      // The validator then compares '   ' < '17:00' which is true lexicographically
+      // This demonstrates actual validator behavior with edge case input
       expect(validator(group)).toBeNull();
     });
   });

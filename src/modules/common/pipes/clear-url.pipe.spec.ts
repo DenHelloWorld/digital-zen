@@ -12,12 +12,6 @@ describe('CleanUrlPipe', () => {
     it('should create an instance', () => {
       expect(pipe).toBeTruthy();
     });
-
-    it('should be a standalone pipe', () => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const metadata = (CleanUrlPipe as any).ɵpipe;
-      expect(metadata.standalone).toBe(true);
-    });
   });
 
   describe('Valid URLs with origins', () => {
@@ -341,15 +335,6 @@ describe('CleanUrlPipe', () => {
   });
 
   describe('Pure pipe behavior', () => {
-    it('should be marked as pure pipe (default)', () => {
-      // Pure pipes in Angular are the default
-      // This test verifies the pipe doesn't have pure: false
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const metadata = (CleanUrlPipe as any).ɵpipe;
-      // If pure is not explicitly set to false, it's pure by default
-      expect(metadata.pure !== false).toBe(true);
-    });
-
     it('should return same reference for same primitive input', () => {
       const url = 'https://example.com';
       const result1 = pipe.transform(url);

@@ -2,7 +2,7 @@
 
 This document describes all coding patterns, conventions, and best practices used in the Digital Zen Chrome Extension project. These guidelines reflect the actual implementation in the codebase and serve as a reference for all development work.
 
-**Primary Source:** We follow official Angular documentation for standard patterns. Custom guidelines (DZ_10-DZ_16) are project-specific conventions.
+**Primary Source:** We follow official Angular documentation for standard patterns. Custom guidelines (DZ_10-DZ_17) are project-specific conventions.
 
 **Version:** 1.0.2  
 **Last Updated:** January 7, 2026
@@ -1153,9 +1153,11 @@ npm test -- --include='**/validators/*.spec.ts'
 
 **Related Documentation:**
 
-- `/docs/TESTING_BEST_PRACTICES.md` - Detailed testing patterns
-- `/docs/TESTING_GUIDE.md` - Setup and configuration
-- [Angular Testing Guide](https://angular.dev/guide/testing) - Official docs
+_DZ_17 is a high-level summary of testing expectations for this project. For canonical and more detailed testing guidance, use the documents below as your primary references._
+
+- `/docs/TESTING_BEST_PRACTICES.md` - Canonical testing patterns and recommended practices
+- `/docs/TESTING_GUIDE.md` - Canonical testing setup, configuration, and tooling
+- [Angular Testing Guide](https://angular.dev/guide/testing) - Primary external reference for Angular testing
 
 ---
 
