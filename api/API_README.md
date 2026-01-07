@@ -4,9 +4,9 @@ Simple PHP backend for storing user data (periods and websites).
 
 ## Quick Links
 
-- 🚀 **[Quick Start (Russian)](../docs/API_QUICK_START_RU.md)** - Fastest way to get started
+- 🚀 **[Quick Start (Russian)](../docs/api-quick-start-ru.md)** - Fastest way to get started
 - 📖 **[Deployment Guide](../docs/api-deployment.md)** - Detailed step-by-step deployment
-- 🔑 **[API Key Generation](../docs/API_KEY_GENERATION.md)** - How to generate secure keys
+- 🔑 **[API Key Generation](../docs/api-key-generation.md)** - How to generate secure keys
 - 💻 **[Usage Examples](../docs/api-usage-example.md)** - Angular code examples
 - 📚 **[API Documentation](README.md)** - Full API reference
 

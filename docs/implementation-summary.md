@@ -192,7 +192,7 @@ When writing new code:
 ### Documentation Created
 
 - `docs/coding-guidelines.md` (NEW)
-- `docs/IMPLEMENTATION_SUMMARY.md` (NEW - this file)
+- `docs/implementation-summary.md` (NEW - this file)
 
 ### Documentation Updated
 

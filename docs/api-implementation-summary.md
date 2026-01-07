@@ -56,7 +56,7 @@
 2. **Developer Documentation** ✓
    - `api-usage-example.md` - Complete code examples
    - `api/README.md` - Full API reference
-   - `api/API_README.md` - Quick reference
+   - `api/README.md` - Quick reference
    - Main `README.md` updated with API section
 
 3. **Configuration Examples** ✓
@@ -74,7 +74,7 @@ digital-zen/
 │   ├── user             # Main endpoint
 │   ├── database.sql              # Database schema
 │   ├── README.md                 # API documentation
-│   └── API_README.md             # Quick reference
+│   └── README.md             # Quick reference
 │
 ├── src/
 │   ├── app/

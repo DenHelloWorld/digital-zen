@@ -20,7 +20,7 @@ Both versions include:
 
 ### Documentation
 
-- **`docs/PRIVACY_POLICY_HOSTING.md`** - Complete guide for hosting the privacy policy
+- **`docs/privacy-policy-hosting.md`** - Complete guide for hosting the privacy policy
 
 ## Privacy Policy URLs
 
@@ -148,7 +148,7 @@ To update the privacy policy in the future:
 
 For detailed information, see:
 
-- [Privacy Policy Hosting Guide](./PRIVACY_POLICY_HOSTING.md) - Complete hosting instructions
+- [Privacy Policy Hosting Guide](./privacy-policy-hosting.md) - Complete hosting instructions
 - [Chrome Web Store Readiness Report](./chrome-web-store-readiness.md) - Publication requirements
 
 ---
