@@ -32,14 +32,14 @@ interface InitialStorageSchema {
 /**
  * Focus service for managing focus periods and blocked websites
  * Handles focus session state, Chrome tab tracking, and period management
- * 
+ *
  * @guidelines
  * - DZ_02: Dependency injection using inject() function
  * - DZ_04: Angular Signals for reactive state (signal, computed)
  * - DZ_08: Private fields with # prefix
  * - DZ_09: Readonly for injected dependencies
  * - DZ_11: Universal Logger usage
- * 
+ *
  * @see /docs/coding-guidelines.md
  * @see https://angular.dev/guide/signals (Signals)
  */

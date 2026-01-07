@@ -6,13 +6,13 @@ import { CHROME_STORAGE_KEY_ENUM } from '../enums/chrome-storage-key.enum';
 /**
  * Theme service for managing light/dark theme state
  * Persists theme preference to Chrome storage and listens to system theme changes
- * 
+ *
  * @guidelines
  * - DZ_02: Dependency injection using inject() function
  * - DZ_04: Angular Signals for reactive state
  * - DZ_08: Private fields with # prefix
  * - DZ_09: Readonly for injected dependencies
- * 
+ *
  * @see /docs/coding-guidelines.md
  * @see https://angular.dev/guide/signals (Signals)
  */

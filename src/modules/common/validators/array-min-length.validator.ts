@@ -3,11 +3,11 @@ import { AbstractControl, ValidationErrors } from '@angular/forms';
 /**
  * Factory function that creates a validator to check if an array has a minimum number of elements.
  * Returns a validator function that validates array length.
- * 
+ *
  * @guidelines
  * - DZ_16: Custom validator pattern (factory function)
  * - DZ_07: Strict TypeScript typing
- * 
+ *
  * @see /docs/coding-guidelines.md#dz_16-custom-validators
  * @see https://angular.dev/guide/forms/form-validation#defining-custom-validators (Custom Validators)
  *

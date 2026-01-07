@@ -4,13 +4,13 @@ import { ICONS, UI_TEXT } from '../common';
 
 /**
  * Menu component for adding new focus periods
- * 
+ *
  * @guidelines
  * - DZ_01: Standalone component with imports array
  * - DZ_03: OnPush change detection strategy
  * - DZ_04: Writable signal for local state
  * - DZ_10: UI text constants usage
- * 
+ *
  * @see /docs/coding-guidelines.md
  */
 @Component({

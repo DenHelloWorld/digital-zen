@@ -39,6 +39,7 @@ The privacy policy is accessible at:
 - **URL:** `https://digital-zen.csmpoint.com/api/privacy-policy.php`
 
 This URL is used in:
+
 1. Chrome Web Store submission (privacy policy URL field)
 2. Extension footer link (in `src/app/app.html`)
 
@@ -75,6 +76,7 @@ When you need to update the privacy policy:
 ### 1. Edit the File
 
 Edit the privacy policy file locally:
+
 - `api/privacy-policy.php`
 
 Update the "Last Updated" date.
@@ -84,17 +86,20 @@ Update the "Last Updated" date.
 Upload the updated file to the server:
 
 **Option A: Using FTP/SFTP Client (FileZilla, WinSCP, etc.)**
+
 1. Connect to `digital-zen.csmpoint.com` using your FTP/SFTP credentials
 2. Navigate to the `/api/` directory
 3. Upload the updated `privacy-policy.php` file
 
 **Option B: Using cPanel File Manager**
+
 1. Log in to cPanel at your hosting provider
 2. Open File Manager
 3. Navigate to `public_html/api/` (or equivalent path)
 4. Upload or edit the privacy policy file
 
 **Option C: Using SSH/Terminal (if available)**
+
 ```bash
 # Connect to server
 ssh your-username@digital-zen.csmpoint.com
@@ -169,7 +174,7 @@ When submitting Digital Zen to the Chrome Web Store:
 
 1. **Navigate to:** Chrome Web Store Developer Dashboard
 2. **Find:** Privacy practices section
-3. **Enter Privacy Policy URL:** 
+3. **Enter Privacy Policy URL:**
    - `https://digital-zen.csmpoint.com/api/privacy-policy.php`
 
 **Important:** The privacy policy must be publicly accessible. Test the URL in an incognito browser window before submitting to Chrome Web Store.
@@ -183,6 +188,7 @@ When submitting Digital Zen to the Chrome Web Store:
 **Current setup:** Privacy policy is now hosted on the PHP server at `https://digital-zen.csmpoint.com/api/`
 
 **Benefits of current setup:**
+
 - ✅ Single hosting solution for both API and privacy policy
 - ✅ No dependency on third-party hosting services
 - ✅ Easier to manage and update

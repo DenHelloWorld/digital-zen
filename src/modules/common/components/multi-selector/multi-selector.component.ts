@@ -11,13 +11,13 @@ import { TitleCasePipe } from '@angular/common';
 /**
  * Generic multi-selector component for selecting multiple items from a list
  * Supports both horizontal and vertical orientations with readonly and highlighted states
- * 
+ *
  * @guidelines
  * - DZ_01: Standalone component with imports array
  * - DZ_03: OnPush change detection strategy
  * - DZ_04: Angular Signals (InputSignal, ModelSignal)
  * - DZ_07: Strict TypeScript with generics
- * 
+ *
  * @see /docs/coding-guidelines.md
  * @see https://angular.dev/guide/components/importing (Standalone Components)
  * @see https://angular.dev/guide/signals (Signals)

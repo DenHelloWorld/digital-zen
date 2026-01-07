@@ -12,12 +12,12 @@ import { ALL_DAYS_OF_WEEK } from '../../constants';
 
 /**
  * Weekdays selector component for choosing days of the week
- * 
+ *
  * @guidelines
  * - DZ_01: Standalone component with imports array
  * - DZ_03: OnPush change detection strategy
  * - DZ_04: Using Angular Signals (InputSignal, ModelSignal)
- * 
+ *
  * @see /docs/coding-guidelines.md
  */
 @Component({

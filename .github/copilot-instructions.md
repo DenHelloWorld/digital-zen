@@ -201,6 +201,7 @@ export const authGuard: CanActivateFn = (route, state) => {
 ## 📚 Documentation & Guidelines
 
 **Complete Coding Guidelines:** `/docs/coding-guidelines.md`
+
 - Comprehensive guide with all DZ_XX patterns
 - Direct links to official Angular documentation
 - Project-specific conventions (UI text, logger, BEM)

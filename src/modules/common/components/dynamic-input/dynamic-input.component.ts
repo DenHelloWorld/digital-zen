@@ -15,7 +15,7 @@ import { ICONS, UI_TEXT } from '../../constants';
 /**
  * Dynamic input component for managing a list of entities with add/remove/edit capabilities
  * Generic component that works with any entity type
- * 
+ *
  * @guidelines
  * - DZ_01: Standalone component
  * - DZ_03: OnPush change detection strategy
@@ -23,7 +23,7 @@ import { ICONS, UI_TEXT } from '../../constants';
  * - DZ_07: Strict TypeScript with generics
  * - DZ_08: Private fields with # prefix
  * - DZ_10: UI text constants usage
- * 
+ *
  * @see /docs/coding-guidelines.md
  * @see https://angular.dev/guide/signals (Signals)
  */

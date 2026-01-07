@@ -14,7 +14,7 @@ export interface IGoogleUserInfo {
 /**
  * Google authentication service for Chrome Extension
  * Handles Google OAuth authentication flow and user info retrieval
- * 
+ *
  * @guidelines
  * - DZ_02: Dependency injection using inject() function
  * - DZ_04: Angular Signals for reactive state (signal, computed)
@@ -22,7 +22,7 @@ export interface IGoogleUserInfo {
  * - DZ_08: Private fields with # prefix
  * - DZ_09: Readonly for injected dependencies
  * - DZ_11: Universal Logger usage
- * 
+ *
  * @see /docs/CODING_GUIDELINES.md
  * @see https://angular.dev/guide/signals (Signals)
  * @see https://developer.chrome.com/docs/extensions/reference/api/identity (Chrome Identity API)

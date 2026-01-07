@@ -34,6 +34,7 @@ The privacy policy is hosted on the same server as the backend API:
 The privacy policy is hosted on **digital-zen.csmpoint.com** - the same PHP server used for the backend API.
 
 **Benefits:**
+
 - ✅ Single hosting solution for both API and privacy policy
 - ✅ No dependency on third-party hosting services (no Vercel needed)
 - ✅ Easier to manage and update
@@ -42,6 +43,7 @@ The privacy policy is hosted on **digital-zen.csmpoint.com** - the same PHP serv
 ### File Location
 
 Privacy policy file is located in the `/api/` directory:
+
 ```
 api/
 ├── privacy-policy.php
@@ -69,6 +71,7 @@ To update the privacy policy in the future:
 ### 1. Edit Locally
 
 Edit the file:
+
 - `api/privacy-policy.php`
 
 Update the "Last Updated" date.
@@ -78,17 +81,20 @@ Update the "Last Updated" date.
 Upload the updated file to the server using one of these methods:
 
 **FTP/SFTP:**
+
 1. Connect to `digital-zen.csmpoint.com`
 2. Navigate to `/api/`
 3. Upload the updated file
 
 **cPanel File Manager:**
+
 1. Log in to cPanel
 2. Open File Manager
 3. Navigate to `public_html/api/`
 4. Upload or edit the file
 
 **SSH (if available):**
+
 ```bash
 scp api/privacy-policy.php username@digital-zen.csmpoint.com:/path/to/api/
 ```
@@ -96,6 +102,7 @@ scp api/privacy-policy.php username@digital-zen.csmpoint.com:/path/to/api/
 ### 3. Verify
 
 Visit the URL to verify changes:
+
 - `https://digital-zen.csmpoint.com/api/privacy-policy.php`
 
 ## Troubleshooting

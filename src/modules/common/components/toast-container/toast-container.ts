@@ -6,13 +6,13 @@ import { UI_TEXT } from '../../constants';
 /**
  * Toast notification container component
  * Manages and displays toast notifications in various positions
- * 
+ *
  * @guidelines
  * - DZ_01: Standalone component
  * - DZ_02: Dependency injection using inject() function
  * - DZ_03: OnPush change detection strategy
  * - DZ_10: UI text constants usage
- * 
+ *
  * @see /docs/coding-guidelines.md
  */
 @Component({

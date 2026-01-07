@@ -38,6 +38,7 @@ This project is built with modern web technologies and follows best practices fo
 This project follows modern Angular 21 patterns and best practices. **Before contributing, please read:**
 
 📖 **[Complete Coding Guidelines](./docs/coding-guidelines.md)** - Comprehensive guide covering:
+
 - Standalone Components & Dependency Injection
 - Signals for State Management
 - Template Syntax (Built-in Control Flow)
@@ -156,23 +157,23 @@ After building the extension, you can test it locally in Chrome:
 
 The following npm scripts are available in this project:
 
-| Script                  | Command                                                                                                                                  | Description                                                                   |
-| ----------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
-| `start`                 | `ng serve`                                                                                                                               | Starts the Angular development server for local development                   |
-| `build`                 | `npm run test:ci && ng build && tsc -p tsconfig.background.json && tsc-alias -p tsconfig.background.json`                               | Builds the project for development (includes tests)                           |
-| `build:skip-tests`      | `ng build && tsc -p tsconfig.background.json && tsc-alias -p tsconfig.background.json`                                                  | Builds the project for development (skips tests)                              |
-| `build:prod`            | `npm run test:ci && ng build && tsc -p tsconfig.background.json && tsc-alias -p tsconfig.background.json && npm run patch-config && npm run patch-manifest` | Builds the project for production with environment patching (includes tests)  |
-| `build:prod:skip-tests` | `ng build && tsc -p tsconfig.background.json && tsc-alias -p tsconfig.background.json && npm run patch-config && npm run patch-manifest` | Builds the project for production with environment patching (skips tests)     |
-| `patch-manifest`        | `dotenv -- node scripts/patch-manifest.js`                                                                                               | Patches the manifest.json with OAuth credentials from environment variables   |
-| `patch-config`          | `dotenv -- node scripts/patch-api-config.js`                                                                                             | Patches the API configuration with credentials from environment variables     |
-| `test`                  | `ng test`                                                                                                                                | Runs unit tests with Karma in watch mode                                      |
-| `test:ci`               | `ng test --browsers=ChromeHeadless --watch=false --code-coverage`                                                                        | Runs tests once in headless mode with coverage (for CI/CD)                    |
-| `test:headless`         | `ng test --browsers=ChromeHeadless --watch=false`                                                                                        | Runs tests once in headless mode without coverage                             |
-| `lint`                  | `ng lint`                                                                                                                                | Runs ESLint to check code quality and style issues                            |
-| `lint:fix`              | `ng lint --fix`                                                                                                                          | Runs ESLint and automatically fixes fixable issues                            |
-| `format`                | `npx prettier --write .`                                                                                                                 | Formats all code files using Prettier                                         |
-| `format:check`          | `npx prettier --check .`                                                                                                                 | Checks if all files are formatted according to Prettier rules                 |
-| `ng`                    | `ng`                                                                                                                                     | Access to Angular CLI commands                                                |
+| Script                  | Command                                                                                                                                                     | Description                                                                  |
+| ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| `start`                 | `ng serve`                                                                                                                                                  | Starts the Angular development server for local development                  |
+| `build`                 | `npm run test:ci && ng build && tsc -p tsconfig.background.json && tsc-alias -p tsconfig.background.json`                                                   | Builds the project for development (includes tests)                          |
+| `build:skip-tests`      | `ng build && tsc -p tsconfig.background.json && tsc-alias -p tsconfig.background.json`                                                                      | Builds the project for development (skips tests)                             |
+| `build:prod`            | `npm run test:ci && ng build && tsc -p tsconfig.background.json && tsc-alias -p tsconfig.background.json && npm run patch-config && npm run patch-manifest` | Builds the project for production with environment patching (includes tests) |
+| `build:prod:skip-tests` | `ng build && tsc -p tsconfig.background.json && tsc-alias -p tsconfig.background.json && npm run patch-config && npm run patch-manifest`                    | Builds the project for production with environment patching (skips tests)    |
+| `patch-manifest`        | `dotenv -- node scripts/patch-manifest.js`                                                                                                                  | Patches the manifest.json with OAuth credentials from environment variables  |
+| `patch-config`          | `dotenv -- node scripts/patch-api-config.js`                                                                                                                | Patches the API configuration with credentials from environment variables    |
+| `test`                  | `ng test`                                                                                                                                                   | Runs unit tests with Karma in watch mode                                     |
+| `test:ci`               | `ng test --browsers=ChromeHeadless --watch=false --code-coverage`                                                                                           | Runs tests once in headless mode with coverage (for CI/CD)                   |
+| `test:headless`         | `ng test --browsers=ChromeHeadless --watch=false`                                                                                                           | Runs tests once in headless mode without coverage                            |
+| `lint`                  | `ng lint`                                                                                                                                                   | Runs ESLint to check code quality and style issues                           |
+| `lint:fix`              | `ng lint --fix`                                                                                                                                             | Runs ESLint and automatically fixes fixable issues                           |
+| `format`                | `npx prettier --write .`                                                                                                                                    | Formats all code files using Prettier                                        |
+| `format:check`          | `npx prettier --check .`                                                                                                                                    | Checks if all files are formatted according to Prettier rules                |
+| `ng`                    | `ng`                                                                                                                                                        | Access to Angular CLI commands                                               |
 
 ## Development Workflow
 
@@ -339,11 +340,13 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## Additional Resources
 
 **Official Documentation:**
+
 - [Angular Documentation](https://angular.dev/) - Primary source for Angular patterns
 - [Chrome Extension Documentation](https://developer.chrome.com/docs/extensions/)
 - [Angular CLI Command Reference](https://angular.dev/tools/cli)
 - [TypeScript Documentation](https://www.typescriptlang.org/docs/)
 
 **Project Guidelines:**
+
 - [Digital Zen Coding Guidelines](./docs/coding-guidelines.md) - Complete reference for development patterns
 - [Logger Documentation](./docs/logger.md) - Universal logger usage guide

@@ -7,14 +7,14 @@ const interceptorLogger = logger.createLogger('ApiKeyInterceptor');
 /**
  * API Key Interceptor - Functional HTTP interceptor
  * Adds X-API-Key header to requests going to our API
- * 
+ *
  * @guidelines
  * - DZ_13: Functional HTTP interceptor pattern
  * - DZ_11: Universal Logger usage
- * 
+ *
  * @see /docs/coding-guidelines.md#dz_13-functional-http-interceptors
  * @see https://angular.dev/guide/http/interceptors (Angular HTTP Interceptors)
- * 
+ *
  * @example
  * ```typescript
  * // app.config.ts

@@ -5,14 +5,14 @@ import { CHROME_COMMAND_ENUM, logger } from '../../common';
 /**
  * Main authentication service
  * Coordinates Google authentication and triggers background data synchronization
- * 
+ *
  * @guidelines
  * - DZ_02: Dependency injection using inject() function
  * - DZ_04: Angular Signals for reactive state
  * - DZ_08: Private fields with # prefix
  * - DZ_09: Readonly for injected dependencies
  * - DZ_11: Universal Logger usage
- * 
+ *
  * @see /docs/coding-guidelines.md
  * @see https://angular.dev/guide/signals (Signals)
  */

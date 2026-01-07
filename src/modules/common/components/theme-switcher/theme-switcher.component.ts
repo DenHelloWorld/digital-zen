@@ -5,7 +5,7 @@ import { ICONS, UI_TEXT } from '../../constants';
 
 /**
  * Theme switcher component for toggling between light and dark themes
- * 
+ *
  * @guidelines
  * - DZ_01: Standalone component
  * - DZ_02: Dependency injection using inject() function
@@ -14,7 +14,7 @@ import { ICONS, UI_TEXT } from '../../constants';
  * - DZ_08: Private fields with # prefix
  * - DZ_09: Readonly for injected dependencies
  * - DZ_10: UI text constants usage
- * 
+ *
  * @see /docs/coding-guidelines.md
  */
 @Component({

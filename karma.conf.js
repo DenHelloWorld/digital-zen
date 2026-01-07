@@ -20,18 +20,15 @@ module.exports = function (config) {
       },
     },
     jasmineHtmlReporter: {
-      suppressAll: true // removes the duplicated traces
+      suppressAll: true, // removes the duplicated traces
     },
     coverageReporter: {
       dir: require('path').join(__dirname, './coverage/digital-zen-extension'),
       subdir: '.',
-      reporters: [
-        { type: 'html' },
-        { type: 'text-summary' }
-      ]
+      reporters: [{ type: 'html' }, { type: 'text-summary' }],
     },
     reporters: ['progress', 'kjhtml'],
     browsers: ['Chrome'],
-    restartOnFileChange: true
+    restartOnFileChange: true,
   });
 };

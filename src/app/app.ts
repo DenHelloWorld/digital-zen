@@ -25,7 +25,7 @@ import { PeriodFormComponent } from '../modules/menu/components/period-form';
 
 /**
  * Root application component for Digital Zen Chrome Extension
- * 
+ *
  * @guidelines
  * - DZ_01: Standalone component with imports array
  * - DZ_02: Dependency injection using inject() function
@@ -34,7 +34,7 @@ import { PeriodFormComponent } from '../modules/menu/components/period-form';
  * - DZ_08: Private fields with # prefix
  * - DZ_09: Readonly for injected dependencies
  * - DZ_10: UI text constants usage
- * 
+ *
  * @see /docs/coding-guidelines.md
  */
 @Component({

@@ -10,11 +10,12 @@ import {
   UI_TEXT,
 } from '../common';
 import { PeriodComponent } from './components/period/period.component';
+import { CleanUrlPipe } from '../common/pipes';
 
 /**
  * Focus management component
  * Main component for managing focus sessions and periods
- * 
+ *
  * @guidelines
  * - DZ_01: Standalone component with imports array
  * - DZ_02: Dependency injection using inject() function
@@ -23,7 +24,7 @@ import { PeriodComponent } from './components/period/period.component';
  * - DZ_08: Private fields with # prefix
  * - DZ_09: Readonly for injected dependencies
  * - DZ_10: UI text constants usage
- * 
+ *
  * @see /docs/coding-guidelines.md
  */
 @Component({
@@ -34,6 +35,7 @@ import { PeriodComponent } from './components/period/period.component';
     // components
     PeriodComponent,
     LoaderComponent,
+    CleanUrlPipe,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

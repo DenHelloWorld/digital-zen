@@ -7,23 +7,31 @@
   >
     @if (isSvgIcon(activeTab()?.favIconUrl)) {
       <svg class="dz-icon dz-icon--shadow" aria-hidden="true" focusable="false">
-        <use width="20" height="20" [attr.href]="activeTab()?.favIconUrl" />
+        <use
+          width="20"
+          height="20"
+          [attr.href]="activeTab()?.favIconUrl ? activeTab()?.favIconUrl : '#icon-save'"
+        />
       </svg>
-
-      <span>+</span>
     } @else if (isImageIcon(activeTab()?.favIconUrl)) {
       <img
         class="dz-icon dz-icon--shadow"
         [src]="activeTab()?.favIconUrl"
         width="20"
         height="20"
-        alt=""
+        alt="Favicon"
       />
-
-      <span>+</span>
-    } @else if (activeTab()?.title) {
-      {{ activeTab()?.title }}
+    } @else {
+      <svg class="dz-icon dz-icon--shadow" aria-hidden="true" focusable="false">
+        <use width="20" height="20" href="#icon-globe" />
+      </svg>
     }
+
+    {{ activeTab()?.url | cleanUrl }}
+
+    <svg class="dz-icon dz-icon--shadow" aria-hidden="true" focusable="false">
+      <use width="20" height="20" href="#icon-plus" />
+    </svg>
   </button>
 
   <button

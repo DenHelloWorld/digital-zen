@@ -3,11 +3,11 @@ import { AbstractControl, ValidationErrors } from '@angular/forms';
 /**
  * Validator that checks if a string value is not empty or contains only whitespace.
  * Trims the input value and returns a validation error if the trimmed string is empty.
- * 
+ *
  * @guidelines
  * - DZ_16: Custom validator pattern
  * - DZ_07: Strict TypeScript typing
- * 
+ *
  * @see /docs/coding-guidelines.md#dz_16-custom-validators
  * @see https://angular.dev/guide/forms/form-validation (Form Validation)
  * @see https://angular.dev/guide/forms/form-validation#defining-custom-validators (Custom Validators)

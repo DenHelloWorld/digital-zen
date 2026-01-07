@@ -4,11 +4,11 @@ import { IFocus } from '../models/focus.model';
 /**
  * Factory function that creates a validator to check if a period name is unique.
  * Compares the trimmed, case-insensitive period name against existing periods.
- * 
+ *
  * @guidelines
  * - DZ_16: Custom validator pattern (factory function with parameters)
  * - DZ_07: Strict TypeScript typing
- * 
+ *
  * @see /docs/coding-guidelines.md#dz_16-custom-validators
  * @see https://angular.dev/guide/forms/form-validation#defining-custom-validators (Custom Validators)
  *

@@ -37,7 +37,7 @@ import { DynamicInputComponent } from '../../../common/components/dynamic-input/
 /**
  * Period form component for creating and editing focus periods
  * Handles form validation, data binding, and period persistence
- * 
+ *
  * @guidelines
  * - DZ_01: Standalone component with imports array
  * - DZ_02: Dependency injection using inject() function
@@ -50,7 +50,7 @@ import { DynamicInputComponent } from '../../../common/components/dynamic-input/
  * - DZ_11: Universal Logger usage
  * - DZ_15: Typed Reactive Forms
  * - DZ_16: Custom validators
- * 
+ *
  * @see /docs/coding-guidelines.md
  * @see https://angular.dev/guide/forms/typed-forms (Typed Forms)
  * @see https://angular.dev/guide/forms/form-validation (Form Validation)

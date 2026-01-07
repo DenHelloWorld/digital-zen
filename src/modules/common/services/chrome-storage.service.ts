@@ -5,11 +5,11 @@ import { logger } from '../helpers/logger';
 /**
  * Chrome Storage service for interacting with chrome.storage.local API
  * Provides type-safe wrapper around Chrome Extension storage
- * 
+ *
  * @guidelines
  * - DZ_08: Private fields with # prefix
  * - DZ_11: Universal Logger usage
- * 
+ *
  * @see /docs/coding-guidelines.md
  * @see https://developer.chrome.com/docs/extensions/reference/api/storage (Chrome Storage API)
  */

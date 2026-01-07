@@ -20,7 +20,7 @@ import { FocusService } from '../../services';
 /**
  * Period display and management component
  * Displays a single focus period with its details, blocked websites, and controls
- * 
+ *
  * @guidelines
  * - DZ_01: Standalone component with imports array
  * - DZ_02: Dependency injection using inject() function
@@ -29,7 +29,7 @@ import { FocusService } from '../../services';
  * - DZ_08: Private fields with # prefix
  * - DZ_09: Readonly for injected dependencies
  * - DZ_10: UI text constants usage
- * 
+ *
  * @see /docs/coding-guidelines.md
  */
 @Component({

@@ -47,7 +47,9 @@ This document describes all coding patterns, conventions, and best practices use
 9. [HTTP & API](#http--api)
    - [DZ_13: Functional HTTP Interceptors](#dz_13-functional-http-interceptors)
 10. [Routing & Guards](#routing--guards)
-   - [DZ_14: Functional Guards](#dz_14-functional-guards)
+
+- [DZ_14: Functional Guards](#dz_14-functional-guards)
+
 11. [Forms](#forms)
     - [DZ_15: Typed Reactive Forms](#dz_15-typed-reactive-forms)
     - [DZ_16: Custom Validators](#dz_16-custom-validators)
@@ -908,6 +910,7 @@ describe('MyComponent/Function/Service', () => {
 Use clear, behavior-focused test names with "should..." pattern:
 
 ✅ **Good:**
+
 ```typescript
 it('should return error when start time equals end time', () => {});
 it('should return null for valid non-empty string', () => {});
@@ -915,6 +918,7 @@ it('should transform URL to origin by removing path', () => {});
 ```
 
 ❌ **Bad:**
+
 ```typescript
 it('test 1', () => {});
 it('works', () => {});
@@ -924,6 +928,7 @@ it('validator test', () => {});
 **4. Test Independence**
 
 Each test should:
+
 - Set up its own data
 - Not depend on execution order
 - Not share state with other tests
@@ -932,6 +937,7 @@ Each test should:
 **5. Comprehensive Coverage**
 
 Always test:
+
 - ✅ **Valid inputs** - Expected behavior with correct data
 - ✅ **Invalid inputs** - Error handling and validation
 - ✅ **Null/undefined** - How code handles missing values
@@ -1104,14 +1110,14 @@ describe('MyService', () => {
 #### Coverage Goals
 
 | Component Type    | Target Coverage | Priority |
-|-------------------|-----------------|----------|
-| Helpers/Utilities | 95%+           | High     |
-| Validators        | 95%+           | High     |
-| Pipes             | 95%+           | High     |
-| Services          | 85%+           | High     |
-| Guards            | 90%+           | High     |
-| Interceptors      | 90%+           | High     |
-| Components        | 80%+           | Medium   |
+| ----------------- | --------------- | -------- |
+| Helpers/Utilities | 95%+            | High     |
+| Validators        | 95%+            | High     |
+| Pipes             | 95%+            | High     |
+| Services          | 85%+            | High     |
+| Guards            | 90%+            | High     |
+| Interceptors      | 90%+            | High     |
+| Components        | 80%+            | Medium   |
 
 **View Coverage:**
 
@@ -1126,8 +1132,8 @@ open coverage/digital-zen-extension/index.html
 
 ```typescript
 // Equality
-expect(value).toBe(expected);           // Strict equality (===)
-expect(value).toEqual(expected);        // Deep equality
+expect(value).toBe(expected); // Strict equality (===)
+expect(value).toEqual(expected); // Deep equality
 
 // Truthiness
 expect(value).toBeTruthy();
