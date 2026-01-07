@@ -21,7 +21,7 @@ The privacy policy includes:
 - **`docs/privacy-policy-hosting.md`** - Complete guide for hosting the privacy policy
 - **`docs/privacy-policy.html`** - Original HTML version (kept for reference)
 
-## Privacy Policy URLs
+## Privacy Policy URL
 
 The privacy policy is hosted on the same server as the backend API:
 
