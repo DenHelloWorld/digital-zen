@@ -48,6 +48,21 @@
     }
   </div>
 
+  <div class="dz-form__field--fit">
+    <span class="dz-form__hint">
+      {{ uiText.PERIOD_FORM.LABELS.TIME_RANGE }}
+    </span>
+
+    <dz-multi-selector
+      [(selectedEntities)]="selectedTimeRanges"
+      [isOnlySingleSelectable]="true"
+      [entities]="timeRanges"
+      [labelKey]="'name'"
+      [idKey]="'id'"
+      orientation="horizontal"
+    />
+  </div>
+
   <ul class="dz-list dz-list--horizontal dz-list--full">
     <li class="dz-form__field--fit">
       <span class="dz-form__hint">

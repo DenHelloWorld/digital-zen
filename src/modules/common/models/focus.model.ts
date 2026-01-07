@@ -43,4 +43,12 @@ export namespace IFocus {
     startFrom: Date | null;
     endTo: Date | null;
   }
+
+  export interface TimeRange {
+    id: string;
+    name: string;
+    description: string;
+    startFrom: string;
+    endTo: string;
+  }
 }

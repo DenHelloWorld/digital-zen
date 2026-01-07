@@ -40,6 +40,7 @@ export class MultiSelectorComponent<T> {
   >('vertical');
   public readonly isSelectable: InputSignal<boolean> = input<boolean>(true);
   public readonly highlightedId: InputSignal<T[keyof T] | null> = input<T[keyof T] | null>(null);
+  public readonly isOnlySingleSelectable: InputSignal<boolean> = input<boolean>(false);
 
   /** @guideline DZ_04 - ModelSignal for two-way binding */
   public readonly selectedEntities: ModelSignal<T[] | undefined> = model<T[]>();
@@ -72,6 +73,15 @@ export class MultiSelectorComponent<T> {
     const id = item[this.idKey()];
     const isAlready = current.some(e => e[this.idKey()] === id);
 
+    if (this.isOnlySingleSelectable()) {
+      /**
+       * Single selection only - switch selection to current item or remove selection
+       */
+      this.selectedEntities.set(isAlready ? [] : [item]);
+      return;
+    }
+
+    // Обычный множественный выбор
     this.selectedEntities.set(
       isAlready ? current.filter(e => e[this.idKey()] !== id) : [...current, item]
     );
