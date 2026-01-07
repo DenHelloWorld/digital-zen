@@ -19,7 +19,6 @@ The privacy policy is now hosted on the same PHP server as the backend API at **
 **Privacy Policy Files:**
 
 - `api/privacy-policy.php` - English version
-- `api/privacy-policy-ru.php` - Russian version
 
 ---
 
@@ -37,10 +36,9 @@ The privacy policy is hosted on the same server as the Digital Zen backend API:
 
 The privacy policy is accessible at:
 
-- **English:** `https://digital-zen.csmpoint.com/api/privacy-policy.php`
-- **Russian:** `https://digital-zen.csmpoint.com/api/privacy-policy-ru.php`
+- **URL:** `https://digital-zen.csmpoint.com/api/privacy-policy.php`
 
-These URLs are used in:
+This URL is used in:
 1. Chrome Web Store submission (privacy policy URL field)
 2. Extension footer link (in `src/app/app.html`)
 
@@ -53,7 +51,6 @@ These URLs are used in:
 ```
 api/
 ├── privacy-policy.php     # English version
-├── privacy-policy-ru.php  # Russian version
 └── .htaccess              # Server configuration (allows public access)
 ```
 
@@ -67,12 +64,6 @@ The `.htaccess` file includes rules to allow public access to the privacy policy
     Order allow,deny
     Allow from all
 </Files>
-
-# Allow access to privacy-policy-ru.php
-<Files "privacy-policy-ru.php">
-    Order allow,deny
-    Allow from all
-</Files>
 ```
 
 ---
@@ -83,11 +74,10 @@ When you need to update the privacy policy:
 
 ### 1. Edit the Files
 
-Edit the privacy policy files locally:
-- `api/privacy-policy.php` (English version)
-- `api/privacy-policy-ru.php` (Russian version)
+Edit the privacy policy file locally:
+- `api/privacy-policy.php`
 
-Update the "Last Updated" date in both files.
+Update the "Last Updated" date.
 
 ### 2. Upload to Server
 
@@ -96,7 +86,7 @@ Upload the updated files to the server:
 **Option A: Using FTP/SFTP Client (FileZilla, WinSCP, etc.)**
 1. Connect to `digital-zen.csmpoint.com` using your FTP/SFTP credentials
 2. Navigate to the `/api/` directory
-3. Upload the updated `privacy-policy.php` and `privacy-policy-ru.php` files
+3. Upload the updated `privacy-policy.php` file
 
 **Option B: Using cPanel File Manager**
 1. Log in to cPanel at your hosting provider
@@ -114,7 +104,6 @@ cd /path/to/public_html/api/
 
 # Upload files using scp from local machine
 scp api/privacy-policy.php your-username@digital-zen.csmpoint.com:/path/to/public_html/api/
-scp api/privacy-policy-ru.php your-username@digital-zen.csmpoint.com:/path/to/public_html/api/
 ```
 
 ### 3. Verify Changes
@@ -124,8 +113,6 @@ After uploading, verify the changes are live:
 1. Visit `https://digital-zen.csmpoint.com/api/privacy-policy.php` in your browser
 2. Verify the "Last Updated" date is correct
 3. Check that the content changes are visible
-4. Test the Russian version at `https://digital-zen.csmpoint.com/api/privacy-policy-ru.php`
-5. Verify language switcher links work correctly
 
 ---
 
@@ -155,7 +142,7 @@ After uploading, verify the changes are live:
 
 1. **Incorrect file path:**
    - Verify files are in the `/api/` directory on the server
-   - Check file names are exactly `privacy-policy.php` and `privacy-policy-ru.php`
+   - Check file name is exactly `privacy-policy.php`
 
 2. **Server configuration issue:**
    - Verify `.htaccess` is present and not corrupted

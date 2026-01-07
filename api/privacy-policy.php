@@ -111,15 +111,6 @@
         font-family: 'Courier New', monospace;
       }
 
-      .lang-switch {
-        margin-bottom: 20px;
-        text-align: right;
-      }
-
-      .lang-switch a {
-        font-size: 0.9em;
-      }
-
       @media (max-width: 768px) {
         .container {
           padding: 20px;
@@ -151,10 +142,6 @@
   </head>
   <body>
     <div class="container">
-      <div class="lang-switch">
-        <a href="privacy-policy-ru.php">Русская версия</a>
-      </div>
-
       <h1>Privacy Policy</h1>
       <p class="last-updated">Last Updated: January 2, 2026</p>
 

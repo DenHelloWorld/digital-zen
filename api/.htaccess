@@ -47,12 +47,6 @@
     Allow from all
 </Files>
 
-# Allow access to privacy-policy-ru.php
-<Files "privacy-policy-ru.php">
-    Order allow,deny
-    Allow from all
-</Files>
-
 # Prevent access to config.php from browser
 <Files "config.php">
     Order deny,allow

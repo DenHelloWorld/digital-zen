@@ -7,7 +7,6 @@ This document provides a quick reference for the privacy policy setup and hostin
 ### Privacy Policy Pages
 
 - **`api/privacy-policy.php`** - English version of the privacy policy (hosted on PHP server)
-- **`api/privacy-policy-ru.php`** - Russian version of the privacy policy (hosted on PHP server)
 
 Both versions include:
 
@@ -16,20 +15,17 @@ Both versions include:
 - Explanation of Chrome permissions
 - Information about Google OAuth integration
 - Contact information
-- Language switcher between English and Russian versions
 
 ### Documentation
 
 - **`docs/privacy-policy-hosting.md`** - Complete guide for hosting the privacy policy
 - **`docs/privacy-policy.html`** - Original HTML version (kept for reference)
-- **`docs/privacy-policy-ru.html`** - Original Russian HTML version (kept for reference)
 
 ## Privacy Policy URLs
 
 The privacy policy is hosted on the same server as the backend API:
 
-- **English:** `https://digital-zen.csmpoint.com/api/privacy-policy.php`
-- **Russian:** `https://digital-zen.csmpoint.com/api/privacy-policy-ru.php`
+- **URL:** `https://digital-zen.csmpoint.com/api/privacy-policy.php`
 
 ## Hosting Setup
 
@@ -49,7 +45,6 @@ Privacy policy files are located in the `/api/` directory:
 ```
 api/
 ├── privacy-policy.php
-├── privacy-policy-ru.php
 └── .htaccess  # Configured to allow public access
 ```
 
@@ -74,10 +69,9 @@ To update the privacy policy in the future:
 ### 1. Edit Locally
 
 Edit the files:
-- `api/privacy-policy.php` (English)
-- `api/privacy-policy-ru.php` (Russian)
+- `api/privacy-policy.php`
 
-Update the "Last Updated" date in both files.
+Update the "Last Updated" date.
 
 ### 2. Upload to Server
 
@@ -97,14 +91,12 @@ Upload the updated files to the server using one of these methods:
 **SSH (if available):**
 ```bash
 scp api/privacy-policy.php username@digital-zen.csmpoint.com:/path/to/api/
-scp api/privacy-policy-ru.php username@digital-zen.csmpoint.com:/path/to/api/
 ```
 
 ### 3. Verify
 
 Visit the URLs to verify changes:
 - `https://digital-zen.csmpoint.com/api/privacy-policy.php`
-- `https://digital-zen.csmpoint.com/api/privacy-policy-ru.php`
 
 ## Troubleshooting
 
@@ -122,7 +114,7 @@ Visit the URLs to verify changes:
 
 ### 404 Not Found
 
-- **Check:** File names are exactly `privacy-policy.php` and `privacy-policy-ru.php`
+- **Check:** File name is exactly `privacy-policy.php`
 - **Verify:** Files are in the correct `/api/` directory
 - **Ensure:** `.htaccess` is present and not corrupted
 
