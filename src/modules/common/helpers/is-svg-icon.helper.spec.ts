@@ -155,8 +155,8 @@ describe('isSvgIcon', () => {
       expect(isSvgIcon('https://example.com/file..svg')).toBe(true);
     });
 
-    it('should handle URLs with fragment identifiers (no query)', () => {
-      // Fragment is not removed by split('?'), so this will be false
+    it('should return false for URLs with hash fragments (not handled by current implementation)', () => {
+      // Fragment is not removed by split('?'), so the current implementation returns false
       expect(isSvgIcon('https://example.com/icon.svg#layer1')).toBe(false);
     });
 

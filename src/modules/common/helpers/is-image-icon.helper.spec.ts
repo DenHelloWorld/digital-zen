@@ -39,8 +39,8 @@ describe('isImageIcon', () => {
       expect(isImageIcon('https://example.com/icon.ico?timestamp=123456')).toBe(true);
     });
 
-    it('should return true for URLs with fragment identifiers', () => {
-      expect(isImageIcon('https://example.com/image.png#section')).toBe(false); // Fragment is not removed by split('?')
+    it('should return false for URLs with hash fragments (fragment is not removed by split)', () => {
+      expect(isImageIcon('https://example.com/image.png#section')).toBe(false); // Known limitation: hash fragment is not removed by split('?')
     });
 
     it('should return true for relative URLs', () => {

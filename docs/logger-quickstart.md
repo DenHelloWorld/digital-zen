@@ -1,8 +1,8 @@
 # Universal Logger - Quick Start
 
-## Быстрый старт
+## Quick Start
 
-### В любом месте проекта (Angular или Background)
+### In Any Part of the Project (Angular or Background)
 
 ```typescript
 import { logger } from '../common';
@@ -17,14 +17,14 @@ export class MyService {
 }
 ```
 
-## Основные принципы
+## Core Principles
 
-1. **Один универсальный logger** - работает везде одинаково
-2. **Используйте `createLogger()`** - создайте именованный logger для вашего модуля
-3. **Всегда readonly** - `readonly #logger = logger.createLogger('Name')`
-4. **Private с #** - следуйте стандартам проекта
+1. **One universal logger** - works the same everywhere
+2. **Use `createLogger()`** - create a named logger for your module
+3. **Always readonly** - `readonly #logger = logger.createLogger('Name')`
+4. **Private with #** - follow project standards
 
-## Примеры использования
+## Usage Examples
 
 ### Angular Component
 
@@ -76,23 +76,23 @@ export class BackgroundService {
 }
 ```
 
-## API Референс
+## API Reference
 
 ```typescript
-// Создать именованный logger (рекомендуется)
+// Create named logger (recommended)
 const myLogger = logger.createLogger('MyModule');
 myLogger.debug('Debug message');
 myLogger.info('Info message');
 myLogger.warn('Warning message');
 myLogger.error('Error message', errorObject);
 
-// Прямое использование с префиксом
+// Direct usage with prefix
 logger.info('MyModule', 'Direct info message');
 
-// Конфигурация
+// Configuration
 logger.configure({
-  level: LogLevel.WARN, // Показывать только WARN и ERROR
-  enableTimestamp: false, // Отключить timestamps
+  level: LogLevel.WARN, // Show only WARN and ERROR
+  enableTimestamp: false, // Disable timestamps
 });
 ```
 
@@ -100,22 +100,22 @@ logger.configure({
 
 ```typescript
 enum LogLevel {
-  DEBUG = 0, // Отладочная информация
-  INFO = 1, // Общая информация
-  WARN = 2, // Предупреждения
-  ERROR = 3, // Ошибки
-  NONE = 4, // Отключить все логи
+  DEBUG = 0, // Debug information
+  INFO = 1, // General information
+  WARN = 2, // Warnings
+  ERROR = 3, // Errors
+  NONE = 4, // Disable all logs
 }
 ```
 
-## Полная документация
+## Full Documentation
 
-См. [docs/logger.md](./logger.md) для подробной документации.
+See [docs/logger.md](./logger.md) for detailed documentation.
 
-## Checklist для использования
+## Usage Checklist
 
-- [ ] Импортировать `logger` из `../common`
-- [ ] Создать `readonly #logger = logger.createLogger('ModuleName')`
-- [ ] Использовать `this.#logger.info()`, `this.#logger.error()`, etc.
-- [ ] НЕ использовать `console.log()` или `console.error()`
-- [ ] Название модуля в CamelCase (e.g., 'AuthService', 'BackgroundService')
+- [ ] Import `logger` from `../common`
+- [ ] Create `readonly #logger = logger.createLogger('ModuleName')`
+- [ ] Use `this.#logger.info()`, `this.#logger.error()`, etc.
+- [ ] DO NOT use `console.log()` or `console.error()`
+- [ ] Module name in CamelCase (e.g., 'AuthService', 'BackgroundService')

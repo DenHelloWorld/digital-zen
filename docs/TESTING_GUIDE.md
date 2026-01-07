@@ -1,108 +1,112 @@
-# Руководство по тестированию Digital Zen
+# Digital Zen Testing Guide
 
-## Содержание
-1. [Быстрый старт](#быстрый-старт)
-2. [Запуск тестов](#запуск-тестов)
-3. [Структура тестов](#структура-тестов)
-4. [Написание тестов](#написание-тестов)
-5. [Лучшие практики](#лучшие-практики)
-6. [Настройка окружения](#настройка-окружения)
-7. [Отладка тестов](#отладка-тестов)
-8. [Покрытие кода](#покрытие-кода)
+## Table of Contents
+
+1. [Quick Start](#quick-start)
+2. [Running Tests](#running-tests)
+3. [Test Structure](#test-structure)
+4. [Writing Tests](#writing-tests)
+5. [Best Practices](#best-practices)
+6. [Environment Setup](#environment-setup)
+7. [Debugging Tests](#debugging-tests)
+8. [Code Coverage](#code-coverage)
 
 ---
 
-## Быстрый старт
+## Quick Start
 
-### Установка зависимостей
+### Installing Dependencies
+
 ```bash
 npm install
 ```
 
-### Запуск всех тестов
+### Running All Tests
+
 ```bash
 npm test
 ```
 
-### Запуск тестов в CI режиме (headless)
+### Running Tests in CI Mode (Headless)
+
 ```bash
 npm run test:ci
 ```
 
 ---
 
-## Запуск тестов
+## Running Tests
 
-### Доступные команды
+### Available Commands
 
-| Команда | Описание |
-|---------|----------|
-| `npm test` | Запускает тесты в браузере с watch режимом |
-| `npm run test:ci` | Запускает тесты в headless режиме с coverage |
-| `npm run test:headless` | Запускает тесты в headless режиме без coverage |
+| Command                 | Description                                  |
+| ----------------------- | -------------------------------------------- |
+| `npm test`              | Runs tests in browser with watch mode        |
+| `npm run test:ci`       | Runs tests in headless mode with coverage    |
+| `npm run test:headless` | Runs tests in headless mode without coverage |
 
-### Билд с тестами
+### Build with Tests
 
-По умолчанию, тесты запускаются перед каждым билдом:
+By default, tests run before each build:
 
 ```bash
-# Билд с запуском тестов (рекомендуется)
+# Build with tests (recommended)
 npm run build
 
-# Билд production с запуском тестов
+# Production build with tests
 npm run build:prod
 ```
 
-### Билд без тестов
+### Build without Tests
 
-Если нужно пропустить тесты (например, для быстрой проверки):
+If you need to skip tests (e.g., for quick verification):
 
 ```bash
-# Билд без тестов
+# Build without tests
 npm run build:skip-tests
 
-# Production билд без тестов
+# Production build without tests
 npm run build:prod:skip-tests
 ```
 
-**⚠️ Внимание:** Пропуск тестов не рекомендуется для production билдов. Используйте эту опцию только для локальной разработки.
+**⚠️ Warning:** Skipping tests is not recommended for production builds. Use this option only for local development.
 
-### Фильтрация тестов
+### Filtering Tests
 
-Запуск конкретных тестов:
+Running specific tests:
 
 ```bash
-# Только тесты для helpers
+# Only tests for helpers
 npm test -- --include='**/helpers/*.spec.ts'
 
-# Только конкретный файл
+# Only a specific file
 npm test -- --include='**/is-image-icon.helper.spec.ts'
 ```
 
 ---
 
-## Структура тестов
+## Test Structure
 
-### Расположение тестов
+### Test Location
 
-Тесты располагаются рядом с тестируемыми файлами:
+Tests are located next to the files they test:
 
 ```
 src/
   modules/
     common/
       helpers/
-        is-image-icon.helper.ts          ← Исходный файл
-        is-image-icon.helper.spec.ts     ← Тест файл
+        is-image-icon.helper.ts          ← Source file
+        is-image-icon.helper.spec.ts     ← Test file
 ```
 
-### Именование тестов
+### Test Naming
 
-- Тестовые файлы должны заканчиваться на `.spec.ts`
-- Имя теста должно соответствовать имени тестируемого файла
-- Пример: `my-helper.ts` → `my-helper.spec.ts`
+- Test files must end with `.spec.ts`
+- Test name should match the source file name
+- Example: `my-helper.ts` → `my-helper.spec.ts`
 
-### Структура теста
+### Test Structure
 
 ```typescript
 import { myFunction } from './my-helper';
@@ -130,11 +134,11 @@ describe('myFunction', () => {
 
 ---
 
-## Написание тестов
+## Writing Tests
 
-### Тестирование Helper функций
+### Testing Helper Functions
 
-Helper функции - это чистые функции, которые легко тестировать:
+Helper functions are pure functions that are easy to test:
 
 ```typescript
 import { isImageIcon } from './is-image-icon.helper';
@@ -154,9 +158,9 @@ describe('isImageIcon', () => {
 });
 ```
 
-### Тестирование Angular компонентов (Standalone)
+### Testing Angular Components (Standalone)
 
-Для компонентов Angular 21+ используйте современный подход с Standalone Components:
+For Angular 21+ components, use the modern approach with Standalone Components:
 
 ```typescript
 import { ComponentFixture, TestBed } from '@angular/core/testing';
@@ -168,7 +172,7 @@ describe('MyComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [MyComponent], // Standalone компонент в imports
+      imports: [MyComponent], // Standalone component in imports
     }).compileComponents();
 
     fixture = TestBed.createComponent(MyComponent);
@@ -182,7 +186,7 @@ describe('MyComponent', () => {
 });
 ```
 
-### Тестирование с Signals
+### Testing with Signals
 
 ```typescript
 import { signal, computed } from '@angular/core';
@@ -200,7 +204,7 @@ describe('Signal-based state', () => {
 });
 ```
 
-### Тестирование с dependency injection (inject)
+### Testing with Dependency Injection (inject)
 
 ```typescript
 import { TestBed } from '@angular/core/testing';
@@ -224,11 +228,12 @@ describe('MyService', () => {
 
 ---
 
-## Лучшие практики
+## Best Practices
 
-### 1. Организация тестов
+### 1. Test Organization
 
-✅ **Хорошо:**
+✅ **Good:**
+
 ```typescript
 describe('myFunction', () => {
   describe('Valid inputs', () => {
@@ -247,7 +252,8 @@ describe('myFunction', () => {
 });
 ```
 
-❌ **Плохо:**
+❌ **Bad:**
+
 ```typescript
 describe('myFunction', () => {
   it('test 1', () => {});
@@ -256,30 +262,32 @@ describe('myFunction', () => {
 });
 ```
 
-### 2. Именование тестов
+### 2. Test Naming
 
-✅ **Хорошо:**
+✅ **Good:**
+
 ```typescript
 it('should return true for valid HTTP URLs', () => {});
 it('should return false for null input', () => {});
 it('should handle URLs with query parameters', () => {});
 ```
 
-❌ **Плохо:**
+❌ **Bad:**
+
 ```typescript
 it('works', () => {});
 it('returns result', () => {});
 it('test case 1', () => {});
 ```
 
-### 3. Тестируйте граничные случаи
+### 3. Test Boundary Cases
 
 ```typescript
 describe('isHttpUrl', () => {
-  // Обычные случаи
+  // Normal cases
   it('should return true for http:// URLs', () => {});
 
-  // Граничные случаи
+  // Boundary cases
   it('should return false for null', () => {});
   it('should return false for undefined', () => {});
   it('should return false for empty strings', () => {});
@@ -288,9 +296,10 @@ describe('isHttpUrl', () => {
 });
 ```
 
-### 4. Один assert на тест (когда возможно)
+### 4. One Assertion Per Test (When Possible)
 
-✅ **Хорошо:**
+✅ **Good:**
+
 ```typescript
 it('should return true for .png files', () => {
   expect(isImageIcon('image.png')).toBe(true);
@@ -301,7 +310,8 @@ it('should return true for .jpg files', () => {
 });
 ```
 
-✅ **Допустимо для связанных проверок:**
+✅ **Acceptable for Related Checks:**
+
 ```typescript
 it('should handle international domain names correctly', () => {
   const result = cleanUrlHelper('http://例え.jp/path');
@@ -310,33 +320,33 @@ it('should handle international domain names correctly', () => {
 });
 ```
 
-### 5. Используйте правильные matchers
+### 5. Use Proper Matchers
 
 ```typescript
-// Для булевых значений
+// For boolean values
 expect(value).toBe(true);
 expect(value).toBe(false);
 
-// Для null/undefined
+// For null/undefined
 expect(value).toBeNull();
 expect(value).toBeUndefined();
 expect(value).toBeDefined();
 
-// Для строк
+// For strings
 expect(str).toContain('substring');
 expect(str).toMatch(/pattern/);
 
-// Для чисел
+// For numbers
 expect(num).toBeGreaterThan(5);
 expect(num).toBeLessThan(10);
 expect(num).toBeCloseTo(10.5, 1);
 
-// Для массивов
+// For arrays
 expect(arr).toEqual([1, 2, 3]);
 expect(arr).toContain(item);
 ```
 
-### 6. Тестируйте производительность и консистентность
+### 6. Test Performance and Consistency
 
 ```typescript
 describe('Performance and consistency', () => {
@@ -357,11 +367,11 @@ describe('Performance and consistency', () => {
 
 ---
 
-## Настройка окружения
+## Environment Setup
 
 ### Karma Configuration
 
-Настройки Karma находятся в файле `karma.conf.js`:
+Karma settings are in the `karma.conf.js` file:
 
 ```javascript
 module.exports = function (config) {
@@ -374,14 +384,14 @@ module.exports = function (config) {
       require('karma-jasmine-html-reporter'),
       require('karma-coverage'),
     ],
-    // ... остальные настройки
+    // ... other settings
   });
 };
 ```
 
 ### TypeScript Configuration
 
-Настройки TypeScript для тестов в `tsconfig.spec.json`:
+TypeScript settings for tests in `tsconfig.spec.json`:
 
 ```json
 {
@@ -396,7 +406,7 @@ module.exports = function (config) {
 
 ### Angular Configuration
 
-Настройки тестов в `angular.json`:
+Test settings in `angular.json`:
 
 ```json
 {
@@ -419,49 +429,50 @@ module.exports = function (config) {
 
 ---
 
-## Отладка тестов
+## Debugging Tests
 
-### Отладка в браузере
+### Debugging in Browser
 
-1. Запустите тесты в watch режиме:
+1. Run tests in watch mode:
+
    ```bash
    npm test
    ```
 
-2. Откройте Chrome DevTools в окне Karma
+2. Open Chrome DevTools in the Karma window
 
-3. Используйте `debugger;` в вашем тесте:
+3. Use `debugger;` in your test:
    ```typescript
    it('should debug this test', () => {
-     debugger; // Выполнение остановится здесь
+     debugger; // Execution will stop here
      expect(myFunction()).toBe(true);
    });
    ```
 
-### Использование fit и fdescribe
+### Using fit and fdescribe
 
 ```typescript
-// Запустит только этот тест
+// Run only this test
 fit('should run only this test', () => {
   expect(true).toBe(true);
 });
 
-// Запустит только тесты в этом блоке
+// Run only tests in this block
 fdescribe('Only this suite', () => {
   it('test 1', () => {});
   it('test 2', () => {});
 });
 ```
 
-### Пропуск тестов
+### Skipping Tests
 
 ```typescript
-// Пропустить конкретный тест
+// Skip a specific test
 xit('should skip this test', () => {
   expect(true).toBe(true);
 });
 
-// Пропустить весь блок
+// Skip entire block
 xdescribe('Skip this suite', () => {
   it('test 1', () => {});
   it('test 2', () => {});
@@ -470,31 +481,31 @@ xdescribe('Skip this suite', () => {
 
 ---
 
-## Покрытие кода
+## Code Coverage
 
-### Генерация отчёта о покрытии
+### Generating Coverage Report
 
 ```bash
 npm run test:ci
 ```
 
-Отчёт будет сохранён в `coverage/digital-zen-extension/index.html`
+Report will be saved in `coverage/digital-zen-extension/index.html`
 
-### Просмотр отчёта
+### Viewing Report
 
 ```bash
-# Откройте в браузере
+# Open in browser
 open coverage/digital-zen-extension/index.html
 
-# Или используйте Python HTTP server
+# Or use Python HTTP server
 cd coverage/digital-zen-extension
 python3 -m http.server 8080
-# Откройте http://localhost:8080
+# Open http://localhost:8080
 ```
 
-### Настройка минимального покрытия
+### Configuring Minimum Coverage
 
-Настройте в `karma.conf.js`:
+Configure in `karma.conf.js`:
 
 ```javascript
 coverageReporter: {
@@ -520,42 +531,46 @@ coverageReporter: {
 
 ## Troubleshooting
 
-### Проблема: Тесты не запускаются
+### Issue: Tests Don't Run
 
-**Решение:**
+**Solution:**
+
 ```bash
-# Переустановите зависимости
+# Reinstall dependencies
 rm -rf node_modules package-lock.json
 npm install
 ```
 
-### Проблема: Chrome не найден
+### Issue: Chrome Not Found
 
-**Решение:**
+**Solution:**
+
 ```bash
-# Используйте ChromeHeadless
+# Use ChromeHeadless
 npm run test:headless
 ```
 
-### Проблема: Порт уже используется
+### Issue: Port Already in Use
 
-**Решение:**
-Karma использует порт 9876 по умолчанию. Измените в `karma.conf.js`:
+**Solution:**
+Karma uses port 9876 by default. Change in `karma.conf.js`:
+
 ```javascript
 port: 9877,
 ```
 
-### Проблема: Timeout в тестах
+### Issue: Test Timeout
 
-**Решение:**
-Увеличьте timeout в `karma.conf.js`:
+**Solution:**
+Increase timeout in `karma.conf.js`:
+
 ```javascript
 browserNoActivityTimeout: 60000,
 ```
 
 ---
 
-## Дополнительные ресурсы
+## Additional Resources
 
 - [Angular Testing Guide](https://angular.dev/guide/testing)
 - [Jasmine Documentation](https://jasmine.github.io/)
@@ -564,14 +579,14 @@ browserNoActivityTimeout: 60000,
 
 ---
 
-## Контрольный список для новых тестов
+## Checklist for New Tests
 
-- [ ] Тест имеет описательное имя
-- [ ] Тестируются обычные случаи
-- [ ] Тестируются граничные случаи (null, undefined, пустые строки)
-- [ ] Тестируются edge cases (очень длинные строки, специальные символы)
-- [ ] Используются правильные matchers
-- [ ] Тесты независимы друг от друга
-- [ ] Тесты организованы в логические группы (describe блоки)
-- [ ] Все тесты проходят успешно
-- [ ] Покрытие кода адекватное (> 80%)
+- [ ] Test has descriptive name
+- [ ] Normal cases are tested
+- [ ] Boundary cases are tested (null, undefined, empty strings)
+- [ ] Edge cases are tested (very long strings, special characters)
+- [ ] Proper matchers are used
+- [ ] Tests are independent of each other
+- [ ] Tests are organized in logical groups (describe blocks)
+- [ ] All tests pass successfully
+- [ ] Code coverage is adequate (> 80%)

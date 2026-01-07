@@ -78,6 +78,7 @@ export class ExampleComponent {
 ```
 
 **Key Points:**
+
 - ✅ Include `imports` array in `@Component` decorator
 - ✅ Import all dependencies directly in the component
 - ❌ Do NOT create or use NgModules
@@ -118,6 +119,7 @@ export class ExampleComponent {
 ```
 
 **Key Points:**
+
 - ✅ Use `inject()` function from `@angular/core`
 - ✅ Declare injected dependencies as class fields
 - ✅ Combine with [DZ_08](#dz_08-private-fields-with--prefix) (private # prefix)
@@ -146,7 +148,9 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
   templateUrl: './example.component.html',
   styleUrls: ['./example.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [/* ... */],
+  imports: [
+    /* ... */
+  ],
 })
 export class ExampleComponent {
   // Component implementation
@@ -154,6 +158,7 @@ export class ExampleComponent {
 ```
 
 **Key Points:**
+
 - ✅ Set `changeDetection: ChangeDetectionStrategy.OnPush` in every component
 - ✅ Works seamlessly with Signals (automatic change detection)
 - ✅ Use with immutable data patterns
@@ -181,10 +186,10 @@ import { Component, signal, computed, Signal, WritableSignal } from '@angular/co
 export class ExampleComponent {
   // Writable signal
   protected readonly count: WritableSignal<number> = signal(0);
-  
+
   // Computed signal (derived state)
   protected readonly doubleCount: Signal<number> = computed(() => this.count() * 2);
-  
+
   // Readonly signal from service
   protected readonly theme: Signal<ColorSchemaType> = this.#themeService.theme;
 
@@ -195,6 +200,7 @@ export class ExampleComponent {
 ```
 
 **Key Points:**
+
 - ✅ Use `signal()` for writable state
 - ✅ Use `computed()` for derived state
 - ✅ Use `Signal<T>` type for readonly signals
@@ -251,6 +257,7 @@ fromEvent(element, 'input')
 ```
 
 **Key Points:**
+
 - ✅ Use RxJS for HTTP requests
 - ✅ Use RxJS when you need operators like `debounceTime`, `switchMap`, `combineLatest`
 - ✅ Always use `takeUntilDestroyed(this.#destroyRef)` for automatic unsubscription
@@ -274,49 +281,49 @@ fromEvent(element, 'input')
 **Implementation:**
 
 **Conditional Rendering:**
+
 ```html
 @if (isLoggedIn()) {
-  <p>Welcome back, {{ userName() }}!</p>
+<p>Welcome back, {{ userName() }}!</p>
 } @else {
-  <p>Please log in</p>
+<p>Please log in</p>
 }
 ```
 
 **List Rendering:**
+
 ```html
 @for (item of items(); track item.id) {
-  <div class="dz-item">{{ item.name }}</div>
+<div class="dz-item">{{ item.name }}</div>
 } @empty {
-  <p>No items found</p>
+<p>No items found</p>
 }
 ```
 
 **Switch Statement:**
+
 ```html
-@switch (status()) {
-  @case ('loading') {
-    <dz-loader />
-  }
-  @case ('success') {
-    <p>Success!</p>
-  }
-  @case ('error') {
-    <p>Error occurred</p>
-  }
-  @default {
-    <p>Unknown status</p>
-  }
-}
+@switch (status()) { @case ('loading') {
+<dz-loader />
+} @case ('success') {
+<p>Success!</p>
+} @case ('error') {
+<p>Error occurred</p>
+} @default {
+<p>Unknown status</p>
+} }
 ```
 
 **Lazy Loading:**
+
 ```html
 @defer {
-  <dz-heavy-component />
+<dz-heavy-component />
 }
 ```
 
 **Key Points:**
+
 - ✅ Use `@if` / `@else` for conditionals
 - ✅ Use `@for` with `track` for lists
 - ✅ Use `@empty` block for empty lists
@@ -341,7 +348,9 @@ fromEvent(element, 'input')
 ```typescript
 // ✅ Good: Explicit typing
 function processData(data: UserData): ProcessedResult {
-  return { /* ... */ };
+  return {
+    /* ... */
+  };
 }
 
 // ✅ Good: Use unknown for truly unknown types
@@ -358,6 +367,7 @@ function processData(data: any): any {
 ```
 
 **Key Points:**
+
 - ✅ Always define explicit types
 - ✅ Use interfaces or types for complex structures
 - ✅ Use `unknown` instead of `any` when type is unknown
@@ -382,7 +392,7 @@ export class ExampleComponent {
   // ✅ Good: Private field with # prefix
   readonly #someService = inject(SomeService);
   readonly #logger = logger.createLogger('ExampleComponent');
-  
+
   #privateMethod(): void {
     // Private logic
   }
@@ -390,6 +400,7 @@ export class ExampleComponent {
 ```
 
 **Key Points:**
+
 - ✅ Use `#` prefix for all private fields and methods
 - ✅ Combine with `readonly` for immutable fields
 - ✅ Use `protected` for fields accessed in templates
@@ -413,12 +424,13 @@ export class ExampleComponent {
   readonly #themeService = inject(ThemeService);
   readonly #router = inject(Router);
   readonly #destroyRef = inject(DestroyRef);
-  
+
   // Component logic
 }
 ```
 
 **Key Points:**
+
 - ✅ Always use `readonly` with injected dependencies
 - ✅ Combine with [DZ_08](#dz_08-private-fields-with--prefix) private `#` prefix
 - ❌ Do NOT reassign injected dependencies
@@ -470,6 +482,7 @@ export class MyComponent {
 ```
 
 **Key Points:**
+
 - ✅ Extract ALL user-facing text to UI_TEXT
 - ✅ Organize by feature/component
 - ✅ Include labels, buttons, placeholders, errors, ARIA labels
@@ -500,7 +513,7 @@ export class ExampleService {
 
   doSomething(): void {
     this.#logger.info('Starting operation...');
-    
+
     try {
       // Logic
       this.#logger.debug('Debug details:', { data: 123 });
@@ -512,6 +525,7 @@ export class ExampleService {
 ```
 
 **Key Points:**
+
 - ✅ Use `logger.createLogger('ModuleName')` to create a named logger
 - ✅ Store logger as `readonly #logger`
 - ✅ Use appropriate log levels: `debug`, `info`, `warn`, `error`
@@ -539,19 +553,19 @@ export class ExampleService {
 // Component: period.component.scss
 .dz-period {
   display: flex;
-  
+
   &__header {
     font-weight: bold;
   }
-  
+
   &__content {
     padding: 1rem;
   }
-  
+
   &--active {
     background-color: var(--color-primary);
   }
-  
+
   &--disabled {
     opacity: 0.5;
   }
@@ -566,11 +580,13 @@ export class ExampleService {
 ```
 
 **BEM Structure:**
+
 - **Block:** `.dz-period` (component root)
 - **Element:** `.dz-period__header` (child element)
 - **Modifier:** `.dz-period--active` (variant/state)
 
 **Key Points:**
+
 - ✅ Use SCSS for all component styles
 - ✅ Prefix all classes with `dz-`
 - ✅ Follow BEM naming: `block__element--modifier`
@@ -608,7 +624,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const authReq = req.clone({
     setHeaders: { Authorization: `Bearer ${token}` },
   });
-  
+
   return next(authReq);
 };
 ```
@@ -618,15 +634,12 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 ```typescript
 // app.config.ts
 export const appConfig: ApplicationConfig = {
-  providers: [
-    provideHttpClient(
-      withInterceptors([authInterceptor])
-    ),
-  ],
+  providers: [provideHttpClient(withInterceptors([authInterceptor]))],
 };
 ```
 
 **Key Points:**
+
 - ✅ Use `HttpInterceptorFn` type
 - ✅ Use `inject()` for dependency injection
 - ✅ Return `next(req)` or modified request
@@ -677,6 +690,7 @@ const routes: Routes = [
 ```
 
 **Key Points:**
+
 - ✅ Use functional guard types: `CanActivateFn`, `CanActivateChildFn`, etc.
 - ✅ Use `inject()` for dependency injection
 - ✅ Return `boolean`, `UrlTree`, or Observable/Promise of these
@@ -717,6 +731,7 @@ export class UserFormComponent {
 ```
 
 **Key Points:**
+
 - ✅ Use explicit type parameters: `FormControl<string>`
 - ✅ Use `{ nonNullable: true }` for required fields
 - ✅ Use `FormControl<Type | null>` for optional fields
@@ -753,6 +768,7 @@ export function requiredTrimmedValidator(control: AbstractControl): ValidationEr
 ```
 
 **Key Points:**
+
 - ✅ Use `AbstractControl` for parameter type
 - ✅ Return `ValidationErrors | null`
 - ✅ Add JSDoc with guideline reference
@@ -768,10 +784,12 @@ export function requiredTrimmedValidator(control: AbstractControl): ValidationEr
 This document covers all major coding patterns used in Digital Zen:
 
 **Standard Angular Patterns (DZ_01-DZ_09, DZ_13-DZ_16):**
+
 - Follow official Angular documentation as primary source
 - See links to official docs at the top of this document
 
 **Project-Specific Conventions (DZ_10-DZ_12):**
+
 - UI Text Management (DZ_10) - Digital Zen specific
 - Universal Logger (DZ_11) - Digital Zen specific
 - BEM with dz- prefix (DZ_12) - Digital Zen specific
@@ -788,13 +806,13 @@ This document covers all major coding patterns used in Digital Zen:
 ```typescript
 /**
  * Component description
- * 
+ *
  * @guidelines
  * - DZ_01: Standalone component - https://angular.dev/guide/components/importing
  * - DZ_03: OnPush change detection - https://angular.dev/best-practices/skipping-subtrees
  * - DZ_04: Angular Signals - https://angular.dev/guide/signals
  * - DZ_10: UI text constants (project-specific)
- * 
+ *
  * @see /docs/CODING_GUIDELINES.md
  * @see https://angular.dev/ (official docs)
  */

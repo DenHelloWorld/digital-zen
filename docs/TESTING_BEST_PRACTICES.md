@@ -287,10 +287,7 @@ describe('UserListComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [UserListComponent],
-      providers: [
-        provideHttpClient(),
-        provideHttpClientTesting(),
-      ],
+      providers: [provideHttpClient(), provideHttpClientTesting()],
     }).compileComponents();
 
     fixture = TestBed.createComponent(UserListComponent);
@@ -373,9 +370,9 @@ import { fakeAsync, tick } from '@angular/core/testing';
 
 it('should debounce search input', fakeAsync(() => {
   component.searchInput.set('test');
-  
+
   tick(300); // Simulate 300ms passing
-  
+
   expect(component.searchResults()).toHaveLength(5);
 }));
 ```
@@ -407,14 +404,14 @@ it('should handle HTTP errors gracefully', () => {
 
 ### Coverage by File Type
 
-| File Type | Target | Priority |
-|-----------|--------|----------|
-| Helpers | 95%+ | High |
-| Services | 85%+ | High |
-| Components | 80%+ | Medium |
-| Guards | 90%+ | High |
-| Interceptors | 90%+ | High |
-| Utilities | 95%+ | High |
+| File Type    | Target | Priority |
+| ------------ | ------ | -------- |
+| Helpers      | 95%+   | High     |
+| Services     | 85%+   | High     |
+| Components   | 80%+   | Medium   |
+| Guards       | 90%+   | High     |
+| Interceptors | 90%+   | High     |
+| Utilities    | 95%+   | High     |
 
 ### Viewing Coverage
 
