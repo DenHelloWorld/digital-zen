@@ -33,6 +33,20 @@ This project is built with modern web technologies and follows best practices fo
 - **Environment Variables:** dotenv-cli
 - **TypeScript Path Aliases:** tsc-alias
 
+## Development Guidelines
+
+This project follows modern Angular 21 patterns and best practices. **Before contributing, please read:**
+
+📖 **[Complete Coding Guidelines](./docs/coding-guidelines.md)** - Comprehensive guide covering:
+- Standalone Components & Dependency Injection
+- Signals for State Management
+- Template Syntax (Built-in Control Flow)
+- TypeScript Conventions
+- UI Text & Icon Management
+- Testing Best Practices
+
+For quick reference, see the [Quick Start Guide for Developers](./docs/README.md).
+
 ## Getting Started
 
 ### Prerequisites
@@ -142,18 +156,23 @@ After building the extension, you can test it locally in Chrome:
 
 The following npm scripts are available in this project:
 
-| Script           | Command                                                                                                          | Description                                                                   |
-| ---------------- | ---------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
-| `start`          | `ng serve`                                                                                                       | Starts the Angular development server for local development                   |
-| `build`          | `ng build && tsc -p tsconfig.background.json && tsc-alias -p tsconfig.background.json`                           | Builds the project for development                                            |
-| `build:prod`     | `ng build && tsc -p tsconfig.background.json && tsc-alias -p tsconfig.background.json && npm run patch-manifest` | Builds the project for production and patches manifest with OAuth credentials |
-| `patch-manifest` | `dotenv -- node scripts/patch-manifest.js`                                                                       | Patches the manifest.json with environment variables                          |
-| `test`           | `ng test`                                                                                                        | Runs unit tests using Karma test runner                                       |
-| `lint`           | `ng lint`                                                                                                        | Runs ESLint to check code quality and style issues                            |
-| `lint:fix`       | `ng lint --fix`                                                                                                  | Runs ESLint and automatically fixes fixable issues                            |
-| `format`         | `npx prettier --write .`                                                                                         | Formats all code files using Prettier                                         |
-| `format:check`   | `npx prettier --check .`                                                                                         | Checks if all files are formatted according to Prettier rules                 |
-| `ng`             | `ng`                                                                                                             | Access to Angular CLI commands                                                |
+| Script                  | Command                                                                                                                                  | Description                                                                   |
+| ----------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| `start`                 | `ng serve`                                                                                                                               | Starts the Angular development server for local development                   |
+| `build`                 | `npm run test:ci && ng build && tsc -p tsconfig.background.json && tsc-alias -p tsconfig.background.json`                               | Builds the project for development (includes tests)                           |
+| `build:skip-tests`      | `ng build && tsc -p tsconfig.background.json && tsc-alias -p tsconfig.background.json`                                                  | Builds the project for development (skips tests)                              |
+| `build:prod`            | `npm run test:ci && ng build && tsc -p tsconfig.background.json && tsc-alias -p tsconfig.background.json && npm run patch-config && npm run patch-manifest` | Builds the project for production with environment patching (includes tests)  |
+| `build:prod:skip-tests` | `ng build && tsc -p tsconfig.background.json && tsc-alias -p tsconfig.background.json && npm run patch-config && npm run patch-manifest` | Builds the project for production with environment patching (skips tests)     |
+| `patch-manifest`        | `dotenv -- node scripts/patch-manifest.js`                                                                                               | Patches the manifest.json with OAuth credentials from environment variables   |
+| `patch-config`          | `dotenv -- node scripts/patch-api-config.js`                                                                                             | Patches the API configuration with credentials from environment variables     |
+| `test`                  | `ng test`                                                                                                                                | Runs unit tests with Karma in watch mode                                      |
+| `test:ci`               | `ng test --browsers=ChromeHeadless --watch=false --code-coverage`                                                                        | Runs tests once in headless mode with coverage (for CI/CD)                    |
+| `test:headless`         | `ng test --browsers=ChromeHeadless --watch=false`                                                                                        | Runs tests once in headless mode without coverage                             |
+| `lint`                  | `ng lint`                                                                                                                                | Runs ESLint to check code quality and style issues                            |
+| `lint:fix`              | `ng lint --fix`                                                                                                                          | Runs ESLint and automatically fixes fixable issues                            |
+| `format`                | `npx prettier --write .`                                                                                                                 | Formats all code files using Prettier                                         |
+| `format:check`          | `npx prettier --check .`                                                                                                                 | Checks if all files are formatted according to Prettier rules                 |
+| `ng`                    | `ng`                                                                                                                                     | Access to Angular CLI commands                                                |
 
 ## Development Workflow
 
@@ -230,128 +249,37 @@ If you encounter errors related to missing environment variables during producti
 ```
 digital-zen/
 ├── src/
-│   ├── app/              # Angular application components
+│   ├── app/              # Main Angular application component
 │   ├── background/       # Background service worker scripts
-│   ├── modules/          # Shared Angular modules
-│   │   ├── common/       # Shared utilities, components, services
+│   ├── modules/          # Feature modules (standalone components)
+│   │   ├── common/       # Shared utilities, components, and services
 │   │   │   ├── components/   # Reusable UI components
-│   │   │   ├── constants/    # Application constants (including UI_TEXT)
+│   │   │   ├── constants/    # Application constants (UI_TEXT, ICONS, etc.)
 │   │   │   ├── enums/        # Enumerations
+│   │   │   ├── helpers/      # Helper functions and utilities
+│   │   │   ├── interceptors/ # HTTP interceptors
+│   │   │   ├── models/       # TypeScript interfaces and types
+│   │   │   ├── pipes/        # Custom Angular pipes
 │   │   │   ├── services/     # Shared services
-│   │   │   └── models/       # TypeScript interfaces and types
+│   │   │   └── validators/   # Form validators
+│   │   ├── auth/         # Authentication feature
 │   │   ├── focus/        # Focus mode feature
-│   │   ├── menu/         # Menu feature
-│   │   └── auth/         # Authentication feature
-│   ├── styles/           # Global styles
-│   ├── manifest.json     # Chrome extension manifest
-│   └── main.ts           # Application entry point
+│   │   └── menu/         # Menu feature
+│   ├── styles/           # Global styles and SCSS files
+│   ├── manifest.json     # Chrome extension manifest (Manifest V3)
+│   ├── main.ts           # Application entry point
+│   └── background.ts     # Background service worker entry point
+├── api/                  # Backend PHP API (optional for data sync)
+├── docs/                 # Documentation files
+├── public/               # Static assets (icons, images)
 ├── scripts/              # Build and utility scripts
-│   └── patch-manifest.js # Script to patch manifest.json with env variables
-├── public/               # Static assets
-├── dist/                 # Build output directory
+│   ├── patch-manifest.js # Patches manifest.json with OAuth credentials
+│   └── patch-api-config.js # Patches API config with credentials
+├── dist/                 # Build output directory (generated)
 └── package.json          # Project dependencies and scripts
 ```
 
-## Architecture Patterns
-
-### UI Text Management
-
-All user-facing text strings are centralized in `src/modules/common/constants/ui-text.const.ts` for maintainability and i18n readiness:
-
-```typescript
-// Centralized UI text constant
-export const UI_TEXT = Object.freeze({
-  HEADER: {
-    FOCUS_MENU_TITLE: 'Focus menu',
-    ADD_NEW_PERIOD_TITLE: 'Add new period',
-    // ...
-  },
-  // Organized by feature/component
-});
-```
-
-**Usage in Components:**
-
-```typescript
-@Component({
-  selector: 'dz-app',
-  templateUrl: './app.html',
-  changeDetection: ChangeDetectionStrategy.OnPush,
-})
-export class App {
-  protected readonly uiText = UI_TEXT;
-}
-```
-
-**Usage in Templates:**
-
-```html
-<button [title]="uiText.HEADER.FOCUS_MENU_TITLE">
-  <svg>...</svg>
-</button>
-```
-
-**Benefits:**
-
-- **Maintainability:** Single source of truth for all UI text
-- **i18n Ready:** Structure designed for easy replacement with translation providers
-- **Type Safety:** Frozen object prevents accidental modifications
-- **Consistency:** Ensures consistent messaging across the application
-
-### Icon Management
-
-All icon identifiers are centralized in `src/modules/common/constants/icons.const.ts` to prevent hardcoded strings and ensure type safety:
-
-```typescript
-// Centralized icon constants
-export const ICONS = Object.freeze({
-  PLUS: '#icon-plus',
-  DELETE: '#icon-delete',
-  EDIT: '#icon-edit',
-  // ... all other icons
-} as const);
-
-export type IconType = (typeof ICONS)[keyof typeof ICONS];
-```
-
-**Usage in Components:**
-
-```typescript
-@Component({
-  selector: 'dz-example',
-  templateUrl: './example.html',
-  changeDetection: ChangeDetectionStrategy.OnPush,
-})
-export class ExampleComponent {
-  protected readonly icons = ICONS;
-}
-```
-
-**Usage in Templates:**
-
-```html
-<svg class="dz-icon" aria-hidden="true" focusable="false">
-  <use [attr.href]="icons.PLUS"></use>
-</svg>
-```
-
-**Benefits:**
-
-- **Type Safety:** Icons are strongly typed and autocomplete-friendly
-- **Refactoring:** Easy to rename or reorganize icons across the entire codebase
-- **Consistency:** Prevents typos and ensures all icons reference valid SVG symbols
-- **Discoverability:** All available icons are visible in one location
-
-### Angular 21 Best Practices
-
-This project follows modern Angular patterns:
-
-- **Standalone Components:** No NgModules required
-- **Signals:** Reactive state management with `signal()` and `computed()`
-- **`inject()` Function:** Dependency injection without constructor
-- **OnPush Strategy:** Optimized change detection
-- **Control Flow Syntax:** New template syntax (`@if`, `@for`, `@switch`)
-- **Functional Interceptors/Guards:** Modern HTTP and routing patterns
+For detailed architecture patterns and coding conventions, see the [Coding Guidelines](./docs/coding-guidelines.md).
 
 ## Chrome Web Store Publication
 
@@ -359,7 +287,7 @@ Planning to publish Digital Zen to the Chrome Web Store? Check out our comprehen
 
 - **[Chrome Web Store Readiness Report](./docs/chrome-web-store-readiness.md)** - Complete analysis and requirements
 - **[Publication Checklist](./docs/publication-checklist.md)** - Actionable task list
-- **[Отчёт о готовности (Russian)](./docs/chrome-web-store-readiness-ru.md)** - Краткое резюме на русском
+- **[Readiness Report (Russian)](./docs/chrome-web-store-readiness-ru.md)** - Brief summary in Russian
 - **[Privacy Policy Setup](./docs/privacy-policy-setup.md)** - Quick reference for hosting the privacy policy
 - **[Privacy Policy Hosting Guide](./docs/privacy-policy-hosting.md)** - Complete guide for hosting options
 
@@ -383,7 +311,7 @@ Digital Zen includes a PHP backend API for storing user data (periods and websit
 - 🚀 **[Quick Start (Russian)](./docs/api-quick-start-ru.md)** - Fastest way to deploy the API
 - 📖 **[Deployment Guide](./docs/api-deployment.md)** - Detailed step-by-step instructions
 - 🔑 **[API Key Generation](./docs/api-key-generation.md)** - Security best practices
-- 💻 **[Usage Examples](./docs/API_USAGE_EXAMPLE.md)** - How to use the API in Angular
+- 💻 **[Usage Examples](./docs/api-usage-example.md)** - How to use the API in Angular
 - 📚 **[API Documentation](./api/README.md)** - Full API reference
 
 ### Features
