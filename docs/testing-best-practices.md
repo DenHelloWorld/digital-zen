@@ -527,4 +527,4 @@ By following these testing guidelines, you ensure:
 - ✅ Confidence in deployments
 - ✅ Alignment with modern Angular best practices
 
-For more details, see [TESTING_GUIDE.md](./TESTING_GUIDE.md) and [CODING_GUIDELINES.md](./CODING_GUIDELINES.md).
+For more details, see [testing-guide.md](./testing-guide.md) and [coding-guidelines.md](./coding-guidelines.md).

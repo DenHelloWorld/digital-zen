@@ -38,18 +38,20 @@ This document describes all coding patterns, conventions, and best practices use
    - [DZ_09: Readonly for Injected Dependencies](#dz_09-readonly-for-injected-dependencies)
 5. [UI Text Management](#ui-text-management)
    - [DZ_10: UI Text Constants](#dz_10-ui-text-constants)
-6. [Logging](#logging)
+6. [Icon Management](#icon-management)
+   - [DZ_10.1: Icon Constants](#dz_101-icon-constants)
+7. [Logging](#logging)
    - [DZ_11: Universal Logger Usage](#dz_11-universal-logger-usage)
-7. [Styling](#styling)
+8. [Styling](#styling)
    - [DZ_12: SCSS and BEM Naming Convention](#dz_12-scss-and-bem-naming-convention)
-8. [HTTP & API](#http--api)
+9. [HTTP & API](#http--api)
    - [DZ_13: Functional HTTP Interceptors](#dz_13-functional-http-interceptors)
-9. [Routing & Guards](#routing--guards)
+10. [Routing & Guards](#routing--guards)
    - [DZ_14: Functional Guards](#dz_14-functional-guards)
-10. [Forms](#forms)
+11. [Forms](#forms)
     - [DZ_15: Typed Reactive Forms](#dz_15-typed-reactive-forms)
     - [DZ_16: Custom Validators](#dz_16-custom-validators)
-11. [Testing](#testing)
+12. [Testing](#testing)
     - [DZ_17: Testing Guidelines](#dz_17-testing-guidelines)
 
 ---
@@ -497,6 +499,66 @@ export class MyComponent {
 
 ---
 
+## Icon Management
+
+### DZ_10.1: Icon Constants
+
+**Guideline:** All icon identifiers must be extracted to the `ICONS` constant in `src/modules/common/constants/icons.const.ts`. No hardcoded icon references in templates or components.
+
+**Rationale:** Centralizing icon identifiers prevents hardcoded strings, ensures type safety, and makes it easy to refactor or reorganize icons across the entire codebase.
+
+**Implementation:**
+
+**1. Icons are defined in the ICONS constant:**
+
+```typescript
+// src/modules/common/constants/icons.const.ts
+export const ICONS = Object.freeze({
+  PLUS: '#icon-plus',
+  DELETE: '#icon-delete',
+  EDIT: '#icon-edit',
+  // ... all other icons
+} as const);
+
+export type IconType = (typeof ICONS)[keyof typeof ICONS];
+```
+
+**2. Use in component:**
+
+```typescript
+export class ExampleComponent {
+  protected readonly icons = ICONS;
+}
+```
+
+**3. Use in template:**
+
+```html
+<svg class="dz-icon" aria-hidden="true" focusable="false">
+  <use [attr.href]="icons.PLUS"></use>
+</svg>
+```
+
+**Key Points:**
+
+- ✅ Use `ICONS` constant for all icon references
+- ✅ Access via `protected readonly icons = ICONS` in component
+- ✅ Icons are strongly typed via `IconType`
+- ✅ All icons are SVG symbols defined in `index.html`
+- ❌ Do NOT hardcode icon IDs like `#icon-plus` in templates
+- ❌ Do NOT use string literals for icon references
+
+**Benefits:**
+
+- **Type Safety:** Icons are strongly typed and autocomplete-friendly
+- **Refactoring:** Easy to rename or reorganize icons across the entire codebase
+- **Consistency:** Prevents typos and ensures all icons reference valid SVG symbols
+- **Discoverability:** All available icons are visible in one location
+
+**File Location:** `src/modules/common/constants/icons.const.ts`
+
+---
+
 ## Logging
 
 ### DZ_11: Universal Logger Usage
@@ -758,7 +820,7 @@ import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 /**
  * Validator that checks if a string value is not empty or contains only whitespace.
  * @guideline DZ_16
- * @see /docs/CODING_GUIDELINES.md#dz_16-custom-validators
+ * @see /docs/coding-guidelines.md#dz_16-custom-validators
  */
 export function requiredTrimmedValidator(control: AbstractControl): ValidationErrors | null {
   const value: typeof control.value = control.value;
@@ -1155,8 +1217,8 @@ npm test -- --include='**/validators/*.spec.ts'
 
 _DZ_17 is a high-level summary of testing expectations for this project. For canonical and more detailed testing guidance, use the documents below as your primary references._
 
-- `/docs/TESTING_BEST_PRACTICES.md` - Canonical testing patterns and recommended practices
-- `/docs/TESTING_GUIDE.md` - Canonical testing setup, configuration, and tooling
+- `/docs/testing-best-practices.md` - Canonical testing patterns and recommended practices
+- `/docs/testing-guide.md` - Canonical testing setup, configuration, and tooling
 - [Angular Testing Guide](https://angular.dev/guide/testing) - Primary external reference for Angular testing
 
 ---
@@ -1195,7 +1257,7 @@ This document covers all major coding patterns used in Digital Zen:
  * - DZ_04: Angular Signals - https://angular.dev/guide/signals
  * - DZ_10: UI text constants (project-specific)
  *
- * @see /docs/CODING_GUIDELINES.md
+ * @see /docs/coding-guidelines.md
  * @see https://angular.dev/ (official docs)
  */
 ```

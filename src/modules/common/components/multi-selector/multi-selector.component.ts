@@ -18,7 +18,7 @@ import { TitleCasePipe } from '@angular/common';
  * - DZ_04: Angular Signals (InputSignal, ModelSignal)
  * - DZ_07: Strict TypeScript with generics
  * 
- * @see /docs/CODING_GUIDELINES.md
+ * @see /docs/coding-guidelines.md
  * @see https://angular.dev/guide/components/importing (Standalone Components)
  * @see https://angular.dev/guide/signals (Signals)
  */

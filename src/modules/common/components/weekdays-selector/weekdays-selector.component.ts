@@ -18,7 +18,7 @@ import { ALL_DAYS_OF_WEEK } from '../../constants';
  * - DZ_03: OnPush change detection strategy
  * - DZ_04: Using Angular Signals (InputSignal, ModelSignal)
  * 
- * @see /docs/CODING_GUIDELINES.md
+ * @see /docs/coding-guidelines.md
  */
 @Component({
   selector: 'dz-weekdays-selector',

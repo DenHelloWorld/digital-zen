@@ -13,7 +13,7 @@ import { CHROME_STORAGE_KEY_ENUM } from '../enums/chrome-storage-key.enum';
  * - DZ_08: Private fields with # prefix
  * - DZ_09: Readonly for injected dependencies
  * 
- * @see /docs/CODING_GUIDELINES.md
+ * @see /docs/coding-guidelines.md
  * @see https://angular.dev/guide/signals (Signals)
  */
 @Injectable({

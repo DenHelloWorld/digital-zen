@@ -12,7 +12,7 @@ const interceptorLogger = logger.createLogger('ApiKeyInterceptor');
  * - DZ_13: Functional HTTP interceptor pattern
  * - DZ_11: Universal Logger usage
  * 
- * @see /docs/CODING_GUIDELINES.md#dz_13-functional-http-interceptors
+ * @see /docs/coding-guidelines.md#dz_13-functional-http-interceptors
  * @see https://angular.dev/guide/http/interceptors (Angular HTTP Interceptors)
  * 
  * @example

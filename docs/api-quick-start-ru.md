@@ -101,9 +101,9 @@ npm run build
 
 ## 📚 Подробные инструкции
 
-- **Полная инструкция по развертыванию**: `docs/API_DEPLOYMENT.md`
-- **Как генерировать ключ**: `docs/API_KEY_GENERATION.md`
-- **Примеры использования в коде**: `docs/API_USAGE_EXAMPLE.md`
+- **Полная инструкция по развертыванию**: `docs/api-deployment.md`
+- **Как генерировать ключ**: `docs/api-key-generation.md`
+- **Примеры использования в коде**: `docs/api-usage-example.md`
 - **Техническая документация API**: `api/README.md`
 
 ## 🔐 Важно для безопасности
@@ -141,7 +141,7 @@ npm run build
    - ✅ `https://digital-zen.csmpoint.com/api/user`
    - ❌ `https://digital-zen.csmpoint.com/api/`
 
-**Подробное руководство:** [TROUBLESHOOTING_403.md](./TROUBLESHOOTING_403.md)
+**Подробное руководство:** [troubleshooting-403.md](./troubleshooting-403.md)
 
 **Другие причины:**
 
@@ -205,7 +205,7 @@ npm run build
 После успешного развертывания:
 
 1. ✅ Протестируй сохранение данных через расширение
-2. ✅ Настрой автоматическую синхронизацию (см. `API_USAGE_EXAMPLE.md`)
+2. ✅ Настрой автоматическую синхронизацию (см. `api-usage-example.md`)
 3. ✅ Настрой регулярные бэкапы базы
 4. ✅ Мониторь размер базы данных
 
