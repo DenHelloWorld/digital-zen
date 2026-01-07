@@ -88,7 +88,7 @@ export class PeriodFormComponent implements OnInit {
   protected form: FormGroup<IFocusForm.UpsertPeriod>;
   /** @guideline DZ_10 - UI text constants */
   protected readonly uiText = UI_TEXT;
-  protected readonly timeRanges = TIME_RANGES;
+  protected readonly timeRanges = [...TIME_RANGES];
   protected readonly manualTimeRangeId = MANUAL_TIME_RANGE.id;
 
   protected excludedSiteKeysArray: (keyof IFocus.WebSite)[] = [
@@ -99,9 +99,7 @@ export class PeriodFormComponent implements OnInit {
     'type',
   ];
 
-  protected selectedTimeRanges: WritableSignal<IFocus.TimeRange[]> = signal<IFocus.TimeRange[]>([
-    MANUAL_TIME_RANGE,
-  ]);
+  protected selectedTimeRanges: WritableSignal<IFocus.TimeRange[]> = signal<IFocus.TimeRange[]>([]);
   protected selectedDays: WritableSignal<IFocus.DayOfWeek[]> = signal<IFocus.DayOfWeek[]>([]);
   protected selectedWebSites: WritableSignal<IFocus.WebSite[]> = signal<IFocus.WebSite[]>([
     WEBSITE_TIKTOK,
