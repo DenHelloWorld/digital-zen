@@ -40,6 +40,7 @@ cp config.example.php config.php
 ### 2. Upload to Server
 
 Upload these files to your hosting:
+
 - `config.php`
 - `helpers.php`
 - `user`
@@ -53,6 +54,7 @@ Run `database.sql` in phpMyAdmin
 Visit: `https://digital-zen.csmpoint.com/api/user`
 
 Should return:
+
 ```json
 {
   "success": false,
@@ -67,13 +69,16 @@ Should return:
 Get user data by email or user_id
 
 **Query parameters:**
+
 - `user_email` - User email
 - `user_id` - User ID
 
 **Headers:**
+
 - `X-API-Key: your_secret_key`
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -93,10 +98,12 @@ Get user data by email or user_id
 Save user data
 
 **Headers:**
+
 - `X-API-Key: your_secret_key`
 - `Content-Type: application/json`
 
 **Body:**
+
 ```json
 {
   "user_email": "user@example.com",
@@ -113,6 +120,7 @@ Save user data
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -128,17 +136,19 @@ Save user data
 ✅ **API Key Authentication** - All requests require `X-API-Key` header  
 ✅ **CORS Protection** - Only Chrome extensions allowed  
 ✅ **SQL Injection Protection** - Prepared statements  
-✅ **No password storage** - Only email and user_id stored  
+✅ **No password storage** - Only email and user_id stored
 
 ## Database Schema
 
 ### users
+
 - `id` - Auto increment
 - `user_email` - User email (unique)
 - `user_external_id` - User ID from auth provider (unique)
 - `created_at`, `updated_at` - Timestamps
 
 ### periods
+
 - `id` - Period ID
 - `user_id` - FK to users
 - `period_name`, `period_description`
@@ -148,6 +158,7 @@ Save user data
 - `session_start_time` - DateTime
 
 ### websites
+
 - `id` - Website ID
 - `period_id` - FK to periods
 - `website_name`, `website_url`
@@ -155,6 +166,7 @@ Save user data
 - `is_blocked` - Boolean
 
 ### focused_times
+
 - `id` - Time ID
 - `period_id` - FK to periods
 - `start_from`, `end_to` - Time

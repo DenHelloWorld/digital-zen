@@ -47,6 +47,7 @@ digital-zen.csmpoint.com/api/user.php
 ### 3. Configure API
 
 1. Copy `config.example.php` to `config.php`:
+
    ```bash
    cp config.example.php config.php
    ```
@@ -63,6 +64,7 @@ define('API_SECRET_KEY', 'your_random_secret_key_here');
 ```
 
 **How to generate API_SECRET_KEY:**
+
 - Go to https://randomkeygen.com/
 - Copy "Fort Knox Password" value
 - Or generate your own random string (at least 32 characters)
@@ -70,11 +72,13 @@ define('API_SECRET_KEY', 'your_random_secret_key_here');
 ### 4. Test API
 
 Test if API is working by visiting:
+
 ```
 https://digital-zen.csmpoint.com/api/user
 ```
 
 You should see:
+
 ```json
 {
   "success": false,
@@ -91,12 +95,14 @@ This means API is working (it rejects request without API key).
 **Endpoint:** `GET /api/user`
 
 **Headers:**
+
 ```
 X-API-Key: your_secret_key
 Content-Type: application/json
 ```
 
 **Query Parameters:**
+
 ```
 GET /api/user?user_email=user@example.com
 ```
@@ -104,6 +110,7 @@ GET /api/user?user_email=user@example.com
 **Note:** Use query parameters to specify user email or user ID.
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -143,12 +150,14 @@ GET /api/user?user_email=user@example.com
 **Endpoint:** `POST /api/user`
 
 **Headers:**
+
 ```
 X-API-Key: your_secret_key
 Content-Type: application/json
 ```
 
 **Body:**
+
 ```json
 {
   "user_email": "user@example.com",
@@ -189,6 +198,7 @@ Content-Type: application/json
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -208,21 +218,26 @@ The Periods API provides CRUD (Create, Read, Update, Delete) operations for mana
 **Endpoint:** `GET /api/periods`
 
 **Headers:**
+
 ```
 X-API-Key: your_secret_key
 Content-Type: application/json
 ```
 
 **Query Parameters:**
+
 ```
 GET /api/periods?user_email=user@example.com
 ```
+
 or
+
 ```
 GET /api/periods?user_id=123456789
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -255,12 +270,14 @@ GET /api/periods?user_id=123456789
 **Endpoint:** `POST /api/periods`
 
 **Headers:**
+
 ```
 X-API-Key: your_secret_key
 Content-Type: application/json
 ```
 
 **Body:**
+
 ```json
 {
   "user_email": "user@example.com",
@@ -297,6 +314,7 @@ Content-Type: application/json
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -312,12 +330,14 @@ Content-Type: application/json
 **Endpoint:** `PUT /api/periods`
 
 **Headers:**
+
 ```
 X-API-Key: your_secret_key
 Content-Type: application/json
 ```
 
 **Body:**
+
 ```json
 {
   "period_id": "period-1",
@@ -353,6 +373,7 @@ Content-Type: application/json
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -368,17 +389,20 @@ Content-Type: application/json
 **Endpoint:** `DELETE /api/periods`
 
 **Headers:**
+
 ```
 X-API-Key: your_secret_key
 Content-Type: application/json
 ```
 
 **Query Parameters:**
+
 ```
 DELETE /api/periods?period_id=period-1
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -399,6 +423,7 @@ DELETE /api/periods?period_id=period-1
 ## Database Tables
 
 ### users
+
 - `id` - Auto increment ID
 - `user_email` - User email (unique)
 - `user_external_id` - User external ID (unique, can be from any auth provider)
@@ -406,6 +431,7 @@ DELETE /api/periods?period_id=period-1
 - `updated_at` - Update timestamp
 
 ### periods
+
 - `id` - Period ID (from extension)
 - `user_id` - Foreign key to users table
 - `period_name` - Period name
@@ -419,6 +445,7 @@ DELETE /api/periods?period_id=period-1
 - `updated_at` - Update timestamp
 
 ### websites
+
 - `id` - Website ID (from extension)
 - `period_id` - Foreign key to periods table
 - `website_name` - Website name
@@ -432,6 +459,7 @@ DELETE /api/periods?period_id=period-1
 - `updated_at` - Update timestamp
 
 ### focused_times
+
 - `id` - Time ID (from extension)
 - `period_id` - Foreign key to periods table
 - `start_from` - Start time
@@ -442,19 +470,23 @@ DELETE /api/periods?period_id=period-1
 ## Troubleshooting
 
 ### Error: "Failed to connect to database"
+
 - Check database password in `config.php`
 - Verify database name and username are correct
 - Make sure database exists
 
 ### Error: "Invalid API key"
+
 - Check that `API_SECRET_KEY` is set in `config.php`
 - Verify that extension is sending correct key in `X-API-Key` header
 
 ### Error: "Method not allowed"
+
 - API only accepts GET and POST requests
 - Check request method
 
 ### Tables not created
+
 - Make sure you ran `database.sql` in phpMyAdmin
 - Check if you selected correct database
 - Check for SQL errors in phpMyAdmin
