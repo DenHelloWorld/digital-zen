@@ -109,7 +109,7 @@ Visit the URL to verify changes:
 ### Changes not showing
 
 - **Clear:** Browser cache (Ctrl+Shift+R)
-- **Verify:** Files were uploaded successfully
+- **Verify:** File was uploaded successfully
 - **Try:** Incognito/private browsing window
 
 ### 404 Not Found
