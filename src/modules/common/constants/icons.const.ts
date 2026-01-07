@@ -26,6 +26,8 @@ export const ICONS = Object.freeze({
   FACEBOOK: '#icon-facebook',
   /** Folder off/empty folder icon */
   FOLDER_OFF: '#icon-folder-off',
+  /** Globe/world icon */
+  GLOBE: '#icon-globe',
   /** Google logo icon */
   GOOGLE_LOGO: '#icon-google-logo',
   /** Instagram social media icon */
