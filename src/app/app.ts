@@ -62,7 +62,7 @@ export class App {
   /** @guideline DZ_04 - Signal for reactive theme state */
   protected readonly theme: Signal<ColorSchemaType> = this.#themeService.theme;
   /** @guideline DZ_04 - Writable signal for view type state */
-  protected readonly currentViewType: WritableSignal<ViewType> = signal(VIEW_ENUM.MENU);
+  protected readonly currentViewType: WritableSignal<ViewType> = signal(VIEW_ENUM.FOCUS);
   /** @guideline DZ_04 - Signal for reactive authentication state */
   protected readonly isGoogleAuthenticated: Signal<boolean> =
     this.#authService.isGoogleAuthenticated;
