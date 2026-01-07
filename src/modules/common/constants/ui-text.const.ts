@@ -35,6 +35,7 @@ export const UI_TEXT = Object.freeze({
       START_FROM: 'Start from',
       END_TO: 'End to',
       BLOCKED_URLS: 'Blocked URLs',
+      TIME_RANGE: 'Time Range',
     },
     PLACEHOLDERS: {
       NAME: "Enter period's name...",

@@ -15,7 +15,7 @@ import {
 } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 
-import { distinctUntilChanged, map } from 'rxjs';
+import { map, distinctUntilChanged } from 'rxjs';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import {
   ALL_DAYS_OF_WEEK,
@@ -29,10 +29,13 @@ import {
   WEBSITE_FACEBOOK,
   WEBSITE_TIKTOK,
   uniquePeriodNameValidator,
+  TIME_RANGES,
+  MANUAL_TIME_RANGE,
 } from '../../../common';
 import { WeekdaysSelectorComponent } from '../../../common/components/weekdays-selector/weekdays-selector.component';
 import { FocusService } from '../../../focus/services';
 import { DynamicInputComponent } from '../../../common/components/dynamic-input/dynamic-input.component';
+import { MultiSelectorComponent } from '../../../common/components/multi-selector/multi-selector.component';
 
 /**
  * Period form component for creating and editing focus periods
@@ -60,7 +63,12 @@ import { DynamicInputComponent } from '../../../common/components/dynamic-input/
   templateUrl: 'period-form.component.html',
   styleUrls: ['period-form.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ReactiveFormsModule, WeekdaysSelectorComponent, DynamicInputComponent],
+  imports: [
+    ReactiveFormsModule,
+    WeekdaysSelectorComponent,
+    DynamicInputComponent,
+    MultiSelectorComponent,
+  ],
 })
 export class PeriodFormComponent implements OnInit {
   /** @guideline DZ_02, DZ_08, DZ_09 - Dependency injection with inject(), private #, readonly */
@@ -80,6 +88,8 @@ export class PeriodFormComponent implements OnInit {
   protected form: FormGroup<IFocusForm.UpsertPeriod>;
   /** @guideline DZ_10 - UI text constants */
   protected readonly uiText = UI_TEXT;
+  protected readonly timeRanges = [...TIME_RANGES];
+  protected readonly manualTimeRangeId = MANUAL_TIME_RANGE.id;
 
   protected excludedSiteKeysArray: (keyof IFocus.WebSite)[] = [
     'imageUrl',
@@ -89,6 +99,7 @@ export class PeriodFormComponent implements OnInit {
     'type',
   ];
 
+  protected selectedTimeRanges: WritableSignal<IFocus.TimeRange[]> = signal<IFocus.TimeRange[]>([]);
   protected selectedDays: WritableSignal<IFocus.DayOfWeek[]> = signal<IFocus.DayOfWeek[]>([]);
   protected selectedWebSites: WritableSignal<IFocus.WebSite[]> = signal<IFocus.WebSite[]>([
     WEBSITE_TIKTOK,
@@ -121,6 +132,28 @@ export class PeriodFormComponent implements OnInit {
       .subscribe((value: IFocus.WebSite[]) => {
         this.form.controls.webSites.setValue(value);
       });
+
+    effect(
+      () => {
+        const timeRange: IFocus.TimeRange | null = this.selectedTimeRanges()?.[0] ?? null;
+
+        if (timeRange === null) {
+          return;
+        }
+
+        this.form.controls.startFrom.enable();
+        this.form.controls.endTo.enable();
+
+        if (timeRange.id !== this.manualTimeRangeId) {
+          this.form.controls.startFrom.disable();
+          this.form.controls.endTo.disable();
+        }
+
+        this.form.controls.startFrom.setValue(timeRange.startFrom);
+        this.form.controls.endTo.setValue(timeRange.endTo);
+      },
+      { injector: this.#injector }
+    );
   }
 
   protected savePeriod() {
@@ -169,7 +202,7 @@ export class PeriodFormComponent implements OnInit {
    * @returns A Date object set to the specified time, or null if invalid.
    */
   #timeStringToDate(timeString: string | null): Date | null {
-    if (!timeString || typeof timeString !== 'string' || !timeString.includes(':')) {
+    if (timeString == null || !timeString.includes(':')) {
       this.#logger.warn('Invalid time string provided to timeStringToDate:', timeString);
       return null;
     }
