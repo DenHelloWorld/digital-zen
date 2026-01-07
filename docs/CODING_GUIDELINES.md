@@ -2,10 +2,10 @@
 
 This document describes all coding patterns, conventions, and best practices used in the Digital Zen Chrome Extension project. These guidelines reflect the actual implementation in the codebase and serve as a reference for all development work.
 
-**Primary Source:** We follow official Angular documentation for standard patterns. Custom guidelines (DZ_10-DZ_16) are project-specific conventions.
+**Primary Source:** We follow official Angular documentation for standard patterns. Custom guidelines (DZ_10-DZ_17) are project-specific conventions.
 
-**Version:** 1.0.1  
-**Last Updated:** January 6, 2026
+**Version:** 1.0.2  
+**Last Updated:** January 7, 2026
 
 ---
 
@@ -49,6 +49,8 @@ This document describes all coding patterns, conventions, and best practices use
 10. [Forms](#forms)
     - [DZ_15: Typed Reactive Forms](#dz_15-typed-reactive-forms)
     - [DZ_16: Custom Validators](#dz_16-custom-validators)
+11. [Testing](#testing)
+    - [DZ_17: Testing Guidelines](#dz_17-testing-guidelines)
 
 ---
 
@@ -779,6 +781,386 @@ export function requiredTrimmedValidator(control: AbstractControl): ValidationEr
 
 ---
 
+## Testing
+
+### DZ_17: Testing Guidelines
+
+**Guideline:** Write comprehensive tests for all code following modern Angular testing patterns. All tests should be thorough, well-organized, and follow best practices.
+
+**Official Documentation:** [Angular Testing Guide](https://angular.dev/guide/testing)
+
+**Rationale:** Comprehensive testing ensures code quality, prevents regressions, improves maintainability, and enables confident refactoring.
+
+---
+
+#### General Testing Principles
+
+**1. AAA Pattern (Arrange, Act, Assert)**
+
+Every test should follow this structure:
+
+```typescript
+it('should validate correctly', () => {
+  // Arrange - Set up test data and dependencies
+  const validator = myValidator();
+  const control = new FormControl('test');
+
+  // Act - Execute the code under test
+  const result = validator(control);
+
+  // Assert - Verify the result
+  expect(result).toBeNull();
+});
+```
+
+**2. Test Organization**
+
+Use nested `describe` blocks to group related tests logically:
+
+```typescript
+describe('MyComponent/Function/Service', () => {
+  describe('Feature/Method A', () => {
+    describe('Valid inputs', () => {
+      it('should handle case 1', () => {});
+      it('should handle case 2', () => {});
+    });
+
+    describe('Invalid inputs', () => {
+      it('should handle error 1', () => {});
+      it('should handle error 2', () => {});
+    });
+
+    describe('Edge cases', () => {
+      it('should handle boundary condition', () => {});
+    });
+  });
+
+  describe('Feature/Method B', () => {
+    // Similar structure
+  });
+});
+```
+
+**3. Descriptive Test Names**
+
+Use clear, behavior-focused test names with "should..." pattern:
+
+✅ **Good:**
+```typescript
+it('should return error when start time equals end time', () => {});
+it('should return null for valid non-empty string', () => {});
+it('should transform URL to origin by removing path', () => {});
+```
+
+❌ **Bad:**
+```typescript
+it('test 1', () => {});
+it('works', () => {});
+it('validator test', () => {});
+```
+
+**4. Test Independence**
+
+Each test should:
+- Set up its own data
+- Not depend on execution order
+- Not share state with other tests
+- Clean up after itself if needed
+
+**5. Comprehensive Coverage**
+
+Always test:
+- ✅ **Valid inputs** - Expected behavior with correct data
+- ✅ **Invalid inputs** - Error handling and validation
+- ✅ **Null/undefined** - How code handles missing values
+- ✅ **Edge cases** - Boundary conditions, empty strings, whitespace
+- ✅ **Performance** - Consistent results for same input
+- ✅ **Integration** - Works with other components/services
+
+---
+
+#### Testing Different Code Types
+
+**Testing Pure Functions (Helpers, Utilities)**
+
+Easiest to test - no dependencies, predictable output:
+
+```typescript
+describe('myHelper', () => {
+  describe('Valid inputs', () => {
+    it('should return expected result', () => {
+      expect(myHelper('input')).toBe('expected');
+    });
+  });
+
+  describe('Invalid inputs', () => {
+    it('should return null for null input', () => {
+      expect(myHelper(null)).toBeNull();
+    });
+  });
+
+  describe('Edge cases', () => {
+    it('should handle empty string', () => {
+      expect(myHelper('')).toBe('');
+    });
+  });
+});
+```
+
+**Testing Validators**
+
+Following DZ_16, validators are pure functions:
+
+```typescript
+describe('myValidator', () => {
+  describe('Valid values', () => {
+    it('should return null for valid input', () => {
+      const control = new FormControl('valid');
+      expect(myValidator(control)).toBeNull();
+    });
+  });
+
+  describe('Invalid values', () => {
+    it('should return error for invalid input', () => {
+      const control = new FormControl('invalid');
+      expect(myValidator(control)).toEqual({ errorKey: true });
+    });
+  });
+
+  // If factory validator
+  describe('Factory behavior', () => {
+    it('should create independent instances', () => {
+      const validator1 = myValidator(param1);
+      const validator2 = myValidator(param2);
+      // Test they work independently
+    });
+  });
+});
+```
+
+**Testing Pipes**
+
+Following DZ_01, pipes are standalone:
+
+```typescript
+describe('MyPipe', () => {
+  let pipe: MyPipe;
+
+  beforeEach(() => {
+    pipe = new MyPipe();
+  });
+
+  describe('Valid transformations', () => {
+    it('should transform input correctly', () => {
+      expect(pipe.transform('input')).toBe('output');
+    });
+  });
+
+  describe('Null/undefined handling', () => {
+    it('should handle null', () => {
+      expect(pipe.transform(null)).toBe('');
+    });
+  });
+});
+```
+
+**Testing Components**
+
+Following DZ_01, components are standalone:
+
+```typescript
+describe('MyComponent', () => {
+  let component: MyComponent;
+  let fixture: ComponentFixture<MyComponent>;
+
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [MyComponent], // Standalone component
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(MyComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
+
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
+
+  describe('Signals', () => {
+    it('should update signal value', () => {
+      component.mySignal.set('new value');
+      expect(component.mySignal()).toBe('new value');
+    });
+  });
+
+  describe('Template rendering', () => {
+    it('should render title', () => {
+      const compiled = fixture.nativeElement as HTMLElement;
+      expect(compiled.textContent).toContain('Expected Text');
+    });
+  });
+});
+```
+
+**Testing Services**
+
+Services with dependency injection:
+
+```typescript
+describe('MyService', () => {
+  let service: MyService;
+  let httpMock: HttpTestingController;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [MyService, provideHttpClient(), provideHttpClientTesting()],
+    });
+    service = TestBed.inject(MyService);
+    httpMock = TestBed.inject(HttpTestingController);
+  });
+
+  afterEach(() => {
+    httpMock.verify();
+  });
+
+  it('should fetch data', () => {
+    const mockData = { id: 1, name: 'Test' };
+
+    service.getData().subscribe(data => {
+      expect(data).toEqual(mockData);
+    });
+
+    const req = httpMock.expectOne('/api/data');
+    req.flush(mockData);
+  });
+});
+```
+
+---
+
+#### Coverage Goals
+
+| Component Type    | Target Coverage | Priority |
+|-------------------|-----------------|----------|
+| Helpers/Utilities | 95%+           | High     |
+| Validators        | 95%+           | High     |
+| Pipes             | 95%+           | High     |
+| Services          | 85%+           | High     |
+| Guards            | 90%+           | High     |
+| Interceptors      | 90%+           | High     |
+| Components        | 80%+           | Medium   |
+
+**View Coverage:**
+
+```bash
+npm run test:ci
+open coverage/digital-zen-extension/index.html
+```
+
+---
+
+#### Common Jasmine Matchers
+
+```typescript
+// Equality
+expect(value).toBe(expected);           // Strict equality (===)
+expect(value).toEqual(expected);        // Deep equality
+
+// Truthiness
+expect(value).toBeTruthy();
+expect(value).toBeFalsy();
+expect(value).toBeNull();
+expect(value).toBeUndefined();
+expect(value).toBeDefined();
+
+// Comparisons
+expect(number).toBeGreaterThan(5);
+expect(number).toBeLessThan(10);
+
+// Strings
+expect(string).toContain('substring');
+expect(string).toMatch(/pattern/);
+
+// Arrays/Objects
+expect(array).toContain(item);
+expect(obj).toEqual({ key: 'value' });
+
+// Exceptions
+expect(() => fn()).toThrow();
+expect(() => fn()).toThrowError(ErrorType);
+```
+
+---
+
+#### Running Tests
+
+```bash
+# Run all tests with watch mode
+npm test
+
+# Run tests in CI mode (headless) with coverage
+npm run test:ci
+
+# Run tests without coverage
+npm run test:headless
+
+# Run specific test file
+npm test -- --include='**/my-file.spec.ts'
+
+# Run tests for specific directory
+npm test -- --include='**/validators/*.spec.ts'
+```
+
+---
+
+#### Best Practices Summary
+
+**DO:**
+
+- ✅ Write tests for all new code
+- ✅ Use descriptive test names with "should..."
+- ✅ Organize tests with nested `describe` blocks
+- ✅ Follow AAA pattern (Arrange, Act, Assert)
+- ✅ Test valid inputs, invalid inputs, and edge cases
+- ✅ Keep tests simple and focused
+- ✅ Test behavior, not implementation
+- ✅ Use appropriate Jasmine matchers
+- ✅ Aim for high coverage (80%+ minimum)
+
+**DON'T:**
+
+- ❌ Skip writing tests
+- ❌ Write vague test names ("test 1", "it works")
+- ❌ Create complex test setups
+- ❌ Share state between tests
+- ❌ Test private methods/implementation details
+- ❌ Use `any` type in tests
+- ❌ Ignore failing tests
+
+---
+
+#### Key Points
+
+- ✅ Test files should be next to source files with `.spec.ts` extension
+- ✅ Use modern Angular testing utilities (`TestBed`, `ComponentFixture`)
+- ✅ Import standalone components in `TestBed.configureTestingModule()`
+- ✅ Test Signals by calling them and verifying values
+- ✅ Use `FormControl`/`FormGroup` for validator testing
+- ✅ Mock external dependencies (HTTP, services)
+- ✅ Clean up after tests (especially subscriptions)
+- ❌ Don't use constructor injection in tests (use `TestBed.inject()`)
+
+**Related Documentation:**
+
+_DZ_17 is a high-level summary of testing expectations for this project. For canonical and more detailed testing guidance, use the documents below as your primary references._
+
+- `/docs/TESTING_BEST_PRACTICES.md` - Canonical testing patterns and recommended practices
+- `/docs/TESTING_GUIDE.md` - Canonical testing setup, configuration, and tooling
+- [Angular Testing Guide](https://angular.dev/guide/testing) - Primary external reference for Angular testing
+
+---
+
 ## Summary
 
 This document covers all major coding patterns used in Digital Zen:
@@ -820,6 +1202,6 @@ This document covers all major coding patterns used in Digital Zen:
 
 ---
 
-**Last Updated:** January 6, 2026  
+**Last Updated:** January 7, 2026  
 **Maintained by:** Digital Zen Development Team  
 **Primary Source:** [Angular Official Documentation](https://angular.dev/)
