@@ -4,7 +4,76 @@ This directory contains documentation for the Digital Zen Chrome extension proje
 
 ## Documents
 
-### [Chrome Web Store Readiness Report](./chrome-web-store-readiness.md)
+### Development & Testing
+
+#### [Testing Guide](./TESTING_GUIDE.md) 🧪
+
+**Purpose:** Complete guide to running and writing tests in the Digital Zen project.
+
+**Contents:**
+
+- Quick start guide
+- Running tests (with and without build)
+- Test structure and organization
+- Writing tests for helpers, components, and services
+- Best practices and patterns
+- Debugging tests
+- Code coverage
+
+**Use this when:**
+
+- Setting up testing environment
+- Learning how to run tests
+- Understanding test commands and options
+- Looking for examples of how to write tests
+
+#### [Testing Best Practices](./TESTING_BEST_PRACTICES.md) 📋
+
+**Purpose:** Best practices and patterns for testing modern Angular 21+ code.
+
+**Contents:**
+
+- Testing helper functions (pure functions)
+- Testing standalone components (DZ_01)
+- Testing with Signals (DZ_04)
+- Testing with inject() (DZ_02)
+- Testing patterns (AAA, organization, async)
+- Code coverage goals
+- Anti-patterns to avoid
+
+**Use this when:**
+
+- Writing new tests
+- Following modern Angular testing patterns
+- Ensuring high code quality
+- Learning testing best practices
+
+#### [Coding Guidelines](./CODING_GUIDELINES.md) 📐
+
+**Purpose:** Complete coding standards and conventions for the Digital Zen project.
+
+**Contents:**
+
+- Angular patterns (standalone components, inject(), OnPush)
+- Reactivity with Signals
+- Template syntax (built-in control flow)
+- TypeScript conventions
+- UI text management
+- Logging
+- Styling with SCSS and BEM
+
+**Use this when:**
+
+- Writing new code
+- Reviewing code
+- Understanding project patterns
+- Ensuring consistency across the codebase
+
+---
+
+### Chrome Web Store Publication
+
+#### [Chrome Web Store Readiness Report](./chrome-web-store-readiness.md)
 
 **Purpose:** Comprehensive research and analysis of the extension's readiness for Chrome Web Store publication.
 
@@ -56,6 +125,15 @@ This directory contains documentation for the Digital Zen Chrome extension proje
 
 ## How to Use These Documents
 
+### For Developers
+
+1. **Start with [CODING_GUIDELINES.md](./CODING_GUIDELINES.md)** to understand the coding patterns
+2. **Read [TESTING_GUIDE.md](./TESTING_GUIDE.md)** to learn how to run and write tests
+3. **Follow [TESTING_BEST_PRACTICES.md](./TESTING_BEST_PRACTICES.md)** when writing tests
+4. **Run `npm run test:ci`** before committing to ensure all tests pass
+
+### For Publication
+
 1. **Start with the Readiness Report** to understand the full scope of what's needed
 2. **Use the Publication Checklist** as your daily task list
 3. **Check off items** as you complete them
@@ -73,6 +151,8 @@ If you find issues or have suggestions for improving these documents, please:
 
 These documents should be updated:
 
+- When coding patterns or best practices change
+- When test infrastructure is updated
 - When Chrome Web Store requirements change
 - After completing major milestones
 - Before each submission/resubmission
@@ -80,4 +160,4 @@ These documents should be updated:
 
 ---
 
-**Last Updated:** January 2, 2026
+**Last Updated:** January 6, 2026
