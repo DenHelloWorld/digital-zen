@@ -40,6 +40,10 @@ export class MultiSelectorComponent<T> {
   >('vertical');
   public readonly isSelectable: InputSignal<boolean> = input<boolean>(true);
   public readonly highlightedId: InputSignal<T[keyof T] | null> = input<T[keyof T] | null>(null);
+  /**
+   * When true, component behaves as a single-select control:
+   * only one entity can be selected at a time.
+   */
   public readonly isOnlySingleSelectable: InputSignal<boolean> = input<boolean>(false);
 
   /** @guideline DZ_04 - ModelSignal for two-way binding */
