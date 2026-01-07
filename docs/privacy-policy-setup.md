@@ -41,7 +41,7 @@ The privacy policy is hosted on **digital-zen.csmpoint.com** - the same PHP serv
 
 ### File Location
 
-Privacy policy files are located in the `/api/` directory:
+Privacy policy file is located in the `/api/` directory:
 ```
 api/
 ├── privacy-policy.php
@@ -50,7 +50,7 @@ api/
 
 ### Access Configuration
 
-The `.htaccess` file in the `/api/` directory includes rules to allow public access to the privacy policy files while keeping other files (like `config.php`) protected.
+The `.htaccess` file in the `/api/` directory includes rules to allow public access to the privacy policy file while keeping other files (like `config.php`) protected.
 
 ## Using the Privacy Policy URL
 

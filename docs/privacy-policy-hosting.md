@@ -6,7 +6,7 @@ This guide provides instructions for hosting the Digital Zen privacy policy on t
 
 - [Overview](#overview)
 - [Current Hosting Setup](#current-hosting-setup)
-- [Privacy Policy Files](#privacy-policy-files)
+- [Privacy Policy File](#privacy-policy-file)
 - [Updating the Privacy Policy](#updating-the-privacy-policy)
 - [Troubleshooting](#troubleshooting)
 
@@ -16,7 +16,7 @@ This guide provides instructions for hosting the Digital Zen privacy policy on t
 
 The privacy policy is now hosted on the same PHP server as the backend API at **digital-zen.csmpoint.com**. This eliminates the need for Vercel or other third-party hosting services.
 
-**Privacy Policy Files:**
+**Privacy Policy File:**
 
 - `api/privacy-policy.php` - English version
 
@@ -32,7 +32,7 @@ The privacy policy is hosted on the same server as the Digital Zen backend API:
 - **Location:** `/api/` directory
 - **Access:** Public (configured in `.htaccess`)
 
-### Privacy Policy URLs
+### Privacy Policy URL
 
 The privacy policy is accessible at:
 
@@ -44,7 +44,7 @@ This URL is used in:
 
 ---
 
-## Privacy Policy Files
+## Privacy Policy File
 
 ### File Structure
 
@@ -102,7 +102,7 @@ ssh your-username@digital-zen.csmpoint.com
 # Navigate to api directory
 cd /path/to/public_html/api/
 
-# Upload files using scp from local machine
+# Upload file using scp from local machine
 scp api/privacy-policy.php your-username@digital-zen.csmpoint.com:/path/to/public_html/api/
 ```
 
