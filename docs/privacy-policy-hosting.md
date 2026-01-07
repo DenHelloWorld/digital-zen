@@ -56,7 +56,7 @@ api/
 
 ### Access Configuration
 
-The `.htaccess` file includes rules to allow public access to the privacy policy files:
+The `.htaccess` file includes rules to allow public access to the privacy policy file:
 
 ```apache
 # Allow access to privacy-policy.php
@@ -72,7 +72,7 @@ The `.htaccess` file includes rules to allow public access to the privacy policy
 
 When you need to update the privacy policy:
 
-### 1. Edit the Files
+### 1. Edit the File
 
 Edit the privacy policy file locally:
 - `api/privacy-policy.php`
@@ -81,7 +81,7 @@ Update the "Last Updated" date.
 
 ### 2. Upload to Server
 
-Upload the updated files to the server:
+Upload the updated file to the server:
 
 **Option A: Using FTP/SFTP Client (FileZilla, WinSCP, etc.)**
 1. Connect to `digital-zen.csmpoint.com` using your FTP/SFTP credentials
@@ -92,7 +92,7 @@ Upload the updated files to the server:
 1. Log in to cPanel at your hosting provider
 2. Open File Manager
 3. Navigate to `public_html/api/` (or equivalent path)
-4. Upload or edit the privacy policy files
+4. Upload or edit the privacy policy file
 
 **Option C: Using SSH/Terminal (if available)**
 ```bash
@@ -122,9 +122,9 @@ After uploading, verify the changes are live:
 
 **Solution:**
 
-- Verify `.htaccess` file includes the allow rules for privacy policy files
+- Verify `.htaccess` file includes the allow rules for privacy policy file
 - Check file permissions (should be 644 for .php files)
-- Ensure the files are in the correct directory (`/api/`)
+- Ensure the file is in the correct directory (`/api/`)
 - Contact hosting provider if issue persists
 
 ### Issue: Changes not showing after update
@@ -132,7 +132,7 @@ After uploading, verify the changes are live:
 **Solution:**
 
 - Clear your browser cache (Ctrl+Shift+R or Cmd+Shift+R)
-- Verify the files were uploaded successfully
+- Verify the file was uploaded successfully
 - Check file modification timestamp on the server
 - Try accessing the URL in an incognito/private browsing window
 
@@ -141,7 +141,7 @@ After uploading, verify the changes are live:
 **Possible causes and solutions:**
 
 1. **Incorrect file path:**
-   - Verify files are in the `/api/` directory on the server
+   - Verify the file is in the `/api/` directory on the server
    - Check file name is exactly `privacy-policy.php`
 
 2. **Server configuration issue:**

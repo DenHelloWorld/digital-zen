@@ -8,7 +8,7 @@ This document provides a quick reference for the privacy policy setup and hostin
 
 - **`api/privacy-policy.php`** - English version of the privacy policy (hosted on PHP server)
 
-Both versions include:
+The privacy policy includes:
 
 - Comprehensive privacy information required for Chrome Web Store
 - Details about data collection, storage, and usage
@@ -68,25 +68,25 @@ To update the privacy policy in the future:
 
 ### 1. Edit Locally
 
-Edit the files:
+Edit the file:
 - `api/privacy-policy.php`
 
 Update the "Last Updated" date.
 
 ### 2. Upload to Server
 
-Upload the updated files to the server using one of these methods:
+Upload the updated file to the server using one of these methods:
 
 **FTP/SFTP:**
 1. Connect to `digital-zen.csmpoint.com`
 2. Navigate to `/api/`
-3. Upload the updated files
+3. Upload the updated file
 
 **cPanel File Manager:**
 1. Log in to cPanel
 2. Open File Manager
 3. Navigate to `public_html/api/`
-4. Upload or edit files
+4. Upload or edit the file
 
 **SSH (if available):**
 ```bash
@@ -95,16 +95,16 @@ scp api/privacy-policy.php username@digital-zen.csmpoint.com:/path/to/api/
 
 ### 3. Verify
 
-Visit the URLs to verify changes:
+Visit the URL to verify changes:
 - `https://digital-zen.csmpoint.com/api/privacy-policy.php`
 
 ## Troubleshooting
 
 ### Privacy policy not accessible (403 Forbidden)
 
-- **Verify:** `.htaccess` includes allow rules for privacy policy files
+- **Verify:** `.htaccess` includes allow rules for privacy policy file
 - **Check:** File permissions (should be 644)
-- **Ensure:** Files are in `/api/` directory
+- **Ensure:** File is in `/api/` directory
 
 ### Changes not showing
 

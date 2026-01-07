@@ -1,3 +1,15 @@
+<?php
+/**
+ * Privacy Policy - Digital Zen
+ * 
+ * This file uses the .php extension to:
+ * 1. Be consistent with the existing API infrastructure on the PHP server
+ * 2. Allow for potential future server-side functionality (e.g., localization, dynamic content)
+ * 3. Leverage existing .htaccess rules and server configurations for the /api/ directory
+ * 
+ * Currently, this file contains static HTML content and does not execute any PHP code.
+ */
+?>
 <!doctype html>
 <html lang="en">
   <head>
