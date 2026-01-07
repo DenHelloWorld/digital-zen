@@ -1,23 +1,23 @@
 # Universal Logger
 
-Универсальный логгер для Digital Zen, который работает как в Angular-контексте, так и в background script (service worker) расширения Chrome.
+Universal logger for Digital Zen that works in both Angular context and background script (Chrome Extension Service Worker).
 
-## Возможности
+## Features
 
-- ✅ Работает в Angular компонентах и сервисах
-- ✅ Работает в background script (Chrome Extension Service Worker)
-- ✅ Поддержка уровней логирования (DEBUG, INFO, WARN, ERROR)
-- ✅ Настройка префиксов для модулей через `createLogger()`
-- ✅ Опциональные timestamp в логах
-- ✅ Конфигурируемый минимальный уровень логирования
-- ✅ TypeScript strict mode совместимость
-- ✅ Единый API для всех контекстов (без отдельного Angular сервиса)
+- ✅ Works in Angular components and services
+- ✅ Works in background script (Chrome Extension Service Worker)
+- ✅ Supports log levels (DEBUG, INFO, WARN, ERROR)
+- ✅ Module prefix configuration via `createLogger()`
+- ✅ Optional timestamps in logs
+- ✅ Configurable minimum log level
+- ✅ TypeScript strict mode compatible
+- ✅ Unified API for all contexts (no separate Angular service needed)
 
-## Использование
+## Usage
 
-### В Angular компонентах и сервисах
+### In Angular Components and Services
 
-Импортируйте `logger` напрямую из common/helpers:
+Import `logger` directly from common/helpers:
 
 ```typescript
 import { ChangeDetectionStrategy, Component } from '@angular/core';
@@ -41,7 +41,7 @@ export class MyComponent {
 }
 ```
 
-### В Angular сервисах
+### In Angular Services
 
 ```typescript
 import { Injectable } from '@angular/core';
@@ -59,9 +59,9 @@ export class MyService {
 }
 ```
 
-### В background script
+### In Background Script
 
-Используйте напрямую `logger` из helpers:
+Use `logger` directly from helpers:
 
 ```typescript
 import { logger } from '../modules/common/helpers/logger';
@@ -89,23 +89,23 @@ export class BackgroundService {
 ### logger (Universal)
 
 ```typescript
-// Прямые методы логирования (с префиксом)
+// Direct logging methods (with prefix)
 logger.debug(prefix: string, ...args: unknown[]): void;
 logger.info(prefix: string, ...args: unknown[]): void;
 logger.warn(prefix: string, ...args: unknown[]): void;
 logger.error(prefix: string, ...args: unknown[]): void;
 
-// Создать именованный логгер для модуля (рекомендуется)
+// Create named logger for module (recommended)
 logger.createLogger(prefix: string): ModuleLogger;
 
-// Конфигурация
+// Configuration
 logger.configure(config: Partial<LoggerConfig>): void;
 logger.getConfig(): LoggerConfig;
 ```
 
-## Конфигурация
+## Configuration
 
-### Уровни логирования
+### Log Levels
 
 ```typescript
 enum LogLevel {
@@ -117,18 +117,18 @@ enum LogLevel {
 }
 ```
 
-### Настройка уровня логирования
+### Setting Log Level
 
 ```typescript
 import { logger, LogLevel } from '../common';
 
-// Показывать только WARNING и ERROR
+// Show only WARNING and ERROR
 logger.configure({
   level: LogLevel.WARN,
 });
 ```
 
-### Отключение timestamp
+### Disabling Timestamp
 
 ```typescript
 logger.configure({
@@ -136,16 +136,16 @@ logger.configure({
 });
 ```
 
-## Примеры вывода
+## Output Examples
 
-### С timestamp (по умолчанию)
+### With Timestamp (Default)
 
 ```
 [2026-01-06T22:30:00.000Z] [INFO] [BackgroundService] Starting sync...
 [2026-01-06T22:30:01.234Z] [ERROR] [UserDataSyncAdapter] Sync failed: Network error
 ```
 
-### Без timestamp
+### Without Timestamp
 
 ```
 [INFO] [BackgroundService] Starting sync...
@@ -154,64 +154,64 @@ logger.configure({
 
 ## Best Practices
 
-### 1. Используйте createLogger для модулей
+### 1. Use createLogger for Modules
 
-Вместо того чтобы передавать префикс каждый раз:
+Instead of passing prefix every time:
 
 ```typescript
-// ❌ Не рекомендуется
+// ❌ Not recommended
 logger.info('AuthService', 'User logged in');
 logger.info('AuthService', 'Token refreshed');
 
-// ✅ Рекомендуется
+// ✅ Recommended
 readonly #logger = logger.createLogger('AuthService');
 
 this.#logger.info('User logged in');
 this.#logger.info('Token refreshed');
 ```
 
-### 2. Используйте подходящие уровни
+### 2. Use Appropriate Levels
 
-- **DEBUG**: Детальная отладочная информация (отключена в продакшене)
-- **INFO**: Общая информация о работе приложения
-- **WARN**: Предупреждения, не критичные проблемы
-- **ERROR**: Ошибки, требующие внимания
+- **DEBUG**: Detailed debug information (disabled in production)
+- **INFO**: General application flow information
+- **WARN**: Warnings, non-critical issues
+- **ERROR**: Errors requiring attention
 
-### 3. Readonly для logger
+### 3. Readonly for Logger
 
-Всегда объявляйте logger как `readonly`:
+Always declare logger as `readonly`:
 
 ```typescript
 readonly #logger = logger.createLogger('ModuleName');
 ```
 
-### 4. Private fields с # prefix
+### 4. Private Fields with # Prefix
 
-Следуйте соглашениям проекта:
+Follow project conventions:
 
 ```typescript
 readonly #logger = logger.createLogger('ModuleName');  // ✅
 readonly logger = logger.createLogger('ModuleName');   // ❌
 ```
 
-## Замена console.log/console.error
+## Replacing console.log/console.error
 
-Везде в проекте используйте logger вместо прямых вызовов console:
+Use logger instead of direct console calls throughout the project:
 
 ```typescript
-// ❌ Старый способ
+// ❌ Old way
 console.log('[MyService] Action completed');
 console.error('[MyService] Error:', error);
 
-// ✅ Новый способ
+// ✅ New way
 readonly #logger = logger.createLogger('MyService');
 this.#logger.info('Action completed');
 this.#logger.error('Error:', error);
 ```
 
-## Интеграция с существующим кодом
+## Integration with Existing Code
 
-Logger уже интегрирован в:
+Logger is already integrated in:
 
 - ✅ BackgroundServiceMV3
 - ✅ UserDataSyncAdapter
@@ -220,24 +220,24 @@ Logger уже интегрирован в:
 - ✅ GoogleAuthService
 - ✅ Bootstrap (main.ts)
 
-## Архитектура
+## Architecture
 
 ```
 src/modules/common/
 └── helpers/
-    └── logger.ts              # Универсальная реализация для всех контекстов
+    └── logger.ts              # Universal implementation for all contexts
 
 src/background/
-├── background-service-MV3.ts  # Использует logger напрямую
-├── storage-adapter.ts         # Использует logger напрямую
-└── user-data-sync-adapter.ts  # Использует logger напрямую
+├── background-service-MV3.ts  # Uses logger directly
+├── storage-adapter.ts         # Uses logger directly
+└── user-data-sync-adapter.ts  # Uses logger directly
 
 src/modules/auth/services/
-├── auth.service.ts            # Использует logger напрямую
-└── google-auth.service.ts     # Использует logger напрямую
+├── auth.service.ts            # Uses logger directly
+└── google-auth.service.ts     # Uses logger directly
 ```
 
-## TypeScript типы
+## TypeScript Types
 
 ```typescript
 interface LoggerConfig {
@@ -253,14 +253,14 @@ type ModuleLogger = {
 };
 ```
 
-## Импорты
+## Imports
 
 ```typescript
-// Из любого модуля в src/modules/
+// From any module in src/modules/
 import { logger, LogLevel } from '../common';
-// или более специфично
+// or more specifically
 import { logger, LogLevel } from '../common/helpers/logger';
 
-// Из background script
+// From background script
 import { logger } from '../modules/common/helpers/logger';
 ```
