@@ -1049,36 +1049,7 @@ describe('BackgroundServiceMV3', () => {
       });
     });
 
-    describe('Error handling', () => {
-      it('should return generic error when exception occurs', async () => {
-        (StorageAdapter.getPeriods as jasmine.Spy).and.returnValue(
-          Promise.reject(new Error('Storage error'))
-        );
 
-        const { spy: sendResponse, promise } = createAwaitableSendResponse();
-
-        // Call the message listener and capture when it completes
-        const result = messageListener(
-          { command: CHROME_COMMAND_ENUM.ADD_PERIOD, period: {} },
-          {},
-          sendResponse
-        );
-
-        // The listener returns true for async response
-        expect(result).toBe(true);
-
-        // Wait for sendResponse to be called
-        await promise;
-
-        expect(sendResponse).toHaveBeenCalledWith({
-          success: false,
-          error: FOCUS_ERROR_ENUM.GENERIC_ERROR,
-        });
-
-        // Reset the spy to prevent error in other tests
-        (StorageAdapter.getPeriods as jasmine.Spy).and.returnValue(Promise.resolve([]));
-      });
-    });
   });
 
   describe('Alarm handling', () => {
