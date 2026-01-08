@@ -49,7 +49,7 @@ describe('BackgroundServiceMV3', () => {
 
   /**
    * Helper to create a sendResponse spy that can be awaited
-   * This properly handles the async IIFE pattern used in the message listener
+   * NO setTimeout - relies on sendResponse being called
    */
   function createAwaitableSendResponse(): {
     spy: jasmine.Spy;
@@ -58,8 +58,6 @@ describe('BackgroundServiceMV3', () => {
     let resolveFn: (value: unknown) => void;
     const promise = new Promise(resolve => {
       resolveFn = resolve;
-      // Safety timeout - resolve after 3 seconds if sendResponse not called
-      setTimeout(() => resolve(undefined), 3000);
     });
 
     const spy = jasmine.createSpy('sendResponse').and.callFake((response: unknown) => {

@@ -24,8 +24,9 @@ describe('StorageAdapter', () => {
   });
 
   afterEach(async () => {
-    // Wait for any pending async operations
-    await new Promise(resolve => setTimeout(resolve, 50));
+    // Wait for microtasks without setTimeout
+    await Promise.resolve();
+    await Promise.resolve();
   });
 
   describe('savePeriod', () => {
