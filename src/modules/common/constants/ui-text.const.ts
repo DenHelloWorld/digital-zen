@@ -118,4 +118,18 @@ export const UI_TEXT = Object.freeze({
     PRIVACY_POLICY_LINK: 'Privacy Policy',
     PRIVACY_POLICY_ARIA_LABEL: 'Privacy Policy (opens in new tab)',
   },
+
+  // Banner Component
+  BANNER: {
+    EXAMPLES: {
+      INFO_TITLE: 'Information',
+      INFO_MESSAGE: 'This is an informational banner message.',
+      SUCCESS_TITLE: 'Success',
+      SUCCESS_MESSAGE: 'Operation completed successfully!',
+      WARN_TITLE: 'Warning',
+      WARN_MESSAGE: 'Please review your settings before proceeding.',
+      ERROR_TITLE: 'Error',
+      ERROR_MESSAGE: 'An error occurred. Please try again.',
+    },
+  },
 });

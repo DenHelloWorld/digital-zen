@@ -68,9 +68,20 @@ export const ICONS = Object.freeze({
   X: '#icon-x',
   /** YouTube social media icon */
   YOUTUBE: '#icon-youtube',
+  /** Chronic/timer icon */
   CHRONIC: '#icon-chronic',
+  /** Privacy tip/shield icon */
   PRIVACY_TIP: '#icon-privacy-tip',
+  /** Power settings/switcher icon */
   POWER_SWITCHER: '#icon-power-settings-circle',
+  /** Info icon for banners */
+  INFO: '#icon-info',
+  /** Success icon for banners */
+  SUCCESS: '#icon-success',
+  /** Warning icon for banners */
+  WARNING: '#icon-warning',
+  /** Error icon for banners */
+  ERROR: '#icon-error',
 } as const);
 
 /**
