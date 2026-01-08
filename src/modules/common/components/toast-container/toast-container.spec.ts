@@ -17,6 +17,12 @@ import { IToast } from '../../models';
  * @see /docs/testing-guide.md
  * @see /docs/testing-best-practices.md
  */
+
+// Test timing constants (based on toast service implementation)
+const TOAST_ANIMATION_DURATION = 300; // ms - time for toast leaving animation
+const TEST_TIMEOUT_BUFFER = 50; // ms - buffer for async operations
+const TOAST_REMOVAL_TIMEOUT = TOAST_ANIMATION_DURATION + TEST_TIMEOUT_BUFFER; // 350ms
+
 describe('DzToastContainerComponent', () => {
   let component: DzToastContainerComponent;
   let fixture: ComponentFixture<DzToastContainerComponent>;
@@ -267,20 +273,21 @@ describe('DzToastContainerComponent', () => {
       let notification = compiled.querySelector('.dz-notification');
       expect(notification?.classList.contains('dz-notification--hidden')).toBe(true);
 
-      // After 300ms, toast should be removed
+      // After animation duration, toast should be removed
       setTimeout(() => {
         fixture.detectChanges();
         notification = compiled.querySelector('.dz-notification');
         expect(notification).toBeNull();
         done();
-      }, 350);
+      }, TOAST_REMOVAL_TIMEOUT);
     });
 
     it('should auto-hide toast after duration', done => {
+      const TOAST_DURATION = 500;
       toastService.show({
         message: 'Auto hide',
         position: POSITIONS_ENUM.BOTTOM_CENTER,
-        durationInMs: 500,
+        durationInMs: TOAST_DURATION,
       });
       fixture.detectChanges();
 
@@ -288,6 +295,7 @@ describe('DzToastContainerComponent', () => {
       expect(compiled.querySelector('.dz-notification')).toBeTruthy();
 
       // Wait for toast duration + removal animation
+      const totalWaitTime = TOAST_DURATION + TOAST_REMOVAL_TIMEOUT;
       setTimeout(() => {
         fixture.detectChanges();
 
@@ -296,7 +304,7 @@ describe('DzToastContainerComponent', () => {
         const notification = updatedCompiled.querySelector('.dz-notification');
         expect(notification).toBeNull();
         done();
-      }, 850);
+      }, totalWaitTime);
     });
   });
 
@@ -317,10 +325,11 @@ describe('DzToastContainerComponent', () => {
     });
 
     it('should not show progress bar when leaving', done => {
+      const TOAST_DURATION = 500;
       toastService.show({
         message: 'Test',
         position: POSITIONS_ENUM.BOTTOM_CENTER,
-        durationInMs: 500,
+        durationInMs: TOAST_DURATION,
       });
       fixture.detectChanges();
 
@@ -328,7 +337,8 @@ describe('DzToastContainerComponent', () => {
       const compiled = fixture.nativeElement as HTMLElement;
       expect(compiled.querySelector('.dz-notification__progress')).toBeTruthy();
 
-      // Wait for auto-hide to start
+      // Wait for auto-hide to start (toast duration + small buffer)
+      const waitTime = TOAST_DURATION + TEST_TIMEOUT_BUFFER;
       setTimeout(() => {
         fixture.detectChanges();
 
@@ -336,7 +346,7 @@ describe('DzToastContainerComponent', () => {
         const updatedCompiled = fixture.nativeElement as HTMLElement;
         expect(updatedCompiled.querySelector('.dz-notification__progress')).toBeNull();
         done();
-      }, 550);
+      }, waitTime);
     });
 
     it('should not show progress bar when durationInMs is 0', () => {
@@ -389,24 +399,27 @@ describe('DzToastContainerComponent', () => {
     });
 
     it('should handle rapid show/hide operations', done => {
+      const TOAST_DURATION = 100;
       toastService.show({
         message: 'Test 1',
         position: POSITIONS_ENUM.BOTTOM_CENTER,
-        durationInMs: 100,
+        durationInMs: TOAST_DURATION,
       });
       toastService.show({
         message: 'Test 2',
         position: POSITIONS_ENUM.BOTTOM_CENTER,
-        durationInMs: 100,
+        durationInMs: TOAST_DURATION,
       });
       fixture.detectChanges();
 
+      // Wait for all toasts to be removed (duration + animation + buffer)
+      const totalWaitTime = TOAST_DURATION + TOAST_REMOVAL_TIMEOUT;
       setTimeout(() => {
         fixture.detectChanges();
         const toasts = component['getToastsByPosition'](POSITIONS_ENUM.BOTTOM_CENTER);
         expect(toasts.length).toBe(0);
         done();
-      }, 450);
+      }, totalWaitTime);
     });
 
     it('should handle empty message', () => {
