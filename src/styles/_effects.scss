@@ -23,6 +23,12 @@
       }
     }
   }
+
+  &--hoverless {
+    &:hover {
+      box-shadow: 0 4px 6px var(--shadow-color);
+    }
+  }
 }
 
 @keyframes pulse {

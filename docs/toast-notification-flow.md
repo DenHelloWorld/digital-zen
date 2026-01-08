@@ -132,9 +132,9 @@ private async startFocus(period: IFocus.Period): Promise<FocusOperationResult> {
   // ✨ Check time range (NEW)
   const now = new Date();
   if (!isCurrentTimeInRange(now, period.startFrom, period.endTo)) {
-    return { 
-      success: false, 
-      error: FOCUS_ERROR_ENUM.PERIOD_OUTSIDE_TIME_RANGE 
+    return {
+      success: false,
+      error: FOCUS_ERROR_ENUM.PERIOD_OUTSIDE_TIME_RANGE
     };
   }
 
@@ -150,7 +150,7 @@ private async startFocus(period: IFocus.Period): Promise<FocusOperationResult> {
 public toggleFocus(): void {
   if (this.#isChromeRuntime) {
     chrome.runtime.sendMessage(
-      { command: CHROME_COMMAND_ENUM.TOGGLE_FOCUS }, 
+      { command: CHROME_COMMAND_ENUM.TOGGLE_FOCUS },
       response => {
         if (response && !response.success) {
           // Handle PERIOD_NOT_SCHEDULED_TODAY
@@ -160,7 +160,7 @@ public toggleFocus(): void {
               type: TOAST_TYPE_ENUM.WARN,
               position: POSITIONS_ENUM.BOTTOM_RIGHT,
             });
-          } 
+          }
           // ✨ Handle PERIOD_OUTSIDE_TIME_RANGE (NEW)
           else if (response.error === FOCUS_ERROR_ENUM.PERIOD_OUTSIDE_TIME_RANGE) {
             this.#toastService.show({
@@ -178,11 +178,11 @@ public toggleFocus(): void {
 
 ## Toast Notification Properties
 
-| Property   | Value                                              | Purpose                                    |
-|------------|----------------------------------------------------|--------------------------------------------|
-| **message**| "Current time is outside the period time range."  | User-friendly error message                |
-| **type**   | `TOAST_TYPE_ENUM.WARN`                            | Yellow/orange warning style                |
-| **position**| `POSITIONS_ENUM.BOTTOM_RIGHT`                    | Bottom-right corner of screen              |
+| Property     | Value                                            | Purpose                       |
+| ------------ | ------------------------------------------------ | ----------------------------- |
+| **message**  | "Current time is outside the period time range." | User-friendly error message   |
+| **type**     | `TOAST_TYPE_ENUM.WARN`                           | Yellow/orange warning style   |
+| **position** | `POSITIONS_ENUM.BOTTOM_RIGHT`                    | Bottom-right corner of screen |
 
 ## Visual Appearance
 
@@ -215,29 +215,29 @@ The toast notification will appear as a **warning** (yellow/orange) in the **bot
 
 ### Scenario 1: Work Hours (09:00 - 17:00)
 
-| Current Time | User Action        | Result                  | Toast Shown? |
-|--------------|-------------------|-------------------------|--------------|
-| 08:30        | Click Start Focus | ❌ Blocked              | ✅ Yes       |
-| 09:00        | Click Start Focus | ✅ Activated            | ❌ No        |
-| 14:30        | Click Start Focus | ✅ Activated            | ❌ No        |
-| 17:00        | Click Start Focus | ❌ Blocked              | ✅ Yes       |
-| 18:00        | Click Start Focus | ❌ Blocked              | ✅ Yes       |
+| Current Time | User Action       | Result       | Toast Shown? |
+| ------------ | ----------------- | ------------ | ------------ |
+| 08:30        | Click Start Focus | ❌ Blocked   | ✅ Yes       |
+| 09:00        | Click Start Focus | ✅ Activated | ❌ No        |
+| 14:30        | Click Start Focus | ✅ Activated | ❌ No        |
+| 17:00        | Click Start Focus | ❌ Blocked   | ✅ Yes       |
+| 18:00        | Click Start Focus | ❌ Blocked   | ✅ Yes       |
 
 ### Scenario 2: Morning Hours (06:00 - 09:00)
 
-| Current Time | User Action        | Result                  | Toast Shown? |
-|--------------|-------------------|-------------------------|--------------|
-| 05:30        | Click Start Focus | ❌ Blocked              | ✅ Yes       |
-| 06:00        | Click Start Focus | ✅ Activated            | ❌ No        |
-| 07:30        | Click Start Focus | ✅ Activated            | ❌ No        |
-| 09:00        | Click Start Focus | ❌ Blocked              | ✅ Yes       |
-| 10:00        | Click Start Focus | ❌ Blocked              | ✅ Yes       |
+| Current Time | User Action       | Result       | Toast Shown? |
+| ------------ | ----------------- | ------------ | ------------ |
+| 05:30        | Click Start Focus | ❌ Blocked   | ✅ Yes       |
+| 06:00        | Click Start Focus | ✅ Activated | ❌ No        |
+| 07:30        | Click Start Focus | ✅ Activated | ❌ No        |
+| 09:00        | Click Start Focus | ❌ Blocked   | ✅ Yes       |
+| 10:00        | Click Start Focus | ❌ Blocked   | ✅ Yes       |
 
 ### Scenario 3: Flexible (No Time Range)
 
-| Current Time | User Action        | Result                  | Toast Shown? |
-|--------------|-------------------|-------------------------|--------------|
-| Any time     | Click Start Focus | ✅ Activated            | ❌ No        |
+| Current Time | User Action       | Result       | Toast Shown? |
+| ------------ | ----------------- | ------------ | ------------ |
+| Any time     | Click Start Focus | ✅ Activated | ❌ No        |
 
 ## Testing the Toast
 
@@ -245,10 +245,8 @@ To manually test the toast notification:
 
 1. **Create a test period:**
    - Set time range to a future time (e.g., if it's 14:00, set range to 15:00 - 17:00)
-   
 2. **Try to activate focus:**
    - Click the "Start Focus" button
-   
 3. **Expected result:**
    - Focus does NOT activate
    - Toast appears in bottom-right corner
@@ -258,7 +256,6 @@ To manually test the toast notification:
 4. **Wait until time range starts:**
    - When current time reaches the start time (15:00)
    - Click "Start Focus" again
-   
 5. **Expected result:**
    - Focus DOES activate
    - No toast appears (success case)

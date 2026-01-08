@@ -20,6 +20,17 @@
       </svg>
     </button>
 
+    <a [href]="websites.PRIVACY_POLICY.url" target="_blank" rel="noopener noreferrer">
+      <button
+        [title]="uiText.FOOTER.PRIVACY_POLICY_ARIA_LABEL"
+        class="dz-button dz-button--round dz-button--md"
+      >
+        <svg class="dz-icon" aria-hidden="true" focusable="false">
+          <use [attr.href]="icons.PRIVACY_TIP"></use>
+        </svg>
+      </button>
+    </a>
+
     <button
       [title]="
         isGoogleAuthenticated()
@@ -58,19 +69,5 @@
     }
   }
 </main>
-
-<footer class="dz-footer" [class.dark-theme]="theme() === colorSchemes.DARK">
-  <nav class="dz-footer__navigation">
-    <a
-      href="https://digital-zen.csmpoint.com/api/privacy-policy.php"
-      target="_blank"
-      rel="noopener noreferrer"
-      class="dz-footer__link"
-      [attr.aria-label]="uiText.FOOTER.PRIVACY_POLICY_ARIA_LABEL"
-    >
-      {{ uiText.FOOTER.PRIVACY_POLICY_LINK }}
-    </a>
-  </nav>
-</footer>
 
 <dz-toast-container />

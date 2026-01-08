@@ -33,7 +33,7 @@
 
   .dz-main {
     width: 100%;
-    height: calc(var(--app-height) - var(--header-height) - var(--footer-height));
+    height: calc(var(--app-height) - var(--header-height));
     overflow: auto;
     background-color: var(--color-background);
     color: var(--color-text);
@@ -43,33 +43,5 @@
     transition:
       color 0.3s,
       background-color 0.3s;
-  }
-
-  .dz-footer {
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    height: var(--footer-height);
-    padding: var(--spacing);
-    font-size: 0.75rem;
-    background-color: var(--color-background);
-    color: var(--color-text);
-
-    &__link {
-      color: var(--color-text);
-      text-decoration: none;
-      opacity: 0.6;
-      transition: opacity 0.2s;
-
-      &:hover,
-      &:focus-visible {
-        opacity: 1;
-        text-decoration: underline;
-      }
-    }
-
-    &__sync {
-      font-size: 0.8em;
-    }
   }
 }

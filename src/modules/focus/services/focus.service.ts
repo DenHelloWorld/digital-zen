@@ -17,11 +17,13 @@ import {
   ChromeStorageService,
   FOCUS_ERROR_ENUM,
   logger,
+  cleanUrlHelper,
+  isImageIcon,
+  isSvgIcon,
+  CHROME_COMMAND_ENUM,
+  CHROME_STORAGE_KEY_ENUM,
+  DzToastService,
 } from '../../common';
-import { DzToastService } from '../../common/components/toast-container/toast.service';
-import { cleanUrlHelper, isImageIcon, isSvgIcon } from '../../common/helpers';
-import { CHROME_COMMAND_ENUM } from '../../common/enums/chrome-command.enum';
-import { CHROME_STORAGE_KEY_ENUM } from '../../common/enums/chrome-storage-key.enum';
 
 interface InitialStorageSchema {
   [CHROME_STORAGE_KEY_ENUM.CURRENT_PERIOD]: IFocus.Period;
@@ -373,7 +375,7 @@ export class FocusService {
 
     if (!period?.isFocused && !hasBlockedSites) {
       this.#toastService.show({
-        message: `${TOAST_MESSAGES_ENUM.FOCUS_ACTIVE} ${TOAST_MESSAGES_ENUM.NO_SITES_BLOCKED}`,
+        message: `${TOAST_MESSAGES_ENUM.NO_SITES_BLOCKED}`,
         type: TOAST_TYPE_ENUM.WARN,
         position: POSITIONS_ENUM.BOTTOM_RIGHT,
       });
