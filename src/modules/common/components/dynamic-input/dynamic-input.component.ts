@@ -126,13 +126,6 @@ export class DynamicInputComponent<T> implements OnInit {
     this.entities.set(filtered);
   }
 
-  protected updateEntity(updatedItem: T): void {
-    const idKey: keyof T = this.idKey();
-    const updated: T[] =
-      this.entities() ?? [].map(e => (e[idKey] === updatedItem[idKey] ? updatedItem : e));
-    this.entities.set(updated);
-  }
-
   protected toggleIsAdding(): void {
     this.isAdding.set(!this.isAdding());
   }

@@ -321,56 +321,6 @@ describe('DynamicInputComponent', () => {
     });
   });
 
-  describe('updateEntity method', () => {
-    /**
-     * KNOWN BUG: The updateEntity method in the source component has a critical
-     * operator precedence bug on line 132:
-     *
-     *   const updated: T[] = this.entities() ?? [].map(e => ...)
-     *
-     * This evaluates as: this.entities() ?? (empty array with map result)
-     * So when entities() returns a truthy array, it returns it unchanged without mapping.
-     * The .map() is only applied to the empty array [], not to this.entities().
-     *
-     * The correct implementation should be:
-     *
-     *   const updated: T[] = (this.entities() ?? []).map(e => ...)
-     *
-     * These tests document the current buggy behavior. Once the bug is fixed,
-     * these tests should be updated to assert the correct expected behavior.
-     */
-
-    it('should update entity in list (currently broken due to operator precedence bug)', () => {
-      const updatedEntity = { id: 1, name: 'Updated', description: 'Updated Desc' };
-      component['updateEntity'](updatedEntity);
-
-      const entities = component.entities();
-      // Bug: Method returns original array unchanged because map is applied to []
-      expect(entities?.length).toBe(2);
-      expect(entities?.[0]).toEqual(mockEntities[0]); // Unchanged (should be updated)
-      expect(entities?.[1]).toEqual(mockEntities[1]); // Unchanged
-
-      // Expected behavior after bug fix:
-      // expect(entities?.[0]).toEqual(updatedEntity);
-      // expect(entities?.[1]).toEqual(mockEntities[1]);
-    });
-
-    it('should update only matching entity (currently broken due to operator precedence bug)', () => {
-      const updatedEntity = { id: 2, name: 'Updated', description: 'Updated Desc' };
-      component['updateEntity'](updatedEntity);
-
-      const entities = component.entities();
-      // Bug: Method returns original array unchanged because map is applied to []
-      expect(entities?.length).toBe(2);
-      expect(entities?.[0]).toEqual(mockEntities[0]); // Unchanged
-      expect(entities?.[1]).toEqual(mockEntities[1]); // Unchanged (should be updated)
-
-      // Expected behavior after bug fix:
-      // expect(entities?.[0]).toEqual(mockEntities[0]); // Unchanged
-      // expect(entities?.[1]).toEqual(updatedEntity); // Changed
-    });
-  });
-
   describe('resetEntities method', () => {
     it('should reset entities to initial state', () => {
       // Modify entities
