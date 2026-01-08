@@ -17,7 +17,10 @@ import { ICONS, UI_TEXT } from '../common';
   selector: 'dz-menu',
   templateUrl: './menu.component.html',
   styleUrls: ['./menu.component.scss'],
-  imports: [PeriodFormComponent],
+  imports: [
+    // components
+    PeriodFormComponent,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MenuComponent {

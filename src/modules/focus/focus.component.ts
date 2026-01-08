@@ -35,6 +35,7 @@ import { CleanUrlPipe } from '../common/pipes';
     // components
     PeriodComponent,
     LoaderComponent,
+    // pipes
     CleanUrlPipe,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,

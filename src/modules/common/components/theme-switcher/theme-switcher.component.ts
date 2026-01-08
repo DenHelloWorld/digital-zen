@@ -20,6 +20,7 @@ import { ICONS, UI_TEXT } from '../../constants';
 @Component({
   selector: 'dz-theme-switcher',
   templateUrl: './theme-switcher.component.html',
+  imports: [],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ThemeSwitcherComponent {

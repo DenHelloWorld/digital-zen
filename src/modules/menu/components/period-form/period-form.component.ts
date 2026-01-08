@@ -65,7 +65,9 @@ import { MultiSelectorComponent } from '../../../common/components/multi-selecto
   styleUrls: ['period-form.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
+    // angular modules
     ReactiveFormsModule,
+    // components
     WeekdaysSelectorComponent,
     DynamicInputComponent,
     MultiSelectorComponent,
