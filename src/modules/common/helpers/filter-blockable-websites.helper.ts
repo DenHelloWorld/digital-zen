@@ -1,4 +1,4 @@
-import { IFocus } from '../models';
+import { IFocus } from '../models/focus.model';
 
 /**
  * Helper function to filter websites to only include blockable types.
