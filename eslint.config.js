@@ -2,6 +2,7 @@
 const eslint = require('@eslint/js');
 const tseslint = require('typescript-eslint');
 const angular = require('angular-eslint');
+const importX = require('eslint-plugin-import-x');
 
 module.exports = tseslint.config(
   {
@@ -12,6 +13,9 @@ module.exports = tseslint.config(
       ...tseslint.configs.stylistic,
       ...angular.configs.tsRecommended,
     ],
+    plugins: {
+      'import-x': importX,
+    },
     processor: angular.processInlineTemplates,
     rules: {
       '@angular-eslint/directive-selector': [
@@ -32,6 +36,9 @@ module.exports = tseslint.config(
       ],
       '@angular-eslint/prefer-on-push-component-change-detection': 'error',
       '@typescript-eslint/no-namespace': 'off',
+      // Import organization rules
+      'import-x/no-cycle': ['error', { maxDepth: 10 }],
+      'import-x/no-self-import': 'error',
     },
   },
   {

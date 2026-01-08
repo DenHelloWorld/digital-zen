@@ -8,9 +8,9 @@ import {
   isHttpUrl,
   isSvgIcon,
   UI_TEXT,
+  CleanUrlPipe,
 } from '../common';
 import { PeriodComponent } from './components/period/period.component';
-import { CleanUrlPipe } from '../common/pipes';
 
 /**
  * Focus management component

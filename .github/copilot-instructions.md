@@ -1,5 +1,21 @@
 # GitHub Copilot Instructions for Digital Zen
 
+## ⚠️ Before You Start
+
+**IMPORTANT:** Before generating any code or making changes:
+1. **Read the complete coding guidelines** at `/docs/coding-guidelines.md`
+2. **Review the relevant DZ_XX patterns** for the task you're working on
+3. **Check examples** in existing code that follow the same patterns
+4. **Verify** that you understand the project-specific conventions (DZ_10-DZ_12, DZ_18-DZ_19)
+
+**Key Guidelines to Study:**
+- `/docs/coding-guidelines.md` - Complete coding standards (DZ_01 - DZ_19)
+- `/docs/README.md` - Quick start guide
+- `/docs/logger.md` - Logger usage
+- This file - Quick reference for common patterns
+
+---
+
 ## Angular Project Configuration (v21)
 
 This project uses **modern Angular (v21)** with the latest features and best practices. All code generation must follow these guidelines.
@@ -194,7 +210,9 @@ export const authGuard: CanActivateFn = (route, state) => {
 - Components should be organized by feature modules in `src/modules/`
 - Shared utilities and common components should be in `src/modules/common/`
 - Services should be in feature-specific directories
-- Use barrel exports (`index.ts`) for cleaner imports
+- Use barrel exports (`index.ts`) for cleaner imports (DZ_19)
+- Import from common module using barrel exports: `from '../common'`
+- Exception: Background module must use direct file imports (no Angular modules)
 
 ---
 
@@ -226,6 +244,8 @@ When generating code, ensure:
 - ✅ Functional interceptors and guards (if applicable) (DZ_13, DZ_14)
 - ✅ UI text extracted to UI_TEXT constants (DZ_10)
 - ✅ Universal logger usage instead of console (DZ_11)
+- ✅ Imports organized with comment markers in component decorator (DZ_18)
+- ✅ Use barrel exports for common module imports (DZ_19)
 
 **For detailed explanations, see `/docs/coding-guidelines.md`**
 
@@ -240,6 +260,7 @@ When generating code, ensure:
 - ❌ Excessive use of RxJS for simple state (use Signals)
 - ❌ Class-based interceptors/guards (use functional)
 - ❌ `any` type (use strict typing)
+- ❌ Direct file imports from common module (use barrel exports, except in background module)
 
 ---
 

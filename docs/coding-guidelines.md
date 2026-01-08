@@ -2,7 +2,7 @@
 
 This document describes all coding patterns, conventions, and best practices used in the Digital Zen Chrome Extension project. These guidelines reflect the actual implementation in the codebase and serve as a reference for all development work.
 
-**Primary Source:** We follow official Angular documentation for standard patterns. Custom guidelines (DZ_10-DZ_12, DZ_18) are project-specific conventions.
+**Primary Source:** We follow official Angular documentation for standard patterns. Custom guidelines (DZ_10-DZ_12, DZ_18-DZ_19) are project-specific conventions.
 
 **Version:** 1.0.3  
 **Last Updated:** January 8, 2026
@@ -57,6 +57,7 @@ This document describes all coding patterns, conventions, and best practices use
     - [DZ_17: Testing Guidelines](#dz_17-testing-guidelines)
 13. [Component Organization](#component-organization)
     - [DZ_18: Organized Imports with Comment Markers](#dz_18-organized-imports-with-comment-markers)
+    - [DZ_19: Import Organization with Barrel Exports](#dz_19-import-organization-with-barrel-exports)
 
 ---
 
@@ -1350,6 +1351,127 @@ Standard Prettier does not support enforcing comment-based organization of array
 
 ---
 
+### DZ_19: Import Organization with Barrel Exports
+
+**Guideline:** Use barrel exports (`index.ts` files) to organize and group imports from the `common` module. All imports from `common` should use the barrel export path, not direct file paths. Exception: Background module must import specific files directly.
+
+**Rationale:** Barrel exports provide a clean, organized way to manage module exports and imports. They simplify import statements, make refactoring easier, and provide a single entry point for module dependencies. This pattern improves code maintainability and readability.
+
+**Implementation:**
+
+**✅ Good - Using barrel exports:**
+
+```typescript
+// In Angular components and services
+import {
+  LoaderComponent,
+  UI_TEXT,
+  ICONS,
+  logger,
+  IFocus,
+  CleanUrlPipe,
+  apiKeyInterceptor,
+} from '../common';
+
+// Or from deeper in the module tree
+import {
+  CHROME_COMMAND_ENUM,
+  ThemeService,
+  API_URLS,
+} from '../../common';
+```
+
+**❌ Bad - Direct file imports (don't use this in Angular modules):**
+
+```typescript
+import { CleanUrlPipe } from '../common/pipes/clear-url.pipe';
+import { apiKeyInterceptor } from '../common/interceptors/api-key.interceptor';
+import { logger } from '../common/helpers/logger';
+import { IFocus } from '../common/models/focus.model';
+```
+
+**⚠️ Exception - Background Module (required):**
+
+The background module cannot import the entire common module barrel export because it would include Angular modules, which are not allowed in the background context. Background scripts must import specific files:
+
+```typescript
+// In src/background/*.ts files - REQUIRED approach
+import { IFocus } from '../modules/common/models/focus.model';
+import { QUICK_FOCUS_ID } from '../modules/common/constants/quick-focus-id.const';
+import { CHROME_ALARM_ENUM } from '../modules/common/enums/chrome-alarm-name.enum';
+import { logger } from '../modules/common/helpers/logger';
+```
+
+**Key Points:**
+
+- ✅ Use barrel exports (`from '../common'`) for all Angular module imports
+- ✅ Barrel exports are defined in `index.ts` files in each subdirectory
+- ✅ The main `common` module re-exports all subdirectory barrel exports
+- ✅ Background module MUST use direct file imports (no Angular modules allowed)
+- ✅ Circular dependency detection is enabled via ESLint (`import-x/no-cycle`)
+- ❌ Do NOT import specific file paths in Angular modules
+- ❌ Do NOT import barrel exports in background module
+
+**Barrel Export Structure:**
+
+```
+src/modules/common/
+├── index.ts              # Main barrel export (re-exports all subdirectories)
+├── components/
+│   └── index.ts          # Exports all components
+├── services/
+│   └── index.ts          # Exports all services
+├── helpers/
+│   └── index.ts          # Exports all helpers
+├── models/
+│   └── index.ts          # Exports all models
+├── constants/
+│   └── index.ts          # Exports all constants
+├── enums/
+│   └── index.ts          # Exports all enums
+├── validators/
+│   └── index.ts          # Exports all validators
+├── pipes/
+│   └── index.ts          # Exports all pipes
+└── interceptors/
+    └── index.ts          # Exports all interceptors
+```
+
+**Circular Dependency Detection:**
+
+The project uses `eslint-plugin-import-x` to detect and prevent circular dependencies:
+
+```javascript
+// In eslint.config.js
+rules: {
+  'import-x/no-cycle': ['error', { maxDepth: 10 }],
+  'import-x/no-self-import': 'error',
+}
+```
+
+**Benefits:**
+
+- **Cleaner imports:** Shorter, more readable import statements
+- **Better refactoring:** Change file structure without updating all imports
+- **Single source of truth:** One place to manage module exports
+- **Circular dependency prevention:** ESLint rules prevent import cycles
+- **Consistent patterns:** All modules use the same import approach
+
+**Migration Guide:**
+
+When you find a direct file import in Angular modules:
+
+1. Ensure the file is exported in its subdirectory's `index.ts`
+2. Ensure the subdirectory is re-exported in `src/modules/common/index.ts`
+3. Change the import to use the barrel export path
+4. Run `npm run lint` to check for circular dependencies
+
+**See Also:** 
+- [DZ_01: Standalone Components](#dz_01-standalone-components)
+- [ESLint Plugin Import-X Documentation](https://github.com/un-ts/eslint-plugin-import-x)
+
+---
+
 ## Summary
 
 This document covers all major coding patterns used in Digital Zen:
@@ -1359,17 +1481,18 @@ This document covers all major coding patterns used in Digital Zen:
 - Follow official Angular documentation as primary source
 - See links to official docs at the top of this document
 
-**Project-Specific Conventions (DZ_10-DZ_12, DZ_18):**
+**Project-Specific Conventions (DZ_10-DZ_12, DZ_18-DZ_19):**
 
 - UI Text Management (DZ_10) - Digital Zen specific
 - Universal Logger (DZ_11) - Digital Zen specific
 - BEM with dz- prefix (DZ_12) - Digital Zen specific
 - Organized Imports (DZ_18) - Digital Zen specific
+- Import Organization with Barrel Exports (DZ_19) - Digital Zen specific
 
 ### When writing code:
 
 1. **Reference official Angular docs** for standard patterns (Components, Signals, Forms, etc.)
-2. **Follow project-specific guidelines** (DZ_10-DZ_12) for UI text, logging, and styling
+2. **Follow project-specific guidelines** (DZ_10-DZ_12, DZ_18-DZ_19) for UI text, logging, styling, and imports
 3. **Add JSDoc comments** with guideline references (e.g., `@guideline DZ_01, DZ_04`)
 4. **Keep documentation synchronized** with actual code implementation
 

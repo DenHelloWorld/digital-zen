@@ -18,9 +18,9 @@ import {
   VIEW_ENUM,
   ViewType,
   WEBSITE_PRIVACY_POLICY,
+  DzToastContainerComponent,
 } from '../modules/common';
 import { FocusComponent } from '../modules/focus/focus.component';
-import { DzToastContainerComponent } from '../modules/common/components/toast-container/toast-container';
 import { AuthService } from '../modules/auth';
 import { PeriodFormComponent } from '../modules/menu/components/period-form';
 
