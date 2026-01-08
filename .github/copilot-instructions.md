@@ -194,7 +194,9 @@ export const authGuard: CanActivateFn = (route, state) => {
 - Components should be organized by feature modules in `src/modules/`
 - Shared utilities and common components should be in `src/modules/common/`
 - Services should be in feature-specific directories
-- Use barrel exports (`index.ts`) for cleaner imports
+- Use barrel exports (`index.ts`) for cleaner imports (DZ_19)
+- Import from common module using barrel exports: `from '../common'`
+- Exception: Background module must use direct file imports (no Angular modules)
 
 ---
 
@@ -226,6 +228,8 @@ When generating code, ensure:
 - ✅ Functional interceptors and guards (if applicable) (DZ_13, DZ_14)
 - ✅ UI text extracted to UI_TEXT constants (DZ_10)
 - ✅ Universal logger usage instead of console (DZ_11)
+- ✅ Imports organized with comment markers in component decorator (DZ_18)
+- ✅ Use barrel exports for common module imports (DZ_19)
 
 **For detailed explanations, see `/docs/coding-guidelines.md`**
 
@@ -240,6 +244,7 @@ When generating code, ensure:
 - ❌ Excessive use of RxJS for simple state (use Signals)
 - ❌ Class-based interceptors/guards (use functional)
 - ❌ `any` type (use strict typing)
+- ❌ Direct file imports from common module (use barrel exports, except in background module)
 
 ---
 
