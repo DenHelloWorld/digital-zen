@@ -1658,7 +1658,7 @@ GitHub Copilot cannot generate binary image files (PNG, JPG, etc.). For creating
 
 **See Also:**
 - [DZ_10.1: Icon Constants](#dz_101-icon-constants) - SVG sprite icon management
-- [Image Generation Capabilities Documentation](/docs/image-generation-capabilities.md) - Detailed guide about image creation tools
+- [Image Generation Capabilities Documentation](./image-generation-capabilities.md) - Detailed guide about image creation tools
 - [Chrome Web Store Requirements](https://developer.chrome.com/docs/webstore/images/) - Official Chrome extension icon guidelines
 
 **Resources:**
