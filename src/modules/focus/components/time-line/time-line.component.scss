@@ -27,6 +27,7 @@
     top: -10px;
     transform: translateX(-50%);
     text-align: center;
+    text-wrap: nowrap;
 
     &__indicator {
       user-select: none;

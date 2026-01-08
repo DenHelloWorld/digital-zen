@@ -22,7 +22,16 @@
 
     <div class="dz-accordion__content">
       @if (p.startFrom && p.endTo) {
-        <dz-time-line [startFrom]="p.startFrom" [endTo]="p.endTo" />
+        <div
+          [title]="'Period when focus is activatable'"
+          class="dz-box dz-box--line-container shadow shadow--hoverless"
+        >
+          <svg class="dz-icon dz-icon--line-container" aria-hidden="true" focusable="false">
+            <use [attr.href]="icons.CHRONIC"></use>
+          </svg>
+
+          <dz-time-line [startFrom]="p.startFrom" [endTo]="p.endTo" />
+        </div>
       }
 
       <p class="description">
@@ -67,6 +76,7 @@
             <button
               type="button"
               class="dz-button dz-button--sm dz-button--error shadow"
+              [title]="uiText.PERIOD.ARIA_LABELS.CONFIRM_DELETE"
               [attr.aria-label]="uiText.PERIOD.ARIA_LABELS.CONFIRM_DELETE"
               (click)="onConfirmDelete()"
             >
@@ -77,6 +87,7 @@
             <button
               type="button"
               class="dz-button dz-button--sm shadow"
+              [title]="uiText.PERIOD.ARIA_LABELS.CANCEL_DELETE"
               [attr.aria-label]="uiText.PERIOD.ARIA_LABELS.CANCEL_DELETE"
               (click)="onCancelDelete()"
             >
@@ -86,10 +97,36 @@
             </button>
           </div>
         } @else {
+          <button
+            type="button"
+            class="dz-button dz-button--sm shadow"
+            [title]="uiText.PERIOD.ARIA_LABELS.EDIT_PERIOD"
+            [attr.aria-label]="uiText.PERIOD.ARIA_LABELS.EDIT_PERIOD"
+            (click)="onEdit()"
+          >
+            <svg class="dz-icon" aria-hidden="true" focusable="false">
+              <use [attr.href]="icons.EDIT"></use>
+            </svg>
+          </button>
+
+          @if (totalPeriodsCount() > 1 && !isCurrent()) {
+            <button
+              type="button"
+              class="dz-button dz-button--sm dz-button--error shadow"
+              [title]="uiText.PERIOD.ARIA_LABELS.DELETE_PERIOD"
+              [attr.aria-label]="uiText.PERIOD.ARIA_LABELS.DELETE_PERIOD"
+              (click)="onDelete()"
+            >
+              <svg class="dz-icon" aria-hidden="true" focusable="false">
+                <use [attr.href]="icons.DELETE"></use>
+              </svg>
+            </button>
+          }
+
           @if (!isCurrent()) {
             <button
               type="button"
-              class="dz-button dz-button--sm dz-button--accent shadow"
+              class="dz-button dz-button--sm dz-button--round dz-button--activated shadow"
               [attr.aria-label]="uiText.PERIOD.ARIA_LABELS.ACTIVATE_PERIOD"
               [attr.title]="
                 isFocusActive()
@@ -99,30 +136,8 @@
               [disabled]="isFocusActive()"
               (click)="onActivate()"
             >
-              {{ uiText.PERIOD.ACTIVATE_BUTTON }}
-            </button>
-          }
-
-          <button
-            type="button"
-            class="dz-button dz-button--sm shadow"
-            [attr.aria-label]="uiText.PERIOD.ARIA_LABELS.EDIT_PERIOD"
-            (click)="onEdit()"
-          >
-            <svg class="dz-icon" aria-hidden="true" focusable="false">
-              <use [attr.href]="icons.EDIT"></use>
-            </svg>
-          </button>
-
-          @if (totalPeriodsCount() > 1) {
-            <button
-              type="button"
-              class="dz-button dz-button--sm dz-button--error shadow"
-              [attr.aria-label]="uiText.PERIOD.ARIA_LABELS.DELETE_PERIOD"
-              (click)="onDelete()"
-            >
               <svg class="dz-icon" aria-hidden="true" focusable="false">
-                <use [attr.href]="icons.DELETE"></use>
+                <use [attr.href]="icons.POWER_SWITCHER"></use>
               </svg>
             </button>
           }

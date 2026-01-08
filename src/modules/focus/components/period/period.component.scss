@@ -7,6 +7,21 @@
     gap: var(--spacing);
   }
 
+  .dz-box {
+    &--line-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: var(--spacing);
+
+      .dz-icon {
+        &--line-container {
+          width: 2rem;
+        }
+      }
+    }
+  }
+
   .description,
   .title,
   .weekdays {
@@ -23,6 +38,7 @@
 
   .dz-period-edit {
     width: 100%;
+    margin: 0 0 var(--spacing) 0;
   }
 
   .dz-confirm-delete {
