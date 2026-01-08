@@ -23,9 +23,7 @@ import { filterBlockableWebsites } from '../helpers';
  * // Returns null if all websites are blockable (SOCIAL_MEDIA or DEFAULT)
  * ```
  */
-export const noUnblockableWebsitesValidator = (
-  control: AbstractControl
-): ValidationErrors | null => {
+export function noUnblockableWebsitesValidator(control: AbstractControl): ValidationErrors | null {
   const value: typeof control.value = control.value;
 
   if (!Array.isArray(value)) {
@@ -41,4 +39,4 @@ export const noUnblockableWebsitesValidator = (
   }
 
   return null;
-};
+}
