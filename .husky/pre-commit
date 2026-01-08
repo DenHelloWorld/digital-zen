@@ -1,1 +1,3 @@
+# Run tests before commit (may be slow - comment out if needed)
+# npm run test:ci
 npx lint-staged
