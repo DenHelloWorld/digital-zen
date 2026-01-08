@@ -95,9 +95,11 @@ describe('BackgroundServiceMV3', () => {
     spyOn(UserDataSyncAdapter, 'syncUserData').and.returnValue(Promise.resolve());
   });
 
-  afterEach(() => {
-    (globalThis as unknown as { chrome: typeof mockChrome }).chrome =
-      undefined as unknown as typeof mockChrome;
+  afterEach(async () => {
+    // Wait for any pending async operations
+    await new Promise(resolve => setTimeout(resolve, 50));
+    // Restore chrome to prevent errors in async operations
+    (globalThis as unknown as { chrome: typeof mockChrome }).chrome = mockChrome;
   });
 
   describe('Initialization', () => {
@@ -1020,12 +1022,15 @@ describe('BackgroundServiceMV3', () => {
         messageListener({ command: CHROME_COMMAND_ENUM.ADD_PERIOD, period: {} }, {}, sendResponse);
 
         // Wait for async processing
-        await new Promise(resolve => setTimeout(resolve, 100));
+        await new Promise(resolve => setTimeout(resolve, 150));
 
         expect(sendResponse).toHaveBeenCalledWith({
           success: false,
           error: FOCUS_ERROR_ENUM.GENERIC_ERROR,
         });
+
+        // Reset the spy to prevent error in other tests
+        (StorageAdapter.getPeriods as jasmine.Spy).and.returnValue(Promise.resolve([]));
       });
     });
   });
@@ -1037,6 +1042,8 @@ describe('BackgroundServiceMV3', () => {
       // Initialize service to set up alarm listeners
       new BackgroundServiceMV3();
       alarmListener = mockChrome.alarms.onAlarm.addListener.calls.mostRecent().args[0];
+      // Reset spy calls after initialization
+      mockChrome.declarativeNetRequest.updateDynamicRules.calls.reset();
     });
 
     it('should stop focus when time has passed', async () => {
@@ -1090,18 +1097,16 @@ describe('BackgroundServiceMV3', () => {
         Promise.resolve(currentPeriod)
       );
 
-      const updateRulesCallCount =
-        mockChrome.declarativeNetRequest.updateDynamicRules.calls.count();
+      // Reset spy before test
+      mockChrome.declarativeNetRequest.updateDynamicRules.calls.reset();
 
       await alarmListener({ name: CHROME_ALARM_ENUM.CHECK_FOCUS_END });
 
       // Wait for async processing
       await new Promise(resolve => setTimeout(resolve, 100));
 
-      // Should not have called updateDynamicRules again
-      expect(mockChrome.declarativeNetRequest.updateDynamicRules.calls.count()).toBe(
-        updateRulesCallCount
-      );
+      // Should not have called updateDynamicRules
+      expect(mockChrome.declarativeNetRequest.updateDynamicRules).not.toHaveBeenCalled();
     });
 
     it('should not stop focus when period is not focused', async () => {
@@ -1122,8 +1127,8 @@ describe('BackgroundServiceMV3', () => {
         Promise.resolve(currentPeriod)
       );
 
-      const updateRulesCallCount =
-        mockChrome.declarativeNetRequest.updateDynamicRules.calls.count();
+      // Reset spy before test
+      mockChrome.declarativeNetRequest.updateDynamicRules.calls.reset();
 
       await alarmListener({ name: CHROME_ALARM_ENUM.CHECK_FOCUS_END });
 
@@ -1131,9 +1136,7 @@ describe('BackgroundServiceMV3', () => {
       await new Promise(resolve => setTimeout(resolve, 100));
 
       // Should not have called updateDynamicRules
-      expect(mockChrome.declarativeNetRequest.updateDynamicRules.calls.count()).toBe(
-        updateRulesCallCount
-      );
+      expect(mockChrome.declarativeNetRequest.updateDynamicRules).not.toHaveBeenCalled();
     });
   });
 

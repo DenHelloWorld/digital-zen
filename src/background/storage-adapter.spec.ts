@@ -23,9 +23,9 @@ describe('StorageAdapter', () => {
     };
   });
 
-  afterEach(() => {
-    (globalThis as unknown as { chrome: { storage: typeof mockChromeStorage } }).chrome =
-      undefined as unknown as { storage: typeof mockChromeStorage };
+  afterEach(async () => {
+    // Wait for any pending async operations
+    await new Promise(resolve => setTimeout(resolve, 50));
   });
 
   describe('savePeriod', () => {

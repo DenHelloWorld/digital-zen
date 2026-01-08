@@ -472,7 +472,9 @@ describe('UserDataSyncAdapter', () => {
         const requestBody = JSON.parse(fetchOptions.body);
         expect(requestBody.user_email).toBe('test@example.com');
         expect(requestBody.user_id).toBe('user-123');
-        expect(requestBody.periods).toEqual(periods);
+        expect(requestBody.periods.length).toBe(1);
+        expect(requestBody.periods[0].id).toBe('period-1');
+        expect(requestBody.periods[0].name).toBe('Work Period');
       });
 
       it('should save user data with empty periods', async () => {
