@@ -7,13 +7,14 @@
 1. **Read the complete coding guidelines** at `/docs/coding-guidelines.md`
 2. **Review the relevant DZ_XX patterns** for the task you're working on
 3. **Check examples** in existing code that follow the same patterns
-4. **Verify** that you understand the project-specific conventions (DZ_10-DZ_12, DZ_18-DZ_19)
+4. **Verify** that you understand the project-specific conventions (DZ_10-DZ_12, DZ_18-DZ_20)
 
 **Key Guidelines to Study:**
 
-- `/docs/coding-guidelines.md` - Complete coding standards (DZ_01 - DZ_19)
+- `/docs/coding-guidelines.md` - Complete coding standards (DZ_01 - DZ_20)
 - `/docs/README.md` - Quick start guide
 - `/docs/logger.md` - Logger usage
+- `/docs/image-generation-capabilities.md` - Image handling and generation
 - This file - Quick reference for common patterns
 
 ---
@@ -248,6 +249,7 @@ When generating code, ensure:
 - ✅ Universal logger usage instead of console (DZ_11)
 - ✅ Imports organized with comment markers in component decorator (DZ_18)
 - ✅ Use barrel exports for common module imports (DZ_19)
+- ✅ Optimize images before committing (DZ_20)
 
 **For detailed explanations, see `/docs/coding-guidelines.md`**
 

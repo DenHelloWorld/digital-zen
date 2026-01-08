@@ -59,8 +59,10 @@ This directory contains documentation for the Digital Zen Chrome extension proje
 - Template syntax (built-in control flow)
 - TypeScript conventions
 - UI text management
+- Icon management
 - Logging
 - Styling with SCSS and BEM
+- Image asset management (DZ_20)
 
 **Use this when:**
 
@@ -68,6 +70,28 @@ This directory contains documentation for the Digital Zen Chrome extension proje
 - Reviewing code
 - Understanding project patterns
 - Ensuring consistency across the codebase
+
+#### [Image Generation Capabilities](./image-generation-capabilities.md) 🎨
+
+**Purpose:** Explains GitHub Copilot's image generation capabilities and provides guidance on image management for Digital Zen.
+
+**Contents:**
+
+- What GitHub Copilot can and cannot do regarding images
+- SVG code generation capabilities
+- Alternatives for creating image assets
+- AI image generation tools
+- Design tool recommendations
+- Digital Zen image management patterns
+- Chrome extension icon requirements
+
+**Use this when:**
+
+- Wondering if Copilot can generate images
+- Need to create new image assets
+- Looking for image optimization tools
+- Understanding Digital Zen image management approach
+- Preparing icons for Chrome Web Store
 
 ---
 

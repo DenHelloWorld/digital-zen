@@ -15,9 +15,9 @@
 
 **File:** `/docs/coding-guidelines.md`
 
-- 16 documented guidelines (DZ_01 through DZ_16)
+- 20 documented guidelines (DZ_01 through DZ_20)
 - Direct links to official Angular documentation for each standard pattern
-- Project-specific conventions (DZ_10: UI Text, DZ_11: Logger, DZ_12: BEM Styling)
+- Project-specific conventions (DZ_10: UI Text, DZ_10.1: Icons, DZ_11: Logger, DZ_12: BEM Styling, DZ_18-DZ_20)
 - All guidelines reflect actual codebase implementation
 
 **Key Sections:**

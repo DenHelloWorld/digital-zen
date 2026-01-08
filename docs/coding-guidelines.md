@@ -4,7 +4,7 @@ This document describes all coding patterns, conventions, and best practices use
 
 **Primary Source:** We follow official Angular documentation for standard patterns. Custom guidelines (DZ_10-DZ_12, DZ_18-DZ_19) are project-specific conventions.
 
-**Version:** 1.0.3  
+**Version:** 1.1.0  
 **Last Updated:** January 8, 2026
 
 ---
@@ -58,6 +58,8 @@ This document describes all coding patterns, conventions, and best practices use
 13. [Component Organization](#component-organization)
     - [DZ_18: Organized Imports with Comment Markers](#dz_18-organized-imports-with-comment-markers)
     - [DZ_19: Import Organization with Barrel Exports](#dz_19-import-organization-with-barrel-exports)
+14. [Image Asset Management](#image-asset-management)
+    - [DZ_20: Image Assets and Optimization](#dz_20-image-assets-and-optimization)
 
 ---
 
@@ -1472,6 +1474,206 @@ When you find a direct file import in Angular modules:
 
 ---
 
+## Image Asset Management
+
+### DZ_20: Image Assets and Optimization
+
+**Guideline:** Follow consistent naming conventions and optimization practices for all image assets. Use SVG for icons whenever possible, and optimize raster images before committing.
+
+**Rationale:** Proper image management ensures fast load times, maintains visual quality, and creates a maintainable asset structure. Chrome extensions have strict size limits, making optimization critical.
+
+**Implementation:**
+
+**1. Image Types and Usage:**
+
+**SVG (Preferred for Icons and Simple Graphics)**
+- ✅ Use for UI icons (already managed via DZ_10.1)
+- ✅ Use for logos and simple illustrations
+- ✅ Scalable without quality loss
+- ✅ Small file size
+- ✅ Can be styled with CSS
+
+```html
+<!-- SVG sprite usage (preferred) -->
+<svg class="dz-icon">
+  <use [attr.href]="icons.PLUS"></use>
+</svg>
+
+<!-- Inline SVG for custom graphics -->
+<svg width="100" height="100" viewBox="0 0 100 100">
+  <circle cx="50" cy="50" r="40" fill="currentColor" />
+</svg>
+```
+
+**Raster Images (PNG, JPG)**
+- ✅ Use for photographs and complex images
+- ✅ Use for Chrome extension icons (required sizes: 16x16, 32x32, 48x48, 128x128)
+- ❌ Avoid for simple icons and graphics (use SVG instead)
+
+**2. File Organization:**
+
+```
+digital-zen/
+├── public/                           # All static image assets
+│   ├── icon-spa-colored.png          # Extension icon (colored variant)
+│   ├── icon-spa-transparent.png      # Extension icon (transparent variant)
+│   ├── icon-16.png                   # Chrome extension icon 16x16
+│   ├── icon-32.png                   # Chrome extension icon 32x32
+│   ├── icon-48.png                   # Chrome extension icon 48x48
+│   └── icon-128.png                  # Chrome extension icon 128x128
+└── src/
+    └── index.html                    # SVG sprite definitions
+```
+
+**3. Naming Conventions:**
+
+**Format:** `{type}-{purpose}-{variant}.{ext}`
+
+**Examples:**
+```
+icon-spa-colored.png          # Icon for spa theme (colored)
+icon-spa-transparent.png      # Icon for spa theme (transparent)
+logo-main-light.svg           # Logo (light theme variant)
+logo-main-dark.svg            # Logo (dark theme variant)
+screenshot-focus-mode.png     # Screenshot for documentation
+```
+
+**Key Points:**
+- Use lowercase with hyphens
+- Start with type: `icon-`, `logo-`, `screenshot-`, `image-`
+- Include purpose: what it represents
+- Include variant if multiple versions exist: `colored`, `transparent`, `light`, `dark`
+
+**4. Image Optimization:**
+
+**Before Committing Images:**
+
+**SVG Optimization:**
+```bash
+# Use SVGO to optimize SVG files
+npm install -g svgo
+svgo input.svg -o output.svg
+
+# Or use online tools:
+# - https://jakearchibald.github.io/svgomg/
+```
+
+**Raster Image Optimization:**
+```bash
+# PNG Optimization (use TinyPNG or similar)
+# - https://tinypng.com/
+# - https://squoosh.app/
+
+# Recommended settings:
+# - PNG: Use PNG-8 for simple graphics, PNG-24 for complex images
+# - JPG: Quality 80-85 is usually optimal
+# - WebP: Consider for modern browsers (not yet supported by all extensions)
+```
+
+**5. Chrome Extension Icon Requirements:**
+
+Chrome extensions require specific icon sizes for different contexts:
+
+| Size    | Usage                          |
+|---------|--------------------------------|
+| 16x16   | Favicon on the extension pages |
+| 32x32   | Windows computers often require this size |
+| 48x48   | Displayed on the Extensions page |
+| 128x128 | Used during installation and in the Chrome Web Store |
+
+**Manifest Configuration:**
+```json
+{
+  "icons": {
+    "16": "icon-16.png",
+    "32": "icon-32.png",
+    "48": "icon-48.png",
+    "128": "icon-128.png"
+  },
+  "action": {
+    "default_icon": {
+      "16": "icon-16.png",
+      "32": "icon-32.png"
+    }
+  }
+}
+```
+
+**6. Image Loading in Code:**
+
+**For Static Images:**
+```typescript
+// In Angular component
+export class MyComponent {
+  protected readonly logoPath = 'assets/logo-main-light.svg';
+}
+
+// In template
+<img [src]="logoPath" alt="Digital Zen Logo" />
+```
+
+**For Dynamic Images:**
+```typescript
+// Create an image constants file if needed
+export const IMAGES = Object.freeze({
+  LOGO_LIGHT: 'assets/logo-main-light.svg',
+  LOGO_DARK: 'assets/logo-main-dark.svg',
+  ICON_DEFAULT: 'icon-48.png',
+} as const);
+```
+
+**7. Image Alt Text (Accessibility):**
+
+Always provide descriptive alt text for images:
+
+```html
+<!-- ✅ Good: Descriptive alt text -->
+<img src="icon-spa-colored.png" alt="Digital Zen spa icon representing relaxation and focus" />
+
+<!-- ❌ Bad: Generic or missing alt text -->
+<img src="icon-spa-colored.png" alt="icon" />
+<img src="icon-spa-colored.png" />
+```
+
+**Key Points:**
+
+- ✅ Use SVG for icons and simple graphics (follow DZ_10.1)
+- ✅ Optimize all images before committing
+- ✅ Follow naming convention: `{type}-{purpose}-{variant}.{ext}`
+- ✅ Place all static images in `/public/` directory
+- ✅ Provide required Chrome extension icon sizes (16, 32, 48, 128)
+- ✅ Always include descriptive alt text
+- ✅ Use CSS for icon colors when possible (with SVG currentColor)
+- ❌ Do NOT commit unoptimized images
+- ❌ Do NOT use raster images for simple icons
+- ❌ Do NOT hardcode image paths (use constants when appropriate)
+
+**Image Generation Note:**
+
+GitHub Copilot cannot generate binary image files (PNG, JPG, etc.). For creating images:
+
+- **SVG Graphics:** Copilot can generate SVG code
+- **Raster Images:** Use AI tools (DALL-E, Midjourney, Stable Diffusion) or design tools (Figma, Canva, Photoshop)
+- **Icon Libraries:** Use existing icon sets (Heroicons, Feather Icons, Bootstrap Icons)
+
+**See Also:**
+- [DZ_10.1: Icon Constants](#dz_101-icon-constants) - SVG sprite icon management
+- [Image Generation Capabilities Documentation](/docs/image-generation-capabilities.md) - Detailed guide about image creation tools
+- [Chrome Web Store Requirements](https://developer.chrome.com/docs/webstore/images/) - Official Chrome extension icon guidelines
+
+**Resources:**
+- [SVGO](https://github.com/svg/svgo) - SVG optimizer
+- [TinyPNG](https://tinypng.com/) - PNG/JPG compression
+- [Squoosh](https://squoosh.app/) - Image optimization tool
+- [SVGOMG](https://jakearchibald.github.io/svgomg/) - Online SVG optimizer
+
+**File Locations:**
+- Static images: `/public/`
+- SVG sprites: `src/index.html`
+- Icon constants: `src/modules/common/constants/icons.const.ts`
+
+---
+
 ## Summary
 
 This document covers all major coding patterns used in Digital Zen:
@@ -1481,18 +1683,20 @@ This document covers all major coding patterns used in Digital Zen:
 - Follow official Angular documentation as primary source
 - See links to official docs at the top of this document
 
-**Project-Specific Conventions (DZ_10-DZ_12, DZ_18-DZ_19):**
+**Project-Specific Conventions (DZ_10-DZ_12, DZ_18-DZ_20):**
 
 - UI Text Management (DZ_10) - Digital Zen specific
+- Icon Constants (DZ_10.1) - Digital Zen specific
 - Universal Logger (DZ_11) - Digital Zen specific
 - BEM with dz- prefix (DZ_12) - Digital Zen specific
 - Organized Imports (DZ_18) - Digital Zen specific
 - Import Organization with Barrel Exports (DZ_19) - Digital Zen specific
+- Image Asset Management (DZ_20) - Digital Zen specific
 
 ### When writing code:
 
 1. **Reference official Angular docs** for standard patterns (Components, Signals, Forms, etc.)
-2. **Follow project-specific guidelines** (DZ_10-DZ_12, DZ_18-DZ_19) for UI text, logging, styling, and imports
+2. **Follow project-specific guidelines** (DZ_10-DZ_12, DZ_18-DZ_20) for UI text, logging, styling, imports, and images
 3. **Add JSDoc comments** with guideline references (e.g., `@guideline DZ_01, DZ_04`)
 4. **Keep documentation synchronized** with actual code implementation
 
