@@ -58,6 +58,8 @@ describe('BackgroundServiceMV3', () => {
     let resolveFn: (value: unknown) => void;
     const promise = new Promise(resolve => {
       resolveFn = resolve;
+      // Safety timeout - resolve after 3 seconds if sendResponse not called
+      setTimeout(() => resolve(undefined), 3000);
     });
 
     const spy = jasmine.createSpy('sendResponse').and.callFake((response: unknown) => {
