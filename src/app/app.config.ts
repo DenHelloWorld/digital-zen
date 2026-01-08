@@ -4,7 +4,7 @@ import {
   provideZonelessChangeDetection,
 } from '@angular/core';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
-import { apiKeyInterceptor } from '../modules/common/interceptors/api-key.interceptor';
+import { apiKeyInterceptor } from '../modules/common';
 
 export const appConfig: ApplicationConfig = {
   providers: [

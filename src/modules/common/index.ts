@@ -5,3 +5,5 @@ export * from './constants';
 export * from './validators';
 export * from './models';
 export * from './helpers';
+export * from './pipes';
+export * from './interceptors';
