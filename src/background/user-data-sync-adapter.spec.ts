@@ -99,19 +99,16 @@ describe('UserDataSyncAdapter', () => {
           periods: [],
         };
 
-        fetchSpy.and
-          .returnValue(
-            Promise.resolve({
-              ok: true,
-              json: () => Promise.resolve({ data: mockGetResponse }),
-            } as Response)
-          )
-          .and.returnValue(
-            Promise.resolve({
-              ok: true,
-              json: () => Promise.resolve({ data: { success: true } }),
-            } as Response)
-          );
+        fetchSpy.and.returnValues(
+          Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve({ data: mockGetResponse }),
+          } as Response),
+          Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve({ data: { success: true } }),
+          } as Response)
+        );
 
         await UserDataSyncAdapter.syncUserData('test@example.com', 'user-123');
 
