@@ -111,7 +111,8 @@ describe('BackgroundServiceMV3', () => {
     });
 
     it('should initialize alarms', () => {
-      service = new BackgroundServiceMV3();
+      // Initialize service to set up alarms
+      new BackgroundServiceMV3();
 
       expect(mockChrome.alarms.onAlarm.addListener).toHaveBeenCalled();
     });
@@ -135,7 +136,8 @@ describe('BackgroundServiceMV3', () => {
       // Wait for async initialization
       await new Promise(resolve => setTimeout(resolve, 100));
 
-      service = new BackgroundServiceMV3();
+      // Initialize service to restore period
+      new BackgroundServiceMV3();
 
       // Wait for async initialization
       await new Promise(resolve => setTimeout(resolve, 100));
@@ -162,7 +164,8 @@ describe('BackgroundServiceMV3', () => {
       (StorageAdapter.getCurrentPeriod as jasmine.Spy).and.returnValue(Promise.resolve(null));
       (StorageAdapter.getPeriods as jasmine.Spy).and.returnValue(Promise.resolve(mockPeriods));
 
-      service = new BackgroundServiceMV3();
+      // Initialize service
+      new BackgroundServiceMV3();
 
       // Wait for async initialization
       await new Promise(resolve => setTimeout(resolve, 100));
@@ -174,7 +177,8 @@ describe('BackgroundServiceMV3', () => {
       (StorageAdapter.getCurrentPeriod as jasmine.Spy).and.returnValue(Promise.resolve(null));
       (StorageAdapter.getPeriods as jasmine.Spy).and.returnValue(Promise.resolve([]));
 
-      service = new BackgroundServiceMV3();
+      // Initialize service
+      new BackgroundServiceMV3();
 
       // Wait for async initialization
       await new Promise(resolve => setTimeout(resolve, 100));
