@@ -134,6 +134,21 @@ export const WEBSITES_SOCIAL_MEDIA: Readonly<readonly IFocus.WebSite[]> = Object
 ]);
 
 /**
+ * External website links for Digital Zen Chrome Extension
+ * These links are never blockable and always accessible
+ */
+export const WEBSITE_PRIVACY_POLICY: Readonly<IFocus.WebSite> = {
+  id: 'privacy-policy',
+  name: 'Privacy Policy',
+  description: 'Digital Zen Privacy Policy',
+  url: 'https://digital-zen.csmpoint.com/api/privacy-policy.php',
+  imageUrl: '',
+  iconUrl: ICONS.PRIVACY_TIP,
+  type: IFocus.EWebSiteType.EXTERNAL_LINK,
+  isBlocked: false,
+};
+
+/**
  * Default period configuration for blocking social media during work hours
  */
 export const DEFAULT_PERIOD: Readonly<IFocus.Period> = Object.freeze({
