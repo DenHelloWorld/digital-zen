@@ -4,7 +4,7 @@ import { filterBlockableWebsites } from './filter-blockable-websites.helper';
 
 describe('filterBlockableWebsites', () => {
   describe('Valid inputs', () => {
-    it('should return all websites when none are EXTERNAL_LINK', () => {
+    it('should return all websites when none are UNBLOCKABLE', () => {
       const websites: IFocus.WebSite[] = [
         {
           id: 'x',
@@ -34,7 +34,7 @@ describe('filterBlockableWebsites', () => {
       expect(result).toEqual(websites);
     });
 
-    it('should filter out EXTERNAL_LINK websites', () => {
+    it('should filter out UNBLOCKABLE websites', () => {
       const websites: IFocus.WebSite[] = [
         {
           id: 'x',
@@ -53,7 +53,7 @@ describe('filterBlockableWebsites', () => {
           url: 'https://example.com/privacy',
           imageUrl: '',
           iconUrl: ICONS.PRIVACY_TIP,
-          type: IFocus.EWebSiteType.EXTERNAL_LINK,
+          type: IFocus.EWebSiteType.UNBLOCKABLE,
           isBlocked: false,
         },
       ];
@@ -65,7 +65,7 @@ describe('filterBlockableWebsites', () => {
       expect(result[0].id).toBe('x');
     });
 
-    it('should filter out multiple EXTERNAL_LINK websites', () => {
+    it('should filter out multiple UNBLOCKABLE websites', () => {
       const websites: IFocus.WebSite[] = [
         {
           id: 'facebook',
@@ -84,7 +84,7 @@ describe('filterBlockableWebsites', () => {
           url: 'https://example.com/privacy',
           imageUrl: '',
           iconUrl: ICONS.PRIVACY_TIP,
-          type: IFocus.EWebSiteType.EXTERNAL_LINK,
+          type: IFocus.EWebSiteType.UNBLOCKABLE,
           isBlocked: false,
         },
         {
@@ -94,7 +94,7 @@ describe('filterBlockableWebsites', () => {
           url: 'https://example.com/terms',
           imageUrl: '',
           iconUrl: '',
-          type: IFocus.EWebSiteType.EXTERNAL_LINK,
+          type: IFocus.EWebSiteType.UNBLOCKABLE,
           isBlocked: false,
         },
       ];
@@ -176,7 +176,7 @@ describe('filterBlockableWebsites', () => {
       expect(result.length).toBe(0);
     });
 
-    it('should return empty array when all websites are EXTERNAL_LINK', () => {
+    it('should return empty array when all websites are UNBLOCKABLE', () => {
       const websites: IFocus.WebSite[] = [
         {
           id: 'privacy',
@@ -185,7 +185,7 @@ describe('filterBlockableWebsites', () => {
           url: 'https://example.com/privacy',
           imageUrl: '',
           iconUrl: ICONS.PRIVACY_TIP,
-          type: IFocus.EWebSiteType.EXTERNAL_LINK,
+          type: IFocus.EWebSiteType.UNBLOCKABLE,
           isBlocked: false,
         },
       ];
@@ -196,7 +196,7 @@ describe('filterBlockableWebsites', () => {
       expect(result.length).toBe(0);
     });
 
-    it('should filter EXTERNAL_LINK even if isBlocked is true', () => {
+    it('should filter UNBLOCKABLE even if isBlocked is true', () => {
       const websites: IFocus.WebSite[] = [
         {
           id: 'privacy',
@@ -205,7 +205,7 @@ describe('filterBlockableWebsites', () => {
           url: 'https://example.com/privacy',
           imageUrl: '',
           iconUrl: ICONS.PRIVACY_TIP,
-          type: IFocus.EWebSiteType.EXTERNAL_LINK,
+          type: IFocus.EWebSiteType.UNBLOCKABLE,
           isBlocked: true,
         },
       ];
@@ -234,7 +234,7 @@ describe('filterBlockableWebsites', () => {
           url: 'https://example.com/privacy',
           imageUrl: '',
           iconUrl: ICONS.PRIVACY_TIP,
-          type: IFocus.EWebSiteType.EXTERNAL_LINK,
+          type: IFocus.EWebSiteType.UNBLOCKABLE,
           isBlocked: false,
         },
       ];
@@ -243,7 +243,7 @@ describe('filterBlockableWebsites', () => {
       filterBlockableWebsites(websites);
 
       expect(websites.length).toBe(originalLength);
-      expect(websites[1].type).toBe(IFocus.EWebSiteType.EXTERNAL_LINK);
+      expect(websites[1].type).toBe(IFocus.EWebSiteType.UNBLOCKABLE);
     });
   });
 

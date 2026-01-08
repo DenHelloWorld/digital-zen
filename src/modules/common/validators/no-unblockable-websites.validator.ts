@@ -3,8 +3,8 @@ import { IFocus } from '../models';
 import { filterBlockableWebsites } from '../helpers';
 
 /**
- * Validator that checks if an array of websites contains any EXTERNAL_LINK type websites.
- * EXTERNAL_LINK websites (like privacy policy) should never be added to blocked sites.
+ * Validator that checks if an array of websites contains any UNBLOCKABLE type websites.
+ * UNBLOCKABLE websites (like privacy policy) should never be added to blocked sites.
  * This prevents users from manually adding forbidden websites through the form.
  *
  * @guideline DZ_16 - Custom validator pattern
@@ -14,16 +14,18 @@ import { filterBlockableWebsites } from '../helpers';
  * @see https://angular.dev/guide/forms/form-validation#defining-custom-validators
  *
  * @param control - Form control containing array of websites
- * @returns Validation error if array contains EXTERNAL_LINK websites, null otherwise
+ * @returns Validation error if array contains UNBLOCKABLE websites, null otherwise
  *
  * @example
  * ```typescript
- * const control = new FormControl(websites, noExternalLinkWebsitesValidator);
- * // Returns { externalLinkNotAllowed: true } if array contains EXTERNAL_LINK websites
+ * const control = new FormControl(websites, noUnblockableWebsitesValidator);
+ * // Returns { unblockableNotAllowed: true } if array contains UNBLOCKABLE websites
  * // Returns null if all websites are blockable (SOCIAL_MEDIA or DEFAULT)
  * ```
  */
-export function noExternalLinkWebsitesValidator(control: AbstractControl): ValidationErrors | null {
+export const noUnblockableWebsitesValidator = (
+  control: AbstractControl
+): ValidationErrors | null => {
   const value: typeof control.value = control.value;
 
   if (!Array.isArray(value)) {
@@ -33,10 +35,10 @@ export function noExternalLinkWebsitesValidator(control: AbstractControl): Valid
   // Use helper to filter blockable websites
   const blockableWebsites = filterBlockableWebsites(value as IFocus.WebSite[]);
 
-  // If filtered list is shorter, it means there were EXTERNAL_LINK websites
+  // If filtered list is shorter, it means there were UNBLOCKABLE websites
   if (blockableWebsites.length < value.length) {
-    return { externalLinkNotAllowed: true };
+    return { unblockableNotAllowed: true };
   }
 
   return null;
-}
+};

@@ -31,7 +31,7 @@ import {
   uniquePeriodNameValidator,
   TIME_RANGES,
   MANUAL_TIME_RANGE,
-  noExternalLinkWebsitesValidator,
+  noUnblockableWebsitesValidator,
 } from '../../../common';
 import { WeekdaysSelectorComponent } from '../../../common/components/weekdays-selector/weekdays-selector.component';
 import { FocusService } from '../../../focus/services';
@@ -276,7 +276,7 @@ export class PeriodFormComponent implements OnInit {
         endTo: this.#fb.control<string | null>(null),
         webSites: this.#fb.nonNullable.control(
           [],
-          [arrayMinLengthValidator(), noExternalLinkWebsitesValidator]
+          [arrayMinLengthValidator(), noUnblockableWebsitesValidator]
         ),
         daysOfWeek: this.#fb.nonNullable.control([], arrayMinLengthValidator()),
         focusedTimes: this.#fb.nonNullable.control([]),

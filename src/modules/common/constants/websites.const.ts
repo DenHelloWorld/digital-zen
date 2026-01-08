@@ -134,7 +134,7 @@ export const WEBSITES_SOCIAL_MEDIA: Readonly<readonly IFocus.WebSite[]> = Object
 ]);
 
 /**
- * External website links for Digital Zen Chrome Extension
+ * Unblockable website links for Digital Zen Chrome Extension
  * These links are never blockable and always accessible
  */
 export const WEBSITE_PRIVACY_POLICY: Readonly<IFocus.WebSite> = {
@@ -144,7 +144,7 @@ export const WEBSITE_PRIVACY_POLICY: Readonly<IFocus.WebSite> = {
   url: 'https://digital-zen.csmpoint.com/api/privacy-policy.php',
   imageUrl: '',
   iconUrl: ICONS.PRIVACY_TIP,
-  type: IFocus.EWebSiteType.EXTERNAL_LINK,
+  type: IFocus.EWebSiteType.UNBLOCKABLE,
   isBlocked: false,
 };
 

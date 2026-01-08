@@ -1,9 +1,9 @@
 import { FormControl } from '@angular/forms';
 import { IFocus } from '../models';
 import { ICONS } from '../constants';
-import { noExternalLinkWebsitesValidator } from './no-external-link-websites.validator';
+import { noUnblockableWebsitesValidator } from './no-unblockable-websites.validator';
 
-describe('noExternalLinkWebsitesValidator', () => {
+describe('noUnblockableWebsitesValidator', () => {
   describe('Valid values', () => {
     it('should return null for array with only SOCIAL_MEDIA websites', () => {
       const websites: IFocus.WebSite[] = [
@@ -20,7 +20,7 @@ describe('noExternalLinkWebsitesValidator', () => {
       ];
 
       const control = new FormControl(websites);
-      expect(noExternalLinkWebsitesValidator(control)).toBeNull();
+      expect(noUnblockableWebsitesValidator(control)).toBeNull();
     });
 
     it('should return null for array with only DEFAULT websites', () => {
@@ -38,7 +38,7 @@ describe('noExternalLinkWebsitesValidator', () => {
       ];
 
       const control = new FormControl(websites);
-      expect(noExternalLinkWebsitesValidator(control)).toBeNull();
+      expect(noUnblockableWebsitesValidator(control)).toBeNull();
     });
 
     it('should return null for array with mixed SOCIAL_MEDIA and DEFAULT websites', () => {
@@ -66,17 +66,17 @@ describe('noExternalLinkWebsitesValidator', () => {
       ];
 
       const control = new FormControl(websites);
-      expect(noExternalLinkWebsitesValidator(control)).toBeNull();
+      expect(noUnblockableWebsitesValidator(control)).toBeNull();
     });
 
     it('should return null for empty array', () => {
       const control = new FormControl([]);
-      expect(noExternalLinkWebsitesValidator(control)).toBeNull();
+      expect(noUnblockableWebsitesValidator(control)).toBeNull();
     });
   });
 
   describe('Invalid values', () => {
-    it('should return error for array with EXTERNAL_LINK website', () => {
+    it('should return error for array with UNBLOCKABLE website', () => {
       const websites: IFocus.WebSite[] = [
         {
           id: 'privacy',
@@ -85,16 +85,16 @@ describe('noExternalLinkWebsitesValidator', () => {
           url: 'https://example.com/privacy',
           imageUrl: '',
           iconUrl: ICONS.PRIVACY_TIP,
-          type: IFocus.EWebSiteType.EXTERNAL_LINK,
+          type: IFocus.EWebSiteType.UNBLOCKABLE,
           isBlocked: false,
         },
       ];
 
       const control = new FormControl(websites);
-      expect(noExternalLinkWebsitesValidator(control)).toEqual({ externalLinkNotAllowed: true });
+      expect(noUnblockableWebsitesValidator(control)).toEqual({ unblockableNotAllowed: true });
     });
 
-    it('should return error for mixed array with EXTERNAL_LINK', () => {
+    it('should return error for mixed array with UNBLOCKABLE', () => {
       const websites: IFocus.WebSite[] = [
         {
           id: 'x',
@@ -113,16 +113,16 @@ describe('noExternalLinkWebsitesValidator', () => {
           url: 'https://example.com/privacy',
           imageUrl: '',
           iconUrl: ICONS.PRIVACY_TIP,
-          type: IFocus.EWebSiteType.EXTERNAL_LINK,
+          type: IFocus.EWebSiteType.UNBLOCKABLE,
           isBlocked: false,
         },
       ];
 
       const control = new FormControl(websites);
-      expect(noExternalLinkWebsitesValidator(control)).toEqual({ externalLinkNotAllowed: true });
+      expect(noUnblockableWebsitesValidator(control)).toEqual({ unblockableNotAllowed: true });
     });
 
-    it('should return error for multiple EXTERNAL_LINK websites', () => {
+    it('should return error for multiple UNBLOCKABLE websites', () => {
       const websites: IFocus.WebSite[] = [
         {
           id: 'privacy',
@@ -131,7 +131,7 @@ describe('noExternalLinkWebsitesValidator', () => {
           url: 'https://example.com/privacy',
           imageUrl: '',
           iconUrl: ICONS.PRIVACY_TIP,
-          type: IFocus.EWebSiteType.EXTERNAL_LINK,
+          type: IFocus.EWebSiteType.UNBLOCKABLE,
           isBlocked: false,
         },
         {
@@ -141,16 +141,16 @@ describe('noExternalLinkWebsitesValidator', () => {
           url: 'https://example.com/terms',
           imageUrl: '',
           iconUrl: '',
-          type: IFocus.EWebSiteType.EXTERNAL_LINK,
+          type: IFocus.EWebSiteType.UNBLOCKABLE,
           isBlocked: false,
         },
       ];
 
       const control = new FormControl(websites);
-      expect(noExternalLinkWebsitesValidator(control)).toEqual({ externalLinkNotAllowed: true });
+      expect(noUnblockableWebsitesValidator(control)).toEqual({ unblockableNotAllowed: true });
     });
 
-    it('should return error even if EXTERNAL_LINK has isBlocked set to true', () => {
+    it('should return error even if UNBLOCKABLE has isBlocked set to true', () => {
       const websites: IFocus.WebSite[] = [
         {
           id: 'privacy',
@@ -159,30 +159,30 @@ describe('noExternalLinkWebsitesValidator', () => {
           url: 'https://example.com/privacy',
           imageUrl: '',
           iconUrl: ICONS.PRIVACY_TIP,
-          type: IFocus.EWebSiteType.EXTERNAL_LINK,
+          type: IFocus.EWebSiteType.UNBLOCKABLE,
           isBlocked: true,
         },
       ];
 
       const control = new FormControl(websites);
-      expect(noExternalLinkWebsitesValidator(control)).toEqual({ externalLinkNotAllowed: true });
+      expect(noUnblockableWebsitesValidator(control)).toEqual({ unblockableNotAllowed: true });
     });
   });
 
   describe('Null/undefined handling', () => {
     it('should return null for non-array value', () => {
       const control = new FormControl('not an array');
-      expect(noExternalLinkWebsitesValidator(control)).toBeNull();
+      expect(noUnblockableWebsitesValidator(control)).toBeNull();
     });
 
     it('should return null for null value', () => {
       const control = new FormControl(null);
-      expect(noExternalLinkWebsitesValidator(control)).toBeNull();
+      expect(noUnblockableWebsitesValidator(control)).toBeNull();
     });
 
     it('should return null for undefined value', () => {
       const control = new FormControl(undefined);
-      expect(noExternalLinkWebsitesValidator(control)).toBeNull();
+      expect(noUnblockableWebsitesValidator(control)).toBeNull();
     });
   });
 
@@ -196,7 +196,7 @@ describe('noExternalLinkWebsitesValidator', () => {
       ];
 
       const control = new FormControl(websites);
-      expect(noExternalLinkWebsitesValidator(control)).toBeNull();
+      expect(noUnblockableWebsitesValidator(control)).toBeNull();
     });
 
     it('should be idempotent', () => {
@@ -208,17 +208,17 @@ describe('noExternalLinkWebsitesValidator', () => {
           url: 'https://example.com/privacy',
           imageUrl: '',
           iconUrl: ICONS.PRIVACY_TIP,
-          type: IFocus.EWebSiteType.EXTERNAL_LINK,
+          type: IFocus.EWebSiteType.UNBLOCKABLE,
           isBlocked: false,
         },
       ];
 
       const control = new FormControl(websites);
-      const result1 = noExternalLinkWebsitesValidator(control);
-      const result2 = noExternalLinkWebsitesValidator(control);
+      const result1 = noUnblockableWebsitesValidator(control);
+      const result2 = noUnblockableWebsitesValidator(control);
 
       expect(result1).toEqual(result2);
-      expect(result1).toEqual({ externalLinkNotAllowed: true });
+      expect(result1).toEqual({ unblockableNotAllowed: true });
     });
 
     it('should not mutate the control value', () => {
@@ -239,7 +239,7 @@ describe('noExternalLinkWebsitesValidator', () => {
       const originalLength = websites.length;
       const originalType = websites[0].type;
 
-      noExternalLinkWebsitesValidator(control);
+      noUnblockableWebsitesValidator(control);
 
       expect(websites.length).toBe(originalLength);
       expect(websites[0].type).toBe(originalType);

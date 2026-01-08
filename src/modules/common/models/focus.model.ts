@@ -28,13 +28,13 @@ export namespace IFocus {
   export enum EWebSiteType {
     DEFAULT = 'Default',
     SOCIAL_MEDIA = 'Social Media',
-    EXTERNAL_LINK = 'External Link',
+    UNBLOCKABLE = 'Unblockable',
   }
 
   export type IWebSiteType =
     | IFocus.EWebSiteType.SOCIAL_MEDIA
     | IFocus.EWebSiteType.DEFAULT
-    | IFocus.EWebSiteType.EXTERNAL_LINK;
+    | IFocus.EWebSiteType.UNBLOCKABLE;
 
   export interface DayOfWeek {
     day: DayOfWeekType;
