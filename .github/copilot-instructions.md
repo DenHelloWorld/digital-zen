@@ -3,12 +3,14 @@
 ## ⚠️ Before You Start
 
 **IMPORTANT:** Before generating any code or making changes:
+
 1. **Read the complete coding guidelines** at `/docs/coding-guidelines.md`
 2. **Review the relevant DZ_XX patterns** for the task you're working on
 3. **Check examples** in existing code that follow the same patterns
 4. **Verify** that you understand the project-specific conventions (DZ_10-DZ_12, DZ_18-DZ_19)
 
 **Key Guidelines to Study:**
+
 - `/docs/coding-guidelines.md` - Complete coding standards (DZ_01 - DZ_19)
 - `/docs/README.md` - Quick start guide
 - `/docs/logger.md` - Logger usage
