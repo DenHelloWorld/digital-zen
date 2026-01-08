@@ -37,6 +37,37 @@ describe('BackgroundServiceMV3', () => {
     };
   };
 
+  /**
+   * Helper function to wait for all pending microtasks to complete
+   * This is the proper way to wait for async operations without setTimeout
+   */
+  async function flushMicrotasks(): Promise<void> {
+    // Wait for 2 microtask cycles to ensure all promises have resolved
+    await Promise.resolve();
+    await Promise.resolve();
+  }
+
+  /**
+   * Helper to create a sendResponse spy that can be awaited
+   * This properly handles the async IIFE pattern used in the message listener
+   */
+  function createAwaitableSendResponse(): {
+    spy: jasmine.Spy;
+    promise: Promise<unknown>;
+  } {
+    let resolveFn: (value: unknown) => void;
+    const promise = new Promise(resolve => {
+      resolveFn = resolve;
+    });
+
+    const spy = jasmine.createSpy('sendResponse').and.callFake((response: unknown) => {
+      resolveFn(response);
+      return response;
+    });
+
+    return { spy, promise };
+  }
+
   beforeEach(() => {
     // Mock Chrome APIs
     mockChrome = {
@@ -96,9 +127,7 @@ describe('BackgroundServiceMV3', () => {
   });
 
   afterEach(async () => {
-    // Wait for any pending async operations
-    await new Promise(resolve => setTimeout(resolve, 50));
-    // Restore chrome to prevent errors in async operations
+    // No setTimeout needed - just ensure chrome mock stays available
     (globalThis as unknown as { chrome: typeof mockChrome }).chrome = mockChrome;
   });
 
@@ -133,16 +162,15 @@ describe('BackgroundServiceMV3', () => {
         webSites: [],
       };
 
-      (StorageAdapter.getCurrentPeriod as jasmine.Spy).and.returnValue(Promise.resolve(mockPeriod));
+      const getCurrentPeriodSpy = (StorageAdapter.getCurrentPeriod as jasmine.Spy).and.returnValue(
+        Promise.resolve(mockPeriod)
+      );
 
-      // Wait for async initialization
-      await new Promise(resolve => setTimeout(resolve, 100));
-
-      // Initialize service to restore period
+      // Initialize service - it calls restoreCurrentPeriod() internally
       new BackgroundServiceMV3();
 
-      // Wait for async initialization
-      await new Promise(resolve => setTimeout(resolve, 100));
+      // Wait for the getCurrentPeriod promise to resolve
+      await getCurrentPeriodSpy.calls.mostRecent().returnValue;
 
       expect(StorageAdapter.getCurrentPeriod).toHaveBeenCalled();
     });
@@ -163,27 +191,37 @@ describe('BackgroundServiceMV3', () => {
         },
       ];
 
-      (StorageAdapter.getCurrentPeriod as jasmine.Spy).and.returnValue(Promise.resolve(null));
-      (StorageAdapter.getPeriods as jasmine.Spy).and.returnValue(Promise.resolve(mockPeriods));
+      const getCurrentPeriodSpy = (StorageAdapter.getCurrentPeriod as jasmine.Spy).and.returnValue(
+        Promise.resolve(null)
+      );
+      const getPeriodsSpy = (StorageAdapter.getPeriods as jasmine.Spy).and.returnValue(
+        Promise.resolve(mockPeriods)
+      );
 
       // Initialize service
       new BackgroundServiceMV3();
 
-      // Wait for async initialization
-      await new Promise(resolve => setTimeout(resolve, 100));
+      // Wait for both promises to resolve
+      await getCurrentPeriodSpy.calls.mostRecent().returnValue;
+      await getPeriodsSpy.calls.mostRecent().returnValue;
 
       expect(StorageAdapter.saveCurrentPeriod).toHaveBeenCalledWith(mockPeriods[0]);
     });
 
     it('should update icon to inactive when no focused period', async () => {
-      (StorageAdapter.getCurrentPeriod as jasmine.Spy).and.returnValue(Promise.resolve(null));
-      (StorageAdapter.getPeriods as jasmine.Spy).and.returnValue(Promise.resolve([]));
+      const getCurrentPeriodSpy = (StorageAdapter.getCurrentPeriod as jasmine.Spy).and.returnValue(
+        Promise.resolve(null)
+      );
+      const getPeriodsSpy = (StorageAdapter.getPeriods as jasmine.Spy).and.returnValue(
+        Promise.resolve([])
+      );
 
       // Initialize service
       new BackgroundServiceMV3();
 
-      // Wait for async initialization
-      await new Promise(resolve => setTimeout(resolve, 100));
+      // Wait for promises to resolve
+      await getCurrentPeriodSpy.calls.mostRecent().returnValue;
+      await getPeriodsSpy.calls.mostRecent().returnValue;
 
       expect(mockChrome.action.setIcon).toHaveBeenCalledWith({
         path: {
@@ -221,7 +259,7 @@ describe('BackgroundServiceMV3', () => {
 
         (StorageAdapter.getPeriods as jasmine.Spy).and.returnValue(Promise.resolve([]));
 
-        const sendResponse = jasmine.createSpy('sendResponse');
+        const { spy: sendResponse, promise } = createAwaitableSendResponse();
 
         messageListener(
           { command: CHROME_COMMAND_ENUM.ADD_PERIOD, period: newPeriod },
@@ -229,8 +267,8 @@ describe('BackgroundServiceMV3', () => {
           sendResponse
         );
 
-        // Wait for async processing
-        await new Promise(resolve => setTimeout(resolve, 100));
+        // Wait for sendResponse to be called
+        await promise;
 
         expect(StorageAdapter.savePeriod).toHaveBeenCalledWith(newPeriod);
         expect(sendResponse).toHaveBeenCalledWith({ success: true });
@@ -254,7 +292,7 @@ describe('BackgroundServiceMV3', () => {
           Promise.resolve([existingPeriod])
         );
 
-        const sendResponse = jasmine.createSpy('sendResponse');
+        const { spy: sendResponse, promise } = createAwaitableSendResponse();
 
         messageListener(
           { command: CHROME_COMMAND_ENUM.ADD_PERIOD, period: existingPeriod },
@@ -263,7 +301,7 @@ describe('BackgroundServiceMV3', () => {
         );
 
         // Wait for async processing
-        await new Promise(resolve => setTimeout(resolve, 100));
+        await promise;
 
         // savePeriod should not be called for duplicate
         expect(StorageAdapter.savePeriod).not.toHaveBeenCalled();
@@ -273,7 +311,7 @@ describe('BackgroundServiceMV3', () => {
 
     describe('REMOVE_PERIOD command', () => {
       it('should remove a period', async () => {
-        const sendResponse = jasmine.createSpy('sendResponse');
+        const { spy: sendResponse, promise } = createAwaitableSendResponse();
 
         messageListener(
           { command: CHROME_COMMAND_ENUM.REMOVE_PERIOD, id: 'period-to-remove' },
@@ -282,7 +320,7 @@ describe('BackgroundServiceMV3', () => {
         );
 
         // Wait for async processing
-        await new Promise(resolve => setTimeout(resolve, 100));
+        await promise;
 
         expect(StorageAdapter.removePeriod).toHaveBeenCalledWith('period-to-remove');
         expect(sendResponse).toHaveBeenCalledWith({ success: true });
@@ -306,7 +344,7 @@ describe('BackgroundServiceMV3', () => {
           Promise.resolve(currentPeriod)
         );
 
-        const sendResponse = jasmine.createSpy('sendResponse');
+        const { spy: sendResponse, promise } = createAwaitableSendResponse();
 
         messageListener(
           { command: CHROME_COMMAND_ENUM.REMOVE_PERIOD, id: 'current-period' },
@@ -315,7 +353,7 @@ describe('BackgroundServiceMV3', () => {
         );
 
         // Wait for async processing
-        await new Promise(resolve => setTimeout(resolve, 100));
+        await promise;
 
         expect(StorageAdapter.removePeriod).toHaveBeenCalledWith('current-period');
         expect(mockChrome.declarativeNetRequest.updateDynamicRules).toHaveBeenCalled();
@@ -337,7 +375,7 @@ describe('BackgroundServiceMV3', () => {
           webSites: [],
         };
 
-        const sendResponse = jasmine.createSpy('sendResponse');
+        const { spy: sendResponse, promise } = createAwaitableSendResponse();
 
         messageListener(
           { command: CHROME_COMMAND_ENUM.UPDATE_PERIOD, period: updatedPeriod },
@@ -346,7 +384,7 @@ describe('BackgroundServiceMV3', () => {
         );
 
         // Wait for async processing
-        await new Promise(resolve => setTimeout(resolve, 100));
+        await promise;
 
         expect(StorageAdapter.savePeriod).toHaveBeenCalledWith(updatedPeriod);
         expect(sendResponse).toHaveBeenCalledWith({ success: true });
@@ -383,7 +421,7 @@ describe('BackgroundServiceMV3', () => {
 
         const updatedPeriod = { ...currentPeriod, name: 'Updated Name' };
 
-        const sendResponse = jasmine.createSpy('sendResponse');
+        const { spy: sendResponse, promise } = createAwaitableSendResponse();
 
         messageListener(
           { command: CHROME_COMMAND_ENUM.UPDATE_PERIOD, period: updatedPeriod },
@@ -392,7 +430,7 @@ describe('BackgroundServiceMV3', () => {
         );
 
         // Wait for async processing
-        await new Promise(resolve => setTimeout(resolve, 100));
+        await promise;
 
         expect(StorageAdapter.savePeriod).toHaveBeenCalledWith(updatedPeriod);
         expect(StorageAdapter.saveCurrentPeriod).toHaveBeenCalledWith(updatedPeriod);
@@ -418,7 +456,7 @@ describe('BackgroundServiceMV3', () => {
 
         (StorageAdapter.getPeriods as jasmine.Spy).and.returnValue(Promise.resolve([period]));
 
-        const sendResponse = jasmine.createSpy('sendResponse');
+        const { spy: sendResponse, promise } = createAwaitableSendResponse();
 
         messageListener(
           { command: CHROME_COMMAND_ENUM.START_FOCUS, periodId: 'test-period' },
@@ -427,7 +465,7 @@ describe('BackgroundServiceMV3', () => {
         );
 
         // Wait for async processing
-        await new Promise(resolve => setTimeout(resolve, 100));
+        await promise;
 
         expect(sendResponse).toHaveBeenCalledWith({ success: true });
         expect(StorageAdapter.saveCurrentPeriod).toHaveBeenCalled();
@@ -444,7 +482,7 @@ describe('BackgroundServiceMV3', () => {
       it('should return error when period not found', async () => {
         (StorageAdapter.getPeriods as jasmine.Spy).and.returnValue(Promise.resolve([]));
 
-        const sendResponse = jasmine.createSpy('sendResponse');
+        const { spy: sendResponse, promise } = createAwaitableSendResponse();
 
         messageListener(
           { command: CHROME_COMMAND_ENUM.START_FOCUS, periodId: 'non-existent' },
@@ -453,7 +491,7 @@ describe('BackgroundServiceMV3', () => {
         );
 
         // Wait for async processing
-        await new Promise(resolve => setTimeout(resolve, 100));
+        await promise;
 
         expect(sendResponse).toHaveBeenCalledWith({
           success: false,
@@ -480,7 +518,7 @@ describe('BackgroundServiceMV3', () => {
 
         (StorageAdapter.getPeriods as jasmine.Spy).and.returnValue(Promise.resolve([period]));
 
-        const sendResponse = jasmine.createSpy('sendResponse');
+        const { spy: sendResponse, promise } = createAwaitableSendResponse();
 
         messageListener(
           { command: CHROME_COMMAND_ENUM.START_FOCUS, periodId: 'test-period' },
@@ -489,7 +527,7 @@ describe('BackgroundServiceMV3', () => {
         );
 
         // Wait for async processing
-        await new Promise(resolve => setTimeout(resolve, 100));
+        await promise;
 
         expect(sendResponse).toHaveBeenCalledWith({
           success: false,
@@ -514,7 +552,7 @@ describe('BackgroundServiceMV3', () => {
 
         (StorageAdapter.getPeriods as jasmine.Spy).and.returnValue(Promise.resolve([period]));
 
-        const sendResponse = jasmine.createSpy('sendResponse');
+        const { spy: sendResponse, promise } = createAwaitableSendResponse();
 
         messageListener(
           { command: CHROME_COMMAND_ENUM.START_FOCUS, periodId: 'test-period' },
@@ -523,7 +561,7 @@ describe('BackgroundServiceMV3', () => {
         );
 
         // Wait for async processing
-        await new Promise(resolve => setTimeout(resolve, 100));
+        await promise;
 
         expect(sendResponse).toHaveBeenCalledWith({
           success: false,
@@ -548,7 +586,7 @@ describe('BackgroundServiceMV3', () => {
 
         (StorageAdapter.getPeriods as jasmine.Spy).and.returnValue(Promise.resolve([period]));
 
-        const sendResponse = jasmine.createSpy('sendResponse');
+        const { spy: sendResponse, promise } = createAwaitableSendResponse();
 
         messageListener(
           { command: CHROME_COMMAND_ENUM.START_FOCUS, periodId: 'test-period' },
@@ -557,7 +595,7 @@ describe('BackgroundServiceMV3', () => {
         );
 
         // Wait for async processing
-        await new Promise(resolve => setTimeout(resolve, 100));
+        await promise;
 
         expect(mockChrome.alarms.create).toHaveBeenCalledWith(CHROME_ALARM_ENUM.CHECK_FOCUS_END, {
           periodInMinutes: 1,
@@ -567,12 +605,12 @@ describe('BackgroundServiceMV3', () => {
 
     describe('STOP_FOCUS command', () => {
       it('should stop focus and save focused time', async () => {
-        const sendResponse = jasmine.createSpy('sendResponse');
+        const { spy: sendResponse, promise } = createAwaitableSendResponse();
 
         messageListener({ command: CHROME_COMMAND_ENUM.STOP_FOCUS }, {}, sendResponse);
 
         // Wait for async processing
-        await new Promise(resolve => setTimeout(resolve, 100));
+        await promise;
 
         expect(sendResponse).toHaveBeenCalledWith({ success: true });
         expect(mockChrome.action.setIcon).toHaveBeenCalledWith({
@@ -587,23 +625,23 @@ describe('BackgroundServiceMV3', () => {
       it('should return success when already stopped', async () => {
         (StorageAdapter.getCurrentPeriod as jasmine.Spy).and.returnValue(Promise.resolve(null));
 
-        const sendResponse = jasmine.createSpy('sendResponse');
+        const { spy: sendResponse, promise } = createAwaitableSendResponse();
 
         messageListener({ command: CHROME_COMMAND_ENUM.STOP_FOCUS }, {}, sendResponse);
 
         // Wait for async processing
-        await new Promise(resolve => setTimeout(resolve, 100));
+        await promise;
 
         expect(sendResponse).toHaveBeenCalledWith({ success: true });
       });
 
       it('should clear blocking rules when stopping focus', async () => {
-        const sendResponse = jasmine.createSpy('sendResponse');
+        const { spy: sendResponse, promise } = createAwaitableSendResponse();
 
         messageListener({ command: CHROME_COMMAND_ENUM.STOP_FOCUS }, {}, sendResponse);
 
         // Wait for async processing
-        await new Promise(resolve => setTimeout(resolve, 100));
+        await promise;
 
         expect(mockChrome.declarativeNetRequest.updateDynamicRules).toHaveBeenCalled();
       });
@@ -627,12 +665,12 @@ describe('BackgroundServiceMV3', () => {
 
         (StorageAdapter.getCurrentPeriod as jasmine.Spy).and.returnValue(Promise.resolve(period));
 
-        const sendResponse = jasmine.createSpy('sendResponse');
+        const { spy: sendResponse, promise } = createAwaitableSendResponse();
 
         messageListener({ command: CHROME_COMMAND_ENUM.TOGGLE_FOCUS }, {}, sendResponse);
 
         // Wait for async processing
-        await new Promise(resolve => setTimeout(resolve, 100));
+        await promise;
 
         expect(sendResponse).toHaveBeenCalledWith({ success: true });
         expect(mockChrome.action.setIcon).toHaveBeenCalledWith({
@@ -660,12 +698,12 @@ describe('BackgroundServiceMV3', () => {
 
         (StorageAdapter.getCurrentPeriod as jasmine.Spy).and.returnValue(Promise.resolve(period));
 
-        const sendResponse = jasmine.createSpy('sendResponse');
+        const { spy: sendResponse, promise } = createAwaitableSendResponse();
 
         messageListener({ command: CHROME_COMMAND_ENUM.TOGGLE_FOCUS }, {}, sendResponse);
 
         // Wait for async processing
-        await new Promise(resolve => setTimeout(resolve, 100));
+        await promise;
 
         expect(sendResponse).toHaveBeenCalledWith({ success: true });
         expect(mockChrome.action.setIcon).toHaveBeenCalledWith({
@@ -680,12 +718,12 @@ describe('BackgroundServiceMV3', () => {
       it('should return success when no current period', async () => {
         (StorageAdapter.getCurrentPeriod as jasmine.Spy).and.returnValue(Promise.resolve(null));
 
-        const sendResponse = jasmine.createSpy('sendResponse');
+        const { spy: sendResponse, promise } = createAwaitableSendResponse();
 
         messageListener({ command: CHROME_COMMAND_ENUM.TOGGLE_FOCUS }, {}, sendResponse);
 
         // Wait for async processing
-        await new Promise(resolve => setTimeout(resolve, 100));
+        await promise;
 
         expect(sendResponse).toHaveBeenCalledWith({ success: true });
       });
@@ -695,7 +733,7 @@ describe('BackgroundServiceMV3', () => {
       it('should start quick focus for a site', async () => {
         (StorageAdapter.getCurrentPeriod as jasmine.Spy).and.returnValue(Promise.resolve(null));
 
-        const sendResponse = jasmine.createSpy('sendResponse');
+        const { spy: sendResponse, promise } = createAwaitableSendResponse();
 
         messageListener(
           { command: CHROME_COMMAND_ENUM.TOGGLE_QUICK_FOCUS, siteUrl: 'https://example.com' },
@@ -704,7 +742,7 @@ describe('BackgroundServiceMV3', () => {
         );
 
         // Wait for async processing
-        await new Promise(resolve => setTimeout(resolve, 100));
+        await promise;
 
         expect(sendResponse).toHaveBeenCalledWith({ success: true });
         expect(StorageAdapter.saveCurrentPeriod).toHaveBeenCalled();
@@ -728,7 +766,7 @@ describe('BackgroundServiceMV3', () => {
           Promise.resolve(quickFocusPeriod)
         );
 
-        const sendResponse = jasmine.createSpy('sendResponse');
+        const { spy: sendResponse, promise } = createAwaitableSendResponse();
 
         messageListener(
           { command: CHROME_COMMAND_ENUM.TOGGLE_QUICK_FOCUS, siteUrl: 'https://example.com' },
@@ -737,7 +775,7 @@ describe('BackgroundServiceMV3', () => {
         );
 
         // Wait for async processing
-        await new Promise(resolve => setTimeout(resolve, 100));
+        await promise;
 
         expect(sendResponse).toHaveBeenCalledWith({ success: true });
         expect(mockChrome.action.setIcon).toHaveBeenCalledWith({
@@ -761,12 +799,12 @@ describe('BackgroundServiceMV3', () => {
 
         mockChrome.tabs.query.and.returnValue(Promise.resolve([mockTab]));
 
-        const sendResponse = jasmine.createSpy('sendResponse');
+        const { spy: sendResponse, promise } = createAwaitableSendResponse();
 
         messageListener({ command: CHROME_COMMAND_ENUM.GET_ACTIVE_TAB }, {}, sendResponse);
 
         // Wait for async processing
-        await new Promise(resolve => setTimeout(resolve, 100));
+        await promise;
 
         expect(sendResponse).toHaveBeenCalledWith({
           success: true,
@@ -777,12 +815,12 @@ describe('BackgroundServiceMV3', () => {
       it('should return null when no active tab', async () => {
         mockChrome.tabs.query.and.returnValue(Promise.resolve([]));
 
-        const sendResponse = jasmine.createSpy('sendResponse');
+        const { spy: sendResponse, promise } = createAwaitableSendResponse();
 
         messageListener({ command: CHROME_COMMAND_ENUM.GET_ACTIVE_TAB }, {}, sendResponse);
 
         // Wait for async processing
-        await new Promise(resolve => setTimeout(resolve, 100));
+        await promise;
 
         expect(sendResponse).toHaveBeenCalledWith({
           success: true,
@@ -809,7 +847,7 @@ describe('BackgroundServiceMV3', () => {
         (StorageAdapter.getPeriods as jasmine.Spy).and.returnValue(Promise.resolve([period]));
         (StorageAdapter.getCurrentPeriod as jasmine.Spy).and.returnValue(Promise.resolve(null));
 
-        const sendResponse = jasmine.createSpy('sendResponse');
+        const { spy: sendResponse, promise } = createAwaitableSendResponse();
 
         messageListener(
           { command: CHROME_COMMAND_ENUM.SET_CURRENT_PERIOD, periodId: 'new-current-period' },
@@ -818,7 +856,7 @@ describe('BackgroundServiceMV3', () => {
         );
 
         // Wait for async processing
-        await new Promise(resolve => setTimeout(resolve, 100));
+        await promise;
 
         expect(sendResponse).toHaveBeenCalledWith({ success: true });
         expect(StorageAdapter.saveCurrentPeriod).toHaveBeenCalledWith(period);
@@ -827,7 +865,7 @@ describe('BackgroundServiceMV3', () => {
       it('should return error when period not found', async () => {
         (StorageAdapter.getPeriods as jasmine.Spy).and.returnValue(Promise.resolve([]));
 
-        const sendResponse = jasmine.createSpy('sendResponse');
+        const { spy: sendResponse, promise } = createAwaitableSendResponse();
 
         messageListener(
           { command: CHROME_COMMAND_ENUM.SET_CURRENT_PERIOD, periodId: 'non-existent' },
@@ -836,7 +874,7 @@ describe('BackgroundServiceMV3', () => {
         );
 
         // Wait for async processing
-        await new Promise(resolve => setTimeout(resolve, 100));
+        await promise;
 
         expect(sendResponse).toHaveBeenCalledWith({
           success: false,
@@ -878,7 +916,7 @@ describe('BackgroundServiceMV3', () => {
           Promise.resolve([currentPeriod, newPeriod])
         );
 
-        const sendResponse = jasmine.createSpy('sendResponse');
+        const { spy: sendResponse, promise } = createAwaitableSendResponse();
 
         messageListener(
           { command: CHROME_COMMAND_ENUM.SET_CURRENT_PERIOD, periodId: 'new-period' },
@@ -887,7 +925,7 @@ describe('BackgroundServiceMV3', () => {
         );
 
         // Wait for async processing
-        await new Promise(resolve => setTimeout(resolve, 200));
+        await promise;
 
         expect(sendResponse).toHaveBeenCalledWith({ success: true });
         expect(mockChrome.declarativeNetRequest.updateDynamicRules).toHaveBeenCalled();
@@ -896,7 +934,7 @@ describe('BackgroundServiceMV3', () => {
 
     describe('SYNC_USER_DATA command', () => {
       it('should sync user data', async () => {
-        const sendResponse = jasmine.createSpy('sendResponse');
+        const { spy: sendResponse, promise } = createAwaitableSendResponse();
 
         messageListener(
           {
@@ -909,7 +947,7 @@ describe('BackgroundServiceMV3', () => {
         );
 
         // Wait for async processing
-        await new Promise(resolve => setTimeout(resolve, 100));
+        await promise;
 
         expect(UserDataSyncAdapter.syncUserData).toHaveBeenCalledWith(
           'test@example.com',
@@ -923,7 +961,7 @@ describe('BackgroundServiceMV3', () => {
           Promise.reject(new Error('Sync failed'))
         );
 
-        const sendResponse = jasmine.createSpy('sendResponse');
+        const { spy: sendResponse, promise } = createAwaitableSendResponse();
 
         messageListener(
           {
@@ -936,7 +974,7 @@ describe('BackgroundServiceMV3', () => {
         );
 
         // Wait for async processing
-        await new Promise(resolve => setTimeout(resolve, 100));
+        await promise;
 
         expect(sendResponse).toHaveBeenCalledWith({
           success: false,
@@ -975,7 +1013,7 @@ describe('BackgroundServiceMV3', () => {
           Promise.resolve(currentPeriod)
         );
 
-        const sendResponse = jasmine.createSpy('sendResponse');
+        const { spy: sendResponse, promise } = createAwaitableSendResponse();
 
         messageListener(
           {
@@ -987,7 +1025,7 @@ describe('BackgroundServiceMV3', () => {
         );
 
         // Wait for async processing
-        await new Promise(resolve => setTimeout(resolve, 100));
+        await promise;
 
         expect(sendResponse).toHaveBeenCalledWith({ success: true });
         expect(StorageAdapter.savePeriod).toHaveBeenCalled();
@@ -997,12 +1035,12 @@ describe('BackgroundServiceMV3', () => {
 
     describe('Unknown command', () => {
       it('should return error for unknown command', async () => {
-        const sendResponse = jasmine.createSpy('sendResponse');
+        const { spy: sendResponse, promise } = createAwaitableSendResponse();
 
         messageListener({ command: 'UNKNOWN_COMMAND' }, {}, sendResponse);
 
         // Wait for async processing
-        await new Promise(resolve => setTimeout(resolve, 100));
+        await promise;
 
         expect(sendResponse).toHaveBeenCalledWith({
           success: false,
@@ -1017,12 +1055,20 @@ describe('BackgroundServiceMV3', () => {
           Promise.reject(new Error('Storage error'))
         );
 
-        const sendResponse = jasmine.createSpy('sendResponse');
+        const { spy: sendResponse, promise } = createAwaitableSendResponse();
 
-        messageListener({ command: CHROME_COMMAND_ENUM.ADD_PERIOD, period: {} }, {}, sendResponse);
+        // Call the message listener and capture when it completes
+        const result = messageListener(
+          { command: CHROME_COMMAND_ENUM.ADD_PERIOD, period: {} },
+          {},
+          sendResponse
+        );
 
-        // Wait for async processing
-        await new Promise(resolve => setTimeout(resolve, 150));
+        // The listener returns true for async response
+        expect(result).toBe(true);
+
+        // Wait for sendResponse to be called
+        await promise;
 
         expect(sendResponse).toHaveBeenCalledWith({
           success: false,
@@ -1067,7 +1113,7 @@ describe('BackgroundServiceMV3', () => {
       await alarmListener({ name: CHROME_ALARM_ENUM.CHECK_FOCUS_END });
 
       // Wait for async processing
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await flushMicrotasks();
 
       expect(mockChrome.declarativeNetRequest.updateDynamicRules).toHaveBeenCalled();
       expect(mockChrome.action.setIcon).toHaveBeenCalledWith({
@@ -1100,10 +1146,9 @@ describe('BackgroundServiceMV3', () => {
       // Reset spy before test
       mockChrome.declarativeNetRequest.updateDynamicRules.calls.reset();
 
+      // Call the alarm listener and wait for it
       await alarmListener({ name: CHROME_ALARM_ENUM.CHECK_FOCUS_END });
-
-      // Wait for async processing
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await flushMicrotasks();
 
       // Should not have called updateDynamicRules
       expect(mockChrome.declarativeNetRequest.updateDynamicRules).not.toHaveBeenCalled();
@@ -1130,10 +1175,9 @@ describe('BackgroundServiceMV3', () => {
       // Reset spy before test
       mockChrome.declarativeNetRequest.updateDynamicRules.calls.reset();
 
+      // Call the alarm listener and wait for it
       await alarmListener({ name: CHROME_ALARM_ENUM.CHECK_FOCUS_END });
-
-      // Wait for async processing
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await flushMicrotasks();
 
       // Should not have called updateDynamicRules
       expect(mockChrome.declarativeNetRequest.updateDynamicRules).not.toHaveBeenCalled();
@@ -1218,7 +1262,7 @@ describe('BackgroundServiceMV3', () => {
       new BackgroundServiceMV3();
     });
 
-    it('should create redirect rule for domain', () => {
+    it('should create redirect rule for domain', async () => {
       const today = new Date().getDay();
       const period: IFocus.Period = {
         id: 'test-period',
@@ -1247,7 +1291,7 @@ describe('BackgroundServiceMV3', () => {
       const messageListener = mockChrome.runtime.onMessage.addListener.calls.mostRecent().args[0];
       (StorageAdapter.getPeriods as jasmine.Spy).and.returnValue(Promise.resolve([period]));
 
-      const sendResponse = jasmine.createSpy('sendResponse');
+      const { spy: sendResponse, promise } = createAwaitableSendResponse();
 
       messageListener(
         { command: CHROME_COMMAND_ENUM.START_FOCUS, periodId: 'test-period' },
@@ -1255,10 +1299,10 @@ describe('BackgroundServiceMV3', () => {
         sendResponse
       );
 
-      // Let async code complete
-      setTimeout(() => {
-        expect(mockChrome.declarativeNetRequest.updateDynamicRules).toHaveBeenCalled();
-      }, 100);
+      // Wait for async operations to complete
+      await promise;
+
+      expect(mockChrome.declarativeNetRequest.updateDynamicRules).toHaveBeenCalled();
     });
 
     it('should remove www prefix from domain', async () => {
@@ -1290,7 +1334,7 @@ describe('BackgroundServiceMV3', () => {
       const messageListener = mockChrome.runtime.onMessage.addListener.calls.mostRecent().args[0];
       (StorageAdapter.getPeriods as jasmine.Spy).and.returnValue(Promise.resolve([period]));
 
-      const sendResponse = jasmine.createSpy('sendResponse');
+      const { spy: sendResponse, promise } = createAwaitableSendResponse();
 
       messageListener(
         { command: CHROME_COMMAND_ENUM.START_FOCUS, periodId: 'test-period' },
@@ -1298,18 +1342,18 @@ describe('BackgroundServiceMV3', () => {
         sendResponse
       );
 
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await promise;
 
       expect(mockChrome.declarativeNetRequest.updateDynamicRules).toHaveBeenCalled();
     });
 
     it('should clear all blocking rules when stopping focus', async () => {
       const messageListener = mockChrome.runtime.onMessage.addListener.calls.mostRecent().args[0];
-      const sendResponse = jasmine.createSpy('sendResponse');
+      const { spy: sendResponse, promise } = createAwaitableSendResponse();
 
       messageListener({ command: CHROME_COMMAND_ENUM.STOP_FOCUS }, {}, sendResponse);
 
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await promise;
 
       expect(mockChrome.declarativeNetRequest.updateDynamicRules).toHaveBeenCalledWith(
         jasmine.objectContaining({
@@ -1344,7 +1388,7 @@ describe('BackgroundServiceMV3', () => {
       const messageListener = mockChrome.runtime.onMessage.addListener.calls.mostRecent().args[0];
       (StorageAdapter.getPeriods as jasmine.Spy).and.returnValue(Promise.resolve([period]));
 
-      const sendResponse = jasmine.createSpy('sendResponse');
+      const { spy: sendResponse, promise } = createAwaitableSendResponse();
 
       messageListener(
         { command: CHROME_COMMAND_ENUM.START_FOCUS, periodId: 'test-period' },
@@ -1352,7 +1396,7 @@ describe('BackgroundServiceMV3', () => {
         sendResponse
       );
 
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await promise;
 
       expect(mockChrome.action.setIcon).toHaveBeenCalledWith({
         path: {
@@ -1365,11 +1409,11 @@ describe('BackgroundServiceMV3', () => {
 
     it('should set transparent icon when stopping focus', async () => {
       const messageListener = mockChrome.runtime.onMessage.addListener.calls.mostRecent().args[0];
-      const sendResponse = jasmine.createSpy('sendResponse');
+      const { spy: sendResponse, promise } = createAwaitableSendResponse();
 
       messageListener({ command: CHROME_COMMAND_ENUM.STOP_FOCUS }, {}, sendResponse);
 
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await promise;
 
       expect(mockChrome.action.setIcon).toHaveBeenCalledWith({
         path: {
