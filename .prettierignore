@@ -24,3 +24,6 @@ build/
 
 # Browser extensions
 /dist/
+
+# Documentation (format only with npm run format:docs)
+docs/

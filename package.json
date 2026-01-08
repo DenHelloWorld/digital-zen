@@ -16,6 +16,8 @@
     "lint": "ng lint",
     "format": "npx prettier --write .",
     "format:check": "npx prettier --check .",
+    "format:docs": "npx prettier --write docs/",
+    "format:docs:check": "npx prettier --check docs/",
     "lint:fix": "ng lint --fix",
     "prepare": "husky"
   },
