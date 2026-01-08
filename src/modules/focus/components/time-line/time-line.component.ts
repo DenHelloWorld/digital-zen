@@ -19,7 +19,10 @@ import { UI_TEXT } from '../../../common/constants';
   templateUrl: 'time-line.component.html',
   styleUrls: ['time-line.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [DatePipe],
+  imports: [
+    // pipes
+    DatePipe,
+  ],
 })
 export class TimeLineComponent implements OnInit, OnDestroy {
   #intervalId!: number;

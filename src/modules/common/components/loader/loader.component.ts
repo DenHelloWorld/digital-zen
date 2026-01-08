@@ -14,6 +14,7 @@ import { ICONS } from '../../constants';
   selector: 'dz-loader',
   templateUrl: 'loader.component.html',
   styleUrls: ['loader.component.scss'],
+  imports: [],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LoaderComponent {

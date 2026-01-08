@@ -31,7 +31,7 @@ import { ICONS, UI_TEXT } from '../../constants';
   selector: 'dz-dynamic-input',
   templateUrl: 'dynamic-input.component.html',
   styleUrls: ['dynamic-input.component.scss'],
-
+  imports: [],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DynamicInputComponent<T> implements OnInit {

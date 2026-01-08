@@ -26,7 +26,10 @@ import { TitleCasePipe } from '@angular/common';
   selector: 'dz-multi-selector',
   templateUrl: './multi-selector.component.html',
   styleUrls: ['./multi-selector.component.scss'],
-  imports: [TitleCasePipe],
+  imports: [
+    // pipes
+    TitleCasePipe,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MultiSelectorComponent<T> {

@@ -2,10 +2,10 @@
 
 This document describes all coding patterns, conventions, and best practices used in the Digital Zen Chrome Extension project. These guidelines reflect the actual implementation in the codebase and serve as a reference for all development work.
 
-**Primary Source:** We follow official Angular documentation for standard patterns. Custom guidelines (DZ_10-DZ_17) are project-specific conventions.
+**Primary Source:** We follow official Angular documentation for standard patterns. Custom guidelines (DZ_10-DZ_12, DZ_18) are project-specific conventions.
 
-**Version:** 1.0.2  
-**Last Updated:** January 7, 2026
+**Version:** 1.0.3  
+**Last Updated:** January 8, 2026
 
 ---
 
@@ -55,6 +55,8 @@ This document describes all coding patterns, conventions, and best practices use
     - [DZ_16: Custom Validators](#dz_16-custom-validators)
 12. [Testing](#testing)
     - [DZ_17: Testing Guidelines](#dz_17-testing-guidelines)
+13. [Component Organization](#component-organization)
+    - [DZ_18: Organized Imports with Comment Markers](#dz_18-organized-imports-with-comment-markers)
 
 ---
 
@@ -76,7 +78,14 @@ This document describes all coding patterns, conventions, and best practices use
   templateUrl: './example.component.html',
   styleUrls: ['./example.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, OtherComponent, SomeDirective],
+  imports: [
+    // angular modules
+    CommonModule,
+    // components
+    OtherComponent,
+    // directives
+    SomeDirective,
+  ],
 })
 export class ExampleComponent {
   // Component implementation
@@ -86,11 +95,12 @@ export class ExampleComponent {
 **Key Points:**
 
 - ✅ Include `imports` array in `@Component` decorator
+- ✅ Organize imports with comment markers (see [DZ_18](#dz_18-organized-imports-with-comment-markers))
 - ✅ Import all dependencies directly in the component
 - ❌ Do NOT create or use NgModules
 - ❌ Do NOT use `declarations`, `providers` at module level
 
-**See Also:** [DZ_03](#dz_03-change-detection-strategy-onpush)
+**See Also:** [DZ_03](#dz_03-change-detection-strategy-onpush), [DZ_18](#dz_18-organized-imports-with-comment-markers)
 
 ---
 
@@ -1229,6 +1239,117 @@ _DZ_17 is a high-level summary of testing expectations for this project. For can
 
 ---
 
+## Component Organization
+
+### DZ_18: Organized Imports with Comment Markers
+
+**Guideline:** Always organize the `imports` array in component decorators with comment markers to categorize imports by type.
+
+**Rationale:** Organizing imports with comment markers improves code readability, makes it easier to find specific imports, and provides clear structure for component dependencies. This pattern helps developers quickly understand what types of dependencies a component uses.
+
+**Implementation:**
+
+```typescript
+@Component({
+  selector: 'dz-example',
+  templateUrl: './example.component.html',
+  styleUrls: ['./example.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [
+    // angular modules
+    CommonModule,
+    ReactiveFormsModule,
+    // pipes
+    DatePipe,
+    TitleCasePipe,
+    CleanUrlPipe,
+    // components
+    LoaderComponent,
+    ThemeSwitcherComponent,
+    PeriodComponent,
+  ],
+})
+export class ExampleComponent {
+  // Component implementation
+}
+```
+
+**Import Categories (in order):**
+
+1. **`// angular modules`** - Angular built-in modules (CommonModule, ReactiveFormsModule, etc.)
+2. **`// pipes`** - All pipes (both Angular built-in and custom pipes)
+3. **`// components`** - All components (both custom and third-party)
+4. **`// directives`** - Custom directives (if any)
+
+**Key Points:**
+
+- ✅ Always include the `imports` array, even if empty (`imports: []`)
+- ✅ Group imports by category with comment markers
+- ✅ Use lowercase comments with spaces: `// angular modules`, `// pipes`, `// components`
+- ✅ Maintain consistent order: modules → pipes → components → directives
+- ✅ Each category should be separated by its comment marker
+- ✅ Omit category comments if that category is empty
+- ❌ Do NOT mix different types of imports without organizing them
+- ❌ Do NOT use different comment formats or inconsistent naming
+
+**Examples:**
+
+**Component with multiple categories:**
+
+```typescript
+imports: [
+  // angular modules
+  CommonModule,
+  ReactiveFormsModule,
+  // pipes
+  DatePipe,
+  // components
+  LoaderComponent,
+  PeriodFormComponent,
+],
+```
+
+**Component with only components:**
+
+```typescript
+imports: [
+  // components
+  LoaderComponent,
+  ThemeSwitcherComponent,
+],
+```
+
+**Component with only pipes:**
+
+```typescript
+imports: [
+  // pipes
+  TitleCasePipe,
+  DatePipe,
+],
+```
+
+**Component with no imports:**
+
+```typescript
+imports: [],
+```
+
+**Benefits:**
+
+- **Readability:** Clear visual separation of different import types
+- **Maintainability:** Easy to add new imports in the correct category
+- **Consistency:** Uniform structure across all components
+- **Discoverability:** Quick identification of component dependencies
+
+**Note on Prettier:**
+
+Standard Prettier does not support enforcing comment-based organization of array elements. This pattern must be maintained manually by developers. Consider using ESLint custom rules if automatic enforcement is required in the future.
+
+**See Also:** [DZ_01](#dz_01-standalone-components)
+
+---
+
 ## Summary
 
 This document covers all major coding patterns used in Digital Zen:
@@ -1238,11 +1359,12 @@ This document covers all major coding patterns used in Digital Zen:
 - Follow official Angular documentation as primary source
 - See links to official docs at the top of this document
 
-**Project-Specific Conventions (DZ_10-DZ_12):**
+**Project-Specific Conventions (DZ_10-DZ_12, DZ_18):**
 
 - UI Text Management (DZ_10) - Digital Zen specific
 - Universal Logger (DZ_11) - Digital Zen specific
 - BEM with dz- prefix (DZ_12) - Digital Zen specific
+- Organized Imports (DZ_18) - Digital Zen specific
 
 ### When writing code:
 
@@ -1270,6 +1392,6 @@ This document covers all major coding patterns used in Digital Zen:
 
 ---
 
-**Last Updated:** January 7, 2026  
+**Last Updated:** January 8, 2026  
 **Maintained by:** Digital Zen Development Team  
 **Primary Source:** [Angular Official Documentation](https://angular.dev/)

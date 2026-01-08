@@ -32,10 +32,11 @@ import { CleanUrlPipe } from '../common/pipes';
   templateUrl: './focus.component.html',
   styleUrls: ['./focus.component.scss'],
   imports: [
+    // pipes
+    CleanUrlPipe,
     // components
     PeriodComponent,
     LoaderComponent,
-    CleanUrlPipe,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

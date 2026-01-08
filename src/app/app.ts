@@ -44,8 +44,8 @@ import { PeriodFormComponent } from '../modules/menu/components/period-form';
   styleUrls: ['./app.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
+    // angular modules
     CommonModule,
-
     // components
     ThemeSwitcherComponent,
     FocusComponent,

@@ -24,7 +24,10 @@ import { ALL_DAYS_OF_WEEK } from '../../constants';
   selector: 'dz-weekdays-selector',
   templateUrl: './weekdays-selector.component.html',
   styleUrls: ['./weekdays-selector.component.scss'],
-  imports: [MultiSelectorComponent],
+  imports: [
+    // components
+    MultiSelectorComponent,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class WeekdaysSelectorComponent {
