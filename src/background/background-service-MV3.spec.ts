@@ -38,16 +38,6 @@ describe('BackgroundServiceMV3', () => {
   };
 
   /**
-   * Helper function to wait for all pending microtasks to complete
-   * This is the proper way to wait for async operations without setTimeout
-   */
-  async function flushMicrotasks(): Promise<void> {
-    // Wait for 2 microtask cycles to ensure all promises have resolved
-    await Promise.resolve();
-    await Promise.resolve();
-  }
-
-  /**
    * Helper to create a sendResponse spy that can be awaited
    * NO setTimeout - relies on sendResponse being called
    */
