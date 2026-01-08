@@ -11,6 +11,7 @@ import { CHROME_ALARM_ENUM } from '../modules/common/enums/chrome-alarm-name.enu
 import { FOCUS_ERROR_ENUM } from '../modules/common/enums/focus-error.enum';
 import { isCurrentTimeAfter, isCurrentTimeInRange } from '../modules/common/helpers/time.helper';
 import { logger } from '../modules/common/helpers/logger';
+import { filterBlockableWebsites } from '../modules/common/helpers/filter-blockable-websites.helper';
 
 type FocusOperationResult = { success: true } | { success: false; error: FOCUS_ERROR_ENUM };
 
@@ -159,7 +160,8 @@ export class BackgroundServiceMV3 {
     this.updateExtensionIcon(!!this.#currentPeriod?.isFocused);
 
     if (this.#currentPeriod?.isFocused) {
-      this.updateBlockRules(this.#currentPeriod.webSites.filter(s => s.isBlocked).map(s => s.url));
+      const blockableWebsites = filterBlockableWebsites(this.#currentPeriod.webSites);
+      this.updateBlockRules(blockableWebsites.filter(s => s.isBlocked).map(s => s.url));
       this.scheduleAlarm();
     } else {
       this.updateBlockRules([]);
@@ -199,7 +201,8 @@ export class BackgroundServiceMV3 {
       this.#currentPeriod = period;
 
       if (period.isFocused) {
-        this.updateBlockRules(period.webSites.filter(s => s.isBlocked).map(s => s.url));
+        const blockableWebsites = filterBlockableWebsites(period.webSites);
+        this.updateBlockRules(blockableWebsites.filter(s => s.isBlocked).map(s => s.url));
         this.scheduleAlarm();
       }
     }
@@ -218,7 +221,8 @@ export class BackgroundServiceMV3 {
     await StorageAdapter.saveCurrentPeriod(updatedPeriod);
 
     if (updatedPeriod.isFocused) {
-      this.updateBlockRules(updatedWebSites.filter(s => s.isBlocked).map(s => s.url));
+      const blockableWebsites = filterBlockableWebsites(updatedWebSites);
+      this.updateBlockRules(blockableWebsites.filter(s => s.isBlocked).map(s => s.url));
       this.#currentPeriod = updatedPeriod;
     }
   }
@@ -244,7 +248,8 @@ export class BackgroundServiceMV3 {
     await StorageAdapter.saveCurrentPeriod(this.#currentPeriod);
     await StorageAdapter.savePeriod(this.#currentPeriod);
 
-    this.updateBlockRules(period.webSites.filter(site => site.isBlocked).map(site => site.url));
+    const blockableWebsites = filterBlockableWebsites(period.webSites);
+    this.updateBlockRules(blockableWebsites.filter(site => site.isBlocked).map(site => site.url));
     this.updateExtensionIcon(true);
     this.scheduleAlarm();
 

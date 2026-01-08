@@ -17,6 +17,7 @@ import {
   UI_TEXT,
   VIEW_ENUM,
   ViewType,
+  WEBSITE_PRIVACY_POLICY,
 } from '../modules/common';
 import { FocusComponent } from '../modules/focus/focus.component';
 import { DzToastContainerComponent } from '../modules/common/components/toast-container/toast-container';
@@ -74,6 +75,7 @@ export class App {
   /** @guideline DZ_10 - UI text constants usage */
   protected readonly uiText = UI_TEXT;
   protected readonly icons = ICONS;
+  protected readonly websites = { PRIVACY_POLICY: WEBSITE_PRIVACY_POLICY } as const;
 
   protected setViewType(viewType: ViewType) {
     this.currentViewType.set(viewType);
