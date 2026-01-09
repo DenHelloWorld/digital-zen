@@ -9,6 +9,8 @@ import {
   isSvgIcon,
   UI_TEXT,
   CleanUrlPipe,
+  cleanUrlHelper,
+  WEBSITES_UNBLOCKABLE,
 } from '../common';
 import { PeriodComponent } from './components/period/period.component';
 
@@ -80,6 +82,17 @@ export class FocusComponent {
     }
 
     return all;
+  });
+
+  /** @guideline DZ_04 - Computed signal to check if current tab is unblockable */
+  protected readonly isCurrentTabUnblockable: Signal<boolean> = computed(() => {
+    const tab = this.activeTab();
+    if (!tab?.url) {
+      return false;
+    }
+
+    const cleanedUrl = cleanUrlHelper(tab.url);
+    return WEBSITES_UNBLOCKABLE.some(site => cleanUrlHelper(site.url) === cleanedUrl);
   });
 
   protected readonly isSvgIcon: (url: string | null | undefined) => boolean = isSvgIcon;

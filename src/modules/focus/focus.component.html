@@ -3,7 +3,7 @@
     [title]="uiText.FOCUS.ADD_CURRENT_TAB_TITLE"
     (click)="addCurrentTabToPeriod()"
     class="dz-button dz-button--sm shadow"
-    [class.hidden]="!isHttpUrl(activeTab()?.url)"
+    [class.hidden]="!isHttpUrl(activeTab()?.url) || isCurrentTabUnblockable()"
   >
     @if (isSvgIcon(activeTab()?.favIconUrl)) {
       <svg class="dz-icon dz-icon--shadow" aria-hidden="true" focusable="false">
