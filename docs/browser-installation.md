@@ -441,6 +441,48 @@ Then manually edit the manifest.json to use `background.scripts` instead of `bac
 - Each browser (and sometimes each installation) may have a different extension ID
 - You may need to add multiple redirect URIs in Google Cloud Console for different browsers/installations
 
+**Firefox-specific OAuth issues:**
+
+**Problem:** "Error 400: redirect_uri_mismatch" when trying to log in with Google in Firefox
+
+**Причина / Cause:** 
+- Firefox uses a different redirect URI format than Chrome: `https://<id>.extensions.allizom.org/oauth2` (not `.chromiumapp.org`)
+- Firefox temporary extensions get a new ID every time you restart the browser
+- The redirect URI must be added to Google Cloud Console OAuth credentials
+
+**Решение / Solution:**
+
+1. **Get the Firefox redirect URI:**
+   - Open the extension popup
+   - Open Developer Tools (right-click → Inspect)
+   - Go to Console tab
+   - Click the Google login button
+   - Look for: `OAuth redirect URL: https://xxxxx.extensions.allizom.org/oauth2`
+   - Copy this entire URL
+
+2. **Add to Google Cloud Console:**
+   - Go to [Google Cloud Console](https://console.cloud.google.com/)
+   - Navigate to APIs & Services → Credentials
+   - Edit your OAuth 2.0 Client ID
+   - In "Authorized redirect URIs", click ADD URI
+   - Paste the Firefox redirect URI
+   - Click SAVE
+   - Wait 1-2 minutes for changes to propagate
+
+3. **Try logging in again**
+
+**⚠️ Important:** Because Firefox temporary extension IDs change on restart, you'll need to update the redirect URI in Google Cloud Console each time you restart Firefox. For a permanent solution:
+- Sign your extension through [Firefox Add-ons Developer Hub](https://addons.mozilla.org/developers/)
+- Or use Chrome/Edge for development (stable extension ID)
+
+**Tip:** You can have BOTH Chrome and Firefox redirect URIs in Google Cloud Console at the same time:
+```
+https://your-chrome-id.chromiumapp.org/oauth2
+https://your-firefox-id.extensions.allizom.org/oauth2
+```
+
+See [Troubleshooting OAuth redirect_uri_mismatch - Firefox Section](./troubleshooting-oauth-redirect-uri.md#firefox-specific-issues) for more details.
+
 ### Reloading After Changes
 
 **Problem:** Changes to code don't appear in the extension
