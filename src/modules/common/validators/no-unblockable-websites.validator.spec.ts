@@ -1,6 +1,6 @@
 import { FormControl } from '@angular/forms';
 import { IFocus } from '../models';
-import { ICONS } from '../constants';
+import { ICONS, WEBSITE_PRIVACY_POLICY } from '../constants';
 import { noUnblockableWebsitesValidator } from './no-unblockable-websites.validator';
 
 describe('noUnblockableWebsitesValidator', () => {
@@ -75,14 +75,14 @@ describe('noUnblockableWebsitesValidator', () => {
     });
   });
 
-  describe('Invalid values', () => {
-    it('should return error for array with UNBLOCKABLE website', () => {
+  describe('Invalid values - URL-based validation', () => {
+    it('should return error for website with privacy policy URL (actual URL from WEBSITE_PRIVACY_POLICY)', () => {
       const websites: IFocus.WebSite[] = [
         {
           id: 'privacy',
           name: 'Privacy Policy',
           description: 'Privacy Policy',
-          url: 'https://example.com/privacy',
+          url: WEBSITE_PRIVACY_POLICY.url,
           imageUrl: '',
           iconUrl: ICONS.PRIVACY_TIP,
           type: IFocus.EWebSiteType.UNBLOCKABLE,
@@ -94,7 +94,64 @@ describe('noUnblockableWebsitesValidator', () => {
       expect(noUnblockableWebsitesValidator(control)).toEqual({ unblockableNotAllowed: true });
     });
 
-    it('should return error for mixed array with UNBLOCKABLE', () => {
+    it('should return error for privacy policy URL even with SOCIAL_MEDIA type', () => {
+      // This is the key test case - user manually adds privacy policy URL
+      // but it gets classified as SOCIAL_MEDIA by addCurrentTabToPeriod()
+      const websites: IFocus.WebSite[] = [
+        {
+          id: 'privacy',
+          name: 'Privacy Policy',
+          description: 'Privacy Policy',
+          url: WEBSITE_PRIVACY_POLICY.url,
+          imageUrl: '',
+          iconUrl: ICONS.PRIVACY_TIP,
+          type: IFocus.EWebSiteType.SOCIAL_MEDIA, // Wrong type, but URL matches
+          isBlocked: false,
+        },
+      ];
+
+      const control = new FormControl(websites);
+      expect(noUnblockableWebsitesValidator(control)).toEqual({ unblockableNotAllowed: true });
+    });
+
+    it('should return error for privacy policy URL even with DEFAULT type', () => {
+      const websites: IFocus.WebSite[] = [
+        {
+          id: 'privacy',
+          name: 'Privacy Policy',
+          description: 'Privacy Policy',
+          url: WEBSITE_PRIVACY_POLICY.url,
+          imageUrl: '',
+          iconUrl: ICONS.PRIVACY_TIP,
+          type: IFocus.EWebSiteType.DEFAULT, // Wrong type, but URL matches
+          isBlocked: false,
+        },
+      ];
+
+      const control = new FormControl(websites);
+      expect(noUnblockableWebsitesValidator(control)).toEqual({ unblockableNotAllowed: true });
+    });
+
+    it('should return error for privacy policy URL with path and query params', () => {
+      // Test that URL cleaning works - URL with extra path/params should still match
+      const websites: IFocus.WebSite[] = [
+        {
+          id: 'privacy',
+          name: 'Privacy Policy',
+          description: 'Privacy Policy',
+          url: WEBSITE_PRIVACY_POLICY.url + '?lang=en&version=1',
+          imageUrl: '',
+          iconUrl: ICONS.PRIVACY_TIP,
+          type: IFocus.EWebSiteType.SOCIAL_MEDIA,
+          isBlocked: false,
+        },
+      ];
+
+      const control = new FormControl(websites);
+      expect(noUnblockableWebsitesValidator(control)).toEqual({ unblockableNotAllowed: true });
+    });
+
+    it('should return error for mixed array with privacy policy URL', () => {
       const websites: IFocus.WebSite[] = [
         {
           id: 'x',
@@ -110,10 +167,10 @@ describe('noUnblockableWebsitesValidator', () => {
           id: 'privacy',
           name: 'Privacy Policy',
           description: 'Privacy Policy',
-          url: 'https://example.com/privacy',
+          url: WEBSITE_PRIVACY_POLICY.url,
           imageUrl: '',
           iconUrl: ICONS.PRIVACY_TIP,
-          type: IFocus.EWebSiteType.UNBLOCKABLE,
+          type: IFocus.EWebSiteType.SOCIAL_MEDIA, // Wrong type
           isBlocked: false,
         },
       ];
@@ -122,45 +179,17 @@ describe('noUnblockableWebsitesValidator', () => {
       expect(noUnblockableWebsitesValidator(control)).toEqual({ unblockableNotAllowed: true });
     });
 
-    it('should return error for multiple UNBLOCKABLE websites', () => {
-      const websites: IFocus.WebSite[] = [
-        {
-          id: 'privacy',
-          name: 'Privacy',
-          description: 'Privacy',
-          url: 'https://example.com/privacy',
-          imageUrl: '',
-          iconUrl: ICONS.PRIVACY_TIP,
-          type: IFocus.EWebSiteType.UNBLOCKABLE,
-          isBlocked: false,
-        },
-        {
-          id: 'terms',
-          name: 'Terms',
-          description: 'Terms',
-          url: 'https://example.com/terms',
-          imageUrl: '',
-          iconUrl: '',
-          type: IFocus.EWebSiteType.UNBLOCKABLE,
-          isBlocked: false,
-        },
-      ];
-
-      const control = new FormControl(websites);
-      expect(noUnblockableWebsitesValidator(control)).toEqual({ unblockableNotAllowed: true });
-    });
-
-    it('should return error even if UNBLOCKABLE has isBlocked set to true', () => {
+    it('should return error even if UNBLOCKABLE URL has isBlocked set to true', () => {
       const websites: IFocus.WebSite[] = [
         {
           id: 'privacy',
           name: 'Privacy Policy',
           description: 'Privacy Policy',
-          url: 'https://example.com/privacy',
+          url: WEBSITE_PRIVACY_POLICY.url,
           imageUrl: '',
           iconUrl: ICONS.PRIVACY_TIP,
-          type: IFocus.EWebSiteType.UNBLOCKABLE,
-          isBlocked: true,
+          type: IFocus.EWebSiteType.SOCIAL_MEDIA,
+          isBlocked: true, // Even if marked as blocked, should fail validation
         },
       ];
 
@@ -187,15 +216,16 @@ describe('noUnblockableWebsitesValidator', () => {
   });
 
   describe('Edge cases', () => {
-    it('should handle array with incomplete website objects', () => {
+    it('should handle array with incomplete website objects (missing url)', () => {
       const websites = [
         {
           id: 'incomplete',
-          // Missing type property
+          // Missing url property
         },
       ];
 
       const control = new FormControl(websites);
+      // Should not throw, should return null since URL is undefined
       expect(noUnblockableWebsitesValidator(control)).toBeNull();
     });
 
@@ -205,10 +235,10 @@ describe('noUnblockableWebsitesValidator', () => {
           id: 'privacy',
           name: 'Privacy Policy',
           description: 'Privacy Policy',
-          url: 'https://example.com/privacy',
+          url: WEBSITE_PRIVACY_POLICY.url,
           imageUrl: '',
           iconUrl: ICONS.PRIVACY_TIP,
-          type: IFocus.EWebSiteType.UNBLOCKABLE,
+          type: IFocus.EWebSiteType.SOCIAL_MEDIA,
           isBlocked: false,
         },
       ];
@@ -243,6 +273,25 @@ describe('noUnblockableWebsitesValidator', () => {
 
       expect(websites.length).toBe(originalLength);
       expect(websites[0].type).toBe(originalType);
+    });
+
+    it('should handle websites with different URL formats that normalize to same origin', () => {
+      // Test URLs that should match after cleaning
+      const websites: IFocus.WebSite[] = [
+        {
+          id: 'privacy',
+          name: 'Privacy',
+          description: 'Privacy',
+          url: WEBSITE_PRIVACY_POLICY.url + '/extra/path',
+          imageUrl: '',
+          iconUrl: '',
+          type: IFocus.EWebSiteType.SOCIAL_MEDIA,
+          isBlocked: false,
+        },
+      ];
+
+      const control = new FormControl(websites);
+      expect(noUnblockableWebsitesValidator(control)).toEqual({ unblockableNotAllowed: true });
     });
   });
 });

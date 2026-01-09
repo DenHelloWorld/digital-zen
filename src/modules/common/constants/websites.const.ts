@@ -149,6 +149,14 @@ export const WEBSITE_PRIVACY_POLICY: Readonly<IFocus.WebSite> = {
 };
 
 /**
+ * Array of all unblockable websites
+ * These websites should never be blocked by the extension
+ */
+export const WEBSITES_UNBLOCKABLE: Readonly<readonly IFocus.WebSite[]> = Object.freeze([
+  WEBSITE_PRIVACY_POLICY,
+]);
+
+/**
  * Default period configuration for blocking social media during work hours
  */
 export const DEFAULT_PERIOD: Readonly<IFocus.Period> = Object.freeze({
