@@ -146,11 +146,78 @@ Before installing the extension, ensure you have:
 4. **Important Notes for Firefox:**
    - **Temporary Extensions:** Extensions loaded this way are temporary and will be removed when Firefox is restarted
    - **Permanent Installation:** For permanent installation during development, you need to:
-     - Package the extension as a `.xpi` file
+     - Package the extension as a `.xpi` file (see "Creating a .xpi File" section below)
      - Sign it through [Firefox Add-ons Developer Hub](https://addons.mozilla.org/developers/)
      - Or use Firefox Developer Edition/Nightly with `xpinstall.signatures.required` set to `false` in `about:config`
    - **Extension ID:** Firefox may generate a different extension ID than Chromium browsers, which affects OAuth configuration
    - **OAuth Setup:** See [OAuth Cross-Browser Setup Guide](./oauth-setup-cross-browser.md) for Firefox-specific OAuth configuration
+
+### Creating a .xpi File for Firefox
+
+A `.xpi` file is a ZIP archive containing your extension files. Here's how to create one:
+
+**Method 1: Using web-ext (Recommended)**
+
+1. **Install web-ext** (Mozilla's official command-line tool):
+   ```bash
+   npm install -g web-ext
+   ```
+
+2. **Build your extension** (if not already built):
+   ```bash
+   npm run build
+   ```
+
+3. **Navigate to the build directory and create the .xpi**:
+   ```bash
+   cd dist/browser
+   web-ext build
+   ```
+
+4. The `.xpi` file will be created in `dist/browser/web-ext-artifacts/`
+
+**Method 2: Manual ZIP Creation**
+
+1. **Build your extension**:
+   ```bash
+   npm run build
+   ```
+
+2. **Navigate to the build directory**:
+   ```bash
+   cd dist/browser
+   ```
+
+3. **Create a ZIP file** (the extension MUST be zipped from within the folder, not the folder itself):
+   
+   On Linux/Mac:
+   ```bash
+   zip -r -FS ../digital-zen.xpi * --exclude '*.git*'
+   ```
+   
+   On Windows (PowerShell):
+   ```powershell
+   Compress-Archive -Path * -DestinationPath ..\digital-zen.xpi
+   ```
+
+4. **Rename to .xpi** (if using generic zip):
+   ```bash
+   mv ../digital-zen.zip ../digital-zen.xpi
+   ```
+
+5. The `.xpi` file will be in the `dist/` folder
+
+**Installing the .xpi File:**
+
+- For **unsigned** .xpi (development only):
+  - Use Firefox Developer Edition or Nightly
+  - Go to `about:config` and set `xpinstall.signatures.required` to `false`
+  - Go to `about:addons`, click the gear icon, select "Install Add-on From File"
+  - Select your `.xpi` file
+
+- For **signed** .xpi (production):
+  - Submit to [Firefox Add-ons Developer Hub](https://addons.mozilla.org/developers/)
+  - Once approved, users can install directly from addons.mozilla.org
 
 ## Quick Reference Table
 
