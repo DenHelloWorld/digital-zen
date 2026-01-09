@@ -349,8 +349,15 @@ export class BackgroundServiceMV3 {
   }
 
   private updateExtensionIcon(isFocused: boolean): void {
-    const iconPath = isFocused ? 'icon-spa-colored.png' : 'icon-spa-transparent.png';
-    chrome.action.setIcon({ path: { '16': iconPath, '48': iconPath, '128': iconPath } });
+    const iconPrefix = isFocused ? 'icon-spa-colored' : 'icon-spa-transparent';
+    chrome.action.setIcon({
+      path: {
+        '16': `${iconPrefix}-16x16.png`,
+        '32': `${iconPrefix}-32x32.png`,
+        '48': `${iconPrefix}-48x48.png`,
+        '128': `${iconPrefix}-128x128.png`,
+      },
+    });
   }
 
   private async getActiveTab(): Promise<chrome.tabs.Tab | null> {

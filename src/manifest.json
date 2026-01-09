@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Digital Zen",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A productivity Chrome extension that helps you maintain concentration by blocking distracting websites during focus sessions.",
   "permissions": [
     "alarms",
@@ -28,7 +28,10 @@
   "action": {
     "default_popup": "index.html",
     "default_icon": {
-      "32": "icon-spa-transparent.png"
+      "16": "icon-spa-transparent-16x16.png",
+      "32": "icon-spa-transparent-32x32.png",
+      "48": "icon-spa-transparent-48x48.png",
+      "128": "icon-spa-transparent-128x128.png"
     }
   },
   "background": {
@@ -36,9 +39,10 @@
     "type": "module"
   },
   "icons": {
-    "16": "icon-spa-colored.png",
-    "48": "icon-spa-colored.png",
-    "128": "icon-spa-colored.png"
+    "16": "icon-spa-colored-16x16.png",
+    "32": "icon-spa-colored-32x32.png",
+    "48": "icon-spa-colored-48x48.png",
+    "128": "icon-spa-colored-128x128.png"
   },
   "key": "__PUBLIC_KEY__"
 }

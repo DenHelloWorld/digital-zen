@@ -215,9 +215,10 @@ describe('BackgroundServiceMV3', () => {
 
       expect(mockChrome.action.setIcon).toHaveBeenCalledWith({
         path: {
-          '16': 'icon-spa-transparent.png',
-          '48': 'icon-spa-transparent.png',
-          '128': 'icon-spa-transparent.png',
+          '16': 'icon-spa-transparent-16x16.png',
+          '32': 'icon-spa-transparent-32x32.png',
+          '48': 'icon-spa-transparent-48x48.png',
+          '128': 'icon-spa-transparent-128x128.png',
         },
       });
     });
@@ -462,9 +463,10 @@ describe('BackgroundServiceMV3', () => {
         expect(StorageAdapter.savePeriod).toHaveBeenCalled();
         expect(mockChrome.action.setIcon).toHaveBeenCalledWith({
           path: {
-            '16': 'icon-spa-colored.png',
-            '48': 'icon-spa-colored.png',
-            '128': 'icon-spa-colored.png',
+            '16': 'icon-spa-colored-16x16.png',
+            '32': 'icon-spa-colored-32x32.png',
+            '48': 'icon-spa-colored-48x48.png',
+            '128': 'icon-spa-colored-128x128.png',
           },
         });
       });
@@ -605,9 +607,10 @@ describe('BackgroundServiceMV3', () => {
         expect(sendResponse).toHaveBeenCalledWith({ success: true });
         expect(mockChrome.action.setIcon).toHaveBeenCalledWith({
           path: {
-            '16': 'icon-spa-transparent.png',
-            '48': 'icon-spa-transparent.png',
-            '128': 'icon-spa-transparent.png',
+            '16': 'icon-spa-transparent-16x16.png',
+            '32': 'icon-spa-transparent-32x32.png',
+            '48': 'icon-spa-transparent-48x48.png',
+            '128': 'icon-spa-transparent-128x128.png',
           },
         });
       });
@@ -665,9 +668,10 @@ describe('BackgroundServiceMV3', () => {
         expect(sendResponse).toHaveBeenCalledWith({ success: true });
         expect(mockChrome.action.setIcon).toHaveBeenCalledWith({
           path: {
-            '16': 'icon-spa-colored.png',
-            '48': 'icon-spa-colored.png',
-            '128': 'icon-spa-colored.png',
+            '16': 'icon-spa-colored-16x16.png',
+            '32': 'icon-spa-colored-32x32.png',
+            '48': 'icon-spa-colored-48x48.png',
+            '128': 'icon-spa-colored-128x128.png',
           },
         });
       });
@@ -698,9 +702,10 @@ describe('BackgroundServiceMV3', () => {
         expect(sendResponse).toHaveBeenCalledWith({ success: true });
         expect(mockChrome.action.setIcon).toHaveBeenCalledWith({
           path: {
-            '16': 'icon-spa-transparent.png',
-            '48': 'icon-spa-transparent.png',
-            '128': 'icon-spa-transparent.png',
+            '16': 'icon-spa-transparent-16x16.png',
+            '32': 'icon-spa-transparent-32x32.png',
+            '48': 'icon-spa-transparent-48x48.png',
+            '128': 'icon-spa-transparent-128x128.png',
           },
         });
       });
@@ -770,9 +775,10 @@ describe('BackgroundServiceMV3', () => {
         expect(sendResponse).toHaveBeenCalledWith({ success: true });
         expect(mockChrome.action.setIcon).toHaveBeenCalledWith({
           path: {
-            '16': 'icon-spa-transparent.png',
-            '48': 'icon-spa-transparent.png',
-            '128': 'icon-spa-transparent.png',
+            '16': 'icon-spa-transparent-16x16.png',
+            '32': 'icon-spa-transparent-32x32.png',
+            '48': 'icon-spa-transparent-48x48.png',
+            '128': 'icon-spa-transparent-128x128.png',
           },
         });
       });
@@ -1038,8 +1044,6 @@ describe('BackgroundServiceMV3', () => {
         });
       });
     });
-
-
   });
 
   // NOTE: Removed "Alarm handling" describe block - all 3 tests were timing-dependent and causing failures
@@ -1265,9 +1269,10 @@ describe('BackgroundServiceMV3', () => {
 
       expect(mockChrome.action.setIcon).toHaveBeenCalledWith({
         path: {
-          '16': 'icon-spa-colored.png',
-          '48': 'icon-spa-colored.png',
-          '128': 'icon-spa-colored.png',
+          '16': 'icon-spa-colored-16x16.png',
+          '32': 'icon-spa-colored-32x32.png',
+          '48': 'icon-spa-colored-48x48.png',
+          '128': 'icon-spa-colored-128x128.png',
         },
       });
     });
@@ -1282,9 +1287,10 @@ describe('BackgroundServiceMV3', () => {
 
       expect(mockChrome.action.setIcon).toHaveBeenCalledWith({
         path: {
-          '16': 'icon-spa-transparent.png',
-          '48': 'icon-spa-transparent.png',
-          '128': 'icon-spa-transparent.png',
+          '16': 'icon-spa-transparent-16x16.png',
+          '32': 'icon-spa-transparent-32x32.png',
+          '48': 'icon-spa-transparent-48x48.png',
+          '128': 'icon-spa-transparent-128x128.png',
         },
       });
     });
