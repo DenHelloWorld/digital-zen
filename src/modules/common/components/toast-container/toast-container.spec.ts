@@ -63,6 +63,10 @@ describe('DzToastContainerComponent', () => {
       expect(component['messageTypes']).toBe(TOAST_TYPE_ENUM);
     });
 
+    it('should have uiText constant', () => {
+      expect(component['uiText']).toBe(UI_TEXT);
+    });
+
     it('should have icons constant', () => {
       expect(component['icons']).toBeTruthy();
     });
