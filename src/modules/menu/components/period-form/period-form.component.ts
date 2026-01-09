@@ -13,6 +13,7 @@ import {
   signal,
   WritableSignal,
 } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 
 import { map, distinctUntilChanged } from 'rxjs';
@@ -68,6 +69,7 @@ import { MultiSelectorComponent } from '../../../common/components/multi-selecto
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     // angular modules
+    CommonModule,
     ReactiveFormsModule,
     // components
     WeekdaysSelectorComponent,

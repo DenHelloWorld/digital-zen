@@ -1,3 +1,19 @@
+<!-- Error banner template -->
+<ng-template #errorBanner let-message="message">
+  <div class="dz-form__error">
+    <div class="dz-banner dz-banner--error dz-banner--sm">
+      <div class="dz-banner__icon">
+        <svg class="dz-icon" aria-hidden="true" focusable="false">
+          <use [attr.href]="icons.ERROR"></use>
+        </svg>
+      </div>
+      <div class="dz-banner__content">
+        <div class="dz-banner__message">{{ message }}</div>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
 <form [formGroup]="form" class="dz-form">
   <div class="dz-form__field">
     <span class="dz-form__hint">
@@ -13,18 +29,12 @@
     />
 
     @if (form.controls.name.hasError('duplicatePeriodName') && form.controls.name.touched) {
-      <div class="dz-form__error">
-        <div class="dz-banner dz-banner--error dz-banner--sm">
-          <div class="dz-banner__icon">
-            <svg class="dz-icon" aria-hidden="true" focusable="false">
-              <use [attr.href]="icons.ERROR"></use>
-            </svg>
-          </div>
-          <div class="dz-banner__content">
-            <div class="dz-banner__message">{{ uiText.PERIOD_FORM.ERRORS.DUPLICATE_NAME }}</div>
-          </div>
-        </div>
-      </div>
+      <ng-container
+        *ngTemplateOutlet="
+          errorBanner;
+          context: { message: uiText.PERIOD_FORM.ERRORS.DUPLICATE_NAME }
+        "
+      ></ng-container>
     }
   </div>
 
@@ -51,18 +61,9 @@
     <dz-weekdays-selector [(selectedDays)]="selectedDays" [isTodayShow]="false" />
 
     @if (form.controls.daysOfWeek.invalid) {
-      <div class="dz-form__error">
-        <div class="dz-banner dz-banner--error dz-banner--sm">
-          <div class="dz-banner__icon">
-            <svg class="dz-icon" aria-hidden="true" focusable="false">
-              <use [attr.href]="icons.ERROR"></use>
-            </svg>
-          </div>
-          <div class="dz-banner__content">
-            <div class="dz-banner__message">{{ uiText.PERIOD_FORM.ERRORS.CHOOSE_DAYS }}</div>
-          </div>
-        </div>
-      </div>
+      <ng-container
+        *ngTemplateOutlet="errorBanner; context: { message: uiText.PERIOD_FORM.ERRORS.CHOOSE_DAYS }"
+      ></ng-container>
     }
   </div>
 
@@ -115,18 +116,12 @@
     </ul>
 
     @if (form.errors?.['invalidTimeRange']) {
-      <div class="dz-form__error">
-        <div class="dz-banner dz-banner--error dz-banner--sm">
-          <div class="dz-banner__icon">
-            <svg class="dz-icon" aria-hidden="true" focusable="false">
-              <use [attr.href]="icons.ERROR"></use>
-            </svg>
-          </div>
-          <div class="dz-banner__content">
-            <div class="dz-banner__message">{{ uiText.PERIOD_FORM.ERRORS.INVALID_TIME_RANGE }}</div>
-          </div>
-        </div>
-      </div>
+      <ng-container
+        *ngTemplateOutlet="
+          errorBanner;
+          context: { message: uiText.PERIOD_FORM.ERRORS.INVALID_TIME_RANGE }
+        "
+      ></ng-container>
     }
   </div>
 
@@ -144,34 +139,24 @@
     />
 
     @if (form.controls.webSites.hasError(validationErrorKeys.UNBLOCKABLE_NOT_ALLOWED)) {
-      <div class="dz-form__error">
-        <div class="dz-banner dz-banner--error dz-banner--sm">
-          <div class="dz-banner__icon">
-            <svg class="dz-icon" aria-hidden="true" focusable="false">
-              <use [attr.href]="icons.ERROR"></use>
-            </svg>
-          </div>
-          <div class="dz-banner__content">
-            <div class="dz-banner__message">
-              {{ uiText.PERIOD_FORM.ERRORS.UNBLOCKABLE_WEBSITE }}:
-              {{ form.controls.webSites.errors?.['invalidUrls']?.join(', ') || '' }}
-            </div>
-          </div>
-        </div>
-      </div>
+      <ng-container
+        *ngTemplateOutlet="
+          errorBanner;
+          context: {
+            message:
+              uiText.PERIOD_FORM.ERRORS.UNBLOCKABLE_WEBSITE +
+              ': ' +
+              (form.controls.webSites.errors?.['invalidUrls']?.join(', ') || ''),
+          }
+        "
+      ></ng-container>
     } @else if (form.controls.webSites.invalid) {
-      <div class="dz-form__error">
-        <div class="dz-banner dz-banner--error dz-banner--sm">
-          <div class="dz-banner__icon">
-            <svg class="dz-icon" aria-hidden="true" focusable="false">
-              <use [attr.href]="icons.ERROR"></use>
-            </svg>
-          </div>
-          <div class="dz-banner__content">
-            <div class="dz-banner__message">{{ uiText.PERIOD_FORM.ERRORS.CHOOSE_WEBSITES }}</div>
-          </div>
-        </div>
-      </div>
+      <ng-container
+        *ngTemplateOutlet="
+          errorBanner;
+          context: { message: uiText.PERIOD_FORM.ERRORS.CHOOSE_WEBSITES }
+        "
+      ></ng-container>
     }
   </div>
 
