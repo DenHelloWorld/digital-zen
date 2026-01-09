@@ -126,7 +126,7 @@ Before installing the extension, ensure you have:
 
 ### Mozilla Firefox
 
-**Note:** Firefox uses the WebExtensions API which is compatible with Manifest V3, but the installation process for temporary add-ons is slightly different.
+**Note:** Firefox supports the WebExtensions API and has Manifest V3 support, but some features may have different implementations or limitations compared to Chromium browsers. The core functionality of Digital Zen (blocking websites, timers, storage) is fully compatible with Firefox.
 
 1. **Open Firefox Add-ons Page**
    - Navigate to `about:debugging#/runtime/this-firefox`
