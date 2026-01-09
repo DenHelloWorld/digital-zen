@@ -206,7 +206,7 @@ https://abcdefghijklmnopqrstuvwxyzabcdef.chromiumapp.org/oauth2
 
 1. **Build for Firefox:**
    ```bash
-   npm run build:firefox:skip-tests
+   npm run build:firefox
    ```
 
 2. **Create .xpi file:**

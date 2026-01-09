@@ -19,7 +19,6 @@ const { execSync } = require('child_process');
 const FIREFOX = process.argv.includes('--firefox');
 const configPath = path.join(__dirname, '..', 'src', 'extension-config.ts');
 const manifestPath = path.join(__dirname, '..', 'dist', 'browser', 'manifest.json');
-const backgroundPath = path.join(__dirname, '..', 'dist', 'browser', 'background.js');
 
 // Store original config for restoration
 let originalConfig = '';
@@ -65,7 +64,9 @@ try {
   let configContent = originalConfig;
 
   if (configContent.includes("'__OAUTH_CLIENT_ID__'")) {
-    configContent = configContent.replaceAll("'__OAUTH_CLIENT_ID__'", `'${clientId}'`);
+    // Escape single quotes in client ID to prevent breaking the JavaScript string
+    const escapedClientId = clientId.replace(/'/g, "\\'");
+    configContent = configContent.replaceAll("'__OAUTH_CLIENT_ID__'", `'${escapedClientId}'`);
     fs.writeFileSync(configPath, configContent);
     console.log('✅ Injected OAuth Client ID into extension-config.ts');
   }

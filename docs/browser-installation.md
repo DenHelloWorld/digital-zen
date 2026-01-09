@@ -137,8 +137,6 @@ OAUTH_CLIENT_ID=your-client-id.apps.googleusercontent.com
 
 ### Mozilla Firefox
 
-### Mozilla Firefox
-
 **✅ Firefox Support Now Available!**
 
 Digital Zen now includes a Firefox-specific build that bundles the background script into a single file, making it compatible with Firefox's `background.scripts` implementation.
@@ -149,15 +147,11 @@ Digital Zen now includes a Firefox-specific build that bundles the background sc
 
 1. **Build for Firefox:**
    ```bash
-   npm run build:firefox:skip-tests
-   ```
-   
-   Or with tests:
-   ```bash
    npm run build:firefox
    ```
    
    This will:
+   - Run all tests
    - Build the Angular application
    - Bundle the background script into a single IIFE (Immediately Invoked Function Expression)
    - Automatically patch the manifest.json for Firefox compatibility
@@ -365,7 +359,7 @@ Firefox does not yet support service workers for background scripts in Manifest 
 ✅ **Use the Firefox build script:**
 
 ```bash
-npm run build:firefox:skip-tests
+npm run build:firefox
 ```
 
 This automatically:
