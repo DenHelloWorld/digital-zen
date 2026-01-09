@@ -35,16 +35,31 @@ try {
   // Use environment variable if set, otherwise use manifest value
   const clientId = process.env.OAUTH_CLIENT_ID || clientIdFromManifest;
 
-  // Replace the placeholder with actual client ID
-  configContent = configContent.replaceAll('__OAUTH_CLIENT_ID__', clientId);
+  // Replace the placeholder with actual client ID (if placeholder exists)
+  if (configContent.includes('__OAUTH_CLIENT_ID__')) {
+    configContent = configContent.replaceAll('__OAUTH_CLIENT_ID__', clientId);
 
-  // Write the patched content back
-  fs.writeFileSync(configPath, configContent);
+    // Write the patched content back
+    fs.writeFileSync(configPath, configContent);
 
-  if (process.env.OAUTH_CLIENT_ID) {
-    console.log('✅ Injected OAuth Client ID from environment variable into extension-config.js');
+    if (process.env.OAUTH_CLIENT_ID) {
+      console.log('✅ Injected OAuth Client ID from environment variable into extension-config.js');
+    } else {
+      console.log('✅ Injected OAuth Client ID from manifest into extension-config.js');
+    }
   } else {
-    console.log('✅ Injected OAuth Client ID from manifest into extension-config.js');
+    // Check if the file already has a valid OAuth client ID (not placeholder)
+    const hasValidClientId = configContent.match(
+      /OAUTH_CLIENT_ID:\s*['"][\w-]+\.apps\.googleusercontent\.com['"]/
+    );
+
+    if (hasValidClientId) {
+      console.log('✅ OAuth Client ID already configured in extension-config.js');
+      console.log('   Using existing value from the source file');
+    } else {
+      console.warn('⚠️  No OAuth Client ID placeholder found and no valid client ID detected');
+      console.warn('   Make sure extension-config.ts has OAUTH_CLIENT_ID set correctly');
+    }
   }
 } catch (error) {
   console.error('❌ Error patching extension-config.js:', error.message);

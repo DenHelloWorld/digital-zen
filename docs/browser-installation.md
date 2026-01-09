@@ -20,8 +20,15 @@ Digital Zen works on all Chromium-based browsers and Firefox:
 
 Before installing the extension, ensure you have:
 
-1. Built the extension using `npm run build` or `npm run build:prod`
-2. The `dist/browser` folder exists in your project directory
+1. **Set up OAuth Client ID** (for Google authentication):
+   - Option 1: Set `OAUTH_CLIENT_ID` in your `.env` file (copy from `.env.example`)
+   - Option 2: Directly edit `src/extension-config.ts` and replace `'__OAUTH_CLIENT_ID__'` with your actual Google OAuth client ID
+   - Get your OAuth client ID from [Google Cloud Console](https://console.cloud.google.com/)
+
+2. Built the extension using `npm run build` or `npm run build:prod`
+3. The `dist/browser` folder exists in your project directory
+
+**Note:** If you edit `src/extension-config.ts` directly with your OAuth client ID, it will work immediately without needing environment variables. Just make sure not to commit your OAuth client ID to git!
 
 ## Installation Instructions
 

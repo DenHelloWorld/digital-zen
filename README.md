@@ -82,16 +82,34 @@ or if you prefer pnpm:
 pnpm install
 ```
 
-3. **Set up environment variables** (Optional for development)
+3. **Set up OAuth Client ID** (Required for Google authentication)
 
-Create a `.env` file in the root directory with the following variables:
+**Option 1: Using .env file (Recommended)**
+
+Create a `.env` file in the root directory (copy from `.env.example`):
 
 ```env
 OAUTH_CLIENT_ID=your_google_oauth_client_id
 PUBLIC_KEY=your_chrome_extension_public_key
+API_URL=https://your-api-url.com/api
+API_SECRET_KEY='your_secret_key'
 ```
 
-> **Note:** These environment variables are only required for production builds. You can run the development server without them.
+Get your OAuth client ID from [Google Cloud Console](https://console.cloud.google.com/).
+
+**Option 2: Direct configuration (Quick setup)**
+
+Edit `src/extension-config.ts` and replace the placeholder:
+
+```typescript
+export const EXTENSION_CONFIG = {
+  OAUTH_CLIENT_ID: 'YOUR-ACTUAL-CLIENT-ID.apps.googleusercontent.com',
+} as const;
+```
+
+> **Important:** Don't commit your actual OAuth client ID to git! Add `src/extension-config.ts` to `.gitignore` if you use this method.
+
+> **Note:** OAuth Client ID is required for Google authentication features. The extension will work without it, but Google login won't be available.
 
 4. **Build the extension for development**
 
