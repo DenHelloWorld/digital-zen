@@ -2,10 +2,10 @@
 
 This document describes all coding patterns, conventions, and best practices used in the Digital Zen Chrome Extension project. These guidelines reflect the actual implementation in the codebase and serve as a reference for all development work.
 
-**Primary Source:** We follow official Angular documentation for standard patterns. Custom guidelines (DZ_10-DZ_12, DZ_18-DZ_19) are project-specific conventions.
+**Primary Source:** We follow official Angular documentation for standard patterns. Custom guidelines (DZ_10-DZ_12, DZ_18-DZ_20) are project-specific conventions.
 
-**Version:** 1.0.3  
-**Last Updated:** January 8, 2026
+**Version:** 1.0.4  
+**Last Updated:** January 9, 2026
 
 ---
 
@@ -58,6 +58,8 @@ This document describes all coding patterns, conventions, and best practices use
 13. [Component Organization](#component-organization)
     - [DZ_18: Organized Imports with Comment Markers](#dz_18-organized-imports-with-comment-markers)
     - [DZ_19: Import Organization with Barrel Exports](#dz_19-import-organization-with-barrel-exports)
+14. [UI Components](#ui-components)
+    - [DZ_20: Banner Styles for Messages](#dz_20-banner-styles-for-messages)
 
 ---
 
@@ -1472,6 +1474,117 @@ When you find a direct file import in Angular modules:
 
 ---
 
+## UI Components
+
+### DZ_20: Banner Styles for Messages
+
+**Guideline:** Use `dz-banner` CSS classes for displaying messages with different severity levels in a consistent visual style.
+
+**Project Pattern:** Digital Zen provides global `dz-banner` styles in `/src/styles/_components.scss` for consistent message display across the application.
+
+**Rationale:** Consistent visual styling for messages (info, success, warning, error) improves user experience and maintainability. The banner styles are reusable and provide built-in support for icons and different severity levels.
+
+**Implementation:**
+
+```html
+<!-- Basic banner structure -->
+<div class="dz-banner dz-banner--info">
+  <div class="dz-banner__icon">
+    <svg class="dz-icon">
+      <use [attr.href]="icons.INFO" />
+    </svg>
+  </div>
+  <div class="dz-banner__content">
+    <div class="dz-banner__message">Information message</div>
+  </div>
+</div>
+```
+
+**Available Severity Levels:**
+
+- `dz-banner--info` - Blue accent color for informational messages
+- `dz-banner--success` - Green color for success messages  
+- `dz-banner--warn` - Yellow/orange color for warnings
+- `dz-banner--error` - Red color for errors
+
+**Available Sizes:**
+
+- `dz-banner--sm` - Small banner (smaller padding and icons)
+- Default - Medium banner (no modifier needed)
+- `dz-banner--lg` - Large banner (larger padding and icons)
+
+**Icon Mapping:**
+
+Use the appropriate icon from `ICONS` constants (see [DZ_10.1](#dz_101-icon-constants)) for each message type:
+
+- **INFO**: `ICONS.INFO` (`#icon-info`)
+- **SUCCESS**: `ICONS.SUCCESS` (`#icon-success`)
+- **WARN**: `ICONS.WARNING` (`#icon-warning`)
+- **ERROR**: `ICONS.ERROR` (`#icon-error`)
+
+**Complete Example (Toast Notification):**
+
+```typescript
+@Component({
+  selector: 'dz-toast-container',
+  template: `
+    <div 
+      class="dz-banner" 
+      [class.dz-banner--info]="type === messageTypes.INFO"
+      [class.dz-banner--success]="type === messageTypes.SUCCESS"
+      [class.dz-banner--warn]="type === messageTypes.WARN"
+      [class.dz-banner--error]="type === messageTypes.ERROR">
+      
+      <div class="dz-banner__icon">
+        <svg class="dz-icon">
+          <use [attr.href]="getIcon(type)" />
+        </svg>
+      </div>
+      
+      <div class="dz-banner__content">
+        <div class="dz-banner__message">{{ message }}</div>
+      </div>
+    </div>
+  `
+})
+export class ToastComponent {
+  protected readonly icons = ICONS;
+  protected readonly messageTypes = TOAST_TYPE_ENUM;
+
+  protected getIcon(type: TOAST_TYPE_ENUM): string {
+    switch (type) {
+      case TOAST_TYPE_ENUM.INFO:
+        return this.icons.INFO;
+      case TOAST_TYPE_ENUM.SUCCESS:
+        return this.icons.SUCCESS;
+      case TOAST_TYPE_ENUM.WARN:
+        return this.icons.WARNING;
+      case TOAST_TYPE_ENUM.ERROR:
+        return this.icons.ERROR;
+      default:
+        return this.icons.INFO;
+    }
+  }
+}
+```
+
+**Key Points:**
+
+- ✅ Use `dz-banner` as base class
+- ✅ Add severity level modifier (`--info`, `--success`, `--warn`, `--error`)
+- ✅ Include `dz-banner__icon` with appropriate icon
+- ✅ Use `dz-banner__content` for message text
+- ✅ Optionally add `dz-banner__title` for message title
+- ✅ Match icon to severity level for consistency
+
+**See Also:**
+- [DZ_10.1: Icon Constants](#dz_101-icon-constants) - Icon management
+- [DZ_12: SCSS and BEM Naming Convention](#dz_12-scss-and-bem-naming-convention) - Styling conventions
+- `/src/styles/_components.scss` - Global banner styles
+- `/src/modules/common/components/toast-container/` - Example usage
+
+---
+
 ## Summary
 
 This document covers all major coding patterns used in Digital Zen:
@@ -1481,18 +1594,19 @@ This document covers all major coding patterns used in Digital Zen:
 - Follow official Angular documentation as primary source
 - See links to official docs at the top of this document
 
-**Project-Specific Conventions (DZ_10-DZ_12, DZ_18-DZ_19):**
+**Project-Specific Conventions (DZ_10-DZ_12, DZ_18-DZ_20):**
 
 - UI Text Management (DZ_10) - Digital Zen specific
 - Universal Logger (DZ_11) - Digital Zen specific
 - BEM with dz- prefix (DZ_12) - Digital Zen specific
 - Organized Imports (DZ_18) - Digital Zen specific
 - Import Organization with Barrel Exports (DZ_19) - Digital Zen specific
+- Banner Styles for Messages (DZ_20) - Digital Zen specific
 
 ### When writing code:
 
 1. **Reference official Angular docs** for standard patterns (Components, Signals, Forms, etc.)
-2. **Follow project-specific guidelines** (DZ_10-DZ_12, DZ_18-DZ_19) for UI text, logging, styling, and imports
+2. **Follow project-specific guidelines** (DZ_10-DZ_12, DZ_18-DZ_20) for UI text, logging, styling, and imports
 3. **Add JSDoc comments** with guideline references (e.g., `@guideline DZ_01, DZ_04`)
 4. **Keep documentation synchronized** with actual code implementation
 
