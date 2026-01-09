@@ -30,7 +30,8 @@
     "default_icon": {
       "16": "icon-spa-transparent-16x16.png",
       "32": "icon-spa-transparent-32x32.png",
-      "48": "icon-spa-transparent-48x48.png"
+      "48": "icon-spa-transparent-48x48.png",
+      "128": "icon-spa-transparent-128x128.png"
     }
   },
   "background": {
@@ -39,6 +40,7 @@
   },
   "icons": {
     "16": "icon-spa-colored-16x16.png",
+    "32": "icon-spa-colored-32x32.png",
     "48": "icon-spa-colored-48x48.png",
     "128": "icon-spa-colored-128x128.png"
   },
