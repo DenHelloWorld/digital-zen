@@ -1,8 +1,10 @@
 # Digital Zen
 
-> A Chrome extension to improve your focus by blocking distracting websites and managing focus sessions.
+> A cross-browser extension to improve your focus by blocking distracting websites and managing focus sessions.
 
 Digital Zen is a productivity browser extension built with Angular that helps you maintain concentration by blocking distracting websites during focus sessions. It provides an intuitive interface for managing blocked sites, tracking focus time, and staying productive throughout your workday.
+
+**Cross-Browser Support:** Works on Chrome, Edge, Brave, and other Chromium-based browsers.
 
 ## Authors
 
@@ -234,6 +236,21 @@ If you encounter errors related to missing environment variables during producti
 1. Make sure you've run the build command first
 2. Verify that `dist/browser` folder contains `manifest.json`
 3. Check that the manifest.json is valid JSON (build process should validate this)
+
+### OAuth Authentication Issues
+
+**Problem:** Google authentication button doesn't work or shows errors
+
+**Solution:**
+
+1. Verify OAuth client ID is configured in `.env` file
+2. Check that redirect URI is properly configured in Google Cloud Console
+3. For cross-browser compatibility details, see [OAuth Cross-Browser Setup Guide](./docs/oauth-setup-cross-browser.md)
+4. Ensure the extension ID matches the redirect URI in Google Cloud Console
+
+For detailed OAuth setup instructions, including cross-browser support, refer to:
+
+- **[OAuth Cross-Browser Setup Guide](./docs/oauth-setup-cross-browser.md)** - Comprehensive guide for configuring Google OAuth to work across different browsers
 
 ### Development Server Not Starting
 
