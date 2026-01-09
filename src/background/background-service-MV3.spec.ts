@@ -563,15 +563,12 @@ describe('BackgroundServiceMV3', () => {
 
       it('should create alarm when starting focus', async () => {
         const today = new Date().getDay();
-        // Use dates that are guaranteed to be on the same day to avoid midnight edge cases
-        const now = new Date();
-        const baseDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 12, 0, 0); // Noon today
         const period: IFocus.Period = {
           id: 'test-period',
           name: 'Test Period',
           description: 'Test description',
-          startFrom: new Date(baseDate.getTime() - 3600000), // 11:00 today
-          endTo: new Date(baseDate.getTime() + 3600000), // 13:00 today
+          startFrom: new Date(Date.now() - 3600000),
+          endTo: new Date(Date.now() + 3600000),
           isFocused: false,
           focusedTimes: [],
           daysOfWeek: [today],
