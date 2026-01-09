@@ -108,6 +108,11 @@
     justify-content: flex-start;
     text-align: start;
   }
+
+  &__error {
+    width: 100%;
+    margin: var(--list-gap) 0;
+  }
 }
 
 .dz-input {

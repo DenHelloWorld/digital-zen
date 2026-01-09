@@ -22,7 +22,6 @@
     }
   }
 
-  .description,
   .title,
   .weekdays {
     width: 100%;
@@ -55,5 +54,9 @@
       font-weight: 500;
       color: var(--color-error, #dc2626);
     }
+  }
+
+  .dz-banner {
+    margin: var(--spacing) 0;
   }
 }

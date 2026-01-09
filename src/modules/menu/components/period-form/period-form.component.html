@@ -13,14 +13,16 @@
     />
 
     @if (form.controls.name.hasError('duplicatePeriodName') && form.controls.name.touched) {
-      <div class="dz-banner dz-banner--error dz-banner--sm">
-        <div class="dz-banner__icon">
-          <svg class="dz-icon" aria-hidden="true" focusable="false">
-            <use [attr.href]="icons.ERROR"></use>
-          </svg>
-        </div>
-        <div class="dz-banner__content">
-          <div class="dz-banner__message">{{ uiText.PERIOD_FORM.ERRORS.DUPLICATE_NAME }}</div>
+      <div class="dz-form__error">
+        <div class="dz-banner dz-banner--error dz-banner--sm">
+          <div class="dz-banner__icon">
+            <svg class="dz-icon" aria-hidden="true" focusable="false">
+              <use [attr.href]="icons.ERROR"></use>
+            </svg>
+          </div>
+          <div class="dz-banner__content">
+            <div class="dz-banner__message">{{ uiText.PERIOD_FORM.ERRORS.DUPLICATE_NAME }}</div>
+          </div>
         </div>
       </div>
     }
@@ -49,14 +51,16 @@
     <dz-weekdays-selector [(selectedDays)]="selectedDays" [isTodayShow]="false" />
 
     @if (form.controls.daysOfWeek.invalid) {
-      <div class="dz-banner dz-banner--error dz-banner--sm">
-        <div class="dz-banner__icon">
-          <svg class="dz-icon" aria-hidden="true" focusable="false">
-            <use [attr.href]="icons.ERROR"></use>
-          </svg>
-        </div>
-        <div class="dz-banner__content">
-          <div class="dz-banner__message">{{ uiText.PERIOD_FORM.ERRORS.CHOOSE_DAYS }}</div>
+      <div class="dz-form__error">
+        <div class="dz-banner dz-banner--error dz-banner--sm">
+          <div class="dz-banner__icon">
+            <svg class="dz-icon" aria-hidden="true" focusable="false">
+              <use [attr.href]="icons.ERROR"></use>
+            </svg>
+          </div>
+          <div class="dz-banner__content">
+            <div class="dz-banner__message">{{ uiText.PERIOD_FORM.ERRORS.CHOOSE_DAYS }}</div>
+          </div>
         </div>
       </div>
     }
@@ -77,50 +81,54 @@
     />
   </div>
 
-  <ul class="dz-list dz-list--horizontal dz-list--full">
-    <li class="dz-form__field--fit">
-      <span class="dz-form__hint">
-        <span class="dz-form__required">{{ uiText.COMMON.REQUIRED_MARKER }}</span>
-        {{ uiText.PERIOD_FORM.LABELS.START_FROM }}
-      </span>
+  <div class="dz-form__field">
+    <ul class="dz-list dz-list--horizontal dz-list--full">
+      <li class="dz-form__field--fit">
+        <span class="dz-form__hint">
+          <span class="dz-form__required">{{ uiText.COMMON.REQUIRED_MARKER }}</span>
+          {{ uiText.PERIOD_FORM.LABELS.START_FROM }}
+        </span>
 
-      <input
-        type="time"
-        class="dz-input dz-input--fit"
-        [class.dz-input--invalid]="form.errors?.['invalidTimeRange']"
-        formControlName="startFrom"
-        [placeholder]="uiText.PERIOD_FORM.PLACEHOLDERS.START_FROM"
-      />
-    </li>
+        <input
+          type="time"
+          class="dz-input dz-input--fit"
+          [class.dz-input--invalid]="form.errors?.['invalidTimeRange']"
+          formControlName="startFrom"
+          [placeholder]="uiText.PERIOD_FORM.PLACEHOLDERS.START_FROM"
+        />
+      </li>
 
-    <li class="dz-form__field--fit">
-      <span class="dz-form__hint">
-        <span class="dz-form__required">{{ uiText.COMMON.REQUIRED_MARKER }}</span>
-        {{ uiText.PERIOD_FORM.LABELS.END_TO }}
-      </span>
+      <li class="dz-form__field--fit">
+        <span class="dz-form__hint">
+          <span class="dz-form__required">{{ uiText.COMMON.REQUIRED_MARKER }}</span>
+          {{ uiText.PERIOD_FORM.LABELS.END_TO }}
+        </span>
 
-      <input
-        type="time"
-        class="dz-input dz-input--fit"
-        [class.dz-input--invalid]="form.errors?.['invalidTimeRange']"
-        formControlName="endTo"
-        [placeholder]="uiText.PERIOD_FORM.PLACEHOLDERS.END_TO"
-      />
-    </li>
-  </ul>
+        <input
+          type="time"
+          class="dz-input dz-input--fit"
+          [class.dz-input--invalid]="form.errors?.['invalidTimeRange']"
+          formControlName="endTo"
+          [placeholder]="uiText.PERIOD_FORM.PLACEHOLDERS.END_TO"
+        />
+      </li>
+    </ul>
 
-  @if (form.errors?.['invalidTimeRange']) {
-    <div class="dz-banner dz-banner--error dz-banner--sm">
-      <div class="dz-banner__icon">
-        <svg class="dz-icon" aria-hidden="true" focusable="false">
-          <use [attr.href]="icons.ERROR"></use>
-        </svg>
+    @if (form.errors?.['invalidTimeRange']) {
+      <div class="dz-form__error">
+        <div class="dz-banner dz-banner--error dz-banner--sm">
+          <div class="dz-banner__icon">
+            <svg class="dz-icon" aria-hidden="true" focusable="false">
+              <use [attr.href]="icons.ERROR"></use>
+            </svg>
+          </div>
+          <div class="dz-banner__content">
+            <div class="dz-banner__message">{{ uiText.PERIOD_FORM.ERRORS.INVALID_TIME_RANGE }}</div>
+          </div>
+        </div>
       </div>
-      <div class="dz-banner__content">
-        <div class="dz-banner__message">{{ uiText.PERIOD_FORM.ERRORS.INVALID_TIME_RANGE }}</div>
-      </div>
-    </div>
-  }
+    }
+  </div>
 
   <div class="dz-form__field">
     <span class="dz-form__hint">
@@ -136,28 +144,32 @@
     />
 
     @if (form.controls.webSites.hasError(validationErrorKeys.UNBLOCKABLE_NOT_ALLOWED)) {
-      <div class="dz-banner dz-banner--error dz-banner--sm">
-        <div class="dz-banner__icon">
-          <svg class="dz-icon" aria-hidden="true" focusable="false">
-            <use [attr.href]="icons.ERROR"></use>
-          </svg>
-        </div>
-        <div class="dz-banner__content">
-          <div class="dz-banner__message">
-            {{ uiText.PERIOD_FORM.ERRORS.UNBLOCKABLE_WEBSITE }}:
-            {{ form.controls.webSites.errors?.['invalidUrls']?.join(', ') || '' }}
+      <div class="dz-form__error">
+        <div class="dz-banner dz-banner--error dz-banner--sm">
+          <div class="dz-banner__icon">
+            <svg class="dz-icon" aria-hidden="true" focusable="false">
+              <use [attr.href]="icons.ERROR"></use>
+            </svg>
+          </div>
+          <div class="dz-banner__content">
+            <div class="dz-banner__message">
+              {{ uiText.PERIOD_FORM.ERRORS.UNBLOCKABLE_WEBSITE }}:
+              {{ form.controls.webSites.errors?.['invalidUrls']?.join(', ') || '' }}
+            </div>
           </div>
         </div>
       </div>
     } @else if (form.controls.webSites.invalid) {
-      <div class="dz-banner dz-banner--error dz-banner--sm">
-        <div class="dz-banner__icon">
-          <svg class="dz-icon" aria-hidden="true" focusable="false">
-            <use [attr.href]="icons.ERROR"></use>
-          </svg>
-        </div>
-        <div class="dz-banner__content">
-          <div class="dz-banner__message">{{ uiText.PERIOD_FORM.ERRORS.CHOOSE_WEBSITES }}</div>
+      <div class="dz-form__error">
+        <div class="dz-banner dz-banner--error dz-banner--sm">
+          <div class="dz-banner__icon">
+            <svg class="dz-icon" aria-hidden="true" focusable="false">
+              <use [attr.href]="icons.ERROR"></use>
+            </svg>
+          </div>
+          <div class="dz-banner__content">
+            <div class="dz-banner__message">{{ uiText.PERIOD_FORM.ERRORS.CHOOSE_WEBSITES }}</div>
+          </div>
         </div>
       </div>
     }
