@@ -3,24 +3,31 @@
     <ul [class]="'dz-notification-area dz-notification-area--' + pos">
       @for (toast of getToastsByPosition(pos); track toast.id) {
         <li
-          class="dz-notification dz-box dz-box--colored shadow"
-          [class.dz-placeholder--error]="toast.type === messageTypes.ERROR"
-          [class.dz-placeholder--accent]="toast.type === messageTypes.ACCENT"
-          [class.dz-placeholder--warn]="toast.type === messageTypes.WARN"
+          class="dz-notification dz-banner"
+          [class.dz-banner--info]="toast.type === messageTypes.INFO || toast.type === messageTypes.ACCENT"
+          [class.dz-banner--success]="toast.type === messageTypes.SUCCESS"
+          [class.dz-banner--warn]="toast.type === messageTypes.WARN"
+          [class.dz-banner--error]="toast.type === messageTypes.ERROR"
           [class.dz-notification--hidden]="toast.leaving"
         >
-          <div class="dz-notification__body">
-            <span class="dz-notification__message">
-              {{ toast.message }}
-            </span>
-
-            <button
-              class="dz-button dz-button--xs dz-button--round dz-button--ghost"
-              (click)="toastService.hide(toast.id)"
-            >
-              {{ uiText.TOAST.CLOSE_ICON }}
-            </button>
+          <div class="dz-banner__icon">
+            <svg class="dz-icon" aria-hidden="true" focusable="false">
+              <use [attr.href]="getToastIcon(toast.type)" />
+            </svg>
           </div>
+
+          <div class="dz-banner__content">
+            <div class="dz-banner__message">
+              {{ toast.message }}
+            </div>
+          </div>
+
+          <button
+            class="dz-button dz-button--xs dz-button--round dz-button--ghost"
+            (click)="toastService.hide(toast.id)"
+          >
+            {{ uiText.TOAST.CLOSE_ICON }}
+          </button>
 
           @if (toast.durationInMs && !toast.leaving) {
             <div
