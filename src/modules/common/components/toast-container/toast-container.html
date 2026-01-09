@@ -4,7 +4,9 @@
       @for (toast of getToastsByPosition(pos); track toast.id) {
         <li
           class="dz-notification dz-banner"
-          [class.dz-banner--info]="toast.type === messageTypes.INFO || toast.type === messageTypes.ACCENT"
+          [class.dz-banner--info]="
+            toast.type === messageTypes.INFO || toast.type === messageTypes.ACCENT
+          "
           [class.dz-banner--success]="toast.type === messageTypes.SUCCESS"
           [class.dz-banner--warn]="toast.type === messageTypes.WARN"
           [class.dz-banner--error]="toast.type === messageTypes.ERROR"

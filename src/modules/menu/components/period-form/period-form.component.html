@@ -1,3 +1,19 @@
+<!-- Error banner template -->
+<ng-template #errorBanner let-message="message">
+  <div class="dz-form__error">
+    <div class="dz-banner dz-banner--error dz-banner--sm">
+      <div class="dz-banner__icon">
+        <svg class="dz-icon" aria-hidden="true" focusable="false">
+          <use [attr.href]="icons.ERROR"></use>
+        </svg>
+      </div>
+      <div class="dz-banner__content">
+        <div class="dz-banner__message">{{ message }}</div>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
 <form [formGroup]="form" class="dz-form">
   <div class="dz-form__field">
     <span class="dz-form__hint">
@@ -13,9 +29,12 @@
     />
 
     @if (form.controls.name.hasError('duplicatePeriodName') && form.controls.name.touched) {
-      <span class="dz-form__hint">
-        <span class="dz-form__required">{{ uiText.PERIOD_FORM.ERRORS.DUPLICATE_NAME }}</span>
-      </span>
+      <ng-container
+        *ngTemplateOutlet="
+          errorBanner;
+          context: { message: uiText.PERIOD_FORM.ERRORS.DUPLICATE_NAME }
+        "
+      ></ng-container>
     }
   </div>
 
@@ -42,9 +61,9 @@
     <dz-weekdays-selector [(selectedDays)]="selectedDays" [isTodayShow]="false" />
 
     @if (form.controls.daysOfWeek.invalid) {
-      <span class="dz-form__hint">
-        <span class="dz-form__required">{{ uiText.PERIOD_FORM.ERRORS.CHOOSE_DAYS }}</span>
-      </span>
+      <ng-container
+        *ngTemplateOutlet="errorBanner; context: { message: uiText.PERIOD_FORM.ERRORS.CHOOSE_DAYS }"
+      ></ng-container>
     }
   </div>
 
@@ -63,43 +82,48 @@
     />
   </div>
 
-  <ul class="dz-list dz-list--horizontal dz-list--full">
-    <li class="dz-form__field--fit">
-      <span class="dz-form__hint">
-        <span class="dz-form__required">{{ uiText.COMMON.REQUIRED_MARKER }}</span>
-        {{ uiText.PERIOD_FORM.LABELS.START_FROM }}
-      </span>
+  <div class="dz-form__field">
+    <ul class="dz-list dz-list--horizontal dz-list--full">
+      <li class="dz-form__field--fit">
+        <span class="dz-form__hint">
+          <span class="dz-form__required">{{ uiText.COMMON.REQUIRED_MARKER }}</span>
+          {{ uiText.PERIOD_FORM.LABELS.START_FROM }}
+        </span>
 
-      <input
-        type="time"
-        class="dz-input dz-input--fit"
-        [class.dz-input--invalid]="form.errors?.['invalidTimeRange']"
-        formControlName="startFrom"
-        [placeholder]="uiText.PERIOD_FORM.PLACEHOLDERS.START_FROM"
-      />
-    </li>
+        <input
+          type="time"
+          class="dz-input dz-input--fit"
+          [class.dz-input--invalid]="form.errors?.['invalidTimeRange']"
+          formControlName="startFrom"
+          [placeholder]="uiText.PERIOD_FORM.PLACEHOLDERS.START_FROM"
+        />
+      </li>
 
-    <li class="dz-form__field--fit">
-      <span class="dz-form__hint">
-        <span class="dz-form__required">{{ uiText.COMMON.REQUIRED_MARKER }}</span>
-        {{ uiText.PERIOD_FORM.LABELS.END_TO }}
-      </span>
+      <li class="dz-form__field--fit">
+        <span class="dz-form__hint">
+          <span class="dz-form__required">{{ uiText.COMMON.REQUIRED_MARKER }}</span>
+          {{ uiText.PERIOD_FORM.LABELS.END_TO }}
+        </span>
 
-      <input
-        type="time"
-        class="dz-input dz-input--fit"
-        [class.dz-input--invalid]="form.errors?.['invalidTimeRange']"
-        formControlName="endTo"
-        [placeholder]="uiText.PERIOD_FORM.PLACEHOLDERS.END_TO"
-      />
-    </li>
-  </ul>
+        <input
+          type="time"
+          class="dz-input dz-input--fit"
+          [class.dz-input--invalid]="form.errors?.['invalidTimeRange']"
+          formControlName="endTo"
+          [placeholder]="uiText.PERIOD_FORM.PLACEHOLDERS.END_TO"
+        />
+      </li>
+    </ul>
 
-  @if (form.errors?.['invalidTimeRange']) {
-    <span class="dz-form__hint">
-      <span class="dz-form__required">{{ uiText.PERIOD_FORM.ERRORS.INVALID_TIME_RANGE }}</span>
-    </span>
-  }
+    @if (form.errors?.['invalidTimeRange']) {
+      <ng-container
+        *ngTemplateOutlet="
+          errorBanner;
+          context: { message: uiText.PERIOD_FORM.ERRORS.INVALID_TIME_RANGE }
+        "
+      ></ng-container>
+    }
+  </div>
 
   <div class="dz-form__field">
     <span class="dz-form__hint">
@@ -115,16 +139,24 @@
     />
 
     @if (form.controls.webSites.hasError(validationErrorKeys.UNBLOCKABLE_NOT_ALLOWED)) {
-      <span class="dz-form__hint">
-        <span class="dz-form__required">
-          {{ uiText.PERIOD_FORM.ERRORS.UNBLOCKABLE_WEBSITE }}:
-          {{ form.controls.webSites.errors?.['invalidUrls']?.join(', ') || '' }}
-        </span>
-      </span>
+      <ng-container
+        *ngTemplateOutlet="
+          errorBanner;
+          context: {
+            message:
+              uiText.PERIOD_FORM.ERRORS.UNBLOCKABLE_WEBSITE +
+              ': ' +
+              (form.controls.webSites.errors?.['invalidUrls']?.join(', ') || ''),
+          }
+        "
+      ></ng-container>
     } @else if (form.controls.webSites.invalid) {
-      <span class="dz-form__hint">
-        <span class="dz-form__required">{{ uiText.PERIOD_FORM.ERRORS.CHOOSE_WEBSITES }}</span>
-      </span>
+      <ng-container
+        *ngTemplateOutlet="
+          errorBanner;
+          context: { message: uiText.PERIOD_FORM.ERRORS.CHOOSE_WEBSITES }
+        "
+      ></ng-container>
     }
   </div>
 

@@ -13,6 +13,7 @@ import {
   signal,
   WritableSignal,
 } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 
 import { map, distinctUntilChanged } from 'rxjs';
@@ -26,6 +27,7 @@ import {
   requiredTrimmedValidator,
   timeRangeValidator,
   UI_TEXT,
+  ICONS,
   WEBSITE_FACEBOOK,
   WEBSITE_TIKTOK,
   uniquePeriodNameValidator,
@@ -67,6 +69,7 @@ import { MultiSelectorComponent } from '../../../common/components/multi-selecto
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     // angular modules
+    CommonModule,
     ReactiveFormsModule,
     // components
     WeekdaysSelectorComponent,
@@ -92,6 +95,8 @@ export class PeriodFormComponent implements OnInit {
   protected form: FormGroup<IFocusForm.UpsertPeriod>;
   /** @guideline DZ_10 - UI text constants */
   protected readonly uiText = UI_TEXT;
+  /** @guideline DZ_10.1 - Icon constants */
+  protected readonly icons = ICONS;
   /** Validation error keys for template usage */
   protected readonly validationErrorKeys = VALIDATION_ERROR_KEYS;
   protected readonly timeRanges = [...TIME_RANGES];

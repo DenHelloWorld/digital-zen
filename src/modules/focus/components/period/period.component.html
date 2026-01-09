@@ -34,9 +34,18 @@
         </div>
       }
 
-      <p class="description">
-        {{ p.description }}
-      </p>
+      <div class="dz-banner dz-banner--info">
+        <div class="dz-banner__icon">
+          <svg class="dz-icon" aria-hidden="true" focusable="false">
+            <use [attr.href]="icons.INFO"></use>
+          </svg>
+        </div>
+        <div class="dz-banner__content">
+          <div class="dz-banner__message">
+            {{ p.description }}
+          </div>
+        </div>
+      </div>
 
       <div class="weekdays">
         <dz-weekdays-selector [selectedDays]="selectedDays()" [isSelectable]="false" />
