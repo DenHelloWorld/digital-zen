@@ -135,7 +135,7 @@ export class GoogleAuthService {
 
       // Construct OAuth authorization URL
       const authUrl =
-        `https://accounts.google.com/o/oauth2/v2/auth?` +
+        `${API_URLS.GOOGLE.OAUTH_AUTH}?` +
         `client_id=${encodeURIComponent(this.#clientId)}` +
         `&redirect_uri=${encodeURIComponent(redirectUrl)}` +
         `&response_type=token` +

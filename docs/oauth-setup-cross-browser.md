@@ -33,6 +33,12 @@ In the Google Cloud Console:
 3. Choose **Chrome App** as the application type
 4. Enter a name for your OAuth client
 
+**Note:** You may also see a newer "Chrome Extension" option. The difference:
+- **Chrome Extension**: Automatic redirect URI handling (you won't see "Authorized redirect URIs" section)
+- **Chrome App**: Manual redirect URI configuration (recommended for development flexibility)
+
+For this guide, we use **Chrome App** to have full control over redirect URIs.
+
 ### 2. Configure Redirect URIs
 
 **⚠️ CRITICAL: This is the most common source of the `redirect_uri_mismatch` error!**

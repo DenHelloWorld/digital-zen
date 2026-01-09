@@ -119,6 +119,27 @@ If you selected "Web application" instead of "Chrome App" when creating OAuth cr
 
 **Solution:** Create new OAuth 2.0 credentials with "Chrome App" as the application type.
 
+### Issue 2.1: Chrome Extension Type - Missing "Authorized redirect URIs" Section
+
+**Important Note:** If your OAuth client is configured with the "Chrome Extension" application type (newer option in Google Cloud Console), you may notice that the "Authorized redirect URIs" section is **NOT visible** on the configuration page.
+
+**This is normal behavior!** For Chrome Extension OAuth clients:
+- Google automatically handles redirect URIs based on the extension ID
+- You don't need to manually configure redirect URIs
+- The extension uses the format: `https://<extension-id>.chromiumapp.org/oauth2`
+
+**However**, if you're getting `redirect_uri_mismatch` errors with a Chrome Extension OAuth client:
+
+1. **Verify your extension ID** matches the one in the OAuth client
+2. **Check the manifest.json** has the correct OAuth client ID
+3. **Try creating a new OAuth client** with "Chrome App" type instead (this gives you manual control over redirect URIs)
+
+**Chrome App vs Chrome Extension OAuth Client Types:**
+- **Chrome Extension** (newer): Automatic redirect URI handling, less configuration needed
+- **Chrome App** (older): Manual redirect URI configuration, more flexibility for development
+
+If you need to configure specific redirect URIs (e.g., for development with changing extension IDs), use the "Chrome App" type.
+
 ### Issue 3: Redirect URI with Extra Characters
 
 Make sure you copy the **exact** redirect URI including:
