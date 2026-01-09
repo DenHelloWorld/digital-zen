@@ -20,9 +20,13 @@ try {
 
   // Check if config file exists
   if (!fs.existsSync(configPath)) {
-    console.error(`❌ Extension config file not found at: ${configPath}`);
-    console.error('💡 Make sure the build process compiled extension-config.ts');
-    process.exit(1);
+    console.warn(`⚠️  Extension config file not found at: ${configPath}`);
+    console.warn(
+      '💡 This is expected if Angular bundled it into the main bundle or if running Firefox build'
+    );
+    console.warn('   OAuth will be configured from the bundled Angular app or skipped');
+    console.log('✅ Skipping extension-config.js patching (file will be created by Angular build)');
+    process.exit(0); // Exit successfully - this is not a fatal error
   }
 
   // Read the compiled config file
