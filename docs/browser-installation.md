@@ -6,14 +6,14 @@ This guide explains how to install the Digital Zen extension in different browse
 
 ## Supported Browsers
 
-Digital Zen works on all Chromium-based browsers and has partial Firefox support:
+Digital Zen works on all Chromium-based browsers and Firefox:
 
 - ✅ **Google Chrome** (Chromium-based) - **Fully supported**
 - ✅ **Microsoft Edge** (Chromium-based) - **Fully supported**
 - ✅ **Brave** - **Fully supported**
 - ✅ **Opera** - **Fully supported**
 - ✅ **Vivaldi** - **Fully supported**
-- ⚠️ **Mozilla Firefox** (WebExtensions API) - **Limited development support** (see Firefox section for details)
+- ✅ **Mozilla Firefox** (WebExtensions API) - **Fully supported** (use `npm run build:firefox`)
 - ✅ **Other Chromium-based browsers** - **Fully supported**
 
 ## Prerequisites
@@ -128,22 +128,57 @@ Before installing the extension, ensure you have:
 
 ### Mozilla Firefox
 
-**⚠️ Important Limitation:** Due to architectural differences in how Firefox handles Manifest V3 background scripts, Digital Zen currently has **limited Firefox compatibility** for development. The extension uses ES6 modules which work in Chrome's service worker environment but have compatibility issues with Firefox's `background.scripts` implementation. 
+**✅ Firefox Support Now Available!**
 
-**Recommendation:** For development and testing, use Chrome, Edge, or Brave browsers. Firefox support will improve once Mozilla adds full service worker support for Manifest V3 extensions.
+Digital Zen now includes a Firefox-specific build that bundles the background script into a single file, making it compatible with Firefox's `background.scripts` implementation.
 
-If you still want to attempt loading in Firefox for testing purposes, follow these steps (note: background functionality may not work):
+**Two Installation Methods:**
 
-**Note:** Firefox supports the WebExtensions API and has Manifest V3 support, but some features may have different implementations or limitations compared to Chromium browsers. **Important: Firefox does not yet support service workers for background scripts in Manifest V3.** You'll need to modify the manifest.json before loading in Firefox (see step 2 below).
+#### Method 1: Using Firefox Build Script (Recommended)
 
-1. **Build the extension** (if not already built):
+1. **Build for Firefox:**
    ```bash
-   npm run build
+   npm run build:firefox:skip-tests
+   ```
+   
+   Or with tests:
+   ```bash
+   npm run build:firefox
+   ```
+   
+   This will:
+   - Build the Angular application
+   - Bundle the background script into a single IIFE (Immediately Invoked Function Expression)
+   - Automatically patch the manifest.json for Firefox compatibility
+   - Convert `background.service_worker` to `background.scripts`
+
+2. **Load in Firefox:**
+   - Navigate to `about:debugging#/runtime/this-firefox`
+   - Or type `about:debugging` in the address bar, then click **"This Firefox"** in the left sidebar
+   - Click the **"Load Temporary Add-on..."** button
+   - Navigate to your project's `dist/browser` folder
+   - Select the `manifest.json` file
+   - Click **"Open"**
+
+3. **Verify Installation:**
+   - The Digital Zen extension should appear in the list of temporary extensions
+   - The extension icon should appear in your Firefox toolbar
+   - Background functionality should now work properly!
+
+#### Method 2: Manual Build (For Advanced Users)
+
+If you prefer to use the standard build and manually modify the manifest:
+
+**Note:** Firefox does not yet support service workers for background scripts in Manifest V3. You'll need to modify the manifest.json before loading in Firefox.
+
+1. **Build the extension:**
+   ```bash
+   npm run build:skip-tests
    ```
 
-2. **Modify manifest.json for Firefox compatibility:**
+2. **Manually modify manifest.json for Firefox compatibility:**
    
-   Firefox requires `background.scripts` instead of `background.service_worker`. You need to temporarily modify the manifest:
+   Firefox requires `background.scripts` instead of `background.service_worker`, and the background script must be bundled:
    
    - Open `dist/browser/manifest.json` in a text editor
    - Find the `"background"` section (around line 37-40)
@@ -162,24 +197,15 @@ If you still want to attempt loading in Firefox for testing purposes, follow the
      ```
    - Save the file
    
-   **Note:** This modification is only needed for Firefox. Don't commit these changes to git - they're only for local Firefox testing.
+   **⚠️ Important:** The standard build creates modular background scripts that won't work with this manual approach. Use Method 1 (Firefox build script) for proper Firefox compatibility.
 
-3. **Open Firefox Add-ons Page**
+3. **Load in Firefox:**
    - Navigate to `about:debugging#/runtime/this-firefox`
-   - Or type `about:debugging` in the address bar, then click **"This Firefox"** in the left sidebar
-
-4. **Load Temporary Add-on**
-   - Click the **"Load Temporary Add-on..."** button
-   - Navigate to your project's `dist/browser` folder
-   - Select the `manifest.json` file (the modified one from step 2)
+   - Click **"Load Temporary Add-on..."**
+   - Select the `manifest.json` file from `dist/browser`
    - Click **"Open"**
 
-5. **Verify Installation**
-   - The Digital Zen extension should appear in the list of temporary extensions
-   - The extension icon should appear in your Firefox toolbar
-   - If you don't see the icon, click the puzzle piece icon in the toolbar
-
-6. **Important Notes for Firefox:**
+#### Important Notes for Firefox:
    - **Temporary Extensions:** Extensions loaded this way are temporary and will be removed when Firefox is restarted
    - **Permanent Installation:** For permanent installation during development, you need to:
      - Package the extension as a `.xpi` file (see "Creating a .xpi File for Firefox" section below)
@@ -261,7 +287,7 @@ A `.xpi` file is a ZIP archive containing your extension files. Here's how to cr
 | Brave | `brave://extensions/` | Top-right toggle | Load unpacked | - |
 | Opera | `opera://extensions/` | Top-right button | Load unpacked | - |
 | Vivaldi | `vivaldi://extensions/` | Top-right toggle | Load unpacked | - |
-| Firefox | `about:debugging#/runtime/this-firefox` | Not needed | Load Temporary Add-on... | ⚠️ **Limited compatibility** - background scripts may not work due to ES6 module limitations |
+| Firefox | `about:debugging#/runtime/this-firefox` | Not needed | Load Temporary Add-on... | Use `npm run build:firefox` for full support |
 
 ## Common Issues and Troubleshooting
 
@@ -316,37 +342,33 @@ Firefox does not yet support service workers for background scripts in Manifest 
 
 **Problem:** After modifying the manifest for Firefox, you get errors like "Failed to communicate with background service" or "Error sending message to background" in the browser console.
 
-**Root Cause:**
+**Solution:**
 
-Digital Zen's background script is built as an ES6 module with modern JavaScript features. While this works perfectly in Chrome's service worker environment, Firefox's `background.scripts` implementation has limited support for ES6 modules when not using the `"type": "module"` declaration.
+✅ **Use the Firefox build script:**
 
-**Current Status:**
+```bash
+npm run build:firefox:skip-tests
+```
 
-**⚠️ Firefox compatibility for development is currently limited** due to this architectural difference between Firefox and Chromium-based browsers. The extension uses:
-- ES6 modules (`import`/`export` statements)
-- Modern TypeScript compilation targeting ES6+
-- Service worker patterns designed for Chrome's MV3 implementation
+This automatically:
+- Bundles the background script into a single IIFE file
+- Patches the manifest for Firefox compatibility
+- Creates a fully working Firefox build
 
-**Potential Workarounds:**
+The standard build creates modular ES6 scripts that don't work with Firefox's `background.scripts`. The Firefox build script solves this by bundling everything into one file.
 
-1. **Wait for Firefox Service Worker Support** (Recommended for most users):
-   - Firefox is actively working on service worker support for Manifest V3
-   - Once available, the extension will work without modifications
-   - Monitor [Mozilla's MV3 roadmap](https://blog.mozilla.org/addons/) for updates
+**Alternative (Manual):**
 
-2. **Use Firefox-specific Build** (For advanced developers):
-   - Create a separate build configuration for Firefox
-   - Compile background scripts to ES5 or bundle as a single non-module script
-   - Use a bundler like webpack or rollup to create a Firefox-compatible build
-   - This requires modifications to the build process and is not covered in this guide
+If you're manually building, you need to bundle the background script yourself using esbuild:
 
-3. **Test in Chromium-based Browsers**:
-   - For development and testing, use Chrome, Edge, or Brave
-   - These browsers fully support the current extension architecture
+```bash
+npm run build:skip-tests
+npm run bundle:background
+```
 
-**For Production:**
+Then manually edit the manifest.json to use `background.scripts` instead of `background.service_worker`.
 
-When Digital Zen is published to Firefox Add-ons, it will require a Firefox-specific build with appropriate bundling to ensure compatibility. This is a known limitation of cross-browser Manifest V3 extensions as of 2026.
+**Why this happens:** Firefox's `background.scripts` doesn't support ES6 modules the same way Chrome's service worker does. The bundled build creates a single IIFE (Immediately Invoked Function Expression) that works in both environments.
 
 ### Extension Not Appearing in Toolbar
 
