@@ -4,6 +4,30 @@ This directory contains documentation for the Digital Zen Chrome extension proje
 
 ## Documents
 
+### Installation & Setup
+
+#### [Browser Installation Guide](./browser-installation.md) 🌐
+
+**Purpose:** Complete guide for installing Digital Zen extension in different browsers.
+
+**Contents:**
+
+- Supported browsers (Chrome, Edge, Brave, Firefox, Opera, Vivaldi)
+- Step-by-step installation instructions for each browser
+- Quick reference table
+- Common troubleshooting issues
+- Testing across multiple browsers
+- Production installation information
+
+**Use this when:**
+
+- Installing the extension for development
+- Testing on different browsers
+- Troubleshooting installation issues
+- Setting up the extension for the first time
+
+---
+
 ### Development & Testing
 
 #### [Testing Guide](./testing-guide.md) 🧪
@@ -124,6 +148,12 @@ This directory contains documentation for the Digital Zen Chrome extension proje
 ---
 
 ## How to Use These Documents
+
+### For Installation
+
+1. **Start with [browser-installation.md](./browser-installation.md)** to install the extension in your browser
+2. **Follow the step-by-step guide** for your specific browser
+3. **Check troubleshooting section** if you encounter issues
 
 ### For Developers
 

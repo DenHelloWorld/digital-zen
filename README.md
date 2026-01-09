@@ -99,9 +99,11 @@ npm run build
 
 This will compile the Angular application and background scripts into the `dist/browser` folder.
 
-5. **Load the extension in Chrome**
+5. **Load the extension in your browser**
 
-Since this is a Chrome extension, you'll need to load it in Chrome:
+For detailed installation instructions for different browsers (Chrome, Edge, Brave, Firefox, Opera, Vivaldi), see the **[Browser Installation Guide](./docs/browser-installation.md)**.
+
+**Quick start for Chrome:**
 
 - Open Chrome and navigate to `chrome://extensions/`
 - Enable "Developer mode" (toggle in the top-right corner)
@@ -146,7 +148,13 @@ npm run build
 
 ### Testing the Build Locally
 
-After building the extension, you can test it locally in Chrome:
+After building the extension, you can test it locally in any supported browser.
+
+**Supported Browsers:** Chrome, Edge, Brave, Firefox, Opera, Vivaldi, and other Chromium-based browsers.
+
+For detailed installation instructions for each browser, see the **[Browser Installation Guide](./docs/browser-installation.md)**.
+
+**Quick start for Chrome:**
 
 1. Build the extension using one of the commands above
 2. Open Chrome and navigate to `chrome://extensions/`
