@@ -4,7 +4,10 @@
  * Patch manifest.json for Firefox compatibility
  * - Converts service_worker to scripts format for Firefox
  * - Removes Chrome-specific fields (oauth2, key) that Firefox doesn't support
- * - Optionally replaces __OAUTH_CLIENT_ID__ and __PUBLIC_KEY__ placeholders (if env vars are set)
+ *
+ * Note: OAuth functionality is preserved via extension-config.ts which is patched
+ * by patch-extension-config.js to include the OAuth client ID.
+ * This universal approach works for all browsers.
  */
 
 const fs = require('fs');
@@ -36,6 +39,7 @@ try {
   if (manifest.oauth2) {
     delete manifest.oauth2;
     console.log('✅ Removed oauth2 field (Chrome-specific, not supported in Firefox)');
+    console.log('   ℹ️  OAuth client ID provided via extension-config.js instead');
   }
 
   if (manifest.key) {
@@ -49,8 +53,7 @@ try {
   console.log('✅ manifest.json patched successfully for Firefox');
   console.log('📦 Firefox build ready in dist/browser/');
   console.log('');
-  console.log('ℹ️  Note: OAuth and extension key features removed for Firefox compatibility');
-  console.log('   Firefox uses different authentication mechanisms.');
+  console.log('✨ OAuth authentication will work in Firefox using extension-config.js');
 } catch (error) {
   console.error('❌ Error patching manifest.json:', error.message);
   process.exit(1);

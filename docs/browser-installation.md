@@ -168,8 +168,9 @@ Digital Zen now includes a Firefox-specific build that bundles the background sc
    - No manifest warnings should appear
 
 **⚠️ Firefox Limitations:**
-- **OAuth Authentication:** The Google OAuth feature is not available in Firefox build as Firefox doesn't support the Chrome-specific `oauth2` manifest field. Firefox uses different authentication mechanisms.
 - **Extension Key:** The permanent extension ID feature (via `key` field) is Chrome-specific and removed in Firefox builds.
+
+**✅ OAuth Authentication:** Works in Firefox! OAuth client ID is provided via `extension-config.ts` (universal approach for all browsers).
 
 #### Method 2: Manual Build (For Advanced Users)
 
