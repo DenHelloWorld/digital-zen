@@ -321,7 +321,7 @@ export class FocusService {
 
       if (isUnblockable) {
         this.#toastService.show({
-          message: 'This website cannot be blocked',
+          message: TOAST_MESSAGES_ENUM.UNBLOCKABLE_WEBSITE,
           type: TOAST_TYPE_ENUM.ERROR,
         });
         return;
