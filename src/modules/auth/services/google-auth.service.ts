@@ -45,7 +45,8 @@ export class GoogleAuthService {
     !!chrome.runtime &&
     !!chrome.runtime.id &&
     !!chrome.identity &&
-    typeof chrome.identity.launchWebAuthFlow === 'function';
+    typeof chrome.identity.launchWebAuthFlow === 'function' &&
+    typeof chrome.identity.getRedirectURL === 'function';
   /** @guideline DZ_02, DZ_09 - Dependency injection with inject(), readonly */
   readonly #apiService = inject(ApiService);
   /** @guideline DZ_02, DZ_09 - Dependency injection with inject(), readonly */
@@ -66,6 +67,12 @@ export class GoogleAuthService {
   /** @guideline DZ_08 - Private field for OAuth client ID from manifest */
   #clientId: string | null = null;
 
+  /** @guideline DZ_08 - OAuth scopes for Google authentication */
+  readonly #OAUTH_SCOPES = [
+    'https://www.googleapis.com/auth/userinfo.email',
+    'https://www.googleapis.com/auth/userinfo.profile',
+  ];
+
   constructor() {
     this.#loadClientId();
     this.checkExistingGoogleAuth();
@@ -74,6 +81,7 @@ export class GoogleAuthService {
   /**
    * Loads OAuth client ID from manifest.json
    * This is needed for constructing the OAuth URL for launchWebAuthFlow
+   * Handles different manifest structures for Chrome and Firefox
    */
   #loadClientId(): void {
     if (!this.#isChromeRuntime) {
@@ -82,7 +90,8 @@ export class GoogleAuthService {
 
     try {
       const manifest = chrome.runtime.getManifest();
-      this.#clientId = manifest.oauth2?.client_id || null;
+      // Chrome/Edge use oauth2 field, Firefox may use different structure
+      this.#clientId = (manifest as { oauth2?: { client_id?: string } }).oauth2?.client_id || null;
 
       if (!this.#clientId || this.#clientId === '__OAUTH_CLIENT_ID__') {
         this.#logger.warn('OAuth client ID not configured in manifest.json');
@@ -116,7 +125,7 @@ export class GoogleAuthService {
         `client_id=${encodeURIComponent(this.#clientId)}` +
         `&redirect_uri=${encodeURIComponent(redirectUrl)}` +
         `&response_type=token` +
-        `&scope=${encodeURIComponent('https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile')}` +
+        `&scope=${encodeURIComponent(this.#OAUTH_SCOPES.join(' '))}` +
         `&prompt=consent`;
 
       this.#logger.info('Starting OAuth flow with redirect URL:', redirectUrl);
@@ -162,14 +171,27 @@ export class GoogleAuthService {
 
   /**
    * Extracts access token from OAuth redirect URL
+   * Validates token format and safely parses the URL
    * @param url The redirect URL containing the access token in the fragment
-   * @returns The access token or null if not found
+   * @returns The access token or null if not found or invalid
    */
   #extractTokenFromUrl(url: string): string | null {
     try {
-      // The token is in the fragment (after #) in the format: #access_token=xxx&...
-      const fragmentMatch = url.match(/[#&]access_token=([^&]+)/);
-      return fragmentMatch ? fragmentMatch[1] : null;
+      // Parse the URL to safely extract the fragment
+      const parsedUrl = new URL(url);
+      const fragment = parsedUrl.hash.substring(1); // Remove the leading #
+
+      // Parse the fragment as URL search params
+      const params = new URLSearchParams(fragment);
+      const token = params.get('access_token');
+
+      // Validate token format (basic check - should be a non-empty string)
+      if (token && token.length > 0 && /^[A-Za-z0-9._-]+$/.test(token)) {
+        return token;
+      }
+
+      this.#logger.warn('Invalid or missing access token in OAuth response');
+      return null;
     } catch (error) {
       this.#logger.error('Error extracting token from URL:', error);
       return null;
