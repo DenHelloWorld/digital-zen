@@ -101,13 +101,20 @@ Get your OAuth client ID from [Google Cloud Console](https://console.cloud.googl
 > - OAuth Client ID is required for Google authentication features
 > - The extension will work without it, but Google login won't be available
 
-4. **Build the extension for development**
+4. **Build the extension**
 
+For **Chrome, Edge, Brave, Opera, Vivaldi**:
 ```bash
 npm run build
 ```
 
+For **Firefox**:
+```bash
+npm run build:firefox
+```
+
 This will compile the Angular application and background scripts into the `dist/browser` folder.
+Both commands run tests automatically before building.
 
 5. **Load the extension in your browser**
 
@@ -141,20 +148,28 @@ npm run build:prod
 
 This command will:
 
-1. Compile the Angular application
-2. Compile the background service worker with TypeScript
-3. Resolve TypeScript path aliases
-4. Patch the manifest.json with OAuth credentials from environment variables
+1. Run tests to ensure code quality
+2. Inject OAuth client ID from .env file
+3. Compile the Angular application
+4. Compile the background service worker with TypeScript
+5. Resolve TypeScript path aliases
+6. Patch configuration files for production
 
 The compiled extension will be available in the `dist/browser` directory.
 
 ### Building for Development
 
-For a development build without environment variable patching:
-
+For **Chrome, Edge, Brave, Opera, Vivaldi**:
 ```bash
 npm run build
 ```
+
+For **Firefox**:
+```bash
+npm run build:firefox
+```
+
+Both commands run tests automatically and inject OAuth credentials from your `.env` file.
 
 ### Testing the Build Locally
 
