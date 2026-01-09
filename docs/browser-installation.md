@@ -200,12 +200,7 @@ A `.xpi` file is a ZIP archive containing your extension files. Here's how to cr
    Compress-Archive -Path * -DestinationPath ..\digital-zen.xpi
    ```
 
-4. **Rename to .xpi** (if using generic zip):
-   ```bash
-   mv ../digital-zen.zip ../digital-zen.xpi
-   ```
-
-5. The `.xpi` file will be in the `dist/` folder
+4. The `.xpi` file will be in the `dist/` folder
 
 **Installing the .xpi File:**
 
