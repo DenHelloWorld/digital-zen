@@ -151,6 +151,7 @@ Digital Zen now includes a Firefox-specific build that bundles the background sc
    - Bundle the background script into a single IIFE (Immediately Invoked Function Expression)
    - Automatically patch the manifest.json for Firefox compatibility
    - Convert `background.service_worker` to `background.scripts`
+   - Remove Chrome-specific fields (`oauth2`, `key`) that cause warnings in Firefox
 
 2. **Load in Firefox:**
    - Navigate to `about:debugging#/runtime/this-firefox`
@@ -164,6 +165,11 @@ Digital Zen now includes a Firefox-specific build that bundles the background sc
    - The Digital Zen extension should appear in the list of temporary extensions
    - The extension icon should appear in your Firefox toolbar
    - Background functionality should now work properly!
+   - No manifest warnings should appear
+
+**⚠️ Firefox Limitations:**
+- **OAuth Authentication:** The Google OAuth feature is not available in Firefox build as Firefox doesn't support the Chrome-specific `oauth2` manifest field. Firefox uses different authentication mechanisms.
+- **Extension Key:** The permanent extension ID feature (via `key` field) is Chrome-specific and removed in Firefox builds.
 
 #### Method 2: Manual Build (For Advanced Users)
 
