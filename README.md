@@ -239,18 +239,33 @@ If you encounter errors related to missing environment variables during producti
 
 ### OAuth Authentication Issues
 
-**Problem:** Google authentication button doesn't work or shows errors
+**Problem:** Google authentication button doesn't work or shows "redirect_uri_mismatch" error
 
-**Solution:**
+**⚠️ This is the most common issue with OAuth setup!**
+
+See our detailed troubleshooting guide:
+
+📖 **[Troubleshooting OAuth redirect_uri_mismatch](./docs/troubleshooting-oauth-redirect-uri.md)**
+
+**Quick Fix:**
+
+1. Open extension popup and inspect it (right-click → Inspect)
+2. Click Google login button and check Console for redirect URL
+3. Copy the URL (e.g., `https://xxxxx.chromiumapp.org/oauth2`)
+4. Add it to Google Cloud Console → APIs & Services → Credentials → OAuth 2.0 Client ID → Authorized redirect URIs
+5. Save and wait 5-10 minutes
+
+**Other OAuth Issues:**
 
 1. Verify OAuth client ID is configured in `.env` file
-2. Check that redirect URI is properly configured in Google Cloud Console
-3. For cross-browser compatibility details, see [OAuth Cross-Browser Setup Guide](./docs/oauth-setup-cross-browser.md)
-4. Ensure the extension ID matches the redirect URI in Google Cloud Console
+2. Check that redirect URI is properly configured in Google Cloud Console (see guide above)
+3. Ensure the extension ID matches the redirect URI in Google Cloud Console
+4. Make sure you selected "Chrome App" (not "Web application") when creating OAuth credentials
 
 For detailed OAuth setup instructions, including cross-browser support, refer to:
 
 - **[OAuth Cross-Browser Setup Guide](./docs/oauth-setup-cross-browser.md)** - Comprehensive guide for configuring Google OAuth to work across different browsers
+- **[Troubleshooting OAuth redirect_uri_mismatch](./docs/troubleshooting-oauth-redirect-uri.md)** - Detailed guide for fixing the most common OAuth error
 
 ### Development Server Not Starting
 

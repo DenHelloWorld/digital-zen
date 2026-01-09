@@ -35,6 +35,8 @@ In the Google Cloud Console:
 
 ### 2. Configure Redirect URIs
 
+**⚠️ CRITICAL: This is the most common source of the `redirect_uri_mismatch` error!**
+
 **Important:** You must add the extension's redirect URI to the allowed redirect URIs list.
 
 The redirect URI format for Chrome extensions is:
@@ -43,25 +45,59 @@ The redirect URI format for Chrome extensions is:
 https://<extension-id>.chromiumapp.org/oauth2
 ```
 
-To get your extension ID:
+#### How to Get Your Extension ID and Redirect URI
+
+**Method 1: From Browser Console (Recommended)**
+
+1. Load your extension in Chrome
+2. Click the extension icon to open the popup
+3. Right-click on the popup and select "Inspect"
+4. Go to the Console tab
+5. Click the Google login button
+6. Look for the log message showing your redirect URI:
+   ```
+   OAuth redirect URL: https://xxxxx.chromiumapp.org/oauth2
+   ```
+7. Copy this exact URL
+
+**Method 2: From chrome://extensions/**
 
 1. Load your unpacked extension in Chrome
 2. Go to `chrome://extensions/`
-3. Enable Developer Mode
-4. Find your extension and copy the ID
+3. Enable Developer Mode (toggle in the top-right corner)
+4. Find your extension and copy the ID (e.g., `abcdefghijklmnopqrstuvwxyzabcdef`)
+5. Your redirect URI will be: `https://abcdefghijklmnopqrstuvwxyzabcdef.chromiumapp.org/oauth2`
 
-For **production** (after publishing):
+#### Add to Google Cloud Console
 
-- Use the extension ID from the Chrome Web Store
-- If you have a `key` field in your `manifest.json`, the ID will remain constant
+1. Go to [Google Cloud Console](https://console.cloud.google.com/)
+2. Navigate to **APIs & Services > Credentials**
+3. Find your OAuth 2.0 Client ID and click the edit button (pencil icon)
+4. In **Authorized redirect URIs**, click **ADD URI**
+5. Paste your redirect URI (e.g., `https://abcdefghijklmnopqrstuvwxyzabcdef.chromiumapp.org/oauth2`)
+6. Click **SAVE**
+7. Wait 5-10 minutes for changes to propagate
 
-Add the redirect URI to your OAuth client:
+#### Important Notes
 
-```
-https://your-extension-id.chromiumapp.org/oauth2
-```
+**For development** (unpacked extensions):
 
-**Note:** For development with unpacked extensions, the ID changes each time you reload. You'll need to update the redirect URI accordingly, or use a fixed key in your manifest.
+- ⚠️ The extension ID changes each time you reload the extension
+- You'll need to update the redirect URI in Google Cloud Console each time
+- **Solution:** Use a fixed key in your manifest (see troubleshooting guide below)
+- You can add multiple redirect URIs (one for each development environment)
+
+**For production** (published extensions):
+
+- The extension ID from Chrome Web Store remains constant
+- Configure the redirect URI once using the published extension ID
+- If you have a `key` field in your `manifest.json`, the ID will remain constant across builds
+
+#### Troubleshooting redirect_uri_mismatch
+
+If you get a `redirect_uri_mismatch` error, see our detailed troubleshooting guide:
+
+📖 **[Troubleshooting OAuth redirect_uri_mismatch](./troubleshooting-oauth-redirect-uri.md)**
 
 ### 3. Configure OAuth Scopes
 
@@ -209,11 +245,17 @@ The current implementation uses the **implicit flow** (`response_type=token`), w
 
 **Problem:** OAuth flow fails with redirect URI mismatch.
 
-**Solution:**
+**This is the most common issue!** See our comprehensive troubleshooting guide:
 
-1. Verify the redirect URI in Google Cloud Console matches exactly
-2. Check that the extension ID is correct
-3. For unpacked extensions, the ID changes on reload - consider using a fixed key
+📖 **[Troubleshooting OAuth redirect_uri_mismatch](./troubleshooting-oauth-redirect-uri.md)**
+
+**Quick Solution:**
+
+1. Open your extension popup and inspect it (right-click → Inspect)
+2. Go to Console tab and click the Google login button
+3. Copy the redirect URL shown in the console (e.g., `https://xxxxx.chromiumapp.org/oauth2`)
+4. Add this exact URL to your Google Cloud Console OAuth credentials under "Authorized redirect URIs"
+5. Wait 5-10 minutes and try again
 
 ### Token Not Persisting
 

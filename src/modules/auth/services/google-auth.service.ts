@@ -127,6 +127,12 @@ export class GoogleAuthService {
       // Get the redirect URL for this extension
       const redirectUrl = chrome.identity.getRedirectURL('oauth2');
 
+      this.#logger.info('OAuth redirect URL:', redirectUrl);
+      this.#logger.info(
+        'If you get redirect_uri_mismatch error, add this URL to Google Cloud Console:',
+        redirectUrl
+      );
+
       // Construct OAuth authorization URL
       const authUrl =
         `https://accounts.google.com/o/oauth2/v2/auth?` +
