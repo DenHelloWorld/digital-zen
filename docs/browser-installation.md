@@ -146,7 +146,7 @@ Before installing the extension, ensure you have:
 4. **Important Notes for Firefox:**
    - **Temporary Extensions:** Extensions loaded this way are temporary and will be removed when Firefox is restarted
    - **Permanent Installation:** For permanent installation during development, you need to:
-     - Package the extension as a `.xpi` file (see "Creating a .xpi File" section below)
+     - Package the extension as a `.xpi` file (see "Creating a .xpi File for Firefox" section below)
      - Sign it through [Firefox Add-ons Developer Hub](https://addons.mozilla.org/developers/)
      - Or use Firefox Developer Edition/Nightly with `xpinstall.signatures.required` set to `false` in `about:config`
    - **Extension ID:** Firefox may generate a different extension ID than Chromium browsers, which affects OAuth configuration
@@ -188,17 +188,19 @@ A `.xpi` file is a ZIP archive containing your extension files. Here's how to cr
    cd dist/browser
    ```
 
-3. **Create a ZIP file** (the extension MUST be zipped from within the folder, not the folder itself):
+3. **Create a .xpi file** (the extension MUST be zipped from within the folder, not the folder itself):
    
    On Linux/Mac:
    ```bash
-   zip -r -FS ../digital-zen.xpi * --exclude '*.git*'
+   zip -r -FS ../digital-zen.xpi * --exclude '*.git*' '*.DS_Store' 'node_modules/*' '*.log'
    ```
    
    On Windows (PowerShell):
    ```powershell
    Compress-Archive -Path * -DestinationPath ..\digital-zen.xpi
    ```
+   
+   **Note:** The `dist/browser` folder from `npm run build` should already be clean and only contain necessary extension files. The exclusions above are extra precautions.
 
 4. The `.xpi` file will be in the `dist/` folder
 
