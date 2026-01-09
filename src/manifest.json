@@ -21,13 +21,7 @@
   "host_permissions": ["<all_urls>"],
   "web_accessible_resources": [
     {
-      "resources": [
-        "blocked-page.html",
-        "icon-spa-colored-16x16.png",
-        "icon-spa-colored-32x32.png",
-        "icon-spa-colored-48x48.png",
-        "icon-spa-colored-128x128.png"
-      ],
+      "resources": ["blocked-page.html"],
       "matches": ["<all_urls>"]
     }
   ],
