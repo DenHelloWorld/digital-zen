@@ -2,8 +2,11 @@ import { FormControl } from '@angular/forms';
 import { IFocus } from '../models';
 import { ICONS, WEBSITE_PRIVACY_POLICY, VALIDATION_ERROR_KEYS } from '../constants';
 import { noUnblockableWebsitesValidator } from './no-unblockable-websites.validator';
+import { cleanUrlHelper } from '../helpers';
 
 describe('noUnblockableWebsitesValidator', () => {
+  // Helper constant for cleaned privacy policy URL
+  const CLEANED_PRIVACY_URL = cleanUrlHelper(WEBSITE_PRIVACY_POLICY.url);
   describe('Valid values', () => {
     it('should return null for array with only SOCIAL_MEDIA websites', () => {
       const websites: IFocus.WebSite[] = [
@@ -93,6 +96,7 @@ describe('noUnblockableWebsitesValidator', () => {
       const control = new FormControl(websites);
       expect(noUnblockableWebsitesValidator(control)).toEqual({
         [VALIDATION_ERROR_KEYS.UNBLOCKABLE_NOT_ALLOWED]: true,
+        invalidUrls: [CLEANED_PRIVACY_URL],
       });
     });
 
@@ -115,6 +119,7 @@ describe('noUnblockableWebsitesValidator', () => {
       const control = new FormControl(websites);
       expect(noUnblockableWebsitesValidator(control)).toEqual({
         [VALIDATION_ERROR_KEYS.UNBLOCKABLE_NOT_ALLOWED]: true,
+        invalidUrls: [CLEANED_PRIVACY_URL],
       });
     });
 
@@ -135,6 +140,7 @@ describe('noUnblockableWebsitesValidator', () => {
       const control = new FormControl(websites);
       expect(noUnblockableWebsitesValidator(control)).toEqual({
         [VALIDATION_ERROR_KEYS.UNBLOCKABLE_NOT_ALLOWED]: true,
+        invalidUrls: [CLEANED_PRIVACY_URL],
       });
     });
 
@@ -156,6 +162,7 @@ describe('noUnblockableWebsitesValidator', () => {
       const control = new FormControl(websites);
       expect(noUnblockableWebsitesValidator(control)).toEqual({
         [VALIDATION_ERROR_KEYS.UNBLOCKABLE_NOT_ALLOWED]: true,
+        invalidUrls: [CLEANED_PRIVACY_URL],
       });
     });
 
@@ -186,6 +193,7 @@ describe('noUnblockableWebsitesValidator', () => {
       const control = new FormControl(websites);
       expect(noUnblockableWebsitesValidator(control)).toEqual({
         [VALIDATION_ERROR_KEYS.UNBLOCKABLE_NOT_ALLOWED]: true,
+        invalidUrls: [CLEANED_PRIVACY_URL],
       });
     });
 
@@ -206,6 +214,7 @@ describe('noUnblockableWebsitesValidator', () => {
       const control = new FormControl(websites);
       expect(noUnblockableWebsitesValidator(control)).toEqual({
         [VALIDATION_ERROR_KEYS.UNBLOCKABLE_NOT_ALLOWED]: true,
+        invalidUrls: [CLEANED_PRIVACY_URL],
       });
     });
   });
@@ -260,7 +269,10 @@ describe('noUnblockableWebsitesValidator', () => {
       const result2 = noUnblockableWebsitesValidator(control);
 
       expect(result1).toEqual(result2);
-      expect(result1).toEqual({ [VALIDATION_ERROR_KEYS.UNBLOCKABLE_NOT_ALLOWED]: true });
+      expect(result1).toEqual({
+        [VALIDATION_ERROR_KEYS.UNBLOCKABLE_NOT_ALLOWED]: true,
+        invalidUrls: [CLEANED_PRIVACY_URL],
+      });
     });
 
     it('should not mutate the control value', () => {
@@ -305,6 +317,7 @@ describe('noUnblockableWebsitesValidator', () => {
       const control = new FormControl(websites);
       expect(noUnblockableWebsitesValidator(control)).toEqual({
         [VALIDATION_ERROR_KEYS.UNBLOCKABLE_NOT_ALLOWED]: true,
+        invalidUrls: [CLEANED_PRIVACY_URL],
       });
     });
   });

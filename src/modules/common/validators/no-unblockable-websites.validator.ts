@@ -38,14 +38,19 @@ export function noUnblockableWebsitesValidator(control: AbstractControl): Valida
   // Get cleaned URLs of all UNBLOCKABLE websites for comparison
   const unblockableUrls = WEBSITES_UNBLOCKABLE.map(site => cleanUrlHelper(site.url));
 
-  // Check if any website in the array has a URL that matches an UNBLOCKABLE website
-  const hasUnblockableWebsite = (value as IFocus.WebSite[]).some(website => {
-    const cleanedUrl = cleanUrlHelper(website.url);
-    return unblockableUrls.includes(cleanedUrl);
-  });
+  // Find all websites that match UNBLOCKABLE websites and collect their URLs
+  const invalidWebsites = (value as IFocus.WebSite[])
+    .filter(website => {
+      const cleanedUrl = cleanUrlHelper(website.url);
+      return unblockableUrls.includes(cleanedUrl);
+    })
+    .map(website => cleanUrlHelper(website.url));
 
-  if (hasUnblockableWebsite) {
-    return { [VALIDATION_ERROR_KEYS.UNBLOCKABLE_NOT_ALLOWED]: true };
+  if (invalidWebsites.length > 0) {
+    return {
+      [VALIDATION_ERROR_KEYS.UNBLOCKABLE_NOT_ALLOWED]: true,
+      invalidUrls: invalidWebsites,
+    };
   }
 
   return null;
