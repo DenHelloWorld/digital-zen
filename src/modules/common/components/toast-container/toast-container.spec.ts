@@ -63,8 +63,40 @@ describe('DzToastContainerComponent', () => {
       expect(component['messageTypes']).toBe(TOAST_TYPE_ENUM);
     });
 
-    it('should have uiText constant', () => {
-      expect(component['uiText']).toBe(UI_TEXT);
+    it('should have icons constant', () => {
+      expect(component['icons']).toBeTruthy();
+    });
+  });
+
+  describe('getToastIcon method', () => {
+    it('should return INFO icon for INFO type', () => {
+      const icon = component['getToastIcon'](TOAST_TYPE_ENUM.INFO);
+      expect(icon).toBe('#icon-info');
+    });
+
+    it('should return SUCCESS icon for SUCCESS type', () => {
+      const icon = component['getToastIcon'](TOAST_TYPE_ENUM.SUCCESS);
+      expect(icon).toBe('#icon-success');
+    });
+
+    it('should return WARNING icon for WARN type', () => {
+      const icon = component['getToastIcon'](TOAST_TYPE_ENUM.WARN);
+      expect(icon).toBe('#icon-warning');
+    });
+
+    it('should return ERROR icon for ERROR type', () => {
+      const icon = component['getToastIcon'](TOAST_TYPE_ENUM.ERROR);
+      expect(icon).toBe('#icon-error');
+    });
+
+    it('should return INFO icon for ACCENT type', () => {
+      const icon = component['getToastIcon'](TOAST_TYPE_ENUM.ACCENT);
+      expect(icon).toBe('#icon-info');
+    });
+
+    it('should return INFO icon for undefined type', () => {
+      const icon = component['getToastIcon'](undefined);
+      expect(icon).toBe('#icon-info');
     });
   });
 
@@ -136,16 +168,22 @@ describe('DzToastContainerComponent', () => {
       expect(notificationArea).toBeTruthy();
     });
 
-    it('should render toast notification', () => {
+    it('should render toast notification with banner styles', () => {
       const compiled = fixture.nativeElement as HTMLElement;
-      const notification = compiled.querySelector('.dz-notification');
+      const notification = compiled.querySelector('.dz-notification.dz-banner');
       expect(notification).toBeTruthy();
     });
 
-    it('should display toast message', () => {
+    it('should display toast message in banner__message', () => {
       const compiled = fixture.nativeElement as HTMLElement;
-      const message = compiled.querySelector('.dz-notification__message');
+      const message = compiled.querySelector('.dz-banner__message');
       expect(message?.textContent?.trim()).toBe('Test message');
+    });
+
+    it('should render banner icon', () => {
+      const compiled = fixture.nativeElement as HTMLElement;
+      const icon = compiled.querySelector('.dz-banner__icon svg.dz-icon');
+      expect(icon).toBeTruthy();
     });
 
     it('should render close button', () => {
@@ -163,7 +201,7 @@ describe('DzToastContainerComponent', () => {
   });
 
   describe('Template rendering - Toast types', () => {
-    it('should apply ERROR class for error toasts', () => {
+    it('should apply banner--error class for error toasts', () => {
       toastService.show({
         message: 'Error',
         type: TOAST_TYPE_ENUM.ERROR,
@@ -173,10 +211,10 @@ describe('DzToastContainerComponent', () => {
 
       const compiled = fixture.nativeElement as HTMLElement;
       const notification = compiled.querySelector('.dz-notification');
-      expect(notification?.classList.contains('dz-placeholder--error')).toBe(true);
+      expect(notification?.classList.contains('dz-banner--error')).toBe(true);
     });
 
-    it('should apply ACCENT class for accent toasts', () => {
+    it('should apply banner--info class for accent toasts', () => {
       toastService.show({
         message: 'Accent',
         type: TOAST_TYPE_ENUM.ACCENT,
@@ -186,10 +224,10 @@ describe('DzToastContainerComponent', () => {
 
       const compiled = fixture.nativeElement as HTMLElement;
       const notification = compiled.querySelector('.dz-notification');
-      expect(notification?.classList.contains('dz-placeholder--accent')).toBe(true);
+      expect(notification?.classList.contains('dz-banner--info')).toBe(true);
     });
 
-    it('should apply WARN class for warn toasts', () => {
+    it('should apply banner--warn class for warn toasts', () => {
       toastService.show({
         message: 'Warning',
         type: TOAST_TYPE_ENUM.WARN,
@@ -199,10 +237,23 @@ describe('DzToastContainerComponent', () => {
 
       const compiled = fixture.nativeElement as HTMLElement;
       const notification = compiled.querySelector('.dz-notification');
-      expect(notification?.classList.contains('dz-placeholder--warn')).toBe(true);
+      expect(notification?.classList.contains('dz-banner--warn')).toBe(true);
     });
 
-    it('should not apply type classes for info toasts', () => {
+    it('should apply banner--success class for success toasts', () => {
+      toastService.show({
+        message: 'Success',
+        type: TOAST_TYPE_ENUM.SUCCESS,
+        position: POSITIONS_ENUM.BOTTOM_CENTER,
+      });
+      fixture.detectChanges();
+
+      const compiled = fixture.nativeElement as HTMLElement;
+      const notification = compiled.querySelector('.dz-notification');
+      expect(notification?.classList.contains('dz-banner--success')).toBe(true);
+    });
+
+    it('should apply banner--info class for info toasts', () => {
       toastService.show({
         message: 'Info',
         type: TOAST_TYPE_ENUM.INFO,
@@ -212,9 +263,7 @@ describe('DzToastContainerComponent', () => {
 
       const compiled = fixture.nativeElement as HTMLElement;
       const notification = compiled.querySelector('.dz-notification');
-      expect(notification?.classList.contains('dz-placeholder--error')).toBe(false);
-      expect(notification?.classList.contains('dz-placeholder--accent')).toBe(false);
-      expect(notification?.classList.contains('dz-placeholder--warn')).toBe(false);
+      expect(notification?.classList.contains('dz-banner--info')).toBe(true);
     });
   });
 
@@ -385,7 +434,7 @@ describe('DzToastContainerComponent', () => {
       expect(toasts.length).toBe(5);
     });
 
-    it('should handle toasts with long messages', () => {
+    it('should handle long messages', () => {
       const longMessage = 'A'.repeat(500);
       toastService.show({
         message: longMessage,
@@ -394,7 +443,7 @@ describe('DzToastContainerComponent', () => {
       fixture.detectChanges();
 
       const compiled = fixture.nativeElement as HTMLElement;
-      const message = compiled.querySelector('.dz-notification__message');
+      const message = compiled.querySelector('.dz-banner__message');
       expect(message?.textContent?.trim()).toBe(longMessage);
     });
 
@@ -430,7 +479,7 @@ describe('DzToastContainerComponent', () => {
       fixture.detectChanges();
 
       const compiled = fixture.nativeElement as HTMLElement;
-      const message = compiled.querySelector('.dz-notification__message');
+      const message = compiled.querySelector('.dz-banner__message');
       expect(message?.textContent?.trim()).toBe('');
     });
   });
