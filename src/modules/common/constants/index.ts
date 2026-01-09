@@ -7,3 +7,4 @@ export * from './sync-delay.const';
 export * from './days-of-week.const';
 export * from './websites.const';
 export * from './time-ranges.const';
+export * from './validation-errors.const';

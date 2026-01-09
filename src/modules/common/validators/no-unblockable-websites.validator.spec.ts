@@ -1,6 +1,6 @@
 import { FormControl } from '@angular/forms';
 import { IFocus } from '../models';
-import { ICONS, WEBSITE_PRIVACY_POLICY } from '../constants';
+import { ICONS, WEBSITE_PRIVACY_POLICY, VALIDATION_ERROR_KEYS } from '../constants';
 import { noUnblockableWebsitesValidator } from './no-unblockable-websites.validator';
 
 describe('noUnblockableWebsitesValidator', () => {
@@ -91,7 +91,9 @@ describe('noUnblockableWebsitesValidator', () => {
       ];
 
       const control = new FormControl(websites);
-      expect(noUnblockableWebsitesValidator(control)).toEqual({ unblockableNotAllowed: true });
+      expect(noUnblockableWebsitesValidator(control)).toEqual({
+        [VALIDATION_ERROR_KEYS.UNBLOCKABLE_NOT_ALLOWED]: true,
+      });
     });
 
     it('should return error for privacy policy URL even with SOCIAL_MEDIA type', () => {
@@ -111,7 +113,9 @@ describe('noUnblockableWebsitesValidator', () => {
       ];
 
       const control = new FormControl(websites);
-      expect(noUnblockableWebsitesValidator(control)).toEqual({ unblockableNotAllowed: true });
+      expect(noUnblockableWebsitesValidator(control)).toEqual({
+        [VALIDATION_ERROR_KEYS.UNBLOCKABLE_NOT_ALLOWED]: true,
+      });
     });
 
     it('should return error for privacy policy URL even with DEFAULT type', () => {
@@ -129,7 +133,9 @@ describe('noUnblockableWebsitesValidator', () => {
       ];
 
       const control = new FormControl(websites);
-      expect(noUnblockableWebsitesValidator(control)).toEqual({ unblockableNotAllowed: true });
+      expect(noUnblockableWebsitesValidator(control)).toEqual({
+        [VALIDATION_ERROR_KEYS.UNBLOCKABLE_NOT_ALLOWED]: true,
+      });
     });
 
     it('should return error for privacy policy URL with path and query params', () => {
@@ -148,7 +154,9 @@ describe('noUnblockableWebsitesValidator', () => {
       ];
 
       const control = new FormControl(websites);
-      expect(noUnblockableWebsitesValidator(control)).toEqual({ unblockableNotAllowed: true });
+      expect(noUnblockableWebsitesValidator(control)).toEqual({
+        [VALIDATION_ERROR_KEYS.UNBLOCKABLE_NOT_ALLOWED]: true,
+      });
     });
 
     it('should return error for mixed array with privacy policy URL', () => {
@@ -176,7 +184,9 @@ describe('noUnblockableWebsitesValidator', () => {
       ];
 
       const control = new FormControl(websites);
-      expect(noUnblockableWebsitesValidator(control)).toEqual({ unblockableNotAllowed: true });
+      expect(noUnblockableWebsitesValidator(control)).toEqual({
+        [VALIDATION_ERROR_KEYS.UNBLOCKABLE_NOT_ALLOWED]: true,
+      });
     });
 
     it('should return error even if UNBLOCKABLE URL has isBlocked set to true', () => {
@@ -194,7 +204,9 @@ describe('noUnblockableWebsitesValidator', () => {
       ];
 
       const control = new FormControl(websites);
-      expect(noUnblockableWebsitesValidator(control)).toEqual({ unblockableNotAllowed: true });
+      expect(noUnblockableWebsitesValidator(control)).toEqual({
+        [VALIDATION_ERROR_KEYS.UNBLOCKABLE_NOT_ALLOWED]: true,
+      });
     });
   });
 
@@ -248,7 +260,7 @@ describe('noUnblockableWebsitesValidator', () => {
       const result2 = noUnblockableWebsitesValidator(control);
 
       expect(result1).toEqual(result2);
-      expect(result1).toEqual({ unblockableNotAllowed: true });
+      expect(result1).toEqual({ [VALIDATION_ERROR_KEYS.UNBLOCKABLE_NOT_ALLOWED]: true });
     });
 
     it('should not mutate the control value', () => {
@@ -291,7 +303,9 @@ describe('noUnblockableWebsitesValidator', () => {
       ];
 
       const control = new FormControl(websites);
-      expect(noUnblockableWebsitesValidator(control)).toEqual({ unblockableNotAllowed: true });
+      expect(noUnblockableWebsitesValidator(control)).toEqual({
+        [VALIDATION_ERROR_KEYS.UNBLOCKABLE_NOT_ALLOWED]: true,
+      });
     });
   });
 });

@@ -32,6 +32,7 @@ import {
   TIME_RANGES,
   MANUAL_TIME_RANGE,
   noUnblockableWebsitesValidator,
+  VALIDATION_ERROR_KEYS,
 } from '../../../common';
 import { WeekdaysSelectorComponent } from '../../../common/components/weekdays-selector/weekdays-selector.component';
 import { FocusService } from '../../../focus/services';
@@ -91,6 +92,8 @@ export class PeriodFormComponent implements OnInit {
   protected form: FormGroup<IFocusForm.UpsertPeriod>;
   /** @guideline DZ_10 - UI text constants */
   protected readonly uiText = UI_TEXT;
+  /** Validation error keys for template usage */
+  protected readonly validationErrorKeys = VALIDATION_ERROR_KEYS;
   protected readonly timeRanges = [...TIME_RANGES];
   protected readonly manualTimeRangeId = MANUAL_TIME_RANGE.id;
 

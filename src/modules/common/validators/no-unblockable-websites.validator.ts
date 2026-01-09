@@ -1,7 +1,7 @@
 import { AbstractControl, ValidationErrors } from '@angular/forms';
 import { IFocus } from '../models';
 import { cleanUrlHelper } from '../helpers';
-import { WEBSITES_UNBLOCKABLE } from '../constants';
+import { WEBSITES_UNBLOCKABLE, VALIDATION_ERROR_KEYS } from '../constants';
 
 /**
  * Validator that checks if an array of websites contains any UNBLOCKABLE websites.
@@ -24,7 +24,7 @@ import { WEBSITES_UNBLOCKABLE } from '../constants';
  * @example
  * ```typescript
  * const control = new FormControl(websites, noUnblockableWebsitesValidator);
- * // Returns { unblockableNotAllowed: true } if array contains UNBLOCKABLE websites
+ * // Returns { [VALIDATION_ERROR_KEYS.UNBLOCKABLE_NOT_ALLOWED]: true } if array contains UNBLOCKABLE websites
  * // Returns null if all websites are blockable
  * ```
  */
@@ -45,7 +45,7 @@ export function noUnblockableWebsitesValidator(control: AbstractControl): Valida
   });
 
   if (hasUnblockableWebsite) {
-    return { unblockableNotAllowed: true };
+    return { [VALIDATION_ERROR_KEYS.UNBLOCKABLE_NOT_ALLOWED]: true };
   }
 
   return null;

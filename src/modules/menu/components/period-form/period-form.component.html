@@ -114,7 +114,7 @@
       labelKey="name"
     />
 
-    @if (form.controls.webSites.hasError('unblockableNotAllowed')) {
+    @if (form.controls.webSites.hasError(validationErrorKeys.UNBLOCKABLE_NOT_ALLOWED)) {
       <span class="dz-form__hint">
         <span class="dz-form__required">{{ uiText.PERIOD_FORM.ERRORS.UNBLOCKABLE_WEBSITE }}</span>
       </span>
