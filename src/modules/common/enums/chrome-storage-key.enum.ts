@@ -6,6 +6,7 @@ export enum CHROME_STORAGE_KEY_ENUM {
   CURRENT_PERIOD = 'currentPeriod',
   PERIODS = 'periods',
   ALL_BLOCKED_WEBSITES = 'allBlockedSites',
+  GOOGLE_AUTH_TOKEN = 'google_auth_token',
 }
 
 export type ChromeStorageKeyType =
@@ -15,4 +16,5 @@ export type ChromeStorageKeyType =
   | CHROME_STORAGE_KEY_ENUM.THEME
   | CHROME_STORAGE_KEY_ENUM.TAB_ID
   | CHROME_STORAGE_KEY_ENUM.TAB_URL
-  | CHROME_STORAGE_KEY_ENUM.HISTORY_URL;
+  | CHROME_STORAGE_KEY_ENUM.HISTORY_URL
+  | CHROME_STORAGE_KEY_ENUM.GOOGLE_AUTH_TOKEN;
