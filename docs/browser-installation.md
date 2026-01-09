@@ -126,24 +126,52 @@ Before installing the extension, ensure you have:
 
 ### Mozilla Firefox
 
-**Note:** Firefox supports the WebExtensions API and has Manifest V3 support, but some features may have different implementations or limitations compared to Chromium browsers. The core functionality of Digital Zen (blocking websites, timers, storage) is fully compatible with Firefox.
+**Note:** Firefox supports the WebExtensions API and has Manifest V3 support, but some features may have different implementations or limitations compared to Chromium browsers. **Important: Firefox does not yet support service workers for background scripts in Manifest V3.** You'll need to modify the manifest.json before loading in Firefox (see step 2 below).
 
-1. **Open Firefox Add-ons Page**
+1. **Build the extension** (if not already built):
+   ```bash
+   npm run build
+   ```
+
+2. **Modify manifest.json for Firefox compatibility:**
+   
+   Firefox requires `background.scripts` instead of `background.service_worker`. You need to temporarily modify the manifest:
+   
+   - Open `dist/browser/manifest.json` in a text editor
+   - Find the `"background"` section (around line 37-40)
+   - Replace:
+     ```json
+     "background": {
+       "service_worker": "background.js",
+       "type": "module"
+     },
+     ```
+   - With:
+     ```json
+     "background": {
+       "scripts": ["background.js"]
+     },
+     ```
+   - Save the file
+   
+   **Note:** This modification is only needed for Firefox. Don't commit these changes to git - they're only for local Firefox testing.
+
+3. **Open Firefox Add-ons Page**
    - Navigate to `about:debugging#/runtime/this-firefox`
    - Or type `about:debugging` in the address bar, then click **"This Firefox"** in the left sidebar
 
-2. **Load Temporary Add-on**
+4. **Load Temporary Add-on**
    - Click the **"Load Temporary Add-on..."** button
    - Navigate to your project's `dist/browser` folder
-   - Select the `manifest.json` file
+   - Select the `manifest.json` file (the modified one from step 2)
    - Click **"Open"**
 
-3. **Verify Installation**
+5. **Verify Installation**
    - The Digital Zen extension should appear in the list of temporary extensions
    - The extension icon should appear in your Firefox toolbar
    - If you don't see the icon, click the puzzle piece icon in the toolbar
 
-4. **Important Notes for Firefox:**
+6. **Important Notes for Firefox:**
    - **Temporary Extensions:** Extensions loaded this way are temporary and will be removed when Firefox is restarted
    - **Permanent Installation:** For permanent installation during development, you need to:
      - Package the extension as a `.xpi` file (see "Creating a .xpi File for Firefox" section below)
@@ -225,7 +253,7 @@ A `.xpi` file is a ZIP archive containing your extension files. Here's how to cr
 | Brave | `brave://extensions/` | Top-right toggle | Load unpacked | - |
 | Opera | `opera://extensions/` | Top-right button | Load unpacked | - |
 | Vivaldi | `vivaldi://extensions/` | Top-right toggle | Load unpacked | - |
-| Firefox | `about:debugging#/runtime/this-firefox` | Not needed | Load Temporary Add-on... | Select manifest.json, temporary only |
+| Firefox | `about:debugging#/runtime/this-firefox` | Not needed | Load Temporary Add-on... | **Requires manifest modification** (see Firefox section), temporary only |
 
 ## Common Issues and Troubleshooting
 
@@ -247,6 +275,34 @@ A `.xpi` file is a ZIP archive containing your extension files. Here's how to cr
 1. Ensure you've run `npm run build` first
 2. Verify the `dist/browser` folder exists and contains `manifest.json`
 3. Check that `manifest.json` is valid JSON (the build process validates this)
+
+### Firefox: "background.service_worker is currently disabled"
+
+**Problem:** When loading the extension in Firefox, you get the error: "background.service_worker is currently disabled. Add background.scripts."
+
+**Solution:**
+
+Firefox does not yet support service workers for background scripts in Manifest V3. You must modify the manifest.json for Firefox:
+
+1. Open `dist/browser/manifest.json` in a text editor
+2. Find the `"background"` section:
+   ```json
+   "background": {
+     "service_worker": "background.js",
+     "type": "module"
+   },
+   ```
+3. Replace it with:
+   ```json
+   "background": {
+     "scripts": ["background.js"]
+   },
+   ```
+4. Save the file and try loading the extension again
+
+**Note:** This is a temporary Firefox limitation. Keep this modification only in your `dist/browser` folder for testing - don't commit it to git. For production Firefox deployment, you'll need to create a Firefox-specific build.
+
+**Why this happens:** Firefox's Manifest V3 implementation doesn't support service workers yet and requires the older `background.scripts` format. Chrome and other Chromium browsers require `service_worker`. This means you need different manifest configurations for different browsers during development.
 
 ### Extension Not Appearing in Toolbar
 
