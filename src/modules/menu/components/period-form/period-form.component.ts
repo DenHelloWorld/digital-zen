@@ -26,6 +26,7 @@ import {
   requiredTrimmedValidator,
   timeRangeValidator,
   UI_TEXT,
+  ICONS,
   WEBSITE_FACEBOOK,
   WEBSITE_TIKTOK,
   uniquePeriodNameValidator,
@@ -92,6 +93,8 @@ export class PeriodFormComponent implements OnInit {
   protected form: FormGroup<IFocusForm.UpsertPeriod>;
   /** @guideline DZ_10 - UI text constants */
   protected readonly uiText = UI_TEXT;
+  /** @guideline DZ_10.1 - Icon constants */
+  protected readonly icons = ICONS;
   /** Validation error keys for template usage */
   protected readonly validationErrorKeys = VALIDATION_ERROR_KEYS;
   protected readonly timeRanges = [...TIME_RANGES];
