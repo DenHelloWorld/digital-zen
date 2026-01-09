@@ -1,11 +1,16 @@
 import { AbstractControl, ValidationErrors } from '@angular/forms';
 import { IFocus } from '../models';
-import { filterBlockableWebsites } from '../helpers';
+import { cleanUrlHelper } from '../helpers';
+import { WEBSITES_UNBLOCKABLE, VALIDATION_ERROR_KEYS } from '../constants';
 
 /**
- * Validator that checks if an array of websites contains any UNBLOCKABLE type websites.
+ * Validator that checks if an array of websites contains any UNBLOCKABLE websites.
  * UNBLOCKABLE websites (like privacy policy) should never be added to blocked sites.
  * This prevents users from manually adding forbidden websites through the form.
+ *
+ * The validator compares cleaned URLs (using cleanUrlHelper) instead of relying on
+ * the website type property, as users can manually add URLs that match UNBLOCKABLE
+ * websites but have a different type assigned.
  *
  * @guideline DZ_16 - Custom validator pattern
  * @guideline DZ_07 - Strict TypeScript typing
@@ -19,8 +24,8 @@ import { filterBlockableWebsites } from '../helpers';
  * @example
  * ```typescript
  * const control = new FormControl(websites, noUnblockableWebsitesValidator);
- * // Returns { unblockableNotAllowed: true } if array contains UNBLOCKABLE websites
- * // Returns null if all websites are blockable (SOCIAL_MEDIA or DEFAULT)
+ * // Returns { [VALIDATION_ERROR_KEYS.UNBLOCKABLE_NOT_ALLOWED]: true } if array contains UNBLOCKABLE websites
+ * // Returns null if all websites are blockable
  * ```
  */
 export function noUnblockableWebsitesValidator(control: AbstractControl): ValidationErrors | null {
@@ -30,12 +35,22 @@ export function noUnblockableWebsitesValidator(control: AbstractControl): Valida
     return null;
   }
 
-  // Use helper to filter blockable websites
-  const blockableWebsites = filterBlockableWebsites(value as IFocus.WebSite[]);
+  // Get cleaned URLs of all UNBLOCKABLE websites for comparison
+  const unblockableUrls = WEBSITES_UNBLOCKABLE.map(site => cleanUrlHelper(site.url));
 
-  // If filtered list is shorter, it means there were UNBLOCKABLE websites
-  if (blockableWebsites.length < value.length) {
-    return { unblockableNotAllowed: true };
+  // Find all websites that match UNBLOCKABLE websites and collect their URLs
+  const invalidWebsites = (value as IFocus.WebSite[])
+    .filter(website => {
+      const cleanedUrl = cleanUrlHelper(website.url);
+      return unblockableUrls.includes(cleanedUrl);
+    })
+    .map(website => cleanUrlHelper(website.url));
+
+  if (invalidWebsites.length > 0) {
+    return {
+      [VALIDATION_ERROR_KEYS.UNBLOCKABLE_NOT_ALLOWED]: true,
+      invalidUrls: invalidWebsites,
+    };
   }
 
   return null;

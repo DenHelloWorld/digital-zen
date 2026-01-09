@@ -23,6 +23,7 @@ import {
   CHROME_COMMAND_ENUM,
   CHROME_STORAGE_KEY_ENUM,
   DzToastService,
+  WEBSITES_UNBLOCKABLE,
 } from '../../common';
 
 interface InitialStorageSchema {
@@ -312,6 +313,20 @@ export class FocusService {
 
     if (tab?.url && period) {
       const clearedUrl = cleanUrlHelper(tab.url);
+
+      // Check if the URL matches any UNBLOCKABLE website
+      const isUnblockable = WEBSITES_UNBLOCKABLE.some(
+        site => cleanUrlHelper(site.url) === clearedUrl
+      );
+
+      if (isUnblockable) {
+        this.#toastService.show({
+          message: TOAST_MESSAGES_ENUM.UNBLOCKABLE_WEBSITE,
+          type: TOAST_TYPE_ENUM.ERROR,
+        });
+        return;
+      }
+
       const iconUrl = tab.favIconUrl ?? this.getGoogleFaviconUrl(clearedUrl);
 
       const newSite: IFocus.WebSite = {
