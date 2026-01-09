@@ -4,7 +4,9 @@
 
 Digital Zen is a productivity browser extension built with Angular that helps you maintain concentration by blocking distracting websites during focus sessions. It provides an intuitive interface for managing blocked sites, tracking focus time, and staying productive throughout your workday.
 
-**Cross-Browser Support:** Works on Chrome, Edge, Brave, and other Chromium-based browsers.
+**Cross-Browser Support:** Works on Chrome, Edge, Brave, Firefox, and other Chromium-based browsers.
+
+**Note:** Firefox requires a small manifest modification for development. See the [Browser Installation Guide](./docs/browser-installation.md#mozilla-firefox) for details.
 
 ## Authors
 
