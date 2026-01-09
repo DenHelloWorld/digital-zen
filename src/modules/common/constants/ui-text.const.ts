@@ -48,6 +48,7 @@ export const UI_TEXT = Object.freeze({
       INVALID_TIME_RANGE: 'Invalid time range',
       CHOOSE_WEBSITES: 'Choose one or more websites',
       DUPLICATE_NAME: 'A period with this name already exists',
+      UNBLOCKABLE_WEBSITE: 'This website cannot be blocked (e.g., privacy policy)',
     },
     BUTTONS: {
       CREATE: 'Create',
