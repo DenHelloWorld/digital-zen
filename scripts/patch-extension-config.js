@@ -1,65 +1,50 @@
 #!/usr/bin/env node
 
 /**
- * Patch extension-config.js with OAuth client ID
+ * Patch extension-config.js with OAuth client ID from .env file
  * This script injects the OAuth client ID into the compiled extension-config.js
  *
- * Universal approach for all browsers - reads from environment or manifest
+ * IMPORTANT: OAuth client ID must be set in .env file
+ * Example: OAUTH_CLIENT_ID=your-client-id.apps.googleusercontent.com
  */
 
 const fs = require('fs');
 const path = require('path');
 
 const configPath = path.join(__dirname, '..', 'dist', 'browser', 'extension-config.js');
-const manifestPath = path.join(__dirname, '..', 'src', 'manifest.json');
 
 try {
-  // Read the manifest to get the OAuth client ID
-  const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
-  const clientIdFromManifest = manifest.oauth2?.client_id || '__OAUTH_CLIENT_ID__';
+  // Check if OAuth client ID is set in environment
+  if (!process.env.OAUTH_CLIENT_ID) {
+    console.error('❌ OAUTH_CLIENT_ID not found in .env file');
+    console.error('💡 Add OAUTH_CLIENT_ID to your .env file');
+    console.error('   Example: OAUTH_CLIENT_ID=your-client-id.apps.googleusercontent.com');
+    process.exit(1);
+  }
+
+  const clientId = process.env.OAUTH_CLIENT_ID;
 
   // Check if config file exists
   if (!fs.existsSync(configPath)) {
     console.warn(`⚠️  Extension config file not found at: ${configPath}`);
-    console.warn(
-      '💡 This is expected if Angular bundled it into the main bundle or if running Firefox build'
-    );
-    console.warn('   OAuth will be configured from the bundled Angular app or skipped');
-    console.log('✅ Skipping extension-config.js patching (file will be created by Angular build)');
+    console.warn('💡 This is expected if Angular bundled it into the main bundle');
+    console.log('✅ Skipping extension-config.js patching');
     process.exit(0); // Exit successfully - this is not a fatal error
   }
 
   // Read the compiled config file
   let configContent = fs.readFileSync(configPath, 'utf8');
 
-  // Use environment variable if set, otherwise use manifest value
-  const clientId = process.env.OAUTH_CLIENT_ID || clientIdFromManifest;
-
-  // Replace the placeholder with actual client ID (if placeholder exists)
+  // Replace the placeholder with actual client ID
   if (configContent.includes('__OAUTH_CLIENT_ID__')) {
     configContent = configContent.replaceAll('__OAUTH_CLIENT_ID__', clientId);
-
-    // Write the patched content back
     fs.writeFileSync(configPath, configContent);
-
-    if (process.env.OAUTH_CLIENT_ID) {
-      console.log('✅ Injected OAuth Client ID from environment variable into extension-config.js');
-    } else {
-      console.log('✅ Injected OAuth Client ID from manifest into extension-config.js');
-    }
+    console.log('✅ Injected OAuth Client ID from .env into extension-config.js');
   } else {
-    // Check if the file already has a valid OAuth client ID (not placeholder)
-    const hasValidClientId = configContent.match(
-      /OAUTH_CLIENT_ID:\s*['"][\w-]+\.apps\.googleusercontent\.com['"]/
+    console.warn('⚠️  No OAuth Client ID placeholder found in extension-config.js');
+    console.warn(
+      "   Make sure src/extension-config.ts contains: OAUTH_CLIENT_ID: '__OAUTH_CLIENT_ID__'"
     );
-
-    if (hasValidClientId) {
-      console.log('✅ OAuth Client ID already configured in extension-config.js');
-      console.log('   Using existing value from the source file');
-    } else {
-      console.warn('⚠️  No OAuth Client ID placeholder found and no valid client ID detected');
-      console.warn('   Make sure extension-config.ts has OAUTH_CLIENT_ID set correctly');
-    }
   }
 } catch (error) {
   console.error('❌ Error patching extension-config.js:', error.message);

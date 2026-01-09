@@ -84,8 +84,6 @@ pnpm install
 
 3. **Set up OAuth Client ID** (Required for Google authentication)
 
-**Option 1: Using .env file (Recommended)**
-
 Create a `.env` file in the root directory (copy from `.env.example`):
 
 ```env
@@ -97,19 +95,11 @@ API_SECRET_KEY='your_secret_key'
 
 Get your OAuth client ID from [Google Cloud Console](https://console.cloud.google.com/).
 
-**Option 2: Direct configuration (Quick setup)**
-
-Edit `src/extension-config.ts` and replace the placeholder:
-
-```typescript
-export const EXTENSION_CONFIG = {
-  OAUTH_CLIENT_ID: 'YOUR-ACTUAL-CLIENT-ID.apps.googleusercontent.com',
-} as const;
-```
-
-> **Important:** Don't commit your actual OAuth client ID to git! Add `src/extension-config.ts` to `.gitignore` if you use this method.
-
-> **Note:** OAuth Client ID is required for Google authentication features. The extension will work without it, but Google login won't be available.
+> **Important:**
+>
+> - Never commit your `.env` file to git! It's already in `.gitignore`
+> - OAuth Client ID is required for Google authentication features
+> - The extension will work without it, but Google login won't be available
 
 4. **Build the extension for development**
 
