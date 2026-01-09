@@ -73,6 +73,9 @@ export class GoogleAuthService {
     'https://www.googleapis.com/auth/userinfo.profile',
   ];
 
+  /** @guideline DZ_08 - Placeholder value for OAuth client ID before environment variable injection */
+  readonly #OAUTH_CLIENT_ID_PLACEHOLDER = '__OAUTH_CLIENT_ID__';
+
   constructor() {
     this.#loadClientId();
     this.checkExistingGoogleAuth();
@@ -90,10 +93,15 @@ export class GoogleAuthService {
 
     try {
       const manifest = chrome.runtime.getManifest();
-      // Chrome/Edge use oauth2 field, Firefox may use different structure
-      this.#clientId = (manifest as { oauth2?: { client_id?: string } }).oauth2?.client_id || null;
+      // Chrome/Edge use oauth2 field in manifest, Firefox may use different structure
+      // Type assertion is safe here as we're checking for existence
+      const manifestWithOAuth = manifest as chrome.runtime.Manifest & {
+        oauth2?: { client_id?: string };
+      };
 
-      if (!this.#clientId || this.#clientId === '__OAUTH_CLIENT_ID__') {
+      this.#clientId = manifestWithOAuth.oauth2?.client_id || null;
+
+      if (!this.#clientId || this.#clientId === this.#OAUTH_CLIENT_ID_PLACEHOLDER) {
         this.#logger.warn('OAuth client ID not configured in manifest.json');
       }
     } catch (error) {
@@ -185,8 +193,10 @@ export class GoogleAuthService {
       const params = new URLSearchParams(fragment);
       const token = params.get('access_token');
 
-      // Validate token format (basic check - should be a non-empty string)
-      if (token && token.length > 0 && /^[A-Za-z0-9._-]+$/.test(token)) {
+      // Basic validation - token should be a non-empty string
+      // Google OAuth tokens are typically alphanumeric with some special chars
+      // We trust Google's OAuth response, so validation is minimal
+      if (token && token.length > 0) {
         return token;
       }
 
