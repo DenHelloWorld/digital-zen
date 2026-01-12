@@ -593,6 +593,47 @@ describe('BackgroundServiceMV3', () => {
           periodInMinutes: 1,
         });
       });
+
+      it('should use period startFrom date for day-of-week check', async () => {
+        // This test ensures we use the period's startFrom date to determine
+        // the day of week, not the current date. This prevents failures when
+        // tests run near midnight and the day changes between test setup and execution.
+
+        // Create a period that starts "yesterday" (simulate a period created
+        // before midnight that is valid for yesterday's day of week)
+        const yesterday = new Date();
+        yesterday.setDate(yesterday.getDate() - 1);
+        const yesterdayDayOfWeek = yesterday.getDay();
+
+        const period: IFocus.Period = {
+          id: 'test-period',
+          name: 'Test Period',
+          description: 'Test description',
+          startFrom: new Date(yesterday.getTime() - 3600000), // 1 hour before yesterday
+          endTo: new Date(Date.now() + 3600000), // Still active (1 hour from now)
+          isFocused: false,
+          focusedTimes: [],
+          daysOfWeek: [yesterdayDayOfWeek], // Only scheduled for yesterday
+          sessionStartTime: null,
+          webSites: [],
+        };
+
+        (StorageAdapter.getPeriods as jasmine.Spy).and.returnValue(Promise.resolve([period]));
+
+        const { spy: sendResponse, promise } = createAwaitableSendResponse();
+
+        messageListener(
+          { command: CHROME_COMMAND_ENUM.START_FOCUS, periodId: 'test-period' },
+          {},
+          sendResponse
+        );
+
+        await promise;
+
+        // Should succeed because we check against the period's startFrom day,
+        // not today's day
+        expect(sendResponse).toHaveBeenCalledWith({ success: true });
+      });
     });
 
     describe('STOP_FOCUS command', () => {

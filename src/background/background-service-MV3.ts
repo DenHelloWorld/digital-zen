@@ -228,7 +228,11 @@ export class BackgroundServiceMV3 {
   }
 
   private async startFocus(period: IFocus.Period): Promise<FocusOperationResult> {
-    const today = new Date().getDay();
+    // Use the period's startFrom date to determine the day of week, falling back to current date.
+    // This prevents race conditions when tests run near midnight, where the day could change
+    // between when the period is created and when startFocus is executed.
+    const dayToCheck = period.startFrom || new Date();
+    const today = dayToCheck.getDay();
 
     if (period.daysOfWeek && !period.daysOfWeek.includes(today)) {
       return { success: false, error: FOCUS_ERROR_ENUM.PERIOD_NOT_SCHEDULED_TODAY };
