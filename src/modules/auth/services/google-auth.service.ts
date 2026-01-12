@@ -152,30 +152,27 @@ export class GoogleAuthService {
       userInfo => {
         if (userInfo) {
           // We have user info, validate it's still good by checking token
-          this.#storageService.get<string>(
-            CHROME_STORAGE_KEY_ENUM.GOOGLE_AUTH_TOKEN,
-            token => {
-              if (token) {
-                // Validate token by fetching user info
-                this.#getUserInfo(token, (success: boolean) => {
-                  if (success) {
-                    this.#isGoogleAuthenticated.set(true);
-                    this.#isPending.set(false);
-                  } else {
-                    // Token is invalid, clear it
-                    this.#clearAuthData();
-                    this.#isGoogleAuthenticated.set(false);
-                    this.#isPending.set(false);
-                  }
-                });
-              } else {
-                // No token, but have user info - inconsistent state, clear all
-                this.#clearAuthData();
-                this.#isGoogleAuthenticated.set(false);
-                this.#isPending.set(false);
-              }
+          this.#storageService.get<string>(CHROME_STORAGE_KEY_ENUM.GOOGLE_AUTH_TOKEN, token => {
+            if (token) {
+              // Validate token by fetching user info
+              this.#getUserInfo(token, (success: boolean) => {
+                if (success) {
+                  this.#isGoogleAuthenticated.set(true);
+                  this.#isPending.set(false);
+                } else {
+                  // Token is invalid, clear it
+                  this.#clearAuthData();
+                  this.#isGoogleAuthenticated.set(false);
+                  this.#isPending.set(false);
+                }
+              });
+            } else {
+              // No token, but have user info - inconsistent state, clear all
+              this.#clearAuthData();
+              this.#isGoogleAuthenticated.set(false);
+              this.#isPending.set(false);
             }
-          );
+          });
         } else {
           this.#isGoogleAuthenticated.set(false);
           this.#isPending.set(false);
@@ -259,7 +256,7 @@ export class GoogleAuthService {
    */
   #clearAuthData(): void {
     if (this.#isChromeRuntime) {
-      const keysToRemove = [
+      const keysToRemove: string[] = [
         CHROME_STORAGE_KEY_ENUM.GOOGLE_AUTH_TOKEN,
         CHROME_STORAGE_KEY_ENUM.GOOGLE_USER_INFO,
         CHROME_STORAGE_KEY_ENUM.USER_EMAIL,

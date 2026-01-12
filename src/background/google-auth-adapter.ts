@@ -274,7 +274,7 @@ export class GoogleAuthAdapter {
    */
   private static async clearAuthData(): Promise<void> {
     return new Promise((resolve, reject) => {
-      const keysToRemove = [
+      const keysToRemove: string[] = [
         CHROME_STORAGE_KEY_ENUM.GOOGLE_AUTH_TOKEN,
         CHROME_STORAGE_KEY_ENUM.GOOGLE_USER_INFO,
         CHROME_STORAGE_KEY_ENUM.USER_EMAIL,
