@@ -9,6 +9,12 @@ describe('UserDataSyncAdapter', () => {
   let originalFetch: typeof globalThis.fetch;
   let fetchSpy: jasmine.Spy;
   let originalApiKey: string;
+  let mockChromeStorage: {
+    local: {
+      get: jasmine.Spy;
+      set: jasmine.Spy;
+    };
+  };
 
   beforeEach(() => {
     // Save original fetch and API key
@@ -27,8 +33,21 @@ describe('UserDataSyncAdapter', () => {
     );
     globalThis.fetch = fetchSpy;
 
+    // Mock chrome.storage.local
+    mockChromeStorage = {
+      local: {
+        get: jasmine.createSpy('get').and.returnValue(Promise.resolve({})),
+        set: jasmine.createSpy('set').and.returnValue(Promise.resolve()),
+      },
+    };
+    (globalThis as unknown as { chrome: { storage: typeof mockChromeStorage } }).chrome = {
+      storage: mockChromeStorage,
+    };
+
     // Mock StorageAdapter
     spyOn(StorageAdapter, 'savePeriod').and.returnValue(Promise.resolve());
+    spyOn(StorageAdapter, 'getPeriods').and.returnValue(Promise.resolve([]));
+    spyOn(StorageAdapter, 'replaceAllPeriods').and.returnValue(Promise.resolve());
   });
 
   afterEach(() => {
@@ -165,9 +184,8 @@ describe('UserDataSyncAdapter', () => {
 
         await UserDataSyncAdapter.syncUserData('test@example.com', 'user-123');
 
-        expect(StorageAdapter.savePeriod).toHaveBeenCalledTimes(2);
-        expect(StorageAdapter.savePeriod).toHaveBeenCalledWith(mockPeriods[0]);
-        expect(StorageAdapter.savePeriod).toHaveBeenCalledWith(mockPeriods[1]);
+        expect(StorageAdapter.replaceAllPeriods).toHaveBeenCalledTimes(1);
+        expect(StorageAdapter.replaceAllPeriods).toHaveBeenCalledWith(mockPeriods);
       });
 
       it('should not sync periods when none exist', async () => {
@@ -189,7 +207,7 @@ describe('UserDataSyncAdapter', () => {
 
         await UserDataSyncAdapter.syncUserData('test@example.com', 'user-123');
 
-        expect(StorageAdapter.savePeriod).not.toHaveBeenCalled();
+        expect(StorageAdapter.replaceAllPeriods).not.toHaveBeenCalled();
       });
     });
 

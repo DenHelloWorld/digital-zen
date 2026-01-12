@@ -145,6 +145,7 @@ export class GoogleAuthService {
         `&prompt=consent`;
 
       this.#logger.info('Starting OAuth flow with redirect URL:', redirectUrl);
+      this.#logger.info('Auth URL:', authUrl);
 
       // Launch web auth flow
       chrome.identity.launchWebAuthFlow(
@@ -153,8 +154,18 @@ export class GoogleAuthService {
           interactive: true,
         },
         (responseUrl?: string) => {
-          if (chrome.runtime.lastError || !responseUrl) {
-            this.#logger.error('OAuth flow failed:', chrome.runtime.lastError?.message);
+          this.#logger.info('OAuth callback fired!', { responseUrl, hasError: !!chrome.runtime.lastError });
+          
+          if (chrome.runtime.lastError) {
+            this.#logger.error('OAuth flow error:', chrome.runtime.lastError);
+            this.#logger.error('Error message:', chrome.runtime.lastError.message);
+            this.#isGoogleAuthenticated.set(false);
+            this.#isPending.set(false);
+            return;
+          }
+          
+          if (!responseUrl) {
+            this.#logger.error('OAuth flow failed: no response URL returned');
             this.#isGoogleAuthenticated.set(false);
             this.#isPending.set(false);
             return;
@@ -162,14 +173,18 @@ export class GoogleAuthService {
 
           // Extract access token from response URL
           const token = this.#extractTokenFromUrl(responseUrl);
+          this.#logger.info('Token extracted:', token ? 'SUCCESS' : 'FAILED');
 
           if (token) {
-            this.#logger.info('OAuth flow completed successfully');
+            this.#logger.info('OAuth flow completed successfully, storing token...');
             // Store token in Chrome storage for persistence
             this.#storageService.set(CHROME_STORAGE_KEY_ENUM.GOOGLE_AUTH_TOKEN, token, () => {
+              this.#logger.info('Token stored, updating authentication state...');
               this.#isGoogleAuthenticated.set(true);
+              this.#logger.info('isGoogleAuthenticated set to true, fetching user info...');
               this.#getUserInfo(token);
               this.#isPending.set(false);
+              this.#logger.info('Login flow completed');
             });
           } else {
             this.#logger.error('Failed to extract token from response URL');
@@ -309,11 +324,25 @@ export class GoogleAuthService {
    * Completes the logout process by clearing all auth-related data
    */
   #completeLogout(): void {
-    // Remove stored token
+    // Remove stored token and user credentials
     this.#storageService.remove(CHROME_STORAGE_KEY_ENUM.GOOGLE_AUTH_TOKEN, () => {
-      this.#isGoogleAuthenticated.set(false);
-      this.#isPending.set(false);
-      this.#userInfo.set(null);
+      // Also clear user credentials to prevent backend sync after logout
+      if (this.#isChromeRuntime) {
+        const keysToRemove: string[] = [
+          CHROME_STORAGE_KEY_ENUM.USER_EMAIL,
+          CHROME_STORAGE_KEY_ENUM.USER_ID,
+        ];
+        chrome.storage.local.remove(keysToRemove, () => {
+          this.#isGoogleAuthenticated.set(false);
+          this.#isPending.set(false);
+          this.#userInfo.set(null);
+          this.#logger.info('Logout completed, user credentials cleared');
+        });
+      } else {
+        this.#isGoogleAuthenticated.set(false);
+        this.#isPending.set(false);
+        this.#userInfo.set(null);
+      }
     });
   }
 }
