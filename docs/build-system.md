@@ -211,23 +211,27 @@ dotenv -- node scripts/patch-api-config.js
 ```json
 {
   "background": {
-    "service_worker": "background.js"
+    "scripts": ["background.js"],
+    "persistent": false
   }
   // No oauth2 or key fields
-  // No "type": "module" - uses bundled worker
 }
 ```
 
 **Background Script:**
 - Bundled as single IIFE file (Immediately Invoked Function Expression)
 - No `import` statements (all code bundled)
-- Service worker architecture (Manifest V3, Firefox 109+)
-- No ES6 modules - bundled with esbuild
+- **Event page architecture** (non-persistent background script)
+- Firefox does NOT support service workers in Manifest V3 (as of 2026)
+- Uses `persistent: false` for proper Manifest V3 event pages
 
 **Archive:**
 - Automatically created by `web-ext build`
 - Located in `dist/firefox/web-ext-artifacts/`
 - Ready for Firefox Add-ons submission
+
+**Important Note:**
+Firefox does not support `background.service_worker` in Manifest V3. Instead, it uses event pages with `background.scripts` and `persistent: false`. This is a fundamental difference from Chrome's Manifest V3 implementation.
 
 ## Environment Variables
 

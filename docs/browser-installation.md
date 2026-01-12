@@ -139,7 +139,9 @@ OAUTH_CLIENT_ID=your-client-id.apps.googleusercontent.com
 
 **✅ Firefox Support Now Available!**
 
-Digital Zen now includes a Firefox-specific build that bundles the background script into a single file, making it compatible with Firefox's Manifest V3 service worker implementation (Firefox 109+).
+Digital Zen now includes a Firefox-specific build that bundles the background script into a single file, compatible with Firefox's Manifest V3 event page implementation.
+
+**Important:** Firefox does NOT support `background.service_worker` in Manifest V3. Instead, it uses event pages with `background.scripts` and `persistent: false`.
 
 **Two Installation Methods:**
 
@@ -155,7 +157,7 @@ Digital Zen now includes a Firefox-specific build that bundles the background sc
    - Build the Angular application
    - Bundle the background script into a single IIFE (Immediately Invoked Function Expression)
    - Automatically patch the manifest.json for Firefox compatibility
-   - Remove `type: "module"` field (use bundled service worker instead)
+   - Convert `background.service_worker` to `background.scripts` with `persistent: false`
    - Remove Chrome-specific fields (`oauth2`, `key`) that cause warnings in Firefox
 
 2. **Load in Firefox:**
@@ -179,7 +181,7 @@ Digital Zen now includes a Firefox-specific build that bundles the background sc
 
 #### Method 2: Manual Build (For Advanced Users)
 
-**Note:** Modern Firefox (109+) supports Manifest V3 service workers. The manual method is no longer necessary - use Method 1 instead.
+**Note:** Firefox requires a specific build configuration. Always use the Firefox build script (Method 1) for proper compatibility.
 
 If you still want to build manually:
 
@@ -303,9 +305,9 @@ A `.xpi` file is a ZIP archive containing your extension files. Here's how to cr
 
 **Problem:** When loading the extension in Firefox, you get the error: "background.service_worker is currently disabled. Add background.scripts."
 
-**Solution:**
+**Root Cause:** Firefox does NOT support `background.service_worker` in Manifest V3 (as of 2026). This is a fundamental difference from Chrome's Manifest V3 implementation.
 
-**This issue is now resolved!** Modern Firefox (109+) fully supports Manifest V3 service workers.
+**Solution:**
 
 ✅ **Use the Firefox build script:**
 
@@ -315,12 +317,16 @@ npm run build:firefox
 
 This automatically:
 - Bundles the background script into a single IIFE file
-- Keeps `service_worker` in manifest (Firefox supports it now)
-- Removes `type: "module"` field (uses bundled worker)
+- Converts `background.service_worker` to `background.scripts` 
+- Adds `persistent: false` for Manifest V3 event pages
 - Removes Chrome-specific fields (`oauth2`, `key`)
 - Creates a fully working Firefox build in `dist/firefox/`
 
-**Why the old error occurred:** Older versions of Firefox didn't support Manifest V3 service workers. Modern Firefox (109+) fully supports them with bundled workers.
+**Technical Details:**
+- Firefox uses **event pages** (non-persistent background scripts) for Manifest V3
+- Chrome uses **service workers** for Manifest V3
+- Both approaches accomplish similar goals but with different APIs
+- The build script handles these differences automatically
 
 ### Firefox: "Failed to communicate with background service"
 
@@ -336,12 +342,12 @@ npm run build:firefox
 
 This automatically:
 - Bundles the background script into a single IIFE file
-- Patches the manifest for Firefox compatibility
+- Configures proper event page architecture for Firefox
 - Creates a fully working Firefox build
 
-The standard Chromium build creates modular ES6 scripts that don't work in Firefox. The Firefox build script solves this by bundling everything into one file while keeping the service worker architecture.
+The standard Chromium build creates modular ES6 scripts with service workers that don't work in Firefox. The Firefox build script solves this by bundling everything into one file and using event pages instead.
 
-**Why this happens:** Firefox service workers require bundled code (IIFE format) rather than ES6 modules. The Firefox build creates a single bundled file that works with Firefox's service worker implementation.
+**Why this happens:** Firefox requires bundled code (IIFE format) with event pages (`persistent: false`) rather than service workers. The Firefox build creates a single bundled file optimized for Firefox's Manifest V3 implementation.
 
 ### Extension Not Appearing in Toolbar
 
