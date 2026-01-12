@@ -147,14 +147,16 @@ function buildForBrowser(browserType, angularAlreadyBuilt = false, backgroundAlr
 
   let manifest = JSON.parse(fs.readFileSync(targetManifestPath, 'utf8'));
 
-  // Remove "type": "module" field - we use bundled IIFE for all browsers
-  if (manifest.background?.type) {
-    delete manifest.background.type;
-    console.log('✅ Removed background.type (using bundled IIFE worker)');
-  }
-
-  // Remove Chrome-specific fields for Firefox
+  // Firefox requires background.scripts instead of background.service_worker
   if (isFirefox) {
+    if (manifest.background?.service_worker) {
+      const workerFile = manifest.background.service_worker;
+      manifest.background = {
+        scripts: [workerFile]
+      };
+      console.log('✅ Converted service_worker to scripts array (Firefox MV3)');
+    }
+    
     if (manifest.oauth2) {
       delete manifest.oauth2;
       console.log('✅ Removed oauth2 field (Chrome-specific)');
@@ -163,6 +165,12 @@ function buildForBrowser(browserType, angularAlreadyBuilt = false, backgroundAlr
     if (manifest.key) {
       delete manifest.key;
       console.log('✅ Removed key field (Chrome-specific)');
+    }
+  } else {
+    // Chromium: Remove "type": "module" field - we use bundled IIFE
+    if (manifest.background?.type) {
+      delete manifest.background.type;
+      console.log('✅ Removed background.type (using bundled IIFE worker)');
     }
   }
 

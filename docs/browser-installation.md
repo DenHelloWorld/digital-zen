@@ -139,9 +139,9 @@ OAUTH_CLIENT_ID=your-client-id.apps.googleusercontent.com
 
 **✅ Firefox Support Now Available!**
 
-Digital Zen includes a Firefox-specific build with bundled background script for Manifest V3 compatibility.
+Digital Zen includes a Firefox-specific build with Manifest V3 event pages (background.scripts).
 
-**Important:** Firefox 146+ supports `background.service_worker` in Manifest V3, but requires bundled IIFE code (not ES6 modules).
+**Important:** Firefox Manifest V3 does NOT support `background.service_worker`. It uses `background.scripts` array (event pages) instead. The build system automatically converts the manifest for Firefox compatibility.
 
 **Two Installation Methods:**
 
@@ -157,7 +157,7 @@ Digital Zen includes a Firefox-specific build with bundled background script for
    - Build the Angular application
    - Bundle the background script into a single IIFE (Immediately Invoked Function Expression)
    - Automatically patch the manifest.json for Firefox compatibility
-   - Remove `type: "module"` (Firefox requires bundled worker without ES6 modules)
+   - Convert `background.service_worker` to `background.scripts` array
    - Remove Chrome-specific fields (`oauth2`, `key`)
 
 2. **Load in Firefox:**
@@ -303,9 +303,9 @@ A `.xpi` file is a ZIP archive containing your extension files. Here's how to cr
 
 ### Firefox: "background.service_worker is currently disabled"
 
-**Problem:** When loading the extension in Firefox, you get the error: "background.service_worker is currently disabled. Add background.scripts." OR "'background.scripts' requires manifest version of 2 or lower."
+**Problem:** When loading the extension in Firefox, you get the error: "background.service_worker is currently disabled. Add background.scripts."
 
-**Root Cause:** Firefox's Manifest V3 support evolved. Modern Firefox 146+ now supports `background.service_worker`, but requires bundled code without ES6 modules.
+**Root Cause:** Firefox Manifest V3 does NOT support `background.service_worker`. It uses `background.scripts` array (event pages) instead.
 
 **Solution:**
 
@@ -317,16 +317,15 @@ npm run build:firefox
 
 This automatically:
 - Bundles the background script into a single IIFE file
-- Keeps `service_worker` in manifest (Firefox 146+ supports it)
-- Removes `type: "module"` (Firefox requires bundled worker without modules)
+- Converts `service_worker` to `scripts` array in manifest
 - Removes Chrome-specific fields (`oauth2`, `key`)
 - Creates a fully working Firefox build in `dist/firefox/`
 
 **Technical Details:**
-- Firefox 146+ supports `background.service_worker` in Manifest V3
-- Firefox requires bundled IIFE code, not ES6 modules
-- Chrome also uses service workers but with ES6 modules
+- Firefox Manifest V3 uses `background.scripts` (event pages)
+- Chromium uses `background.service_worker` (service workers)
 - The build script handles these differences automatically
+- Both browsers run the same bundled IIFE background code
 
 ### Firefox: "Failed to communicate with background service"
 
@@ -342,12 +341,12 @@ npm run build:firefox
 
 This automatically:
 - Bundles the background script into a single IIFE file
-- Configures proper event page architecture for Firefox
+- Configures proper event page architecture for Firefox (`background.scripts`)
 - Creates a fully working Firefox build
 
-The standard Chromium build creates modular ES6 scripts with service workers that don't work in Firefox. The Firefox build script solves this by bundling everything into one file.
+The standard Chromium build uses service workers that don't work in Firefox. The Firefox build script solves this by using event pages with bundled code.
 
-**Why this happens:** Firefox service workers require bundled IIFE code rather than ES6 modules. The Firefox build creates a single bundled file optimized for Firefox's Manifest V3 implementation.
+**Why this happens:** Firefox and Chrome use different background architectures in Manifest V3. Firefox uses event pages (`background.scripts`), while Chrome uses service workers (`background.service_worker`). The Firefox build creates the correct configuration automatically.
 
 ### Extension Not Appearing in Toolbar
 

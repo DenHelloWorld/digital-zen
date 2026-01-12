@@ -153,20 +153,20 @@ Main build script that orchestrates the entire build process.
 - Supports `--chromium`, `--firefox`, `--all` flags
 - Outputs to separate directories: `dist/chromium/` and `dist/firefox/`
 - **Single bundled IIFE background script for all browsers** - no browser-specific compilation
-- Manifest patching for Firefox (removes `oauth2` and `key` fields)
+- Manifest patching for Firefox (removes `oauth2`, `key`, converts `service_worker` to `scripts`)
 
 **Build Process:**
 1. Build Angular app once
 2. **Bundle background script ONCE with esbuild (IIFE format)** - used by all browsers
 3. Copy to `dist/chromium/` - remove `type: "module"` from manifest
-4. Copy to `dist/firefox/` - remove `type: "module"`, `oauth2`, and `key` from manifest
+4. Copy to `dist/firefox/` - convert `service_worker` to `scripts` array, remove `oauth2` and `key`
 5. Run `web-ext build` for Firefox archive
 
 **Key Features:**
 - **Unified approach:** Both browsers use the same bundled IIFE background script
 - **Simplified maintenance:** No browser-specific background compilation
 - **Faster builds:** Single bundling step instead of separate compilations
-- Only manifest differences between browsers (Chrome-specific fields)
+- Automatic manifest conversion for Firefox (service worker → scripts array)
 
 ### 2. `scripts/patch-manifest.js`
 
@@ -225,18 +225,18 @@ dotenv -- node scripts/patch-api-config.js
 ```json
 {
   "background": {
-    "service_worker": "background.js"
+    "scripts": ["background.js"]
   }
   // No oauth2 or key fields
-  // No "type": "module" - Firefox requires bundled worker
+  // No service_worker - Firefox Manifest V3 uses event pages
 }
 ```
 
 **Background Script:**
 - Bundled as single IIFE file (Immediately Invoked Function Expression)
 - No `import` statements (all code bundled with esbuild)
-- **Service worker architecture** (Manifest V3, Firefox 146+)
-- Firefox supports service workers in Manifest V3 but requires bundled code (no ES6 modules)
+- **Event pages architecture** (Manifest V3 with background.scripts)
+- Firefox Manifest V3 does NOT support `background.service_worker`, uses `background.scripts` array instead
 
 **Archive:**
 - Automatically created by `web-ext build`
@@ -244,7 +244,7 @@ dotenv -- node scripts/patch-api-config.js
 - Ready for Firefox Add-ons submission
 
 **Important Note:**
-Firefox 146+ supports `background.service_worker` in Manifest V3, but requires bundled IIFE code instead of ES6 modules. The build system removes `type: "module"` and bundles the background script appropriately.
+Firefox Manifest V3 uses `background.scripts` array (event pages) instead of `background.service_worker`. The build system automatically converts the service worker configuration to scripts array for Firefox compatibility.
 
 ## Environment Variables
 
