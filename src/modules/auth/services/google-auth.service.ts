@@ -162,14 +162,18 @@ export class GoogleAuthService {
 
           // Extract access token from response URL
           const token = this.#extractTokenFromUrl(responseUrl);
+          this.#logger.info('Token extracted:', token ? 'SUCCESS' : 'FAILED');
 
           if (token) {
-            this.#logger.info('OAuth flow completed successfully');
+            this.#logger.info('OAuth flow completed successfully, storing token...');
             // Store token in Chrome storage for persistence
             this.#storageService.set(CHROME_STORAGE_KEY_ENUM.GOOGLE_AUTH_TOKEN, token, () => {
+              this.#logger.info('Token stored, updating authentication state...');
               this.#isGoogleAuthenticated.set(true);
+              this.#logger.info('isGoogleAuthenticated set to true, fetching user info...');
               this.#getUserInfo(token);
               this.#isPending.set(false);
+              this.#logger.info('Login flow completed');
             });
           } else {
             this.#logger.error('Failed to extract token from response URL');
