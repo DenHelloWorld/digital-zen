@@ -183,7 +183,9 @@ function buildForBrowser(browserType) {
       console.log('✅ Firefox archive created in dist/firefox/web-ext-artifacts/');
     } catch (error) {
       console.warn('⚠️  web-ext build failed, but extension files are ready');
+      console.warn('   Error:', error.message);
       console.warn('   You can manually create an archive or load the extension as-is');
+      console.warn('   💡 Try: cd dist/firefox && npx web-ext build');
     }
   }
 
@@ -246,7 +248,8 @@ try {
   let extensionConfigContent = originalExtensionConfig;
 
   if (extensionConfigContent.includes("'__OAUTH_CLIENT_ID__'")) {
-    const escapedClientId = clientId.replace(/'/g, "\\'");
+    // Use JSON.stringify for proper escaping, then remove surrounding quotes
+    const escapedClientId = JSON.stringify(clientId).slice(1, -1);
     extensionConfigContent = extensionConfigContent.replaceAll(
       "'__OAUTH_CLIENT_ID__'",
       `'${escapedClientId}'`
@@ -262,7 +265,8 @@ try {
     let apiConfigContent = originalApiConfig;
 
     if (apiConfigContent.includes("apiKey: '',") || apiConfigContent.includes('apiKey: "",')) {
-      const escapedApiKey = process.env.API_SECRET_KEY.replace(/'/g, "\\'");
+      // Use JSON.stringify for proper escaping, then remove surrounding quotes
+      const escapedApiKey = JSON.stringify(process.env.API_SECRET_KEY).slice(1, -1);
       apiConfigContent = apiConfigContent.replace(
         /(apiKey:\s*)(['"])(['"])/,
         `$1$2${escapedApiKey}$3`
