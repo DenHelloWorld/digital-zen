@@ -58,6 +58,34 @@ describe('BackgroundServiceMV3', () => {
     return { spy, promise };
   }
 
+  /**
+   * Helper to create a date that is guaranteed to be "today" in the local timezone
+   * Avoids timezone issues between Windows and Linux
+   * @param hoursOffset - Hours to offset from now (e.g., -1 for 1 hour ago, +1 for 1 hour from now)
+   */
+  function createTodayDate(hoursOffset = 0): Date {
+    const date = new Date();
+    // Force the date to stay "today" by setting time components explicitly
+    // This prevents crossing day boundaries when adjusting hours
+    const currentHour = date.getHours();
+    const currentMinute = date.getMinutes();
+    const currentSecond = date.getSeconds();
+    const currentMs = date.getMilliseconds();
+
+    // Calculate new hour, clamping to 0-23 range to stay within the same day
+    let newHour = currentHour + hoursOffset;
+
+    // Clamp to valid hour range (0-23) to ensure we stay on the same day
+    if (newHour < 0) {
+      newHour = 0;
+    } else if (newHour > 23) {
+      newHour = 23;
+    }
+
+    date.setHours(newHour, currentMinute, currentSecond, currentMs);
+    return date;
+  }
+
   beforeEach(() => {
     // Mock Chrome APIs
     mockChrome = {
@@ -436,8 +464,8 @@ describe('BackgroundServiceMV3', () => {
           id: 'test-period',
           name: 'Test Period',
           description: 'Test description',
-          startFrom: new Date(Date.now() - 3600000), // 1 hour ago
-          endTo: new Date(Date.now() + 3600000), // 1 hour from now
+          startFrom: createTodayDate(-1), // 1 hour ago
+          endTo: createTodayDate(+1), // 1 hour from now
           isFocused: false,
           focusedTimes: [],
           daysOfWeek: [today], // Include today
@@ -499,8 +527,8 @@ describe('BackgroundServiceMV3', () => {
           id: 'test-period',
           name: 'Test Period',
           description: 'Test description',
-          startFrom: new Date(Date.now() - 3600000),
-          endTo: new Date(Date.now() + 3600000),
+          startFrom: createTodayDate(-1), // 1 hour ago
+          endTo: createTodayDate(+1), // 1 hour from now
           isFocused: false,
           focusedTimes: [],
           daysOfWeek: [tomorrow], // Only scheduled for tomorrow
@@ -533,8 +561,8 @@ describe('BackgroundServiceMV3', () => {
           id: 'test-period',
           name: 'Test Period',
           description: 'Test description',
-          startFrom: new Date(Date.now() + 3600000), // 1 hour from now
-          endTo: new Date(Date.now() + 7200000), // 2 hours from now
+          startFrom: createTodayDate(+1), // 1 hour from now
+          endTo: createTodayDate(+2), // 2 hours from now
           isFocused: false,
           focusedTimes: [],
           daysOfWeek: [today],
@@ -567,8 +595,8 @@ describe('BackgroundServiceMV3', () => {
           id: 'test-period',
           name: 'Test Period',
           description: 'Test description',
-          startFrom: new Date(Date.now() - 3600000),
-          endTo: new Date(Date.now() + 3600000),
+          startFrom: createTodayDate(-1), // 1 hour ago
+          endTo: createTodayDate(+1), // 1 hour from now
           isFocused: false,
           focusedTimes: [],
           daysOfWeek: [today],
@@ -610,7 +638,7 @@ describe('BackgroundServiceMV3', () => {
           name: 'Test Period',
           description: 'Test description',
           startFrom: new Date(yesterday.getTime() - 3600000), // 1 hour before yesterday
-          endTo: new Date(Date.now() + 3600000), // Still active (1 hour from now)
+          endTo: createTodayDate(+1), // Still active (1 hour from now)
           isFocused: false,
           focusedTimes: [],
           daysOfWeek: [yesterdayDayOfWeek], // Only scheduled for yesterday
@@ -688,8 +716,8 @@ describe('BackgroundServiceMV3', () => {
           id: 'test-period',
           name: 'Test Period',
           description: 'Test description',
-          startFrom: new Date(Date.now() - 3600000),
-          endTo: new Date(Date.now() + 3600000),
+          startFrom: createTodayDate(-1),
+          endTo: createTodayDate(+1),
           isFocused: false,
           focusedTimes: [],
           daysOfWeek: [today],
@@ -722,12 +750,12 @@ describe('BackgroundServiceMV3', () => {
           id: 'test-period',
           name: 'Test Period',
           description: 'Test description',
-          startFrom: new Date(Date.now() - 3600000),
-          endTo: new Date(Date.now() + 3600000),
+          startFrom: createTodayDate(-1),
+          endTo: createTodayDate(+1),
           isFocused: true,
           focusedTimes: [],
           daysOfWeek: [0, 1, 2, 3, 4, 5, 6],
-          sessionStartTime: new Date(Date.now() - 1800000), // 30 minutes ago
+          sessionStartTime: createTodayDate(-0.5), // 30 minutes ago
           webSites: [],
         };
 
@@ -1180,8 +1208,8 @@ describe('BackgroundServiceMV3', () => {
         id: 'test-period',
         name: 'Test Period',
         description: 'Test description',
-        startFrom: new Date(Date.now() - 3600000),
-        endTo: new Date(Date.now() + 3600000),
+        startFrom: createTodayDate(-1),
+        endTo: createTodayDate(+1),
         isFocused: false,
         focusedTimes: [],
         daysOfWeek: [today],
@@ -1223,8 +1251,8 @@ describe('BackgroundServiceMV3', () => {
         id: 'test-period',
         name: 'Test Period',
         description: 'Test description',
-        startFrom: new Date(Date.now() - 3600000),
-        endTo: new Date(Date.now() + 3600000),
+        startFrom: createTodayDate(-1),
+        endTo: createTodayDate(+1),
         isFocused: false,
         focusedTimes: [],
         daysOfWeek: [today],
@@ -1288,8 +1316,8 @@ describe('BackgroundServiceMV3', () => {
         id: 'test-period',
         name: 'Test Period',
         description: 'Test description',
-        startFrom: new Date(Date.now() - 3600000),
-        endTo: new Date(Date.now() + 3600000),
+        startFrom: createTodayDate(-1), // 1 hour ago
+        endTo: createTodayDate(+1), // 1 hour from now
         isFocused: false,
         focusedTimes: [],
         daysOfWeek: [today],
