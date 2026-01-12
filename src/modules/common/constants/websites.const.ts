@@ -1,4 +1,4 @@
-import { IFocus } from '../models';
+import { IFocus } from '../models/focus.model';
 import { ICONS } from './icons.const';
 import { ALL_DAYS_OF_WEEK_DAYS } from './days-of-week.const';
 

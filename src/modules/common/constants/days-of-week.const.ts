@@ -1,5 +1,6 @@
-import { DAY_OF_WEEK_ENUM, DAY_OF_WEEK_SHORT_NAME_ENUM, DayOfWeekType } from '../enums';
-import { IFocus } from '../models';
+import { DAY_OF_WEEK_ENUM, DayOfWeekType } from '../enums/day-of-week.enum';
+import { DAY_OF_WEEK_SHORT_NAME_ENUM } from '../enums/day-of-week-short-name.enum';
+import { IFocus } from '../models/focus.model';
 
 /**
  * Day of week constants for Digital Zen Chrome Extension
