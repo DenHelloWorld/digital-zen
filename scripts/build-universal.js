@@ -17,16 +17,22 @@ const path = require('path');
 const { execSync } = require('child_process');
 
 const FIREFOX = process.argv.includes('--firefox');
-const configPath = path.join(__dirname, '..', 'src', 'extension-config.ts');
+const extensionConfigPath = path.join(__dirname, '..', 'src', 'extension-config.ts');
+const apiConfigPath = path.join(__dirname, '..', 'src', 'modules', 'common', 'constants', 'api-config.const.ts');
 const manifestPath = path.join(__dirname, '..', 'dist', 'browser', 'manifest.json');
 
-// Store original config for restoration
-let originalConfig = '';
+// Store original configs for restoration
+let originalExtensionConfig = '';
+let originalApiConfig = '';
 
 function cleanup() {
-  if (originalConfig) {
-    fs.writeFileSync(configPath, originalConfig);
+  if (originalExtensionConfig) {
+    fs.writeFileSync(extensionConfigPath, originalExtensionConfig);
     console.log('✅ Restored original extension-config.ts');
+  }
+  if (originalApiConfig) {
+    fs.writeFileSync(apiConfigPath, originalApiConfig);
+    console.log('✅ Restored original api-config.const.ts');
   }
 }
 
@@ -60,15 +66,38 @@ try {
   console.log('✅ OAuth Client ID found in .env');
 
   // Step 2: Patch extension-config.ts BEFORE build
-  originalConfig = fs.readFileSync(configPath, 'utf8');
-  let configContent = originalConfig;
+  originalExtensionConfig = fs.readFileSync(extensionConfigPath, 'utf8');
+  let extensionConfigContent = originalExtensionConfig;
 
-  if (configContent.includes("'__OAUTH_CLIENT_ID__'")) {
+  if (extensionConfigContent.includes("'__OAUTH_CLIENT_ID__'")) {
     // Escape single quotes in client ID to prevent breaking the JavaScript string
     const escapedClientId = clientId.replace(/'/g, "\\'");
-    configContent = configContent.replaceAll("'__OAUTH_CLIENT_ID__'", `'${escapedClientId}'`);
-    fs.writeFileSync(configPath, configContent);
+    extensionConfigContent = extensionConfigContent.replaceAll("'__OAUTH_CLIENT_ID__'", `'${escapedClientId}'`);
+    fs.writeFileSync(extensionConfigPath, extensionConfigContent);
     console.log('✅ Injected OAuth Client ID into extension-config.ts');
+  }
+
+  // Step 2.5: Patch api-config.const.ts with API_SECRET_KEY if provided
+  if (process.env.API_SECRET_KEY) {
+    console.log('✅ API_SECRET_KEY found in .env');
+    originalApiConfig = fs.readFileSync(apiConfigPath, 'utf8');
+    let apiConfigContent = originalApiConfig;
+
+    // Replace empty apiKey with actual value
+    // The pattern looks for apiKey: '', in the API_CONFIG object
+    if (apiConfigContent.includes("apiKey: '',") || apiConfigContent.includes('apiKey: "",')) {
+      // Escape single quotes in API key
+      const escapedApiKey = process.env.API_SECRET_KEY.replace(/'/g, "\\'");
+      apiConfigContent = apiConfigContent.replace(
+        /(apiKey:\s*)(['"])(['"])/,
+        `$1$2${escapedApiKey}$3`
+      );
+      fs.writeFileSync(apiConfigPath, apiConfigContent);
+      console.log('✅ Injected API_SECRET_KEY into api-config.const.ts');
+    }
+  } else {
+    console.warn('⚠️  API_SECRET_KEY not set - backend sync will be disabled');
+    console.log('💡 Set API_SECRET_KEY in .env file to enable backend synchronization');
   }
 
   // Step 3: Build Angular app

@@ -17,17 +17,17 @@ export class UserDataSyncAdapter {
   /**
    * Check if API key is configured
    * @private
+   * @returns true if API key is configured, false otherwise
    */
-  private static checkApiKey(): void {
+  private static checkApiKey(): boolean {
     if (!API_CONFIG.apiKey) {
-      UserDataSyncAdapter.logger.error('API key is not configured!');
-      UserDataSyncAdapter.logger.error(
-        'Ensure API_SECRET_KEY is set in your .env file and rebuild with: npm run build:prod'
+      UserDataSyncAdapter.logger.warn('API key is not configured - skipping backend sync');
+      UserDataSyncAdapter.logger.info(
+        'To enable backend sync, set API_SECRET_KEY in your .env file and rebuild with: npm run build:prod'
       );
-      throw new Error(
-        'API key not configured. Ensure API_SECRET_KEY is set in your .env file and rebuild with: npm run build:prod'
-      );
+      return false;
     }
+    return true;
   }
 
   /**
@@ -41,6 +41,12 @@ export class UserDataSyncAdapter {
   static async syncUserData(userEmail: string, userId: string): Promise<void> {
     try {
       UserDataSyncAdapter.logger.info('Starting sync for:', userEmail);
+
+      // Check if API key is configured - if not, skip backend sync
+      if (!this.checkApiKey()) {
+        UserDataSyncAdapter.logger.info('Backend sync skipped - API key not configured');
+        return;
+      }
 
       // Save user credentials to local storage for later use
       await chrome.storage.local.set({
