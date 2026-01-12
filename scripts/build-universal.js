@@ -3,11 +3,11 @@
 /**
  * Universal build script for Digital Zen extension
  * Supports ALL browsers: Chrome, Edge, Brave, Opera, Vivaldi, Firefox
- * 
+ *
  * Usage:
  *   npm run build          - Build for Chrome/Edge/Brave (standard build)
  *   npm run build:firefox  - Build for Firefox (bundled background)
- * 
+ *
  * Requirements:
  *   - .env file with OAUTH_CLIENT_ID
  */
@@ -18,7 +18,15 @@ const { execSync } = require('child_process');
 
 const FIREFOX = process.argv.includes('--firefox');
 const extensionConfigPath = path.join(__dirname, '..', 'src', 'extension-config.ts');
-const apiConfigPath = path.join(__dirname, '..', 'src', 'modules', 'common', 'constants', 'api-config.const.ts');
+const apiConfigPath = path.join(
+  __dirname,
+  '..',
+  'src',
+  'modules',
+  'common',
+  'constants',
+  'api-config.const.ts'
+);
 const manifestPath = path.join(__dirname, '..', 'dist', 'browser', 'manifest.json');
 
 // Store original configs for restoration
@@ -72,7 +80,10 @@ try {
   if (extensionConfigContent.includes("'__OAUTH_CLIENT_ID__'")) {
     // Escape single quotes in client ID to prevent breaking the JavaScript string
     const escapedClientId = clientId.replace(/'/g, "\\'");
-    extensionConfigContent = extensionConfigContent.replaceAll("'__OAUTH_CLIENT_ID__'", `'${escapedClientId}'`);
+    extensionConfigContent = extensionConfigContent.replaceAll(
+      "'__OAUTH_CLIENT_ID__'",
+      `'${escapedClientId}'`
+    );
     fs.writeFileSync(extensionConfigPath, extensionConfigContent);
     console.log('✅ Injected OAuth Client ID into extension-config.ts');
   }
@@ -116,15 +127,21 @@ try {
   } else {
     console.log('');
     console.log('📦 Compiling background script for Chrome/Edge/Brave...');
-    execSync('tsc -p tsconfig.background.json', { stdio: 'inherit', cwd: path.join(__dirname, '..') });
-    execSync('tsc-alias -p tsconfig.background.json', { stdio: 'inherit', cwd: path.join(__dirname, '..') });
+    execSync('tsc -p tsconfig.background.json', {
+      stdio: 'inherit',
+      cwd: path.join(__dirname, '..'),
+    });
+    execSync('tsc-alias -p tsconfig.background.json', {
+      stdio: 'inherit',
+      cwd: path.join(__dirname, '..'),
+    });
   }
 
   // Step 5: Patch manifest for Firefox
   if (FIREFOX) {
     console.log('');
     console.log('🔧 Patching manifest.json for Firefox...');
-    
+
     let manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
 
     // Convert service_worker to scripts
@@ -154,7 +171,7 @@ try {
   console.log('✨ Build completed successfully!');
   console.log('📁 Output: dist/browser/');
   console.log('');
-  
+
   if (FIREFOX) {
     console.log('🦊 Firefox: Load extension from about:debugging');
     console.log('   → "This Firefox" → "Load Temporary Add-on"');
@@ -166,7 +183,6 @@ try {
     console.log('   → Select dist/browser/ folder');
   }
   console.log('');
-
 } catch (error) {
   console.error('');
   console.error('❌ Build failed:', error.message);

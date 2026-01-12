@@ -35,12 +35,15 @@
 ```
 
 ### Valid Types
+
 `feat`, `fix`, `chore`, `refactor`, `style`, `docs`, `perf`, `test`
 
 ### Valid Scopes (REQUIRED)
+
 `core`, `common`, `focus`, `auth`, `menu`
 
 ### Rules
+
 - Type must be lowercase
 - Scope is **REQUIRED** (cannot be empty)
 - Description must be lowercase (no sentence-case, start-case, pascal-case, upper-case)
@@ -48,6 +51,7 @@
 ### Examples
 
 ✅ **Correct:**
+
 ```
 feat(core): add new authentication feature
 fix(common): resolve navigation bug
@@ -56,6 +60,7 @@ docs(menu): update component documentation
 ```
 
 ❌ **Wrong:**
+
 ```
 Fix: something broken          # Missing scope, wrong type case
 feat: add feature              # Missing scope
@@ -64,6 +69,7 @@ Feat(core): Add new feature    # Wrong type case, description case
 ```
 
 ### Verification
+
 Before committing, the hook in `.husky/commit-msg` validates your message using `commitlint.config.js`.
 
 ---

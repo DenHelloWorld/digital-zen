@@ -104,11 +104,13 @@ Get your OAuth client ID from [Google Cloud Console](https://console.cloud.googl
 4. **Build the extension**
 
 For **Chrome, Edge, Brave, Opera, Vivaldi**:
+
 ```bash
 npm run build
 ```
 
 For **Firefox**:
+
 ```bash
 npm run build:firefox
 ```
@@ -160,11 +162,13 @@ The compiled extension will be available in the `dist/browser` directory.
 ### Building for Development
 
 For **Chrome, Edge, Brave, Opera, Vivaldi**:
+
 ```bash
 npm run build
 ```
 
 For **Firefox**:
+
 ```bash
 npm run build:firefox
 ```

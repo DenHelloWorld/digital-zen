@@ -57,12 +57,13 @@ describe('UserDataSyncAdapter', () => {
   });
 
   describe('checkApiKey', () => {
-    it('should throw error when API key is not configured', async () => {
+    it('should return null when API key is not configured', async () => {
       (API_CONFIG as unknown as { apiKey: string }).apiKey = '';
 
-      await expectAsync(
-        UserDataSyncAdapter.getUserData('test@example.com', 'user-123')
-      ).toBeRejectedWithError(/API key not configured/);
+      const result = await UserDataSyncAdapter.getUserData('test@example.com', 'user-123');
+
+      expect(result).toBeNull();
+      expect(fetchSpy).not.toHaveBeenCalled();
     });
 
     it('should not throw error when API key is configured', async () => {
@@ -362,13 +363,12 @@ describe('UserDataSyncAdapter', () => {
         ).toBeRejected();
       });
 
-      it('should throw error when API key is not configured', async () => {
+      it('should return null when API key is not configured', async () => {
         (API_CONFIG as unknown as { apiKey: string }).apiKey = '';
 
-        await expectAsync(
-          UserDataSyncAdapter.getUserData('test@example.com', 'user-123')
-        ).toBeRejectedWithError(/API key not configured/);
+        const result = await UserDataSyncAdapter.getUserData('test@example.com', 'user-123');
 
+        expect(result).toBeNull();
         expect(fetchSpy).not.toHaveBeenCalled();
       });
     });
@@ -439,13 +439,12 @@ describe('UserDataSyncAdapter', () => {
         ).toBeRejected();
       });
 
-      it('should throw error when API key is not configured', async () => {
+      it('should return null when API key is not configured', async () => {
         (API_CONFIG as unknown as { apiKey: string }).apiKey = '';
 
-        await expectAsync(
-          UserDataSyncAdapter.createUser('test@example.com', 'user-123')
-        ).toBeRejectedWithError(/API key not configured/);
+        const result = await UserDataSyncAdapter.createUser('test@example.com', 'user-123');
 
+        expect(result).toBeNull();
         expect(fetchSpy).not.toHaveBeenCalled();
       });
     });
@@ -546,12 +545,10 @@ describe('UserDataSyncAdapter', () => {
         ).toBeRejected();
       });
 
-      it('should throw error when API key is not configured', async () => {
+      it('should skip save when API key is not configured', async () => {
         (API_CONFIG as unknown as { apiKey: string }).apiKey = '';
 
-        await expectAsync(
-          UserDataSyncAdapter.saveUserData('test@example.com', 'user-123', [])
-        ).toBeRejectedWithError(/API key not configured/);
+        await UserDataSyncAdapter.saveUserData('test@example.com', 'user-123', []);
 
         expect(fetchSpy).not.toHaveBeenCalled();
       });

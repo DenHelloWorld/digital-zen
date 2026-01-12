@@ -57,6 +57,12 @@ export class UserDataSyncAdapter {
       // Get user data from API
       const userData = await this.getUserData(userEmail, userId);
 
+      // If API key is not configured, getUserData returns null
+      if (!userData) {
+        UserDataSyncAdapter.logger.info('Skipping backend sync - API key not configured');
+        return;
+      }
+
       UserDataSyncAdapter.logger.info('Received user data:', {
         hasUser: !!userData.user,
         periodsCount: userData.periods?.length ?? 0,
@@ -101,15 +107,20 @@ export class UserDataSyncAdapter {
    *
    * @param userEmail User email
    * @param userId User ID
-   * @returns Promise with user data
+   * @returns Promise with user data or null if API key not configured
    */
-  static async getUserData(userEmail: string, userId: string): Promise<IUserDataSync.Response> {
+  static async getUserData(
+    userEmail: string,
+    userId: string
+  ): Promise<IUserDataSync.Response | null> {
     if (!userEmail && !userId) {
       throw new Error('At least one of userEmail or userId must be provided');
     }
 
     // Check if API key is configured
-    this.checkApiKey();
+    if (!this.checkApiKey()) {
+      return null;
+    }
 
     const url = new URL(API_URLS.USER);
 
@@ -150,11 +161,13 @@ export class UserDataSyncAdapter {
    *
    * @param userEmail User email
    * @param userId User ID
-   * @returns Promise that resolves when user is created
+   * @returns Promise that resolves when user is created or null if API key not configured
    */
-  static async createUser(userEmail: string, userId: string): Promise<void> {
+  static async createUser(userEmail: string, userId: string): Promise<void | null> {
     // Check if API key is configured
-    this.checkApiKey();
+    if (!this.checkApiKey()) {
+      return null;
+    }
 
     const url = API_URLS.USER;
 
@@ -202,7 +215,9 @@ export class UserDataSyncAdapter {
     periods: IFocus.Period[]
   ): Promise<void> {
     // Check if API key is configured
-    this.checkApiKey();
+    if (!this.checkApiKey()) {
+      return;
+    }
 
     const url = API_URLS.USER;
 
