@@ -211,16 +211,18 @@ dotenv -- node scripts/patch-api-config.js
 ```json
 {
   "background": {
-    "scripts": ["background.js"]
+    "service_worker": "background.js"
   }
   // No oauth2 or key fields
+  // No "type": "module" - uses bundled worker
 }
 ```
 
 **Background Script:**
-- Bundled as single IIFE file
+- Bundled as single IIFE file (Immediately Invoked Function Expression)
 - No `import` statements (all code bundled)
-- Traditional background script architecture
+- Service worker architecture (Manifest V3, Firefox 109+)
+- No ES6 modules - bundled with esbuild
 
 **Archive:**
 - Automatically created by `web-ext build`
