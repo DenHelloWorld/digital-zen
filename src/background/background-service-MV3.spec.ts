@@ -627,21 +627,21 @@ describe('BackgroundServiceMV3', () => {
         // the day of week, not the current date. This prevents failures when
         // tests run near midnight and the day changes between test setup and execution.
 
-        // Create a period that starts "yesterday" (simulate a period created
-        // before midnight that is valid for yesterday's day of week)
-        const yesterday = new Date();
-        yesterday.setDate(yesterday.getDate() - 1);
-        const yesterdayDayOfWeek = yesterday.getDay();
+        // Create a period that starts a few hours ago but is still active.
+        // The key is that startFrom's day-of-week should be used, not current time's day-of-week.
+        // We use createTodayDate to ensure we stay on the same calendar day regardless of platform.
+        const startTime = createTodayDate(-3); // 3 hours ago (clamped to hour 0 if needed)
+        const dayOfWeek = startTime.getDay();
 
         const period: IFocus.Period = {
           id: 'test-period',
           name: 'Test Period',
           description: 'Test description',
-          startFrom: new Date(yesterday.getTime() - 3600000), // 1 hour before yesterday
+          startFrom: startTime,
           endTo: createTodayDate(+1), // Still active (1 hour from now)
           isFocused: false,
           focusedTimes: [],
-          daysOfWeek: [yesterdayDayOfWeek], // Only scheduled for yesterday
+          daysOfWeek: [dayOfWeek], // Scheduled for the day of startFrom
           sessionStartTime: null,
           webSites: [],
         };
@@ -659,7 +659,7 @@ describe('BackgroundServiceMV3', () => {
         await promise;
 
         // Should succeed because we check against the period's startFrom day,
-        // not today's day
+        // which matches the daysOfWeek array
         expect(sendResponse).toHaveBeenCalledWith({ success: true });
       });
     });
