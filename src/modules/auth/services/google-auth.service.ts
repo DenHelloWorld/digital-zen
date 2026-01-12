@@ -5,8 +5,8 @@ import {
   logger,
   ChromeStorageService,
   CHROME_STORAGE_KEY_ENUM,
+  CHROME_COMMAND_ENUM,
 } from '../../common';
-import { EXTENSION_CONFIG } from '../../../extension-config';
 
 export interface IGoogleUserInfo {
   sub: string;
@@ -20,11 +20,13 @@ export interface IGoogleUserInfo {
 
 /**
  * Google authentication service for Chrome Extension
- * Handles Google OAuth authentication flow using launchWebAuthFlow for cross-browser compatibility
- * Supports Chrome, Edge, Firefox and other browsers with WebExtensions API
+ * Coordinates with background service worker for OAuth authentication
  *
- * Universal approach: OAuth client ID is read from extension-config.ts (injected at build time)
- * This works consistently across all browsers.
+ * Architecture:
+ * - Popup sends START_GOOGLE_AUTH message to background service worker
+ * - Background handles OAuth flow (doesn't close when popup loses focus)
+ * - Background stores token and user info in chrome.storage
+ * - Popup listens to storage changes and updates state accordingly
  *
  * @guidelines
  * - DZ_02: Dependency injection using inject() function
@@ -37,7 +39,6 @@ export interface IGoogleUserInfo {
  * @see /docs/CODING_GUIDELINES.md
  * @see https://angular.dev/guide/signals (Signals)
  * @see https://developer.chrome.com/docs/extensions/reference/api/identity (Chrome Identity API)
- * @see https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/identity/launchWebAuthFlow (MDN launchWebAuthFlow)
  */
 @Injectable({
   providedIn: 'root',
@@ -45,12 +46,7 @@ export interface IGoogleUserInfo {
 export class GoogleAuthService {
   /** @guideline DZ_08 - Private readonly field for runtime check */
   readonly #isChromeRuntime: boolean =
-    typeof chrome !== 'undefined' &&
-    !!chrome.runtime &&
-    !!chrome.runtime.id &&
-    !!chrome.identity &&
-    typeof chrome.identity.launchWebAuthFlow === 'function' &&
-    typeof chrome.identity.getRedirectURL === 'function';
+    typeof chrome !== 'undefined' && !!chrome.runtime && !!chrome.runtime.id;
   /** @guideline DZ_02, DZ_09 - Dependency injection with inject(), readonly */
   readonly #apiService = inject(ApiService);
   /** @guideline DZ_02, DZ_09 - Dependency injection with inject(), readonly */
@@ -68,171 +64,48 @@ export class GoogleAuthService {
   public isPending: Signal<boolean> = computed(() => this.#isPending());
   public userInfo: Signal<IGoogleUserInfo | null> = computed(() => this.#userInfo());
 
-  /** @guideline DZ_08 - Private field for OAuth client ID from manifest */
-  #clientId: string | null = null;
-
-  /** @guideline DZ_08 - OAuth scopes for Google authentication */
-  readonly #OAUTH_SCOPES = [
-    'https://www.googleapis.com/auth/userinfo.email',
-    'https://www.googleapis.com/auth/userinfo.profile',
-  ];
-
-  /** @guideline DZ_08 - Placeholder value for OAuth client ID before environment variable injection */
-  readonly #OAUTH_CLIENT_ID_PLACEHOLDER = '__OAUTH_CLIENT_ID__';
-
   constructor() {
-    this.#loadClientId();
     this.checkExistingGoogleAuth();
+    this.#listenToStorageChanges();
   }
 
   /**
-   * Loads OAuth client ID from extension config
-   * Universal approach: client ID is injected at build time into extension-config.ts
-   * Works consistently across all browsers (Chrome, Edge, Brave, Firefox, etc.)
-   */
-  #loadClientId(): void {
-    if (!this.#isChromeRuntime) {
-      return;
-    }
-
-    try {
-      // Get client ID from extension config (injected at build time)
-      this.#clientId = EXTENSION_CONFIG.OAUTH_CLIENT_ID;
-
-      if (!this.#clientId || this.#clientId === this.#OAUTH_CLIENT_ID_PLACEHOLDER) {
-        this.#logger.warn(
-          'OAuth client ID not configured. Run build with OAUTH_CLIENT_ID env var.'
-        );
-      } else {
-        this.#logger.info('OAuth client ID loaded from extension config');
-      }
-    } catch (error) {
-      this.#logger.error('Failed to load client ID from config', error);
-    }
-  }
-
-  /**
-   * Initiates Google OAuth login flow using launchWebAuthFlow for cross-browser compatibility
-   * Works in Chrome, Edge, Firefox and other browsers supporting WebExtensions API
+   * Initiates Google OAuth login flow by sending message to background service worker
+   * Background handles the OAuth flow which won't be interrupted when popup closes
    */
   public login(): void {
-    if (this.#isPending() || !this.#isChromeRuntime || !this.#clientId) {
-      if (!this.#clientId) {
-        this.#logger.error('Cannot login: OAuth client ID not configured');
-      }
+    if (this.#isPending() || !this.#isChromeRuntime) {
       return;
     }
 
     this.#isPending.set(true);
+    this.#logger.info('Sending START_GOOGLE_AUTH message to background...');
 
-    try {
-      // Get the redirect URL for this extension
-      const redirectUrl = chrome.identity.getRedirectURL('oauth2');
-
-      this.#logger.info('OAuth redirect URL:', redirectUrl);
-      this.#logger.info(
-        'If you get redirect_uri_mismatch error, add this URL to Google Cloud Console:',
-        redirectUrl
-      );
-
-      // Construct OAuth authorization URL
-      const authUrl =
-        `${API_URLS.GOOGLE.OAUTH_AUTH}?` +
-        `client_id=${encodeURIComponent(this.#clientId)}` +
-        `&redirect_uri=${encodeURIComponent(redirectUrl)}` +
-        `&response_type=token` +
-        `&scope=${encodeURIComponent(this.#OAUTH_SCOPES.join(' '))}` +
-        `&prompt=consent`;
-
-      this.#logger.info('Starting OAuth flow with redirect URL:', redirectUrl);
-      this.#logger.info('Auth URL:', authUrl);
-
-      // Launch web auth flow
-      chrome.identity.launchWebAuthFlow(
-        {
-          url: authUrl,
-          interactive: true,
-        },
-        (responseUrl?: string) => {
-          this.#logger.info('OAuth callback fired!', { responseUrl, hasError: !!chrome.runtime.lastError });
-          
-          if (chrome.runtime.lastError) {
-            this.#logger.error('OAuth flow error:', chrome.runtime.lastError);
-            this.#logger.error('Error message:', chrome.runtime.lastError.message);
-            this.#isGoogleAuthenticated.set(false);
-            this.#isPending.set(false);
-            return;
-          }
-          
-          if (!responseUrl) {
-            this.#logger.error('OAuth flow failed: no response URL returned');
-            this.#isGoogleAuthenticated.set(false);
-            this.#isPending.set(false);
-            return;
-          }
-
-          // Extract access token from response URL
-          const token = this.#extractTokenFromUrl(responseUrl);
-          this.#logger.info('Token extracted:', token ? 'SUCCESS' : 'FAILED');
-
-          if (token) {
-            this.#logger.info('OAuth flow completed successfully, storing token...');
-            // Store token in Chrome storage for persistence
-            this.#storageService.set(CHROME_STORAGE_KEY_ENUM.GOOGLE_AUTH_TOKEN, token, () => {
-              this.#logger.info('Token stored, updating authentication state...');
-              this.#isGoogleAuthenticated.set(true);
-              this.#logger.info('isGoogleAuthenticated set to true, fetching user info...');
-              this.#getUserInfo(token);
-              this.#isPending.set(false);
-              this.#logger.info('Login flow completed');
-            });
-          } else {
-            this.#logger.error('Failed to extract token from response URL');
-            this.#isGoogleAuthenticated.set(false);
-            this.#isPending.set(false);
-          }
+    chrome.runtime.sendMessage(
+      { command: CHROME_COMMAND_ENUM.START_GOOGLE_AUTH },
+      (response: { success: boolean; error?: string }) => {
+        if (chrome.runtime.lastError) {
+          this.#logger.error('Failed to communicate with background:', chrome.runtime.lastError);
+          this.#isPending.set(false);
+          return;
         }
-      );
-    } catch (error) {
-      this.#logger.error('Error during login:', error);
-      this.#isGoogleAuthenticated.set(false);
-      this.#isPending.set(false);
-    }
-  }
 
-  /**
-   * Extracts access token from OAuth redirect URL
-   * Validates token format and safely parses the URL
-   * @param url The redirect URL containing the access token in the fragment
-   * @returns The access token or null if not found or invalid
-   */
-  #extractTokenFromUrl(url: string): string | null {
-    try {
-      // Parse the URL to safely extract the fragment
-      const parsedUrl = new URL(url);
-      const fragment = parsedUrl.hash.substring(1); // Remove the leading #
-
-      // Parse the fragment as URL search params
-      const params = new URLSearchParams(fragment);
-      const token = params.get('access_token');
-
-      // Basic validation - token should be a non-empty string
-      // Google OAuth tokens are typically alphanumeric with some special chars
-      // We trust Google's OAuth response, so validation is minimal
-      if (token && token.length > 0) {
-        return token;
+        if (response?.success) {
+          this.#logger.info('Background OAuth flow completed successfully');
+          // Auth state will be updated via storage change listener
+          // Check immediately to update UI faster
+          this.checkExistingGoogleAuth();
+        } else {
+          this.#logger.error('Background OAuth flow failed:', response?.error);
+          this.#isPending.set(false);
+        }
       }
-
-      this.#logger.warn('Invalid or missing access token in OAuth response');
-      return null;
-    } catch (error) {
-      this.#logger.error('Error extracting token from URL:', error);
-      return null;
-    }
+    );
   }
 
   /**
-   * Logs out the user by revoking the OAuth token and clearing stored data
+   * Logs out the user by sending message to background service worker
+   * Background handles token revocation and data cleanup
    */
   public logout(): void {
     if (this.#isPending() || !this.#isChromeRuntime) {
@@ -241,54 +114,115 @@ export class GoogleAuthService {
 
     this.#isPending.set(true);
 
-    // Get the stored token
-    this.#storageService.get<string>(CHROME_STORAGE_KEY_ENUM.GOOGLE_AUTH_TOKEN, token => {
-      if (token) {
-        const url = `${API_URLS.GOOGLE.REVOKE_TOKEN}${token}`;
+    chrome.runtime.sendMessage(
+      { command: CHROME_COMMAND_ENUM.LOGOUT_GOOGLE_AUTH },
+      (response: { success: boolean; error?: string }) => {
+        if (chrome.runtime.lastError) {
+          this.#logger.error('Failed to communicate with background:', chrome.runtime.lastError);
+          this.#isPending.set(false);
+          return;
+        }
 
-        // Revoke the token with Google
-        this.#apiService.get(url).subscribe({
-          next: () => {
-            this.#logger.info('Token revoked successfully');
-            this.#completeLogout();
-          },
-          error: (error: unknown) => {
-            this.#logger.error('Failed to revoke token:', error);
-            // Complete logout anyway
-            this.#completeLogout();
-          },
-        });
-      } else {
-        this.#completeLogout();
+        if (response?.success) {
+          this.#logger.info('Logout completed successfully');
+          // Auth state will be updated via storage change listener
+          this.#isGoogleAuthenticated.set(false);
+          this.#userInfo.set(null);
+        } else {
+          this.#logger.error('Logout failed:', response?.error);
+        }
+
+        this.#isPending.set(false);
       }
-    });
+    );
   }
 
   /**
-   * Checks for existing authentication by looking for stored token
-   * and validating it with Google's API
+   * Checks for existing authentication by looking for stored token and user info
+   * Called on service initialization and after login completes
    */
   public checkExistingGoogleAuth(): void {
-    if (this.#isPending() || !this.#isChromeRuntime) {
+    if (!this.#isChromeRuntime) {
       return;
     }
 
-    this.#isPending.set(true);
-
-    // Check if we have a stored token
-    this.#storageService.get<string>(CHROME_STORAGE_KEY_ENUM.GOOGLE_AUTH_TOKEN, token => {
-      if (token) {
-        // Validate token by fetching user info
-        this.#getUserInfo(token, (success: boolean) => {
-          this.#isGoogleAuthenticated.set(success);
+    // Check if we have stored user info (indicates successful auth)
+    this.#storageService.get<IGoogleUserInfo>(
+      CHROME_STORAGE_KEY_ENUM.GOOGLE_USER_INFO,
+      userInfo => {
+        if (userInfo) {
+          // We have user info, validate it's still good by checking token
+          this.#storageService.get<string>(
+            CHROME_STORAGE_KEY_ENUM.GOOGLE_AUTH_TOKEN,
+            token => {
+              if (token) {
+                // Validate token by fetching user info
+                this.#getUserInfo(token, (success: boolean) => {
+                  if (success) {
+                    this.#isGoogleAuthenticated.set(true);
+                    this.#isPending.set(false);
+                  } else {
+                    // Token is invalid, clear it
+                    this.#clearAuthData();
+                    this.#isGoogleAuthenticated.set(false);
+                    this.#isPending.set(false);
+                  }
+                });
+              } else {
+                // No token, but have user info - inconsistent state, clear all
+                this.#clearAuthData();
+                this.#isGoogleAuthenticated.set(false);
+                this.#isPending.set(false);
+              }
+            }
+          );
+        } else {
+          this.#isGoogleAuthenticated.set(false);
           this.#isPending.set(false);
+        }
+      }
+    );
+  }
 
-          if (!success) {
-            // Token is invalid, clear it
-            this.#storageService.remove(CHROME_STORAGE_KEY_ENUM.GOOGLE_AUTH_TOKEN);
-          }
-        });
-      } else {
+  /**
+   * Listens to chrome.storage changes to update auth state
+   * This allows popup to react to auth changes made by background service worker
+   */
+  #listenToStorageChanges(): void {
+    if (!this.#isChromeRuntime) {
+      return;
+    }
+
+    chrome.storage.onChanged.addListener((changes, areaName) => {
+      if (areaName !== 'local') {
+        return;
+      }
+
+      // Listen for user info changes (indicates auth state change)
+      if (changes[CHROME_STORAGE_KEY_ENUM.GOOGLE_USER_INFO]) {
+        const newUserInfo = changes[CHROME_STORAGE_KEY_ENUM.GOOGLE_USER_INFO]
+          .newValue as IGoogleUserInfo | null;
+
+        if (newUserInfo) {
+          this.#logger.info('User info updated in storage, updating state');
+          this.#userInfo.set(newUserInfo);
+          this.#isGoogleAuthenticated.set(true);
+          this.#isPending.set(false);
+        } else {
+          this.#logger.info('User info removed from storage, clearing auth state');
+          this.#userInfo.set(null);
+          this.#isGoogleAuthenticated.set(false);
+          this.#isPending.set(false);
+        }
+      }
+
+      // Also listen for token removal (indicates logout)
+      if (
+        changes[CHROME_STORAGE_KEY_ENUM.GOOGLE_AUTH_TOKEN] &&
+        !changes[CHROME_STORAGE_KEY_ENUM.GOOGLE_AUTH_TOKEN].newValue
+      ) {
+        this.#logger.info('Auth token removed from storage, clearing auth state');
+        this.#userInfo.set(null);
         this.#isGoogleAuthenticated.set(false);
         this.#isPending.set(false);
       }
@@ -296,7 +230,7 @@ export class GoogleAuthService {
   }
 
   /**
-   * Fetches user info from Google's userinfo endpoint
+   * Fetches user info from Google's userinfo endpoint to validate token
    * @param token The access token
    * @param callback Optional callback to indicate success/failure for validation
    */
@@ -321,28 +255,17 @@ export class GoogleAuthService {
   }
 
   /**
-   * Completes the logout process by clearing all auth-related data
+   * Clears auth-related data from storage
    */
-  #completeLogout(): void {
-    // Remove stored token and user credentials
-    this.#storageService.remove(CHROME_STORAGE_KEY_ENUM.GOOGLE_AUTH_TOKEN, () => {
-      // Also clear user credentials to prevent backend sync after logout
-      if (this.#isChromeRuntime) {
-        const keysToRemove: string[] = [
-          CHROME_STORAGE_KEY_ENUM.USER_EMAIL,
-          CHROME_STORAGE_KEY_ENUM.USER_ID,
-        ];
-        chrome.storage.local.remove(keysToRemove, () => {
-          this.#isGoogleAuthenticated.set(false);
-          this.#isPending.set(false);
-          this.#userInfo.set(null);
-          this.#logger.info('Logout completed, user credentials cleared');
-        });
-      } else {
-        this.#isGoogleAuthenticated.set(false);
-        this.#isPending.set(false);
-        this.#userInfo.set(null);
-      }
-    });
+  #clearAuthData(): void {
+    if (this.#isChromeRuntime) {
+      const keysToRemove = [
+        CHROME_STORAGE_KEY_ENUM.GOOGLE_AUTH_TOKEN,
+        CHROME_STORAGE_KEY_ENUM.GOOGLE_USER_INFO,
+        CHROME_STORAGE_KEY_ENUM.USER_EMAIL,
+        CHROME_STORAGE_KEY_ENUM.USER_ID,
+      ];
+      chrome.storage.local.remove(keysToRemove);
+    }
   }
 }
