@@ -309,11 +309,21 @@ export class GoogleAuthService {
    * Completes the logout process by clearing all auth-related data
    */
   #completeLogout(): void {
-    // Remove stored token
+    // Remove stored token and user credentials
     this.#storageService.remove(CHROME_STORAGE_KEY_ENUM.GOOGLE_AUTH_TOKEN, () => {
-      this.#isGoogleAuthenticated.set(false);
-      this.#isPending.set(false);
-      this.#userInfo.set(null);
+      // Also clear user credentials to prevent backend sync after logout
+      if (this.#isChromeRuntime) {
+        chrome.storage.local.remove(['user_email', 'user_id'], () => {
+          this.#isGoogleAuthenticated.set(false);
+          this.#isPending.set(false);
+          this.#userInfo.set(null);
+          this.#logger.info('Logout completed, user credentials cleared');
+        });
+      } else {
+        this.#isGoogleAuthenticated.set(false);
+        this.#isPending.set(false);
+        this.#userInfo.set(null);
+      }
     });
   }
 }

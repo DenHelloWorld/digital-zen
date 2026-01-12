@@ -152,7 +152,12 @@ export class FocusService {
         );
 
         if (!currentPeriod) {
-          this.addPeriod(DEFAULT_PERIOD);
+          // Create a default period with unique ID for each user
+          const defaultPeriod: IFocus.Period = {
+            ...DEFAULT_PERIOD,
+            id: `work-social-block-${Date.now()}`, // Unique ID per user
+          };
+          this.addPeriod(defaultPeriod);
         }
 
         this.#periods.set(periods);

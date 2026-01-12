@@ -158,9 +158,11 @@ export const WEBSITES_UNBLOCKABLE: Readonly<readonly IFocus.WebSite[]> = Object.
 
 /**
  * Default period configuration for blocking social media during work hours
+ * Note: The ID will be replaced with a unique ID when the period is added to ensure
+ * each user has their own instance of the default period
  */
 export const DEFAULT_PERIOD: Readonly<IFocus.Period> = Object.freeze({
-  id: 'work-social-block',
+  id: 'work-social-block', // This will be replaced with unique ID
   name: 'Work Hours Social Media Block',
   description: 'Disables access to social media during work hours.',
   startFrom: new Date(new Date().setHours(9, 0, 0, 0)),
