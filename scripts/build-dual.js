@@ -134,6 +134,9 @@ function buildForBrowser(browserType, angularAlreadyBuilt = false, backgroundAlr
     fs.rmSync(targetDir, { recursive: true, force: true });
   }
 
+  // Create target directory
+  fs.mkdirSync(targetDir, { recursive: true });
+
   // Copy from temp build dir to target dir
   copyDir(tempBuildDir, targetDir);
   console.log(`✅ Copied to dist/${browserType}/`);
