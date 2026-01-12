@@ -6,8 +6,7 @@ import { IFocus } from '../modules/common/models/focus.model';
 import { StorageAdapter } from './storage-adapter';
 import { logger } from '../modules/common/helpers/logger';
 import { CHROME_STORAGE_KEY_ENUM } from '../modules/common/enums/chrome-storage-key.enum';
-import { WEBSITES_SOCIAL_MEDIA } from '../modules/common/constants/websites.const';
-import { ALL_DAYS_OF_WEEK_DAYS } from '../modules/common/constants/days-of-week.const';
+import { createDefaultPeriod } from '../modules/common/constants/websites.const';
 
 /**
  * User Data Sync Adapter for Background Service
@@ -80,18 +79,7 @@ export class UserDataSyncAdapter {
         // No periods on backend - add default period for new users
         UserDataSyncAdapter.logger.info('No periods found on backend, adding default period');
 
-        const defaultPeriod: IFocus.Period = {
-          id: `work-social-block-${Date.now()}`,
-          name: 'Work Hours Social Media Block',
-          description: 'Disables access to social media during work hours.',
-          startFrom: new Date(new Date().setHours(9, 0, 0, 0)),
-          endTo: new Date(new Date().setHours(17, 0, 0, 0)),
-          webSites: [...WEBSITES_SOCIAL_MEDIA],
-          daysOfWeek: [...ALL_DAYS_OF_WEEK_DAYS],
-          focusedTimes: [],
-          isFocused: false,
-          sessionStartTime: null,
-        };
+        const defaultPeriod = createDefaultPeriod();
 
         await StorageAdapter.savePeriod(defaultPeriod);
         UserDataSyncAdapter.logger.info('Default period added for new user');

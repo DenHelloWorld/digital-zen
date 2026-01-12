@@ -13,7 +13,7 @@ import {
   TOAST_TYPE_ENUM,
   TOAST_MESSAGES_ENUM,
   POSITIONS_ENUM,
-  DEFAULT_PERIOD,
+  createDefaultPeriod,
   ChromeStorageService,
   FOCUS_ERROR_ENUM,
   logger,
@@ -129,7 +129,7 @@ export class FocusService {
 
   #syncInitialState(): void {
     if (!this.#isChromeRuntime) {
-      this.#periods.set([DEFAULT_PERIOD]);
+      this.#periods.set([createDefaultPeriod()]);
       return;
     }
 
@@ -155,12 +155,15 @@ export class FocusService {
         chrome.storage.local.get(
           [CHROME_STORAGE_KEY_ENUM.USER_EMAIL, CHROME_STORAGE_KEY_ENUM.USER_ID],
           credentials => {
-            const isLoggedIn = !!(credentials[CHROME_STORAGE_KEY_ENUM.USER_EMAIL] && credentials[CHROME_STORAGE_KEY_ENUM.USER_ID]);
+            const isLoggedIn = Boolean(
+              credentials[CHROME_STORAGE_KEY_ENUM.USER_EMAIL] &&
+                credentials[CHROME_STORAGE_KEY_ENUM.USER_ID]
+            );
 
-            // If user is NOT logged in and has no periods, add default period
+            // If user is NOT logged in and has no periods, add default period with unique ID
             // If user IS logged in, periods will be synced from backend (or default added there if none exist)
             if (!isLoggedIn && periods.length === 0) {
-              this.#periods.set([DEFAULT_PERIOD]);
+              this.#periods.set([createDefaultPeriod()]);
             } else {
               this.#periods.set(periods);
             }

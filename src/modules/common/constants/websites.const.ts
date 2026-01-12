@@ -157,19 +157,22 @@ export const WEBSITES_UNBLOCKABLE: Readonly<readonly IFocus.WebSite[]> = Object.
 ]);
 
 /**
- * Default period configuration for blocking social media during work hours
- * Note: The ID will be replaced with a unique ID when the period is added to ensure
- * each user has their own instance of the default period
+ * Creates a default period with a unique ID for blocking social media during work hours
+ * Each invocation generates a new period with timestamp-based unique ID
+ * 
+ * @returns A new default period instance with unique ID
  */
-export const DEFAULT_PERIOD: Readonly<IFocus.Period> = Object.freeze({
-  id: 'work-social-block', // This will be replaced with unique ID
-  name: 'Work Hours Social Media Block',
-  description: 'Disables access to social media during work hours.',
-  startFrom: new Date(new Date().setHours(9, 0, 0, 0)),
-  endTo: new Date(new Date().setHours(17, 0, 0, 0)),
-  webSites: [...WEBSITES_SOCIAL_MEDIA],
-  daysOfWeek: [...ALL_DAYS_OF_WEEK_DAYS],
-  focusedTimes: [],
-  isFocused: false,
-  sessionStartTime: null,
-});
+export function createDefaultPeriod(): IFocus.Period {
+  return {
+    id: `work-social-block-${Date.now()}`,
+    name: 'Work Hours Social Media Block',
+    description: 'Disables access to social media during work hours.',
+    startFrom: new Date(new Date().setHours(9, 0, 0, 0)),
+    endTo: new Date(new Date().setHours(17, 0, 0, 0)),
+    webSites: [...WEBSITES_SOCIAL_MEDIA],
+    daysOfWeek: [...ALL_DAYS_OF_WEEK_DAYS],
+    focusedTimes: [],
+    isFocused: false,
+    sessionStartTime: null,
+  };
+}
