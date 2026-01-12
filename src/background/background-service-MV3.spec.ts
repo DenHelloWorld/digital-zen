@@ -59,31 +59,36 @@ describe('BackgroundServiceMV3', () => {
   }
 
   /**
-   * Helper to create a date that is guaranteed to be "today" in the local timezone
-   * Avoids timezone issues between Windows and Linux
-   * @param hoursOffset - Hours to offset from now (e.g., -1 for 1 hour ago, +1 for 1 hour from now)
+   * Helper to create a date that is guaranteed to be "today" in the local timezone.
+   * Prevents crossing day boundaries by clamping hours to the 0–23 range so the date stays
+   * within the same local calendar day, regardless of the hoursOffset applied.
+   * @param hoursOffset - Hours to offset from now (e.g., -1 for 1 hour ago, +1 for 1 hour from now).
+   *                      Supports fractional hours (e.g., -0.5 for 30 minutes ago).
    */
   function createTodayDate(hoursOffset = 0): Date {
     const date = new Date();
-    // Force the date to stay "today" by setting time components explicitly
-    // This prevents crossing day boundaries when adjusting hours
-    const currentHour = date.getHours();
-    const currentMinute = date.getMinutes();
-    const currentSecond = date.getSeconds();
-    const currentMs = date.getMilliseconds();
 
-    // Calculate new hour, clamping to 0-23 range to stay within the same day
-    let newHour = currentHour + hoursOffset;
+    // Convert hours to milliseconds and add to current time
+    const offsetMs = hoursOffset * 3600000; // 3600000 ms = 1 hour
+    const newTime = date.getTime() + offsetMs;
+    const newDate = new Date(newTime);
 
-    // Clamp to valid hour range (0-23) to ensure we stay on the same day
-    if (newHour < 0) {
-      newHour = 0;
-    } else if (newHour > 23) {
-      newHour = 23;
+    // Check if we crossed a day boundary
+    if (newDate.getDate() !== date.getDate()) {
+      // If we crossed to yesterday, clamp to start of today (00:00:00.000)
+      if (hoursOffset < 0) {
+        date.setHours(0, 0, 0, 0);
+        return date;
+      }
+      // If we crossed to tomorrow, clamp to end of today (23:59:59.999)
+      else {
+        date.setHours(23, 59, 59, 999);
+        return date;
+      }
     }
 
-    date.setHours(newHour, currentMinute, currentSecond, currentMs);
-    return date;
+    // No day boundary crossed, return the offset date
+    return newDate;
   }
 
   beforeEach(() => {
@@ -627,10 +632,10 @@ describe('BackgroundServiceMV3', () => {
         // the day of week, not the current date. This prevents failures when
         // tests run near midnight and the day changes between test setup and execution.
 
-        // Create a period that starts a few hours ago but is still active.
+        // Create a period that starts recently (e.g., 1 hour ago) but is still active.
         // The key is that startFrom's day-of-week should be used, not current time's day-of-week.
-        // We use createTodayDate to ensure we stay on the same calendar day regardless of platform.
-        const startTime = createTodayDate(-3); // 3 hours ago (clamped to hour 0 if needed)
+        // We use createTodayDate with a small negative offset to avoid clamping to midnight.
+        const startTime = createTodayDate(-1); // 1 hour ago (avoids clamping to hour 0 in normal cases)
         const dayOfWeek = startTime.getDay();
 
         const period: IFocus.Period = {
