@@ -151,14 +151,8 @@ export class FocusService {
           this.#convertPeriodFromStorage(p)
         );
 
-        if (!currentPeriod) {
-          // Create a default period with unique ID for each user
-          const defaultPeriod: IFocus.Period = {
-            ...DEFAULT_PERIOD,
-            id: `work-social-block-${Date.now()}`, // Unique ID per user
-          };
-          this.addPeriod(defaultPeriod);
-        }
+        // Don't add default period automatically - it will be added after backend sync
+        // only if user has no periods at all
 
         this.#periods.set(periods);
         this.#currentPeriod.set(currentPeriod);
