@@ -192,6 +192,89 @@ https://abcdefghijklmnopqrstuvwxyzabcdef.chromiumapp.org/oauth2
 
 **Note:** Replace `abcdefghijklmnopqrstuvwxyzabcdef` with your actual extension ID.
 
+## Firefox-Specific Issues
+
+### Firefox Extension ID Changes
+
+**Problem:** Firefox temporary extensions get a new ID every time Firefox restarts.
+
+**Why:** Unlike Chrome, Firefox doesn't support the `key` field in manifest for unpacked extensions, so the extension ID is regenerated on each restart.
+
+**Solutions:**
+
+#### Option 1: Create a .xpi File (Recommended for Development)
+
+1. **Build for Firefox:**
+   ```bash
+   npm run build:firefox
+   ```
+
+2. **Create .xpi file:**
+   ```bash
+   cd dist/browser
+   zip -r ../digital-zen-firefox.xpi . -x "*.DS_Store"
+   ```
+
+3. **Install .xpi in Firefox:**
+   - Go to `about:debugging#/runtime/this-firefox`
+   - Click "Load Temporary Add-on"
+   - Select the `.xpi` file
+   
+4. **Get Extension ID:**
+   - The extension ID will still be temporary (changes on restart)
+   - Copy the redirect URI from browser console: `https://xxxxx.extensions.allizom.org/oauth2`
+
+5. **Add redirect URI to Google Cloud Console**
+
+**Note:** Even with .xpi, Firefox temporary extensions get new IDs on restart. You'll need to update the redirect URI in Google Cloud Console after each restart.
+
+#### Option 2: Sign the Extension (For Permanent Installation)
+
+For a permanent installation with a fixed extension ID:
+
+1. Sign the extension through [Firefox Add-ons Developer Hub](https://addons.mozilla.org/developers/)
+2. Install the signed .xpi file
+3. The extension ID will remain constant
+4. Add the redirect URI once to Google Cloud Console
+
+### Firefox Redirect URI Format
+
+Firefox uses a different redirect URI format than Chrome:
+
+**Chrome format:**
+```
+https://abcdefghijklmnopqrstuvwxyz.chromiumapp.org/oauth2
+```
+
+**Firefox format:**
+```
+https://abcdefghijklmnopqrstuvwxyz.extensions.allizom.org/oauth2
+```
+
+**Important:** Make sure to add the Firefox redirect URI to your Google Cloud Console OAuth credentials!
+
+### Quick Fix for Firefox Development
+
+Since Firefox temporary extension IDs change on every restart:
+
+1. **Keep the Google Cloud Console page open**
+2. **After each Firefox restart:**
+   - Get the new redirect URI from browser console
+   - Update it in Google Cloud Console (replace old URI)
+   - Wait 1-2 minutes
+   - Try OAuth login again
+
+### Multiple Browser Support
+
+If you're developing for both Chrome and Firefox, you'll need **both redirect URI formats** in Google Cloud Console:
+
+```
+https://your-chrome-extension-id.chromiumapp.org/oauth2
+https://your-firefox-extension-id.extensions.allizom.org/oauth2
+```
+
+Google Cloud Console allows multiple redirect URIs - add both!
+
 ## Getting Help / Получение помощи
 
 If you need further assistance:
@@ -199,6 +282,7 @@ If you need further assistance:
 1. Check the [GitHub Issues](https://github.com/DenHelloWorld/digital-zen/issues)
 2. Create a new issue with:
    - The exact error message
-   - Your extension ID (visible in `chrome://extensions/`)
+   - Your extension ID (visible in `chrome://extensions/` or `about:debugging`)
+   - Browser name and version (Chrome, Firefox, etc.)
    - Screenshots of your Google Cloud Console OAuth configuration
    - Browser and extension version

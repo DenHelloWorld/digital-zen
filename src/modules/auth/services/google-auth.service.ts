@@ -6,6 +6,7 @@ import {
   ChromeStorageService,
   CHROME_STORAGE_KEY_ENUM,
 } from '../../common';
+import { EXTENSION_CONFIG } from '../../../extension-config';
 
 export interface IGoogleUserInfo {
   sub: string;
@@ -21,6 +22,9 @@ export interface IGoogleUserInfo {
  * Google authentication service for Chrome Extension
  * Handles Google OAuth authentication flow using launchWebAuthFlow for cross-browser compatibility
  * Supports Chrome, Edge, Firefox and other browsers with WebExtensions API
+ *
+ * Universal approach: OAuth client ID is read from extension-config.ts (injected at build time)
+ * This works consistently across all browsers.
  *
  * @guidelines
  * - DZ_02: Dependency injection using inject() function
@@ -82,9 +86,9 @@ export class GoogleAuthService {
   }
 
   /**
-   * Loads OAuth client ID from manifest.json
-   * This is needed for constructing the OAuth URL for launchWebAuthFlow
-   * Handles different manifest structures for Chrome and Firefox
+   * Loads OAuth client ID from extension config
+   * Universal approach: client ID is injected at build time into extension-config.ts
+   * Works consistently across all browsers (Chrome, Edge, Brave, Firefox, etc.)
    */
   #loadClientId(): void {
     if (!this.#isChromeRuntime) {
@@ -92,20 +96,18 @@ export class GoogleAuthService {
     }
 
     try {
-      const manifest = chrome.runtime.getManifest();
-      // Chrome/Edge use oauth2 field in manifest, Firefox may use different structure
-      // Type assertion is safe here as we're checking for existence
-      const manifestWithOAuth = manifest as chrome.runtime.Manifest & {
-        oauth2?: { client_id?: string };
-      };
-
-      this.#clientId = manifestWithOAuth.oauth2?.client_id || null;
+      // Get client ID from extension config (injected at build time)
+      this.#clientId = EXTENSION_CONFIG.OAUTH_CLIENT_ID;
 
       if (!this.#clientId || this.#clientId === this.#OAUTH_CLIENT_ID_PLACEHOLDER) {
-        this.#logger.warn('OAuth client ID not configured in manifest.json');
+        this.#logger.warn(
+          'OAuth client ID not configured. Run build with OAUTH_CLIENT_ID env var.'
+        );
+      } else {
+        this.#logger.info('OAuth client ID loaded from extension config');
       }
     } catch (error) {
-      this.#logger.error('Failed to load client ID from manifest', error);
+      this.#logger.error('Failed to load client ID from config', error);
     }
   }
 

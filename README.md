@@ -4,7 +4,9 @@
 
 Digital Zen is a productivity browser extension built with Angular that helps you maintain concentration by blocking distracting websites during focus sessions. It provides an intuitive interface for managing blocked sites, tracking focus time, and staying productive throughout your workday.
 
-**Cross-Browser Support:** Works on Chrome, Edge, Brave, and other Chromium-based browsers.
+**Cross-Browser Support:** Works on Chrome, Edge, Brave, Firefox, and other Chromium-based browsers.
+
+**Note:** Firefox requires a small manifest modification for development. See the [Browser Installation Guide](./docs/browser-installation.md#mozilla-firefox) for details.
 
 ## Authors
 
@@ -80,28 +82,45 @@ or if you prefer pnpm:
 pnpm install
 ```
 
-3. **Set up environment variables** (Optional for development)
+3. **Set up OAuth Client ID** (Required for Google authentication)
 
-Create a `.env` file in the root directory with the following variables:
+Create a `.env` file in the root directory (copy from `.env.example`):
 
 ```env
 OAUTH_CLIENT_ID=your_google_oauth_client_id
 PUBLIC_KEY=your_chrome_extension_public_key
+API_URL=https://your-api-url.com/api
+API_SECRET_KEY='your_secret_key'
 ```
 
-> **Note:** These environment variables are only required for production builds. You can run the development server without them.
+Get your OAuth client ID from [Google Cloud Console](https://console.cloud.google.com/).
 
-4. **Build the extension for development**
+> **Important:**
+>
+> - Never commit your `.env` file to git! It's already in `.gitignore`
+> - OAuth Client ID is required for Google authentication features
+> - The extension will work without it, but Google login won't be available
 
+4. **Build the extension**
+
+For **Chrome, Edge, Brave, Opera, Vivaldi**:
 ```bash
 npm run build
 ```
 
+For **Firefox**:
+```bash
+npm run build:firefox
+```
+
 This will compile the Angular application and background scripts into the `dist/browser` folder.
+Both commands run tests automatically before building.
 
-5. **Load the extension in Chrome**
+5. **Load the extension in your browser**
 
-Since this is a Chrome extension, you'll need to load it in Chrome:
+For detailed installation instructions for different browsers (Chrome, Edge, Brave, Firefox, Opera, Vivaldi), see the **[Browser Installation Guide](./docs/browser-installation.md)**.
+
+**Quick start for Chrome:**
 
 - Open Chrome and navigate to `chrome://extensions/`
 - Enable "Developer mode" (toggle in the top-right corner)
@@ -129,24 +148,38 @@ npm run build:prod
 
 This command will:
 
-1. Compile the Angular application
-2. Compile the background service worker with TypeScript
-3. Resolve TypeScript path aliases
-4. Patch the manifest.json with OAuth credentials from environment variables
+1. Run tests to ensure code quality
+2. Inject OAuth client ID from .env file
+3. Compile the Angular application
+4. Compile the background service worker with TypeScript
+5. Resolve TypeScript path aliases
+6. Patch configuration files for production
 
 The compiled extension will be available in the `dist/browser` directory.
 
 ### Building for Development
 
-For a development build without environment variable patching:
-
+For **Chrome, Edge, Brave, Opera, Vivaldi**:
 ```bash
 npm run build
 ```
 
+For **Firefox**:
+```bash
+npm run build:firefox
+```
+
+Both commands run tests automatically and inject OAuth credentials from your `.env` file.
+
 ### Testing the Build Locally
 
-After building the extension, you can test it locally in Chrome:
+After building the extension, you can test it locally in any supported browser.
+
+**Supported Browsers:** Chrome, Edge, Brave, Firefox, Opera, Vivaldi, and other Chromium-based browsers.
+
+For detailed installation instructions for each browser, see the **[Browser Installation Guide](./docs/browser-installation.md)**.
+
+**Quick start for Chrome:**
 
 1. Build the extension using one of the commands above
 2. Open Chrome and navigate to `chrome://extensions/`
