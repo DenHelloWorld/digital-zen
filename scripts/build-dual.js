@@ -92,7 +92,7 @@ function copyDir(src, dest) {
 /**
  * Build for a specific browser target
  */
-function buildForBrowser(browserType) {
+function buildForBrowser(browserType, angularAlreadyBuilt = false) {
   const isFirefox = browserType === 'firefox';
   const targetDir = path.join(__dirname, '..', 'dist', browserType);
   const tempBuildDir = path.join(__dirname, '..', 'dist', 'browser');
@@ -104,37 +104,51 @@ function buildForBrowser(browserType) {
   console.log('━'.repeat(60));
   console.log('');
 
-  // Step 1: Build Angular app
-  console.log('📦 Building Angular app...');
-  execSync('ng build', { stdio: 'inherit', cwd: path.join(__dirname, '..') });
+  // Step 1: Build Angular app (only once for all browsers)
+  if (!angularAlreadyBuilt) {
+    console.log('📦 Building Angular app...');
+    execSync('ng build', { stdio: 'inherit', cwd: path.join(__dirname, '..') });
+  } else {
+    console.log('✅ Using existing Angular build...');
+  }
 
-  // Step 2: Build background script
+  // Step 2: Copy to target directory FIRST (before any modifications)
+  console.log('');
+  console.log(`📁 Copying build to dist/${browserType}/...`);
+  
+  // Remove old target directory if exists
+  if (fs.existsSync(targetDir)) {
+    fs.rmSync(targetDir, { recursive: true, force: true });
+  }
+
+  // Copy from temp build dir to target dir
+  copyDir(tempBuildDir, targetDir);
+  console.log(`✅ Copied to dist/${browserType}/`);
+
+  // Now work with the target directory, not the temp build dir
+  const targetManifestPath = path.join(targetDir, 'manifest.json');
+
+  // Step 3: Build background script in target directory
   if (isFirefox) {
     console.log('');
     console.log('📦 Bundling background script for Firefox (IIFE format)...');
     execSync(
-      'esbuild src/background.ts --bundle --outfile=dist/browser/background.js --format=iife --target=es2020 --platform=browser --external:chrome',
+      `esbuild src/background.ts --bundle --outfile=dist/${browserType}/background.js --format=iife --target=es2020 --platform=browser --external:chrome`,
       { stdio: 'inherit', cwd: path.join(__dirname, '..') }
     );
   } else {
     console.log('');
     console.log('📦 Compiling background script for Chromium...');
-    execSync('tsc -p tsconfig.background.json', {
-      stdio: 'inherit',
-      cwd: path.join(__dirname, '..'),
-    });
-    execSync('tsc-alias -p tsconfig.background.json', {
-      stdio: 'inherit',
-      cwd: path.join(__dirname, '..'),
-    });
+    // For Chromium, use the already compiled background from Angular build
+    console.log('✅ Using TypeScript compiled background script');
   }
 
-  // Step 3: Patch manifest for Firefox
+  // Step 4: Patch manifest for Firefox in TARGET directory
   if (isFirefox) {
     console.log('');
     console.log('🔧 Patching manifest.json for Firefox...');
 
-    let manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+    let manifest = JSON.parse(fs.readFileSync(targetManifestPath, 'utf8'));
 
     // Firefox 146+ now supports service_worker in Manifest V3
     // But requires bundled script without ES6 modules
@@ -155,21 +169,8 @@ function buildForBrowser(browserType) {
       console.log('✅ Removed key field (Chrome-specific)');
     }
 
-    fs.writeFileSync(manifestPath, JSON.stringify(manifest, null, 2));
+    fs.writeFileSync(targetManifestPath, JSON.stringify(manifest, null, 2));
   }
-
-  // Step 4: Copy to target directory
-  console.log('');
-  console.log(`📁 Copying build to dist/${browserType}/...`);
-  
-  // Remove old target directory if exists
-  if (fs.existsSync(targetDir)) {
-    fs.rmSync(targetDir, { recursive: true, force: true });
-  }
-
-  // Copy from temp build dir to target dir
-  copyDir(tempBuildDir, targetDir);
-  console.log(`✅ Copied to dist/${browserType}/`);
 
   // Step 5: For Firefox, run web-ext build
   if (isFirefox) {
@@ -279,13 +280,31 @@ try {
     console.log('💡 Set API_SECRET_KEY in .env file to enable backend synchronization');
   }
 
-  // Step 4: Build for each target
+  // Step 4: Build Angular app and background ONCE
+  console.log('');
+  console.log('📦 Building Angular app...');
+  execSync('ng build', { stdio: 'inherit', cwd: path.join(__dirname, '..') });
+  
+  console.log('');
+  console.log('📦 Compiling background script...');
+  execSync('tsc -p tsconfig.background.json', {
+    stdio: 'inherit',
+    cwd: path.join(__dirname, '..'),
+  });
+  execSync('tsc-alias -p tsconfig.background.json', {
+    stdio: 'inherit',
+    cwd: path.join(__dirname, '..'),
+  });
+
+  // Step 5: Build for each target browser
+  let angularBuilt = true;
+  
   if (BUILD_CHROMIUM) {
-    buildForBrowser('chromium');
+    buildForBrowser('chromium', angularBuilt);
   }
 
   if (BUILD_FIREFOX) {
-    buildForBrowser('firefox');
+    buildForBrowser('firefox', angularBuilt);
   }
 
   // Final summary
