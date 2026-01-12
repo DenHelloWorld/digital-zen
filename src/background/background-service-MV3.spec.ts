@@ -994,9 +994,13 @@ describe('BackgroundServiceMV3', () => {
       });
 
       it('should return error when sync fails', async () => {
-        (UserDataSyncAdapter.syncUserData as jasmine.Spy).and.callFake(() =>
-          Promise.reject(new Error('Sync failed'))
-        );
+        const rejectedPromise = Promise.reject(new Error('Sync failed'));
+        // Attach a catch handler immediately to prevent unhandled rejection
+        rejectedPromise.catch(() => {
+          // This promise will be handled by the code under test
+        });
+
+        (UserDataSyncAdapter.syncUserData as jasmine.Spy).and.returnValue(rejectedPromise);
 
         const { spy: sendResponse, promise } = createAwaitableSendResponse();
 
