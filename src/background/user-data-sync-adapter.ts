@@ -6,8 +6,6 @@ import { IFocus } from '../modules/common/models/focus.model';
 import { StorageAdapter } from './storage-adapter';
 import { logger } from '../modules/common/helpers/logger';
 import { CHROME_STORAGE_KEY_ENUM } from '../modules/common/enums/chrome-storage-key.enum';
-import { WEBSITES_SOCIAL_MEDIA } from '../modules/common/constants/websites.const';
-import { ALL_DAYS_OF_WEEK_DAYS } from '../modules/common/constants/days-of-week.const';
 
 /**
  * User Data Sync Adapter for Background Service
@@ -86,8 +84,8 @@ export class UserDataSyncAdapter {
           description: 'Disables access to social media during work hours.',
           startFrom: new Date(new Date().setHours(9, 0, 0, 0)),
           endTo: new Date(new Date().setHours(17, 0, 0, 0)),
-          webSites: [...WEBSITES_SOCIAL_MEDIA],
-          daysOfWeek: [...ALL_DAYS_OF_WEEK_DAYS],
+          webSites: [], // Will be populated by frontend with social media sites
+          daysOfWeek: [1, 2, 3, 4, 5, 6, 0], // All days of week
           focusedTimes: [],
           isFocused: false,
           sessionStartTime: null,
