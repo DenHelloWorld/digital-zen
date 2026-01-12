@@ -6,6 +6,31 @@ This directory contains documentation for the Digital Zen Chrome extension proje
 
 ### Installation & Setup
 
+#### [Build System Documentation](./build-system.md) 🏗️
+
+**Purpose:** Complete guide to the dual-build system for Chromium and Firefox.
+
+**Contents:**
+
+- Build system overview and architecture
+- Available build scripts and commands
+- Directory structure explanation
+- Browser-specific build differences
+- Environment variables configuration
+- Testing builds in different browsers
+- Troubleshooting build issues
+- Migration guide from old build system
+
+**Use this when:**
+
+- Building the extension for development or production
+- Understanding the build process
+- Setting up builds for different browsers
+- Troubleshooting build errors
+- Creating production releases
+
+---
+
 #### [Browser Installation Guide](./browser-installation.md) 🌐
 
 **Purpose:** Complete guide for installing Digital Zen extension in different browsers.
