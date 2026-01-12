@@ -151,11 +151,23 @@ export class FocusService {
           this.#convertPeriodFromStorage(p)
         );
 
-        // Don't add default period automatically - it will be added after backend sync
-        // only if user has no periods at all
+        // Check if user is logged in by checking if user credentials exist
+        chrome.storage.local.get(
+          [CHROME_STORAGE_KEY_ENUM.USER_EMAIL, CHROME_STORAGE_KEY_ENUM.USER_ID],
+          credentials => {
+            const isLoggedIn = !!(credentials[CHROME_STORAGE_KEY_ENUM.USER_EMAIL] && credentials[CHROME_STORAGE_KEY_ENUM.USER_ID]);
 
-        this.#periods.set(periods);
-        this.#currentPeriod.set(currentPeriod);
+            // If user is NOT logged in and has no periods, add default period
+            // If user IS logged in, periods will be synced from backend (or default added there if none exist)
+            if (!isLoggedIn && periods.length === 0) {
+              this.#periods.set([DEFAULT_PERIOD]);
+            } else {
+              this.#periods.set(periods);
+            }
+
+            this.#currentPeriod.set(currentPeriod);
+          }
+        );
       }
     );
   }
