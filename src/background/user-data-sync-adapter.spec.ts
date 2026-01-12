@@ -9,6 +9,12 @@ describe('UserDataSyncAdapter', () => {
   let originalFetch: typeof globalThis.fetch;
   let fetchSpy: jasmine.Spy;
   let originalApiKey: string;
+  let mockChromeStorage: {
+    local: {
+      get: jasmine.Spy;
+      set: jasmine.Spy;
+    };
+  };
 
   beforeEach(() => {
     // Save original fetch and API key
@@ -27,8 +33,20 @@ describe('UserDataSyncAdapter', () => {
     );
     globalThis.fetch = fetchSpy;
 
+    // Mock chrome.storage.local
+    mockChromeStorage = {
+      local: {
+        get: jasmine.createSpy('get').and.returnValue(Promise.resolve({})),
+        set: jasmine.createSpy('set').and.returnValue(Promise.resolve()),
+      },
+    };
+    (globalThis as unknown as { chrome: { storage: typeof mockChromeStorage } }).chrome = {
+      storage: mockChromeStorage,
+    };
+
     // Mock StorageAdapter
     spyOn(StorageAdapter, 'savePeriod').and.returnValue(Promise.resolve());
+    spyOn(StorageAdapter, 'getPeriods').and.returnValue(Promise.resolve([]));
   });
 
   afterEach(() => {

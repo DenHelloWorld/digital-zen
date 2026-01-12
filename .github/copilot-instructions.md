@@ -8,13 +8,63 @@
 2. **Review the relevant DZ_XX patterns** for the task you're working on
 3. **Check examples** in existing code that follow the same patterns
 4. **Verify** that you understand the project-specific conventions (DZ_10-DZ_12, DZ_18-DZ_19)
+5. **Check commit message rules** in `commitlint.config.js` before creating commits
 
 **Key Guidelines to Study:**
 
 - `/docs/coding-guidelines.md` - Complete coding standards (DZ_01 - DZ_19)
 - `/docs/README.md` - Quick start guide
 - `/docs/logger.md` - Logger usage
+- `commitlint.config.js` - Commit message format rules
 - This file - Quick reference for common patterns
+
+---
+
+## 📝 Commit Message Rules
+
+**CRITICAL:** This project uses [Conventional Commits](https://www.conventionalcommits.org/) with strict validation.
+
+### Required Format
+
+```
+<type>(<scope>): <description>
+
+[optional body]
+
+[optional footer]
+```
+
+### Valid Types
+`feat`, `fix`, `chore`, `refactor`, `style`, `docs`, `perf`, `test`
+
+### Valid Scopes (REQUIRED)
+`core`, `common`, `focus`, `auth`, `menu`
+
+### Rules
+- Type must be lowercase
+- Scope is **REQUIRED** (cannot be empty)
+- Description must be lowercase (no sentence-case, start-case, pascal-case, upper-case)
+
+### Examples
+
+✅ **Correct:**
+```
+feat(core): add new authentication feature
+fix(common): resolve navigation bug
+chore(focus): update dependencies
+docs(menu): update component documentation
+```
+
+❌ **Wrong:**
+```
+Fix: something broken          # Missing scope, wrong type case
+feat: add feature              # Missing scope
+feat(CORE): Add feature        # Wrong case in scope and description
+Feat(core): Add new feature    # Wrong type case, description case
+```
+
+### Verification
+Before committing, the hook in `.husky/commit-msg` validates your message using `commitlint.config.js`.
 
 ---
 

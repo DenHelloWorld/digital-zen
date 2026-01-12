@@ -10,6 +10,28 @@ Modern Angular project (v21+) - Chrome Extension for productivity and focus mana
 - **State Management:** Angular Signals (primary), RxJS (for async streams)
 - **Build:** Angular CLI with custom Chrome extension build pipeline
 
+## Commit Message Rules (MUST READ FIRST!)
+
+**Format:** `<type>(<scope>): <description>`
+
+**Valid types:** `feat`, `fix`, `chore`, `refactor`, `style`, `docs`, `perf`, `test`
+
+**Valid scopes (REQUIRED):** `core`, `common`, `focus`, `auth`, `menu`
+
+**Rules:**
+- Type must be lowercase
+- Scope is REQUIRED (cannot be empty)
+- Description must be lowercase
+
+**Examples:**
+```
+feat(core): add new authentication feature
+fix(common): resolve navigation bug
+chore(focus): update dependencies
+```
+
+**See:** `commitlint.config.js` for full configuration
+
 ## Coding Guidelines
 
 **Primary Source:** We follow [official Angular documentation](https://angular.dev/) for standard patterns.
