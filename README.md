@@ -140,40 +140,42 @@ This starts the Angular development server at `http://localhost:4200/`. While th
 
 ## Build and Deployment
 
-### Building for Production
+Digital Zen uses a **dual-build system** that creates separate, optimized builds for Chromium browsers and Firefox.
 
-To create a production build of the extension:
+📖 **[Complete Build System Documentation](./docs/build-system.md)** - Detailed guide covering all build options, architecture, and troubleshooting.
 
+### Quick Start
+
+**Build for all browsers:**
+```bash
+npm run build:all
+```
+
+This creates:
+- `dist/chromium/` - For Chrome, Edge, Brave, Opera, Vivaldi
+- `dist/firefox/` - For Firefox (includes .zip archive)
+
+**Build for specific browser:**
+```bash
+npm run build              # Chromium only → dist/chromium/
+npm run build:chromium     # Chromium only → dist/chromium/
+npm run build:firefox      # Firefox only → dist/firefox/
+```
+
+**Production build:**
 ```bash
 npm run build:prod
 ```
 
-This command will:
+This builds for both browsers with production patches applied.
 
-1. Run tests to ensure code quality
-2. Inject OAuth client ID from .env file
-3. Compile the Angular application
-4. Compile the background service worker with TypeScript
-5. Resolve TypeScript path aliases
-6. Patch configuration files for production
+### Output Directories
 
-The compiled extension will be available in the `dist/browser` directory.
-
-### Building for Development
-
-For **Chrome, Edge, Brave, Opera, Vivaldi**:
-
-```bash
-npm run build
-```
-
-For **Firefox**:
-
-```bash
-npm run build:firefox
-```
-
-Both commands run tests automatically and inject OAuth credentials from your `.env` file.
+| Directory | Browser | Description |
+|-----------|---------|-------------|
+| `dist/chromium/` | Chrome, Edge, Brave, Opera, Vivaldi | Chromium build with service worker |
+| `dist/firefox/` | Firefox | Firefox build with bundled background script |
+| `dist/firefox/web-ext-artifacts/*.zip` | Firefox | Firefox archive ready for distribution |
 
 ### Testing the Build Locally
 
@@ -185,34 +187,45 @@ For detailed installation instructions for each browser, see the **[Browser Inst
 
 **Quick start for Chrome:**
 
-1. Build the extension using one of the commands above
+1. Build the extension: `npm run build`
 2. Open Chrome and navigate to `chrome://extensions/`
 3. Enable "Developer mode"
 4. Click "Load unpacked"
-5. Select the `dist/browser` folder from your project directory
+5. Select the `dist/chromium/` folder from your project directory
 6. The extension icon should appear in your Chrome toolbar
+
+**Quick start for Firefox:**
+
+1. Build the extension: `npm run build:firefox`
+2. Navigate to `about:debugging#/runtime/this-firefox`
+3. Click "Load Temporary Add-on..."
+4. Select `dist/firefox/manifest.json`
+5. The extension should load successfully
 
 ## Available Scripts
 
 The following npm scripts are available in this project:
 
-| Script                  | Command                                                                                                                                                     | Description                                                                  |
-| ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
-| `start`                 | `ng serve`                                                                                                                                                  | Starts the Angular development server for local development                  |
-| `build`                 | `npm run test:ci && ng build && tsc -p tsconfig.background.json && tsc-alias -p tsconfig.background.json`                                                   | Builds the project for development (includes tests)                          |
-| `build:skip-tests`      | `ng build && tsc -p tsconfig.background.json && tsc-alias -p tsconfig.background.json`                                                                      | Builds the project for development (skips tests)                             |
-| `build:prod`            | `npm run test:ci && ng build && tsc -p tsconfig.background.json && tsc-alias -p tsconfig.background.json && npm run patch-config && npm run patch-manifest` | Builds the project for production with environment patching (includes tests) |
-| `build:prod:skip-tests` | `ng build && tsc -p tsconfig.background.json && tsc-alias -p tsconfig.background.json && npm run patch-config && npm run patch-manifest`                    | Builds the project for production with environment patching (skips tests)    |
-| `patch-manifest`        | `dotenv -- node scripts/patch-manifest.js`                                                                                                                  | Patches the manifest.json with OAuth credentials from environment variables  |
-| `patch-config`          | `dotenv -- node scripts/patch-api-config.js`                                                                                                                | Patches the API configuration with credentials from environment variables    |
-| `test`                  | `ng test`                                                                                                                                                   | Runs unit tests with Karma in watch mode                                     |
-| `test:ci`               | `ng test --browsers=ChromeHeadless --watch=false --code-coverage`                                                                                           | Runs tests once in headless mode with coverage (for CI/CD)                   |
-| `test:headless`         | `ng test --browsers=ChromeHeadless --watch=false`                                                                                                           | Runs tests once in headless mode without coverage                            |
-| `lint`                  | `ng lint`                                                                                                                                                   | Runs ESLint to check code quality and style issues                           |
-| `lint:fix`              | `ng lint --fix`                                                                                                                                             | Runs ESLint and automatically fixes fixable issues                           |
-| `format`                | `npx prettier --write .`                                                                                                                                    | Formats all code files using Prettier                                        |
-| `format:check`          | `npx prettier --check .`                                                                                                                                    | Checks if all files are formatted according to Prettier rules                |
-| `ng`                    | `ng`                                                                                                                                                        | Access to Angular CLI commands                                               |
+| Script | Description |
+|--------|-------------|
+| `start` | Starts the Angular development server for local development |
+| `build` | Builds for Chromium browsers only → `dist/chromium/` (includes tests) |
+| `build:all` | Builds for both Chromium and Firefox → `dist/chromium/` + `dist/firefox/` (includes tests) |
+| `build:chromium` | Builds for Chromium browsers only → `dist/chromium/` (includes tests) |
+| `build:firefox` | Builds for Firefox only → `dist/firefox/` with archive (includes tests) |
+| `build:prod` | Production build for both browsers with environment patching (includes tests) |
+| `patch-manifest` | Patches manifest.json with OAuth credentials from environment variables |
+| `patch-config` | Patches API configuration with credentials from environment variables |
+| `test` | Runs unit tests with Karma in watch mode |
+| `test:ci` | Runs tests once in headless mode with coverage (for CI/CD) |
+| `test:headless` | Runs tests once in headless mode without coverage |
+| `lint` | Runs ESLint to check code quality and style issues |
+| `lint:fix` | Runs ESLint and automatically fixes fixable issues |
+| `format` | Formats all code files using Prettier |
+| `format:check` | Checks if all files are formatted according to Prettier rules |
+| `ng` | Access to Angular CLI commands |
+
+📖 **[Complete Build Documentation](./docs/build-system.md)** - For detailed build system architecture and troubleshooting.
 
 ## Development Workflow
 

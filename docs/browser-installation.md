@@ -139,7 +139,9 @@ OAUTH_CLIENT_ID=your-client-id.apps.googleusercontent.com
 
 **✅ Firefox Support Now Available!**
 
-Digital Zen now includes a Firefox-specific build that bundles the background script into a single file, making it compatible with Firefox's `background.scripts` implementation.
+Digital Zen includes a Firefox-specific build with Manifest V3 event pages (background.scripts).
+
+**Important:** Firefox Manifest V3 does NOT support `background.service_worker`. It uses `background.scripts` array (event pages) instead. The build system automatically converts the manifest for Firefox compatibility.
 
 **Two Installation Methods:**
 
@@ -155,14 +157,14 @@ Digital Zen now includes a Firefox-specific build that bundles the background sc
    - Build the Angular application
    - Bundle the background script into a single IIFE (Immediately Invoked Function Expression)
    - Automatically patch the manifest.json for Firefox compatibility
-   - Convert `background.service_worker` to `background.scripts`
-   - Remove Chrome-specific fields (`oauth2`, `key`) that cause warnings in Firefox
+   - Convert `background.service_worker` to `background.scripts` array
+   - Remove Chrome-specific fields (`oauth2`, `key`)
 
 2. **Load in Firefox:**
    - Navigate to `about:debugging#/runtime/this-firefox`
    - Or type `about:debugging` in the address bar, then click **"This Firefox"** in the left sidebar
    - Click the **"Load Temporary Add-on..."** button
-   - Navigate to your project's `dist/browser` folder
+   - Navigate to your project's `dist/firefox/` folder
    - Select the `manifest.json` file
    - Click **"Open"**
 
@@ -179,42 +181,19 @@ Digital Zen now includes a Firefox-specific build that bundles the background sc
 
 #### Method 2: Manual Build (For Advanced Users)
 
-If you prefer to use the standard build and manually modify the manifest:
+**Note:** Firefox requires a specific build configuration. Always use the Firefox build script (Method 1) for proper compatibility.
 
-**Note:** Firefox does not yet support service workers for background scripts in Manifest V3. You'll need to modify the manifest.json before loading in Firefox.
+If you still want to build manually:
 
 1. **Build the extension:**
    ```bash
-   npm run build:skip-tests
+   npm run build:firefox
    ```
 
-2. **Manually modify manifest.json for Firefox compatibility:**
-   
-   Firefox requires `background.scripts` instead of `background.service_worker`, and the background script must be bundled:
-   
-   - Open `dist/browser/manifest.json` in a text editor
-   - Find the `"background"` section (around line 37-40)
-   - Replace:
-     ```json
-     "background": {
-       "service_worker": "background.js",
-       "type": "module"
-     },
-     ```
-   - With:
-     ```json
-     "background": {
-       "scripts": ["background.js"]
-     },
-     ```
-   - Save the file
-   
-   **⚠️ Important:** The standard build creates modular background scripts that won't work with this manual approach. Use Method 1 (Firefox build script) for proper Firefox compatibility.
-
-3. **Load in Firefox:**
+2. **Load in Firefox:**
    - Navigate to `about:debugging#/runtime/this-firefox`
    - Click **"Load Temporary Add-on..."**
-   - Select the `manifest.json` file from `dist/browser`
+   - Select the `manifest.json` file from `dist/firefox/`
    - Click **"Open"**
 
 #### Important Notes for Firefox:
@@ -326,33 +305,7 @@ A `.xpi` file is a ZIP archive containing your extension files. Here's how to cr
 
 **Problem:** When loading the extension in Firefox, you get the error: "background.service_worker is currently disabled. Add background.scripts."
 
-**Solution:**
-
-Firefox does not yet support service workers for background scripts in Manifest V3. You must modify the manifest.json for Firefox:
-
-1. Open `dist/browser/manifest.json` in a text editor
-2. Find the `"background"` section:
-   ```json
-   "background": {
-     "service_worker": "background.js",
-     "type": "module"
-   },
-   ```
-3. Replace it with:
-   ```json
-   "background": {
-     "scripts": ["background.js"]
-   },
-   ```
-4. Save the file and try loading the extension again
-
-**Note:** This is a temporary Firefox limitation. Keep this modification only in your `dist/browser` folder for testing - don't commit it to git. For production Firefox deployment, you'll need to create a Firefox-specific build.
-
-**Why this happens:** Firefox's Manifest V3 implementation doesn't support service workers yet and requires the older `background.scripts` format. Chrome and other Chromium browsers require `service_worker`. This means you need different manifest configurations for different browsers during development.
-
-### Firefox: "Failed to communicate with background service"
-
-**Problem:** After modifying the manifest for Firefox, you get errors like "Failed to communicate with background service" or "Error sending message to background" in the browser console.
+**Root Cause:** Firefox Manifest V3 does NOT support `background.service_worker`. It uses `background.scripts` array (event pages) instead.
 
 **Solution:**
 
@@ -364,23 +317,36 @@ npm run build:firefox
 
 This automatically:
 - Bundles the background script into a single IIFE file
-- Patches the manifest for Firefox compatibility
-- Creates a fully working Firefox build
+- Converts `service_worker` to `scripts` array in manifest
+- Removes Chrome-specific fields (`oauth2`, `key`)
+- Creates a fully working Firefox build in `dist/firefox/`
 
-The standard build creates modular ES6 scripts that don't work with Firefox's `background.scripts`. The Firefox build script solves this by bundling everything into one file.
+**Technical Details:**
+- Firefox Manifest V3 uses `background.scripts` (event pages)
+- Chromium uses `background.service_worker` (service workers)
+- The build script handles these differences automatically
+- Both browsers run the same bundled IIFE background code
 
-**Alternative (Manual):**
+### Firefox: "Failed to communicate with background service"
 
-If you're manually building, you need to bundle the background script yourself using esbuild:
+**Problem:** Extension loads but background service doesn't work properly.
+
+**Solution:**
+
+✅ **Use the Firefox build script:**
 
 ```bash
-npm run build:skip-tests
-npm run bundle:background
+npm run build:firefox
 ```
 
-Then manually edit the manifest.json to use `background.scripts` instead of `background.service_worker`.
+This automatically:
+- Bundles the background script into a single IIFE file
+- Configures proper event page architecture for Firefox (`background.scripts`)
+- Creates a fully working Firefox build
 
-**Why this happens:** Firefox's `background.scripts` doesn't support ES6 modules the same way Chrome's service worker does. The bundled build creates a single IIFE (Immediately Invoked Function Expression) that works in both environments.
+The standard Chromium build uses service workers that don't work in Firefox. The Firefox build script solves this by using event pages with bundled code.
+
+**Why this happens:** Firefox and Chrome use different background architectures in Manifest V3. Firefox uses event pages (`background.scripts`), while Chrome uses service workers (`background.service_worker`). The Firefox build creates the correct configuration automatically.
 
 ### Extension Not Appearing in Toolbar
 

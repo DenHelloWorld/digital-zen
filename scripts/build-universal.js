@@ -144,12 +144,12 @@ try {
 
     let manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
 
-    // Convert service_worker to scripts
-    if (manifest.background?.service_worker) {
-      manifest.background = {
-        scripts: [manifest.background.service_worker],
-      };
-      console.log('✅ Converted background.service_worker → background.scripts');
+    // Firefox 146+ now supports service_worker in Manifest V3
+    // But requires bundled script without ES6 modules
+    // Remove the "type": "module" field to use bundled IIFE worker
+    if (manifest.background?.type) {
+      delete manifest.background.type;
+      console.log('✅ Removed background.type (Firefox requires bundled worker without modules)');
     }
 
     // Remove Chrome-specific fields

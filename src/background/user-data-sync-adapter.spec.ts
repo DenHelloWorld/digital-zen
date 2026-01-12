@@ -228,7 +228,9 @@ describe('UserDataSyncAdapter', () => {
       });
 
       it('should throw error when network request fails', async () => {
-        fetchSpy.and.returnValue(Promise.reject(new Error('Network error')));
+        fetchSpy.and.callFake(() => {
+          throw new Error('Network error');
+        });
 
         await expectAsync(
           UserDataSyncAdapter.syncUserData('test@example.com', 'user-123')
@@ -356,7 +358,9 @@ describe('UserDataSyncAdapter', () => {
       });
 
       it('should throw error when fetch fails', async () => {
-        fetchSpy.and.returnValue(Promise.reject(new Error('Network error')));
+        fetchSpy.and.callFake(() => {
+          throw new Error('Network error');
+        });
 
         await expectAsync(
           UserDataSyncAdapter.getUserData('test@example.com', 'user-123')
@@ -432,7 +436,9 @@ describe('UserDataSyncAdapter', () => {
       });
 
       it('should throw error when fetch fails', async () => {
-        fetchSpy.and.returnValue(Promise.reject(new Error('Network error')));
+        fetchSpy.and.callFake(() => {
+          throw new Error('Network error');
+        });
 
         await expectAsync(
           UserDataSyncAdapter.createUser('test@example.com', 'user-123')
@@ -538,7 +544,9 @@ describe('UserDataSyncAdapter', () => {
       });
 
       it('should throw error when fetch fails', async () => {
-        fetchSpy.and.returnValue(Promise.reject(new Error('Network error')));
+        fetchSpy.and.callFake(() => {
+          throw new Error('Network error');
+        });
 
         await expectAsync(
           UserDataSyncAdapter.saveUserData('test@example.com', 'user-123', [])

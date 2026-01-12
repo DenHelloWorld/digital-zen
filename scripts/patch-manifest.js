@@ -3,25 +3,18 @@
 /**
  * Patch manifest.json with environment variables
  * Replaces __OAUTH_CLIENT_ID__ and __PUBLIC_KEY__ placeholders
+ * Works with the new dual-build system (dist/chromium/ and dist/firefox/)
  */
 
 const fs = require('fs');
 const path = require('path');
 
-const manifestPath = path.join(__dirname, '..', 'dist', 'browser', 'manifest.json');
-
-try {
-  // Check if required environment variables are set
-  if (!process.env.OAUTH_CLIENT_ID || !process.env.PUBLIC_KEY) {
-    console.error('❌ Missing required environment variables: OAUTH_CLIENT_ID and/or PUBLIC_KEY');
-    process.exit(1);
-  }
-
-  // Check if manifest file exists
+/**
+ * Patch a single manifest file
+ */
+function patchManifest(manifestPath) {
   if (!fs.existsSync(manifestPath)) {
-    console.error(`❌ Manifest file not found at: ${manifestPath}`);
-    console.error('💡 Make sure to run "npm run build" first');
-    process.exit(1);
+    return false;
   }
 
   // Read the manifest file
@@ -35,7 +28,47 @@ try {
   // Write the patched content back
   fs.writeFileSync(manifestPath, content);
 
-  console.log('✅ manifest.json patched successfully');
+  return true;
+}
+
+try {
+  // Check if required environment variables are set
+  if (!process.env.OAUTH_CLIENT_ID || !process.env.PUBLIC_KEY) {
+    console.error('❌ Missing required environment variables: OAUTH_CLIENT_ID and/or PUBLIC_KEY');
+    process.exit(1);
+  }
+
+  const distDir = path.join(__dirname, '..', 'dist');
+  let patchedCount = 0;
+
+  // Try to patch Chromium build
+  const chromiumManifest = path.join(distDir, 'chromium', 'manifest.json');
+  if (patchManifest(chromiumManifest)) {
+    console.log('✅ dist/chromium/manifest.json patched successfully');
+    patchedCount++;
+  }
+
+  // Try to patch Firefox build (though Firefox doesn't use these fields)
+  const firefoxManifest = path.join(distDir, 'firefox', 'manifest.json');
+  if (patchManifest(firefoxManifest)) {
+    console.log('✅ dist/firefox/manifest.json patched successfully');
+    patchedCount++;
+  }
+
+  // Try to patch legacy browser build (for backward compatibility)
+  const browserManifest = path.join(distDir, 'browser', 'manifest.json');
+  if (patchManifest(browserManifest)) {
+    console.log('✅ dist/browser/manifest.json patched successfully');
+    patchedCount++;
+  }
+
+  if (patchedCount === 0) {
+    console.error('❌ No manifest.json files found in dist/ directory');
+    console.error('💡 Make sure to run "npm run build" first');
+    process.exit(1);
+  }
+
+  console.log(`✅ Patched ${patchedCount} manifest file(s)`);
 } catch (error) {
   console.error('❌ Error patching manifest.json:', error.message);
   process.exit(1);
