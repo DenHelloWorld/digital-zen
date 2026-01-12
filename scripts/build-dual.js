@@ -228,7 +228,7 @@ try {
   console.log('━'.repeat(60));
   console.log('');
   
-  if (BUILD_ALL) {
+  if (BUILD_CHROMIUM && BUILD_FIREFOX) {
     console.log('📦 Building for: Chromium + Firefox');
   } else if (BUILD_CHROMIUM) {
     console.log('📦 Building for: Chromium browsers only');
