@@ -59,9 +59,10 @@ describe('BackgroundServiceMV3', () => {
   }
 
   /**
-   * Helper to create a date that is guaranteed to be "today" in the local timezone.
-   * Prevents crossing day boundaries by clamping hours to the 0–23 range so the date stays
-   * within the same local calendar day, regardless of the hoursOffset applied.
+   * Creates a date offset from "now" by the specified hours, then clamps the result so it is
+   * guaranteed to be within "today" in the local timezone.
+   * If the offset would move the time into yesterday or tomorrow, the result is clamped to
+   * today's boundaries: 00:00:00.000 (start of today) or 23:59:59.999 (end of today).
    * @param hoursOffset - Hours to offset from now (e.g., -1 for 1 hour ago, +1 for 1 hour from now).
    *                      Supports fractional hours (e.g., -0.5 for 30 minutes ago).
    */
@@ -73,18 +74,16 @@ describe('BackgroundServiceMV3', () => {
     const newTime = date.getTime() + offsetMs;
     const newDate = new Date(newTime);
 
-    // Check if we crossed a day boundary
-    if (newDate.getDate() !== date.getDate()) {
+    // Check if we crossed a day boundary (year/month/day), not just day-of-month
+    if (newDate.toDateString() !== date.toDateString()) {
       // If we crossed to yesterday, clamp to start of today (00:00:00.000)
       if (hoursOffset < 0) {
         date.setHours(0, 0, 0, 0);
         return date;
       }
       // If we crossed to tomorrow, clamp to end of today (23:59:59.999)
-      else {
-        date.setHours(23, 59, 59, 999);
-        return date;
-      }
+      date.setHours(23, 59, 59, 999);
+      return date;
     }
 
     // No day boundary crossed, return the offset date
@@ -634,8 +633,9 @@ describe('BackgroundServiceMV3', () => {
 
         // Create a period that starts recently (e.g., 1 hour ago) but is still active.
         // The key is that startFrom's day-of-week should be used, not current time's day-of-week.
-        // We use createTodayDate with a small negative offset to avoid clamping to midnight.
-        const startTime = createTodayDate(-1); // 1 hour ago (avoids clamping to hour 0 in normal cases)
+        // We use createTodayDate with a small negative offset to reduce the chance of crossing
+        // the day boundary (which would clamp to 00:00:00.000 on the previous day).
+        const startTime = createTodayDate(-1); // ~1 hour ago, unlikely to cross into yesterday in tests
         const dayOfWeek = startTime.getDay();
 
         const period: IFocus.Period = {
