@@ -149,10 +149,24 @@ Main build script that orchestrates the entire build process.
 - Copies builds to separate directories
 - Runs `web-ext build` for Firefox
 
-**Key Functions:**
-- `buildForBrowser(browserType)` - Builds for a specific browser
-- `copyDir(src, dest)` - Recursively copies directories
-- `cleanup()` - Restores original source files after build
+**New build script** (`scripts/build-dual.js`)
+- Supports `--chromium`, `--firefox`, `--all` flags
+- Outputs to separate directories: `dist/chromium/` and `dist/firefox/`
+- **Single bundled IIFE background script for all browsers** - no browser-specific compilation
+- Manifest patching for Firefox (removes `oauth2` and `key` fields)
+
+**Build Process:**
+1. Build Angular app once
+2. **Bundle background script ONCE with esbuild (IIFE format)** - used by all browsers
+3. Copy to `dist/chromium/` - remove `type: "module"` from manifest
+4. Copy to `dist/firefox/` - remove `type: "module"`, `oauth2`, and `key` from manifest
+5. Run `web-ext build` for Firefox archive
+
+**Key Features:**
+- **Unified approach:** Both browsers use the same bundled IIFE background script
+- **Simplified maintenance:** No browser-specific background compilation
+- **Faster builds:** Single bundling step instead of separate compilations
+- Only manifest differences between browsers (Chrome-specific fields)
 
 ### 2. `scripts/patch-manifest.js`
 

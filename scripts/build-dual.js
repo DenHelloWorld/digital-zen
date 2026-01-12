@@ -92,11 +92,10 @@ function copyDir(src, dest) {
 /**
  * Build for a specific browser target
  */
-function buildForBrowser(browserType, angularAlreadyBuilt = false) {
+function buildForBrowser(browserType, angularAlreadyBuilt = false, backgroundAlreadyBundled = false) {
   const isFirefox = browserType === 'firefox';
   const targetDir = path.join(__dirname, '..', 'dist', browserType);
   const tempBuildDir = path.join(__dirname, '..', 'dist', 'browser');
-  const manifestPath = path.join(tempBuildDir, 'manifest.json');
 
   console.log('');
   console.log('━'.repeat(60));
@@ -112,7 +111,21 @@ function buildForBrowser(browserType, angularAlreadyBuilt = false) {
     console.log('✅ Using existing Angular build...');
   }
 
-  // Step 2: Copy to target directory FIRST (before any modifications)
+  // Step 2: Bundle background script (only once for all browsers)
+  if (!backgroundAlreadyBundled) {
+    console.log('');
+    console.log('📦 Bundling background script (IIFE format for all browsers)...');
+    execSync(
+      'esbuild src/background.ts --bundle --outfile=dist/browser/background.js --format=iife --target=es2020 --platform=browser --external:chrome',
+      { stdio: 'inherit', cwd: path.join(__dirname, '..') }
+    );
+    console.log('✅ Background script bundled');
+  } else {
+    console.log('');
+    console.log('✅ Using existing bundled background script...');
+  }
+
+  // Step 3: Copy to target directory
   console.log('');
   console.log(`📁 Copying build to dist/${browserType}/...`);
   
@@ -128,37 +141,20 @@ function buildForBrowser(browserType, angularAlreadyBuilt = false) {
   // Now work with the target directory, not the temp build dir
   const targetManifestPath = path.join(targetDir, 'manifest.json');
 
-  // Step 3: Build background script in target directory
-  if (isFirefox) {
-    console.log('');
-    console.log('📦 Bundling background script for Firefox (IIFE format)...');
-    execSync(
-      `esbuild src/background.ts --bundle --outfile=dist/${browserType}/background.js --format=iife --target=es2020 --platform=browser --external:chrome`,
-      { stdio: 'inherit', cwd: path.join(__dirname, '..') }
-    );
-  } else {
-    console.log('');
-    console.log('📦 Compiling background script for Chromium...');
-    // For Chromium, use the already compiled background from Angular build
-    console.log('✅ Using TypeScript compiled background script');
+  // Step 4: Patch manifest in TARGET directory
+  console.log('');
+  console.log('🔧 Patching manifest.json...');
+
+  let manifest = JSON.parse(fs.readFileSync(targetManifestPath, 'utf8'));
+
+  // Remove "type": "module" field - we use bundled IIFE for all browsers
+  if (manifest.background?.type) {
+    delete manifest.background.type;
+    console.log('✅ Removed background.type (using bundled IIFE worker)');
   }
 
-  // Step 4: Patch manifest for Firefox in TARGET directory
+  // Remove Chrome-specific fields for Firefox
   if (isFirefox) {
-    console.log('');
-    console.log('🔧 Patching manifest.json for Firefox...');
-
-    let manifest = JSON.parse(fs.readFileSync(targetManifestPath, 'utf8'));
-
-    // Firefox 146+ now supports service_worker in Manifest V3
-    // But requires bundled script without ES6 modules
-    // Remove the "type": "module" field to use bundled IIFE worker
-    if (manifest.background?.type) {
-      delete manifest.background.type;
-      console.log('✅ Removed background.type (Firefox requires bundled worker without modules)');
-    }
-
-    // Remove Chrome-specific fields
     if (manifest.oauth2) {
       delete manifest.oauth2;
       console.log('✅ Removed oauth2 field (Chrome-specific)');
@@ -168,9 +164,9 @@ function buildForBrowser(browserType, angularAlreadyBuilt = false) {
       delete manifest.key;
       console.log('✅ Removed key field (Chrome-specific)');
     }
-
-    fs.writeFileSync(targetManifestPath, JSON.stringify(manifest, null, 2));
   }
+
+  fs.writeFileSync(targetManifestPath, JSON.stringify(manifest, null, 2));
 
   // Step 5: For Firefox, run web-ext build
   if (isFirefox) {
@@ -286,25 +282,22 @@ try {
   execSync('ng build', { stdio: 'inherit', cwd: path.join(__dirname, '..') });
   
   console.log('');
-  console.log('📦 Compiling background script...');
-  execSync('tsc -p tsconfig.background.json', {
-    stdio: 'inherit',
-    cwd: path.join(__dirname, '..'),
-  });
-  execSync('tsc-alias -p tsconfig.background.json', {
-    stdio: 'inherit',
-    cwd: path.join(__dirname, '..'),
-  });
+  console.log('📦 Bundling background script (IIFE format for all browsers)...');
+  execSync(
+    'esbuild src/background.ts --bundle --outfile=dist/browser/background.js --format=iife --target=es2020 --platform=browser --external:chrome',
+    { stdio: 'inherit', cwd: path.join(__dirname, '..') }
+  );
 
   // Step 5: Build for each target browser
   let angularBuilt = true;
+  let backgroundBundled = true;
   
   if (BUILD_CHROMIUM) {
-    buildForBrowser('chromium', angularBuilt);
+    buildForBrowser('chromium', angularBuilt, backgroundBundled);
   }
 
   if (BUILD_FIREFOX) {
-    buildForBrowser('firefox', angularBuilt);
+    buildForBrowser('firefox', angularBuilt, backgroundBundled);
   }
 
   // Final summary
