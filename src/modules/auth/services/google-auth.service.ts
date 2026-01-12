@@ -313,15 +313,16 @@ export class GoogleAuthService {
     this.#storageService.remove(CHROME_STORAGE_KEY_ENUM.GOOGLE_AUTH_TOKEN, () => {
       // Also clear user credentials to prevent backend sync after logout
       if (this.#isChromeRuntime) {
-        chrome.storage.local.remove(
-          [CHROME_STORAGE_KEY_ENUM.USER_EMAIL, CHROME_STORAGE_KEY_ENUM.USER_ID],
-          () => {
-            this.#isGoogleAuthenticated.set(false);
-            this.#isPending.set(false);
-            this.#userInfo.set(null);
-            this.#logger.info('Logout completed, user credentials cleared');
-          }
-        );
+        const keysToRemove: string[] = [
+          CHROME_STORAGE_KEY_ENUM.USER_EMAIL,
+          CHROME_STORAGE_KEY_ENUM.USER_ID,
+        ];
+        chrome.storage.local.remove(keysToRemove, () => {
+          this.#isGoogleAuthenticated.set(false);
+          this.#isPending.set(false);
+          this.#userInfo.set(null);
+          this.#logger.info('Logout completed, user credentials cleared');
+        });
       } else {
         this.#isGoogleAuthenticated.set(false);
         this.#isPending.set(false);
