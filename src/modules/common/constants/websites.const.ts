@@ -159,7 +159,7 @@ export const WEBSITES_UNBLOCKABLE: Readonly<readonly IFocus.WebSite[]> = Object.
 /**
  * Creates a default period with a unique ID for blocking social media during work hours
  * Each invocation generates a new period with timestamp-based unique ID
- * 
+ *
  * @returns A new default period instance with unique ID
  */
 export function createDefaultPeriod(): IFocus.Period {

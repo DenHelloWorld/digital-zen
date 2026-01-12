@@ -17,17 +17,17 @@ export class UserDataSyncAdapter {
   /**
    * Check if API key is configured
    * @private
+   * @returns true if API key is configured, false otherwise
    */
-  private static checkApiKey(): void {
+  private static checkApiKey(): boolean {
     if (!API_CONFIG.apiKey) {
-      UserDataSyncAdapter.logger.error('API key is not configured!');
-      UserDataSyncAdapter.logger.error(
-        'Ensure API_SECRET_KEY is set in your .env file and rebuild with: npm run build:prod'
+      UserDataSyncAdapter.logger.warn('API key is not configured - skipping backend sync');
+      UserDataSyncAdapter.logger.info(
+        'To enable backend sync, set API_SECRET_KEY in your .env file and rebuild with: npm run build:prod'
       );
-      throw new Error(
-        'API key not configured. Ensure API_SECRET_KEY is set in your .env file and rebuild with: npm run build:prod'
-      );
+      return false;
     }
+    return true;
   }
 
   /**
@@ -42,6 +42,12 @@ export class UserDataSyncAdapter {
     try {
       UserDataSyncAdapter.logger.info('Starting sync for:', userEmail);
 
+      // Check if API key is configured - if not, skip backend sync
+      if (!this.checkApiKey()) {
+        UserDataSyncAdapter.logger.info('Backend sync skipped - API key not configured');
+        return;
+      }
+
       // Save user credentials to local storage for later use
       await chrome.storage.local.set({
         [CHROME_STORAGE_KEY_ENUM.USER_EMAIL]: userEmail,
@@ -50,6 +56,12 @@ export class UserDataSyncAdapter {
 
       // Get user data from API
       const userData = await this.getUserData(userEmail, userId);
+
+      // If API key is not configured, getUserData returns null
+      if (!userData) {
+        UserDataSyncAdapter.logger.info('Skipping backend sync - API key not configured');
+        return;
+      }
 
       UserDataSyncAdapter.logger.info('Received user data:', {
         hasUser: !!userData.user,
@@ -95,15 +107,20 @@ export class UserDataSyncAdapter {
    *
    * @param userEmail User email
    * @param userId User ID
-   * @returns Promise with user data
+   * @returns Promise with user data or null if API key not configured
    */
-  static async getUserData(userEmail: string, userId: string): Promise<IUserDataSync.Response> {
+  static async getUserData(
+    userEmail: string,
+    userId: string
+  ): Promise<IUserDataSync.Response | null> {
     if (!userEmail && !userId) {
       throw new Error('At least one of userEmail or userId must be provided');
     }
 
     // Check if API key is configured
-    this.checkApiKey();
+    if (!this.checkApiKey()) {
+      return null;
+    }
 
     const url = new URL(API_URLS.USER);
 
@@ -144,11 +161,13 @@ export class UserDataSyncAdapter {
    *
    * @param userEmail User email
    * @param userId User ID
-   * @returns Promise that resolves when user is created
+   * @returns Promise that resolves when user is created or null if API key not configured
    */
-  static async createUser(userEmail: string, userId: string): Promise<void> {
+  static async createUser(userEmail: string, userId: string): Promise<void | null> {
     // Check if API key is configured
-    this.checkApiKey();
+    if (!this.checkApiKey()) {
+      return null;
+    }
 
     const url = API_URLS.USER;
 
@@ -196,7 +215,9 @@ export class UserDataSyncAdapter {
     periods: IFocus.Period[]
   ): Promise<void> {
     // Check if API key is configured
-    this.checkApiKey();
+    if (!this.checkApiKey()) {
+      return;
+    }
 
     const url = API_URLS.USER;
 

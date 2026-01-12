@@ -157,7 +157,7 @@ export class FocusService {
           credentials => {
             const isLoggedIn = Boolean(
               credentials[CHROME_STORAGE_KEY_ENUM.USER_EMAIL] &&
-                credentials[CHROME_STORAGE_KEY_ENUM.USER_ID]
+              credentials[CHROME_STORAGE_KEY_ENUM.USER_ID]
             );
 
             // If user is NOT logged in and has no periods, add default period with unique ID

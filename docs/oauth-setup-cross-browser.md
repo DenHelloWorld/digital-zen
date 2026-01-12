@@ -145,49 +145,95 @@ This will:
 
 ## Technical Implementation Details
 
+### Architecture: Background Service Worker
+
+**Important:** OAuth flow now runs in the **background service worker** instead of the popup. This prevents the authentication flow from being interrupted when the popup loses focus.
+
+**Why this change was necessary:**
+- When the popup opens Google's OAuth window, the browser gives focus to that window
+- This causes the popup to close automatically (standard browser behavior)
+- Any OAuth logic running in the popup context is destroyed
+- The OAuth callback never executes, breaking the authentication flow
+
+**New architecture:**
+1. **Popup (GoogleAuthService):** Sends message to background, listens for state changes
+2. **Background (GoogleAuthAdapter):** Handles OAuth flow, stores token and user info
+3. **chrome.storage:** Persists auth state, enables communication between popup and background
+
 ### OAuth Flow Steps
 
-1. **User clicks login button** → `GoogleAuthService.login()` is called
-2. **Client ID is loaded** from `manifest.json`
-3. **Redirect URL is generated** using `chrome.identity.getRedirectURL('oauth2')`
-4. **Authorization URL is constructed** with:
+1. **User clicks login button** → `GoogleAuthService.login()` is called in popup
+2. **Message sent to background** → `{ command: 'START_GOOGLE_AUTH' }`
+3. **Background receives message** → `GoogleAuthAdapter.login()` is called
+4. **Client ID is loaded** from `extension-config.ts` (injected at build time)
+5. **Redirect URL is generated** using `chrome.identity.getRedirectURL('oauth2')`
+6. **Authorization URL is constructed** with:
    - Client ID
    - Redirect URI
    - Response type: `token` (implicit flow)
    - Scopes: email and profile
-5. **Browser opens OAuth dialog** via `chrome.identity.launchWebAuthFlow()`
-6. **User grants permissions** in Google's consent screen
-7. **Google redirects** to the extension's redirect URI with access token in URL fragment
-8. **Extension extracts token** from the redirect URL
-9. **Token is stored** in `chrome.storage.local` for persistence
-10. **User info is fetched** from Google's userinfo API to validate the token
+7. **Browser opens OAuth dialog** via `chrome.identity.launchWebAuthFlow()`
+8. **User grants permissions** in Google's consent screen
+9. **Google redirects** to the extension's redirect URI with access token in URL fragment
+10. **Background extracts token** from the redirect URL
+11. **Token is stored** in `chrome.storage.local` for persistence
+12. **User info is fetched** from Google's userinfo API
+13. **User info is stored** in `chrome.storage.local`
+14. **Popup detects storage change** via `chrome.storage.onChanged` listener
+15. **Popup updates UI** to reflect authenticated state
 
 ### Token Storage
 
-Tokens are stored in Chrome's local storage using the key `CHROME_STORAGE_KEY_ENUM.GOOGLE_AUTH_TOKEN`.
+Tokens and user info are stored in Chrome's local storage:
+- `CHROME_STORAGE_KEY_ENUM.GOOGLE_AUTH_TOKEN` - Access token
+- `CHROME_STORAGE_KEY_ENUM.GOOGLE_USER_INFO` - Complete user profile
+- `CHROME_STORAGE_KEY_ENUM.USER_EMAIL` - User email
+- `CHROME_STORAGE_KEY_ENUM.USER_ID` - User ID (Google's `sub` claim)
 
 This allows:
 
 - Token persistence across browser restarts
+- Token persistence across popup close/open
 - Cross-browser compatibility (each browser has its own storage)
+- Communication between popup and background service worker
 - Manual token management
 
 ### Token Validation
 
-On application startup, `checkExistingGoogleAuth()`:
+On application startup, `GoogleAuthService.checkExistingGoogleAuth()`:
 
-1. Checks if a token exists in storage
-2. Validates the token by calling Google's userinfo API
-3. If invalid, clears the stored token
+1. Checks if user info exists in storage
+2. Validates the stored token by calling Google's userinfo API
+3. If invalid, clears all stored auth data
+4. Updates UI state via Angular Signals
 
 ### Logout Process
 
 When logging out:
 
-1. Token is retrieved from storage
-2. Token is revoked via Google's revocation endpoint
-3. Token is removed from local storage
-4. User info is cleared from memory
+1. Popup sends message to background: `{ command: 'LOGOUT_GOOGLE_AUTH' }`
+2. Background retrieves token from storage
+3. Token is revoked via Google's revocation endpoint
+4. All auth data is cleared from storage:
+   - `GOOGLE_AUTH_TOKEN`
+   - `GOOGLE_USER_INFO`
+   - `USER_EMAIL`
+   - `USER_ID`
+5. Popup detects storage change and updates UI
+
+### State Management
+
+**Popup (GoogleAuthService):**
+- Uses Angular Signals for reactive state
+- Listens to `chrome.storage.onChanged` events
+- Automatically updates UI when auth state changes
+- No direct OAuth implementation
+
+**Background (GoogleAuthAdapter):**
+- Pure TypeScript, no Angular dependencies
+- Handles all OAuth operations
+- Persists state to `chrome.storage`
+- Survives popup close/open cycles
 
 ## Browser Compatibility
 

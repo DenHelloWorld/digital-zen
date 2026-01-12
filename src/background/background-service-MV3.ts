@@ -1,6 +1,7 @@
 /// <reference types="chrome"/>
 import { StorageAdapter } from './storage-adapter';
 import { UserDataSyncAdapter } from './user-data-sync-adapter';
+import { GoogleAuthAdapter } from './google-auth-adapter';
 import { IFocus } from '../modules/common/models/focus.model';
 import { QUICK_FOCUS_ID } from '../modules/common/constants/quick-focus-id.const';
 import {
@@ -104,6 +105,16 @@ export class BackgroundServiceMV3 {
             case CHROME_COMMAND_ENUM.SYNC_USER_DATA: {
               const syncResult = await this.syncUserData(message.userEmail, message.userId);
               sendResponse(syncResult);
+              break;
+            }
+            case CHROME_COMMAND_ENUM.START_GOOGLE_AUTH: {
+              const authResult = await GoogleAuthAdapter.login();
+              sendResponse(authResult);
+              break;
+            }
+            case CHROME_COMMAND_ENUM.LOGOUT_GOOGLE_AUTH: {
+              const logoutResult = await GoogleAuthAdapter.logout();
+              sendResponse(logoutResult);
               break;
             }
             default:
