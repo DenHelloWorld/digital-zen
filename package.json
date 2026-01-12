@@ -4,9 +4,11 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "npm run test:ci && dotenv -- node scripts/build-universal.js",
-    "build:firefox": "npm run test:ci && dotenv -- node scripts/build-universal.js --firefox",
-    "build:prod": "npm run test:ci && dotenv -- node scripts/build-universal.js && dotenv -- node scripts/patch-api-config.js && dotenv -- node scripts/patch-manifest.js",
+    "build": "npm run test:ci && dotenv -- node scripts/build-dual.js --chromium",
+    "build:all": "npm run test:ci && dotenv -- node scripts/build-dual.js --all",
+    "build:chromium": "npm run test:ci && dotenv -- node scripts/build-dual.js --chromium",
+    "build:firefox": "npm run test:ci && dotenv -- node scripts/build-dual.js --firefox",
+    "build:prod": "npm run test:ci && dotenv -- node scripts/build-dual.js --all && dotenv -- node scripts/patch-api-config.js && dotenv -- node scripts/patch-manifest.js",
     "patch-config": "dotenv -- node scripts/patch-api-config.js",
     "test": "ng test",
     "test:ci": "ng test --browsers=ChromeHeadless --watch=false --code-coverage",
@@ -58,6 +60,7 @@
     "prettier": "^3.7.4",
     "tsc-alias": "^1.8.16",
     "typescript": "~5.9.3",
-    "typescript-eslint": "8.52.0"
+    "typescript-eslint": "8.52.0",
+    "web-ext": "^9.2.0"
   }
 }
