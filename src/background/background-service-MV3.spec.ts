@@ -994,7 +994,7 @@ describe('BackgroundServiceMV3', () => {
       });
 
       it('should return error when sync fails', async () => {
-        (UserDataSyncAdapter.syncUserData as jasmine.Spy).and.returnValue(
+        (UserDataSyncAdapter.syncUserData as jasmine.Spy).and.callFake(() =>
           Promise.reject(new Error('Sync failed'))
         );
 
@@ -1012,6 +1012,8 @@ describe('BackgroundServiceMV3', () => {
 
         // Wait for async processing
         await promise;
+        // Allow one more microtask cycle for error handling
+        await Promise.resolve();
 
         expect(sendResponse).toHaveBeenCalledWith({
           success: false,
