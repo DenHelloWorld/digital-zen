@@ -6,17 +6,8 @@ import {
   ChromeStorageService,
   CHROME_STORAGE_KEY_ENUM,
   CHROME_COMMAND_ENUM,
+  IGoogleUserInfo,
 } from '../../common';
-
-export interface IGoogleUserInfo {
-  sub: string;
-  name: string;
-  given_name: string;
-  family_name: string;
-  picture: string;
-  email: string;
-  email_verified: boolean;
-}
 
 /**
  * Google authentication service for Chrome Extension
@@ -126,8 +117,6 @@ export class GoogleAuthService {
         if (response?.success) {
           this.#logger.info('Logout completed successfully');
           // Auth state will be updated via storage change listener
-          this.#isGoogleAuthenticated.set(false);
-          this.#userInfo.set(null);
         } else {
           this.#logger.error('Logout failed:', response?.error);
         }
@@ -195,33 +184,26 @@ export class GoogleAuthService {
         return;
       }
 
-      // Listen for user info changes (indicates auth state change)
-      if (changes[CHROME_STORAGE_KEY_ENUM.GOOGLE_USER_INFO]) {
-        const newUserInfo = changes[CHROME_STORAGE_KEY_ENUM.GOOGLE_USER_INFO]
-          .newValue as IGoogleUserInfo | null;
+      // Handle auth state changes (both login and logout)
+      // Check for user info changes first as it's the primary indicator
+      const userInfoChange = changes[CHROME_STORAGE_KEY_ENUM.GOOGLE_USER_INFO];
+      const tokenChange = changes[CHROME_STORAGE_KEY_ENUM.GOOGLE_AUTH_TOKEN];
+
+      if (userInfoChange || (tokenChange && !tokenChange.newValue)) {
+        const newUserInfo = userInfoChange?.newValue as IGoogleUserInfo | null;
 
         if (newUserInfo) {
           this.#logger.info('User info updated in storage, updating state');
           this.#userInfo.set(newUserInfo);
           this.#isGoogleAuthenticated.set(true);
           this.#isPending.set(false);
-        } else {
-          this.#logger.info('User info removed from storage, clearing auth state');
+        } else if (userInfoChange || !tokenChange?.newValue) {
+          // User info removed or token removed - clear auth state
+          this.#logger.info('Auth data cleared from storage, clearing auth state');
           this.#userInfo.set(null);
           this.#isGoogleAuthenticated.set(false);
           this.#isPending.set(false);
         }
-      }
-
-      // Also listen for token removal (indicates logout)
-      if (
-        changes[CHROME_STORAGE_KEY_ENUM.GOOGLE_AUTH_TOKEN] &&
-        !changes[CHROME_STORAGE_KEY_ENUM.GOOGLE_AUTH_TOKEN].newValue
-      ) {
-        this.#logger.info('Auth token removed from storage, clearing auth state');
-        this.#userInfo.set(null);
-        this.#isGoogleAuthenticated.set(false);
-        this.#isPending.set(false);
       }
     });
   }

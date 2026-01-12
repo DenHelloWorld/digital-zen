@@ -1,20 +1,8 @@
 /// <reference types="chrome"/>
 import { EXTENSION_CONFIG } from '../extension-config';
 import { CHROME_STORAGE_KEY_ENUM } from '../modules/common/enums/chrome-storage-key.enum';
+import { IGoogleUserInfo } from '../modules/common/models/google-user-info.model';
 import { logger } from '../modules/common/helpers/logger';
-
-/**
- * Google user info interface
- */
-export interface IGoogleUserInfo {
-  sub: string;
-  name: string;
-  given_name: string;
-  family_name: string;
-  picture: string;
-  email: string;
-  email_verified: boolean;
-}
 
 /**
  * OAuth adapter for background service worker
@@ -190,8 +178,11 @@ export class GoogleAuthAdapter {
    */
   private static async fetchUserInfo(token: string): Promise<IGoogleUserInfo | null> {
     try {
-      const url = `${this.GOOGLE_USER_INFO_URL}?access_token=${encodeURIComponent(token)}`;
-      const response = await fetch(url);
+      const response = await fetch(this.GOOGLE_USER_INFO_URL, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       if (!response.ok) {
         this.logger.error('Failed to fetch user info:', response.status, response.statusText);
