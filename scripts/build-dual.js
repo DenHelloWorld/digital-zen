@@ -136,14 +136,12 @@ function buildForBrowser(browserType) {
 
     let manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
 
-    // Firefox does NOT support service_worker in Manifest V3 (as of 2026)
-    // Must use background.scripts with persistent: false for event pages
-    if (manifest.background?.service_worker) {
-      manifest.background = {
-        scripts: [manifest.background.service_worker],
-        persistent: false, // Required for Manifest V3 event pages
-      };
-      console.log('✅ Converted background.service_worker → background.scripts (event page)');
+    // Firefox 146+ now supports service_worker in Manifest V3
+    // But requires bundled script without ES6 modules
+    // Remove the "type": "module" field to use bundled IIFE worker
+    if (manifest.background?.type) {
+      delete manifest.background.type;
+      console.log('✅ Removed background.type (Firefox requires bundled worker without modules)');
     }
 
     // Remove Chrome-specific fields
