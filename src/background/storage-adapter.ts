@@ -53,6 +53,22 @@ export class StorageAdapter {
     });
   }
 
+  /**
+   * Replace all periods in storage with new periods
+   * This is an atomic operation that clears existing periods and sets new ones
+   *
+   * @param periods Array of periods to save
+   */
+  static async replaceAllPeriods(periods: IFocus.Period[]): Promise<void> {
+    return this.enqueue(async () => {
+      const storedPeriods = periods.map(p => this.toStorageFormat(p));
+      await chrome.storage.local.set({
+        [CHROME_STORAGE_KEY_ENUM.PERIODS]: storedPeriods,
+      });
+      StorageAdapter.logger.info('Replaced all periods, count:', periods.length);
+    });
+  }
+
   static async removePeriod(periodId: string): Promise<void> {
     return this.enqueue(async () => {
       const result = await chrome.storage.local.get(CHROME_STORAGE_KEY_ENUM.PERIODS);

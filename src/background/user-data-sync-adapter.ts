@@ -70,13 +70,8 @@ export class UserDataSyncAdapter {
           userData.periods.length
         );
 
-        // Clear existing periods first, then add backend periods
-        await chrome.storage.local.set({
-          [CHROME_STORAGE_KEY_ENUM.PERIODS]: [],
-        });
-
-        // Now save each period from backend
-        await Promise.all(userData.periods.map(period => StorageAdapter.savePeriod(period)));
+        // Atomically replace all local periods with backend data
+        await StorageAdapter.replaceAllPeriods(userData.periods);
 
         UserDataSyncAdapter.logger.info('Periods synced successfully from backend');
       } else {

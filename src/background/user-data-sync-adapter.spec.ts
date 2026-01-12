@@ -47,6 +47,7 @@ describe('UserDataSyncAdapter', () => {
     // Mock StorageAdapter
     spyOn(StorageAdapter, 'savePeriod').and.returnValue(Promise.resolve());
     spyOn(StorageAdapter, 'getPeriods').and.returnValue(Promise.resolve([]));
+    spyOn(StorageAdapter, 'replaceAllPeriods').and.returnValue(Promise.resolve());
   });
 
   afterEach(() => {
@@ -183,9 +184,8 @@ describe('UserDataSyncAdapter', () => {
 
         await UserDataSyncAdapter.syncUserData('test@example.com', 'user-123');
 
-        expect(StorageAdapter.savePeriod).toHaveBeenCalledTimes(2);
-        expect(StorageAdapter.savePeriod).toHaveBeenCalledWith(mockPeriods[0]);
-        expect(StorageAdapter.savePeriod).toHaveBeenCalledWith(mockPeriods[1]);
+        expect(StorageAdapter.replaceAllPeriods).toHaveBeenCalledTimes(1);
+        expect(StorageAdapter.replaceAllPeriods).toHaveBeenCalledWith(mockPeriods);
       });
 
       it('should not sync periods when none exist', async () => {
@@ -207,7 +207,7 @@ describe('UserDataSyncAdapter', () => {
 
         await UserDataSyncAdapter.syncUserData('test@example.com', 'user-123');
 
-        expect(StorageAdapter.savePeriod).not.toHaveBeenCalled();
+        expect(StorageAdapter.replaceAllPeriods).not.toHaveBeenCalled();
       });
     });
 
