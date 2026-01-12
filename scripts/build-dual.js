@@ -25,10 +25,10 @@ const path = require('path');
 const { execSync } = require('child_process');
 
 // Parse command line arguments
+// By default, ALWAYS build both browsers
 const args = process.argv.slice(2);
-const BUILD_ALL = args.includes('--all');
-const BUILD_CHROMIUM = args.includes('--chromium') || (!BUILD_ALL && !args.includes('--firefox'));
-const BUILD_FIREFOX = args.includes('--firefox') || BUILD_ALL;
+const BUILD_CHROMIUM = true;  // Always build Chromium
+const BUILD_FIREFOX = true;   // Always build Firefox
 
 const extensionConfigPath = path.join(__dirname, '..', 'src', 'extension-config.ts');
 const apiConfigPath = path.join(
