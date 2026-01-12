@@ -145,6 +145,7 @@ export class GoogleAuthService {
         `&prompt=consent`;
 
       this.#logger.info('Starting OAuth flow with redirect URL:', redirectUrl);
+      this.#logger.info('Auth URL:', authUrl);
 
       // Launch web auth flow
       chrome.identity.launchWebAuthFlow(
@@ -153,8 +154,18 @@ export class GoogleAuthService {
           interactive: true,
         },
         (responseUrl?: string) => {
-          if (chrome.runtime.lastError || !responseUrl) {
-            this.#logger.error('OAuth flow failed:', chrome.runtime.lastError?.message);
+          this.#logger.info('OAuth callback fired!', { responseUrl, hasError: !!chrome.runtime.lastError });
+          
+          if (chrome.runtime.lastError) {
+            this.#logger.error('OAuth flow error:', chrome.runtime.lastError);
+            this.#logger.error('Error message:', chrome.runtime.lastError.message);
+            this.#isGoogleAuthenticated.set(false);
+            this.#isPending.set(false);
+            return;
+          }
+          
+          if (!responseUrl) {
+            this.#logger.error('OAuth flow failed: no response URL returned');
             this.#isGoogleAuthenticated.set(false);
             this.#isPending.set(false);
             return;
