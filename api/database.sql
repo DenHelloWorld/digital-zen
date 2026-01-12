@@ -50,12 +50,12 @@ CREATE TABLE IF NOT EXISTS websites (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Table for focused times
--- Stores time ranges when focus mode should be active
+-- Stores actual focus session history with full datetime stamps
 CREATE TABLE IF NOT EXISTS focused_times (
     id VARCHAR(255) PRIMARY KEY,
     period_id VARCHAR(255) NOT NULL,
-    start_from TIME,
-    end_to TIME,
+    start_from DATETIME,
+    end_to DATETIME,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (period_id) REFERENCES periods(id) ON DELETE CASCADE,

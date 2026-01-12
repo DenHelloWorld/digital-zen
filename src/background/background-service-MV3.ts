@@ -180,6 +180,8 @@ export class BackgroundServiceMV3 {
     if (!periods.some(p => p.id === period.id)) {
       await StorageAdapter.savePeriod(period);
       await this.restoreCurrentPeriod();
+      // Sync to backend
+      await UserDataSyncAdapter.syncPeriodsToBackend();
     }
   }
 
@@ -190,6 +192,8 @@ export class BackgroundServiceMV3 {
 
     if (current?.id === periodId) await this.stopFocus();
     await this.restoreCurrentPeriod();
+    // Sync to backend
+    await UserDataSyncAdapter.syncPeriodsToBackend();
   }
 
   private async updatePeriod(period: IFocus.Period): Promise<void> {
@@ -206,6 +210,8 @@ export class BackgroundServiceMV3 {
         this.scheduleAlarm();
       }
     }
+    // Sync to backend
+    await UserDataSyncAdapter.syncPeriodsToBackend();
   }
 
   private async toggleWebSiteBlocking(toggledSite: IFocus.WebSite): Promise<void> {
@@ -225,6 +231,9 @@ export class BackgroundServiceMV3 {
       this.updateBlockRules(blockableWebsites.filter(s => s.isBlocked).map(s => s.url));
       this.#currentPeriod = updatedPeriod;
     }
+
+    // Sync to backend
+    await UserDataSyncAdapter.syncPeriodsToBackend();
   }
 
   private async startFocus(period: IFocus.Period): Promise<FocusOperationResult> {
@@ -299,6 +308,9 @@ export class BackgroundServiceMV3 {
 
     this.updateBlockRules([]);
     this.updateExtensionIcon(false);
+
+    // Sync to backend (including new focusedTime)
+    await UserDataSyncAdapter.syncPeriodsToBackend();
 
     return { success: true };
   }

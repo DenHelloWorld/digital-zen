@@ -44,6 +44,13 @@ digital-zen.csmpoint.com/api/user.php
 5. Copy content from `database.sql` file
 6. Paste it and click "Go" to create tables
 
+**For existing databases:** If you already have the database installed before this update, you need to run the migration script to fix the `focused_times` table schema:
+
+1. In phpMyAdmin, select your database
+2. Click on "SQL" tab
+3. Copy content from `migrate-focused-times.sql` file
+4. Paste it and click "Go" to update the table schema
+
 ### 3. Configure API
 
 1. Copy `config.example.php` to `config.php`:
