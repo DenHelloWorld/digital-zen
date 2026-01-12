@@ -50,19 +50,37 @@ export class UserDataSyncAdapter {
       // Get user data from API
       const userData = await this.getUserData(userEmail, userId);
 
+      UserDataSyncAdapter.logger.info('Received user data:', {
+        hasUser: !!userData.user,
+        periodsCount: userData.periods?.length ?? 0,
+      });
+
       // If user doesn't exist, create new user
       if (!userData.user) {
         UserDataSyncAdapter.logger.info('User not found, creating new user');
         await this.createUser(userEmail, userId);
       } else {
-        UserDataSyncAdapter.logger.info('User found, sync complete');
+        UserDataSyncAdapter.logger.info('User found, syncing periods');
       }
 
-      // Sync periods if needed
+      // Sync periods from backend - replace local periods entirely with backend data
       if (userData.periods && userData.periods.length > 0) {
-        UserDataSyncAdapter.logger.info('Syncing periods from backend');
-        // Store all periods in local storage, awaiting each save
+        UserDataSyncAdapter.logger.info(
+          'Syncing periods from backend, count:',
+          userData.periods.length
+        );
+
+        // Clear existing periods first, then add backend periods
+        await chrome.storage.local.set({
+          [CHROME_STORAGE_KEY_ENUM.PERIODS]: [],
+        });
+
+        // Now save each period from backend
         await Promise.all(userData.periods.map(period => StorageAdapter.savePeriod(period)));
+
+        UserDataSyncAdapter.logger.info('Periods synced successfully from backend');
+      } else {
+        UserDataSyncAdapter.logger.info('No periods found on backend, keeping local periods');
       }
     } catch (error) {
       UserDataSyncAdapter.logger.error('Sync failed:', error);
