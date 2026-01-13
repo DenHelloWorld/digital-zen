@@ -1753,8 +1753,8 @@ export class ToastComponent {
 - ✅ Use for repeated SVG icons, buttons, banners within same component
 - ✅ Define template parameters with `let-paramName="paramName"`
 - ✅ Pass context using `context: { paramName: value }`
-- ✅ Use `*ngTemplateOutlet` to render the fragment
-- ✅ Import `CommonModule` to use `*ngTemplateOutlet`
+- ✅ Use `*ngTemplateOutlet` to render the fragment **(this is the only allowed legacy structural directive; Angular 17–21 does not yet provide a modern `@`-syntax alternative for template rendering, so DZ_06 still applies to all other control flow)**
+- ✅ Import `CommonModule` to use `*ngTemplateOutlet` when rendering template fragments
 - ✅ Name fragments descriptively (e.g., `#icon`, `#bannerIcon`, `#errorBanner`)
 - ❌ Don't overuse for complex logic (create component instead)
 - ❌ Don't use across multiple components (create shared component instead)
