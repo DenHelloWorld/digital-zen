@@ -1,3 +1,10 @@
+<!-- Template fragment for icon -->
+<ng-template #icon let-iconHref="href">
+  <svg class="dz-icon" aria-hidden="true" focusable="false">
+    <use [attr.href]="iconHref"></use>
+  </svg>
+</ng-template>
+
 <ul class="dz-list dz-list--full">
   @for (entity of entities(); track entity[idKey()]) {
     <li class="item">
@@ -16,9 +23,7 @@
         (click)="removeEntity(entity)"
         [disabled]="isReadonly(entity)"
       >
-        <svg class="dz-icon" aria-hidden="true" focusable="false">
-          <use [attr.href]="icons.DELETE"></use>
-        </svg>
+        <ng-container *ngTemplateOutlet="icon; context: { href: icons.DELETE }"></ng-container>
       </button>
     </li>
   }
@@ -48,9 +53,7 @@
             class="dz-button dz-button--xs dz-button--icon dz-button--activated dz-button--ghost shadow"
             (click)="addEntity()"
           >
-            <svg class="dz-icon" aria-hidden="true" focusable="false">
-              <use [attr.href]="icons.SAVE"></use>
-            </svg>
+            <ng-container *ngTemplateOutlet="icon; context: { href: icons.SAVE }"></ng-container>
           </button>
 
           <button
@@ -59,9 +62,7 @@
             class="dz-button dz-button--xs dz-button--icon dz-button--error dz-button--ghost shadow"
             (click)="cancelAdding()"
           >
-            <svg class="dz-icon" aria-hidden="true" focusable="false">
-              <use [attr.href]="icons.CLOSE"></use>
-            </svg>
+            <ng-container *ngTemplateOutlet="icon; context: { href: icons.CLOSE }"></ng-container>
           </button>
         </div>
       </ul>
@@ -71,9 +72,7 @@
   @if (isPlaceholderShown()) {
     <li class="dz-placeholder">
       <div class="dz-placeholder__icon">
-        <svg class="dz-icon" aria-hidden="true" focusable="false">
-          <use [attr.href]="icons.FOLDER_OFF"></use>
-        </svg>
+        <ng-container *ngTemplateOutlet="icon; context: { href: icons.FOLDER_OFF }"></ng-container>
       </div>
 
       <div class="dz-placeholder__text">{{ uiText.DYNAMIC_INPUT.EMPTY_PLACEHOLDER }}</div>
@@ -85,9 +84,7 @@
         (click)="toggleIsAdding()"
       >
         {{ uiText.DYNAMIC_INPUT.ADD_BUTTON }}
-        <svg class="dz-icon" aria-hidden="true" focusable="false">
-          <use [attr.href]="icons.PLUS"></use>
-        </svg>
+        <ng-container *ngTemplateOutlet="icon; context: { href: icons.PLUS }"></ng-container>
       </button>
     </li>
   }
@@ -102,9 +99,7 @@
         class="dz-button dz-button--xs dz-button--icon dz-button--ghost shadow"
         (click)="toggleIsAdding()"
       >
-        <svg class="dz-icon" aria-hidden="true" focusable="false">
-          <use [attr.href]="icons.PLUS"></use>
-        </svg>
+        <ng-container *ngTemplateOutlet="icon; context: { href: icons.PLUS }"></ng-container>
       </button>
     }
 
@@ -114,9 +109,7 @@
       class="dz-button dz-button--xs dz-button--icon dz-button--ghost shadow"
       (click)="resetEntities()"
     >
-      <svg class="dz-icon" aria-hidden="true" focusable="false">
-        <use [attr.href]="icons.RESET"></use>
-      </svg>
+      <ng-container *ngTemplateOutlet="icon; context: { href: icons.RESET }"></ng-container>
     </button>
 
     @if (entities()?.length) {
@@ -126,9 +119,7 @@
         class="dz-button dz-button--xs dz-button--icon dz-button--ghost shadow"
         (click)="clearEntities()"
       >
-        <svg class="dz-icon" aria-hidden="true" focusable="false">
-          <use [attr.href]="icons.DELETE"></use>
-        </svg>
+        <ng-container *ngTemplateOutlet="icon; context: { href: icons.DELETE }"></ng-container>
       </button>
     }
   </div>

@@ -1,3 +1,10 @@
+<!-- Template fragment for icon -->
+<ng-template #icon let-iconHref="href">
+  <svg class="dz-icon" aria-hidden="true" focusable="false">
+    <use [attr.href]="iconHref"></use>
+  </svg>
+</ng-template>
+
 <div class="dz-box">
   @if (isAddPeriodFormShow()) {
     <dz-period-form mode="create" (completed)="onFormCompleted()" />
@@ -7,9 +14,7 @@
       (click)="onAddClick()"
     >
       {{ uiText.MENU.ADD_PERIOD_BUTTON }}
-      <svg class="dz-icon" aria-hidden="true" focusable="false">
-        <use [attr.href]="icons.PLUS"></use>
-      </svg>
+      <ng-container *ngTemplateOutlet="icon; context: { href: icons.PLUS }"></ng-container>
     </button>
   }
 </div>

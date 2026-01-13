@@ -1,3 +1,16 @@
+<!-- Template fragment for icon -->
+<ng-template #icon let-iconHref="href" let-iconClass="class" let-width="width" let-height="height">
+  <svg
+    [class]="iconClass || 'dz-icon'"
+    aria-hidden="true"
+    focusable="false"
+    [attr.width]="width"
+    [attr.height]="height"
+  >
+    <use [attr.href]="iconHref" [attr.width]="width" [attr.height]="height" />
+  </svg>
+</ng-template>
+
 <div class="dz-actions">
   <button
     [title]="uiText.FOCUS.ADD_CURRENT_TAB_TITLE"
@@ -6,13 +19,17 @@
     [class.hidden]="!isHttpUrl(activeTab()?.url) || isCurrentTabUnblockable()"
   >
     @if (isSvgIcon(activeTab()?.favIconUrl)) {
-      <svg class="dz-icon dz-icon--shadow" aria-hidden="true" focusable="false">
-        <use
-          width="20"
-          height="20"
-          [attr.href]="activeTab()?.favIconUrl ? activeTab()?.favIconUrl : icons.SAVE"
-        />
-      </svg>
+      <ng-container
+        *ngTemplateOutlet="
+          icon;
+          context: {
+            href: activeTab()?.favIconUrl ? activeTab()?.favIconUrl : icons.SAVE,
+            class: 'dz-icon dz-icon--shadow',
+            width: 20,
+            height: 20,
+          }
+        "
+      ></ng-container>
     } @else if (isImageIcon(activeTab()?.favIconUrl)) {
       <img
         class="dz-icon dz-icon--shadow"
@@ -22,16 +39,22 @@
         alt="Favicon"
       />
     } @else {
-      <svg class="dz-icon dz-icon--shadow" aria-hidden="true" focusable="false">
-        <use width="20" height="20" [attr.href]="icons.GLOBE" />
-      </svg>
+      <ng-container
+        *ngTemplateOutlet="
+          icon;
+          context: { href: icons.GLOBE, class: 'dz-icon dz-icon--shadow', width: 20, height: 20 }
+        "
+      ></ng-container>
     }
 
     {{ activeTab()?.url | cleanUrl }}
 
-    <svg class="dz-icon dz-icon--shadow" aria-hidden="true" focusable="false">
-      <use width="20" height="20" [attr.href]="icons.PLUS" />
-    </svg>
+    <ng-container
+      *ngTemplateOutlet="
+        icon;
+        context: { href: icons.PLUS, class: 'dz-icon dz-icon--shadow', width: 20, height: 20 }
+      "
+    ></ng-container>
   </button>
 
   <button

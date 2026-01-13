@@ -1,3 +1,10 @@
+<!-- Template fragment for icon -->
+<ng-template #icon let-iconHref="href">
+  <svg class="dz-icon" aria-hidden="true" focusable="false">
+    <use [attr.href]="iconHref" />
+  </svg>
+</ng-template>
+
 @for (pos of positions; track pos) {
   @if (getToastsByPosition(pos).length > 0) {
     <ul [class]="'dz-notification-area dz-notification-area--' + pos">
@@ -13,9 +20,9 @@
           [class.dz-notification--hidden]="toast.leaving"
         >
           <div class="dz-banner__icon">
-            <svg class="dz-icon" aria-hidden="true" focusable="false">
-              <use [attr.href]="getToastIcon(toast.type)" />
-            </svg>
+            <ng-container
+              *ngTemplateOutlet="icon; context: { href: getToastIcon(toast.type) }"
+            ></ng-container>
           </div>
 
           <div class="dz-banner__content">
