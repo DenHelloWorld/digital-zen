@@ -54,15 +54,15 @@ Builds the extension for **both** Chromium-based browsers and Firefox simultaneo
 1. Run tests (`npm run test:ci`)
 2. Inject OAuth Client ID and API Secret Key from `.env`
 3. Build Angular application
-4. Build Chromium version:
-   - Compile background script as ES6 module
-   - Copy to `dist/chromium/`
-5. Build Firefox version:
-   - Bundle background script as IIFE (Immediately Invoked Function Expression)
+4. Bundle background script as IIFE (Immediately Invoked Function Expression) - **same bundled script for all browsers**
+5. Build Chromium version:
+   - Copy bundled files to `dist/chromium/`
+   - Remove `background.type` field from manifest (using bundled IIFE, not ES6 modules)
+6. Build Firefox version:
+   - Copy bundled files to `dist/firefox/`
    - Patch manifest.json:
-     - Remove `background.type` (Firefox requires bundled worker without modules)
+     - Convert `background.service_worker` to `background.scripts` array (Firefox MV3 requirement)
      - Remove Chrome-specific fields (`oauth2`, `key`)
-   - Copy to `dist/firefox/`
    - Run `web-ext build` to create archive in `dist/firefox/web-ext-artifacts/`
 
 **Usage:**
@@ -112,16 +112,17 @@ Main build script that orchestrates the entire build process for both browsers.
 1. Validate OAuth client ID from `.env`
 2. Inject OAuth Client ID into `extension-config.ts`
 3. Inject API Secret Key into `api-config.const.ts` (if provided)
-4. Build Angular app
-5. **For Chromium:**
-   - Compile background script with TypeScript (ES6 module)
-   - Copy to `dist/chromium/`
-6. **For Firefox:**
-   - Bundle background script with esbuild (IIFE format)
-   - Patch manifest: remove `background.type`, `oauth2`, `key` fields
-   - Copy to `dist/firefox/`
+4. Build Angular app once
+5. Bundle background script once with esbuild (IIFE format) - **same script used by all browsers**
+6. **For Chromium:**
+   - Copy Angular app and bundled background script to `dist/chromium/`
+   - Remove `background.type` field from manifest (bundled IIFE doesn't use modules)
+7. **For Firefox:**
+   - Copy Angular app and bundled background script to `dist/firefox/`
+   - Patch manifest: Convert `background.service_worker` to `background.scripts` array (Firefox MV3 requirement)
+   - Remove Chrome-specific fields (`oauth2`, `key`) from manifest
    - Run `web-ext build` to create archive
-7. Restore original source files (cleanup)
+8. Restore original source files (cleanup)
 
 ### 2. `scripts/patch-manifest.js`
 
@@ -145,6 +146,8 @@ Patches API configuration files with production API key (used by `build:prod`).
 - Replaces empty `apiKey` value with actual API secret key from `.env`
 - Works with all build directories (`chromium/`, `firefox/`)
 
+**⚠️ Security Warning:** This script embeds the `API_SECRET_KEY` directly into the extension bundle, making it accessible to anyone who installs the extension. The key can be easily extracted from the built extension files. **Do not rely on this key for server-side security.** For production systems, implement proper server-side authentication using per-user tokens (OAuth/JWT) or other mechanisms where secrets remain exclusively on the server.
+
 **Usage:**
 ```bash
 dotenv -- node scripts/patch-api-config.js
@@ -164,8 +167,8 @@ This script is kept for backward compatibility but the dual-build system (`build
 ```json
 {
   "background": {
-    "service_worker": "background.js",
-    "type": "module"
+    "service_worker": "background.js"
+    // No "type": "module" field - uses bundled IIFE script
   },
   "oauth2": {
     "client_id": "your-client-id.apps.googleusercontent.com",
@@ -176,10 +179,10 @@ This script is kept for backward compatibility but the dual-build system (`build
 ```
 
 **Background Script:**
-- Compiled as ES6 module with TypeScript
-- Uses `import` statements
+- Bundled as single IIFE file (Immediately Invoked Function Expression) with esbuild
+- Same bundled script used by all browsers
+- No `import` statements (all code bundled into one file)
 - Service worker architecture
-- Uses `tsc` + `tsc-alias` for compilation
 
 ### Firefox
 
@@ -187,8 +190,8 @@ This script is kept for backward compatibility but the dual-build system (`build
 ```json
 {
   "background": {
-    "service_worker": "background.js"
-    // No "type": "module" field - Firefox requires bundled worker
+    "scripts": ["background.js"]
+    // Firefox MV3 uses scripts array instead of service_worker
   }
   // No oauth2 or key fields (Chrome-specific)
 }
@@ -196,9 +199,9 @@ This script is kept for backward compatibility but the dual-build system (`build
 
 **Background Script:**
 - Bundled as single IIFE file (Immediately Invoked Function Expression) with esbuild
+- **Same bundled script as Chromium** - only manifest differs
 - No `import` statements (all code bundled into one file)
-- Service worker architecture (Firefox 146+ supports service_worker in Manifest V3)
-- Uses bundled script without ES6 modules
+- Background scripts architecture (using scripts array in manifest)
 
 **Archive:**
 - Automatically created by `web-ext build`
@@ -206,7 +209,11 @@ This script is kept for backward compatibility but the dual-build system (`build
 - Ready for Firefox Add-ons submission
 
 **Important Note:**
-Firefox requires the background script to be bundled without ES6 modules. The build system uses esbuild to create a single IIFE bundle and removes the `"type": "module"` field from manifest.json.
+Both Chromium and Firefox builds use the same bundled IIFE background script. The key difference is in the manifest.json:
+- **Chromium**: Uses `background.service_worker` (without `type: "module"`)
+- **Firefox**: Uses `background.scripts` array (Firefox MV3 requirement)
+
+The build system creates one background bundle and adjusts the manifest for each browser's requirements.
 
 ## Environment Variables
 

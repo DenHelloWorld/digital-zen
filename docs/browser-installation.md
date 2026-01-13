@@ -154,10 +154,10 @@ Digital Zen includes a Firefox-specific build with a bundled background service 
    - Run all tests
    - Build the Angular application
    - Create both Chromium and Firefox builds
-   - For Firefox: Bundle the background script into a single IIFE (Immediately Invoked Function Expression)
-   - Automatically patch the manifest.json for Firefox compatibility
-   - Remove `background.type` field
-   - Remove Chrome-specific fields (`oauth2`, `key`)
+   - Bundle background script as IIFE (same script for all browsers)
+   - For Firefox: Convert `background.service_worker` to `background.scripts` array in manifest
+   - For Firefox: Remove Chrome-specific fields (`oauth2`, `key`) from manifest
+   - For Chromium: Remove `background.type` field from manifest
 
 2. **Load in Firefox:**
    - Navigate to `about:debugging#/runtime/this-firefox`
@@ -301,15 +301,14 @@ npm run build
 ```
 
 This automatically:
-- Bundles the background script into a single IIFE file for Firefox
-- Removes `background.type` field from manifest
-- Removes Chrome-specific fields (`oauth2`, `key`)
+- Bundles the background script into a single IIFE file (used by all browsers)
+- For Firefox: Converts `background.service_worker` to `background.scripts` array in manifest
+- For Firefox: Removes Chrome-specific fields (`oauth2`, `key`) from manifest
 - Creates a fully working Firefox build in `dist/firefox/`
 
 **Technical Details:**
-- Firefox supports `background.service_worker` in Manifest V3 (Firefox 146+)
-- However, Firefox requires the background script to be bundled without ES6 modules
-- The build script handles these differences automatically
+- Both Chromium and Firefox use the same bundled IIFE background script
+- Firefox requires `background.scripts` array in Manifest V3 instead of `background.service_worker`
 
 ### Extension Not Appearing in Toolbar
 

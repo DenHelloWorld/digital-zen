@@ -115,7 +115,7 @@ For **Firefox**: The same command builds Firefox version too:
 npm run build
 ```
 
-This will compile the Angular application and background scripts into both `dist/chromium/` and `dist/firefox/` folders.
+This will compile the Angular application and background script into both `dist/chromium/` and `dist/firefox/` folders.
 Both commands run tests automatically before building.
 
 5. **Load the extension in your browser**
@@ -161,6 +161,8 @@ npm run build:prod
 ```
 
 This builds for both browsers with production patches applied (OAuth credentials and API keys from `.env` file).
+
+**⚠️ Security Warning:** The `API_SECRET_KEY` from `.env` is bundled into the extension and is **not truly secret**. Any user can extract this key from the installed extension. This key should only be used for basic API access control, not as a security mechanism. For production deployments, implement proper server-side authentication using per-user tokens (OAuth/JWT) instead of relying on a shared secret embedded in client code.
 
 ### Output Directories
 
