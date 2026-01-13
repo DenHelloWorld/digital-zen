@@ -32,12 +32,21 @@ export class UserDataSyncAdapter {
   }
 
   /**
-   * Synchronize user data with backend
-   * Fetches user data from API and creates user if doesn't exist
+   * Synchronizes user state with backend API.
+   *
+   * - Fetches user data from backend (by email / userId)
+   * - Creates user on backend if it does not exist
+   * - Reconciles local periods with backend state:
+   *   - Backend periods fully replace local custom periods
+   *   - Default period is always preserved locally
+   *   - If backend has no periods, only the local default period is kept
+   * - Ensures that a local default period exists
+   * - Stores user credentials in chrome local storage
+   *
+   * Default period is local-only and is never persisted to backend.
    *
    * @param userEmail User email
-   * @param userId User ID (sub from Google Auth)
-   * @returns Promise that resolves when sync is complete
+   * @param userId User ID (Google sub)
    */
   static async syncUserData(userEmail: string, userId: string): Promise<void> {
     try {
@@ -99,14 +108,33 @@ export class UserDataSyncAdapter {
 
         UserDataSyncAdapter.logger.info('Periods synced successfully from backend');
       } else {
-        // No periods on backend - add default period for new users
-        UserDataSyncAdapter.logger.info('No periods found on backend, adding default period');
+        UserDataSyncAdapter.logger.info(
+          'No periods found on backend, syncing local state'
+        );
 
-        const defaultPeriod = createDefaultPeriod();
+        const localPeriods = await StorageAdapter.getPeriods();
+        const defaultPeriod = localPeriods.find(
+          p => p.id === DEFAULT_PERIOD_ID
+        );
 
-        await StorageAdapter.savePeriod(defaultPeriod);
-        UserDataSyncAdapter.logger.info('Default period added for new user');
+        if (!defaultPeriod) {
+          UserDataSyncAdapter.logger.info(
+            'Default period not found locally, creating it'
+          );
+
+          const newDefaultPeriod = createDefaultPeriod();
+          await StorageAdapter.replaceAllPeriods([newDefaultPeriod]);
+
+          UserDataSyncAdapter.logger.info('Default period created and set as only period');
+        } else {
+          await StorageAdapter.replaceAllPeriods([defaultPeriod]);
+
+          UserDataSyncAdapter.logger.info(
+            'Backend empty — keeping only local default period'
+          );
+        }
       }
+
     } catch (error) {
       UserDataSyncAdapter.logger.error('Sync failed:', error);
       throw error;
