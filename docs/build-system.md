@@ -35,147 +35,102 @@ dist/
 
 ### Available npm Scripts
 
-| Script | Command | Description |
-|--------|---------|-------------|
-| `npm run build` | Build for Chromium only | Creates `dist/chromium/` |
-| `npm run build:all` | Build for both browsers | Creates both `dist/chromium/` and `dist/firefox/` |
-| `npm run build:chromium` | Build for Chromium only | Same as `npm run build` |
-| `npm run build:firefox` | Build for Firefox only | Creates `dist/firefox/` with archive |
-| `npm run build:prod` | Production build for both | Includes patching and optimization |
+| Script | Description |
+|--------|-------------|
+| `npm run build` | Build for both Chromium and Firefox → Creates `dist/chromium/` + `dist/firefox/` |
+| `npm run build:prod` | Production build for both browsers with environment patching |
 
 ### Script Details
 
-#### `npm run build` / `npm run build:chromium`
+#### `npm run build`
 
-Builds the extension for Chromium-based browsers only.
-
-**Output:** `dist/chromium/`
-
-**Process:**
-1. Run tests (`npm run test:ci`)
-2. Inject OAuth Client ID from `.env`
-3. Build Angular application
-4. Compile background script as ES6 module
-5. Copy to `dist/chromium/`
-
-**Usage:**
-```bash
-npm run build
-```
-
-#### `npm run build:firefox`
-
-Builds the extension for Firefox only, including automatic archive creation.
+Builds the extension for **both** Chromium-based browsers and Firefox simultaneously.
 
 **Output:** 
-- `dist/firefox/` - Unpacked extension
-- `dist/firefox/web-ext-artifacts/*.zip` - Archive for distribution
-
-**Process:**
-1. Run tests (`npm run test:ci`)
-2. Inject OAuth Client ID from `.env`
-3. Build Angular application
-4. Bundle background script as IIFE (Immediately Invoked Function Expression)
-5. Patch manifest.json:
-   - Convert `background.service_worker` → `background.scripts`
-   - Remove Chrome-specific fields (`oauth2`, `key`)
-6. Copy to `dist/firefox/`
-7. Run `web-ext build` to create archive
-
-**Usage:**
-```bash
-npm run build:firefox
-```
-
-#### `npm run build:all`
-
-Builds the extension for both Chromium and Firefox simultaneously.
-
-**Output:**
 - `dist/chromium/` - Chromium build
 - `dist/firefox/` - Firefox build with archive
 
 **Process:**
 1. Run tests (`npm run test:ci`)
 2. Inject OAuth Client ID and API Secret Key from `.env`
-3. Build for Chromium (see above)
-4. Build for Firefox (see above)
+3. Build Angular application
+4. Build Chromium version:
+   - Compile background script as ES6 module
+   - Copy to `dist/chromium/`
+5. Build Firefox version:
+   - Bundle background script as IIFE (Immediately Invoked Function Expression)
+   - Patch manifest.json:
+     - Remove `background.type` (Firefox requires bundled worker without modules)
+     - Remove Chrome-specific fields (`oauth2`, `key`)
+   - Copy to `dist/firefox/`
+   - Run `web-ext build` to create archive in `dist/firefox/web-ext-artifacts/`
 
 **Usage:**
 ```bash
-npm run build:all
+npm run build
 ```
-
-This is the recommended command for creating production-ready builds for all supported browsers.
 
 #### `npm run build:prod`
 
-Production build with additional patching for deployment.
+Production build for both browsers with full environment patching.
 
 **Output:**
-- `dist/chromium/` - Chromium build with production patches
-- `dist/firefox/` - Firefox build with production patches
+- `dist/chromium/` - Production Chromium build
+- `dist/firefox/` - Production Firefox build with archive
 
 **Process:**
-1. Run all build steps from `npm run build:all`
-2. Patch API configuration files with production credentials
-3. Patch manifest files with production OAuth and extension keys
+1. Same as `npm run build`
+2. Additionally runs `patch-manifest.js` for production-specific patches
 
 **Usage:**
 ```bash
 npm run build:prod
 ```
 
-**Requirements:**
-- `.env` file with all production credentials:
-  - `OAUTH_CLIENT_ID`
-  - `PUBLIC_KEY`
-  - `API_SECRET_KEY` (optional)
+**Note:** The build system **always builds for both browsers**. There are no separate scripts for building individual browsers. This ensures consistency and reduces the chance of configuration drift between browser versions.
 
 ## Build Script Architecture
 
-The build system consists of three main scripts:
+The build system consists of several scripts:
 
 ### 1. `scripts/build-dual.js`
 
-Main build script that orchestrates the entire build process.
+Main build script that orchestrates the entire build process for both browsers.
 
 **Features:**
-- Supports `--chromium`, `--firefox`, and `--all` flags
-- Injects environment variables into source files
-- Builds Angular application
-- Compiles/bundles background scripts differently for each browser
+- Always builds for both Chromium and Firefox (hardcoded in script)
+- Injects environment variables into source files before build
+- Builds Angular application once
+- Creates browser-specific background scripts:
+  - **Chromium:** ES6 module compiled with TypeScript
+  - **Firefox:** IIFE bundle created with esbuild
 - Patches manifest.json for Firefox compatibility
 - Copies builds to separate directories
-- Runs `web-ext build` for Firefox
-
-**New build script** (`scripts/build-dual.js`)
-- Supports `--chromium`, `--firefox`, `--all` flags
-- Outputs to separate directories: `dist/chromium/` and `dist/firefox/`
-- **Single bundled IIFE background script for all browsers** - no browser-specific compilation
-- Manifest patching for Firefox (removes `oauth2`, `key`, converts `service_worker` to `scripts`)
+- Runs `web-ext build` for Firefox archive creation
 
 **Build Process:**
-1. Build Angular app once
-2. **Bundle background script ONCE with esbuild (IIFE format)** - used by all browsers
-3. Copy to `dist/chromium/` - remove `type: "module"` from manifest
-4. Copy to `dist/firefox/` - convert `service_worker` to `scripts` array, remove `oauth2` and `key`
-5. Run `web-ext build` for Firefox archive
-
-**Key Features:**
-- **Unified approach:** Both browsers use the same bundled IIFE background script
-- **Simplified maintenance:** No browser-specific background compilation
-- **Faster builds:** Single bundling step instead of separate compilations
-- Automatic manifest conversion for Firefox (service worker → scripts array)
+1. Validate OAuth client ID from `.env`
+2. Inject OAuth Client ID into `extension-config.ts`
+3. Inject API Secret Key into `api-config.const.ts` (if provided)
+4. Build Angular app
+5. **For Chromium:**
+   - Compile background script with TypeScript (ES6 module)
+   - Copy to `dist/chromium/`
+6. **For Firefox:**
+   - Bundle background script with esbuild (IIFE format)
+   - Patch manifest: remove `background.type`, `oauth2`, `key` fields
+   - Copy to `dist/firefox/`
+   - Run `web-ext build` to create archive
+7. Restore original source files (cleanup)
 
 ### 2. `scripts/patch-manifest.js`
 
-Patches manifest.json files with production credentials.
+Patches manifest.json files with production credentials (used by `build:prod`).
 
 **What it does:**
 - Replaces `__OAUTH_CLIENT_ID__` placeholder with actual OAuth client ID
 - Replaces `__PUBLIC_KEY__` placeholder with Chrome extension public key
-- Works with all build directories (`chromium/`, `firefox/`, `browser/`)
+- Works with all build directories (`chromium/`, `firefox/`)
 
 **Usage:**
 ```bash
@@ -184,18 +139,24 @@ dotenv -- node scripts/patch-manifest.js
 
 ### 3. `scripts/patch-api-config.js`
 
-Patches API configuration files with production API key.
+Patches API configuration files with production API key (used by `build:prod`).
 
 **What it does:**
-- Replaces empty `apiKey` value with actual API secret key
-- Works with all build directories (`chromium/`, `firefox/`, `browser/`)
+- Replaces empty `apiKey` value with actual API secret key from `.env`
+- Works with all build directories (`chromium/`, `firefox/`)
 
 **Usage:**
 ```bash
 dotenv -- node scripts/patch-api-config.js
 ```
 
-## Browser-Specific Differences
+### 4. `scripts/build-universal.js`
+
+**⚠️ Legacy script** - Not currently used by npm scripts. Builds to `dist/browser/` directory.
+
+This script is kept for backward compatibility but the dual-build system (`build-dual.js`) is now the standard.
+
+## Browser-Specific Build Differences
 
 ### Chromium Browsers
 
@@ -215,9 +176,10 @@ dotenv -- node scripts/patch-api-config.js
 ```
 
 **Background Script:**
-- Compiled as ES6 module
+- Compiled as ES6 module with TypeScript
 - Uses `import` statements
 - Service worker architecture
+- Uses `tsc` + `tsc-alias` for compilation
 
 ### Firefox
 
@@ -225,18 +187,18 @@ dotenv -- node scripts/patch-api-config.js
 ```json
 {
   "background": {
-    "scripts": ["background.js"]
+    "service_worker": "background.js"
+    // No "type": "module" field - Firefox requires bundled worker
   }
-  // No oauth2 or key fields
-  // No service_worker - Firefox Manifest V3 uses event pages
+  // No oauth2 or key fields (Chrome-specific)
 }
 ```
 
 **Background Script:**
-- Bundled as single IIFE file (Immediately Invoked Function Expression)
-- No `import` statements (all code bundled with esbuild)
-- **Event pages architecture** (Manifest V3 with background.scripts)
-- Firefox Manifest V3 does NOT support `background.service_worker`, uses `background.scripts` array instead
+- Bundled as single IIFE file (Immediately Invoked Function Expression) with esbuild
+- No `import` statements (all code bundled into one file)
+- Service worker architecture (Firefox 146+ supports service_worker in Manifest V3)
+- Uses bundled script without ES6 modules
 
 **Archive:**
 - Automatically created by `web-ext build`
@@ -244,7 +206,7 @@ dotenv -- node scripts/patch-api-config.js
 - Ready for Firefox Add-ons submission
 
 **Important Note:**
-Firefox Manifest V3 uses `background.scripts` array (event pages) instead of `background.service_worker`. The build system automatically converts the service worker configuration to scripts array for Firefox compatibility.
+Firefox requires the background script to be bundled without ES6 modules. The build system uses esbuild to create a single IIFE bundle and removes the `"type": "module"` field from manifest.json.
 
 ## Environment Variables
 
@@ -305,7 +267,7 @@ API_SECRET_KEY=your-secret-key-here
 
 1. Build the extension:
    ```bash
-   npm run build:firefox
+   npm run build
    ```
 
 2. Load in Firefox:
@@ -315,7 +277,7 @@ API_SECRET_KEY=your-secret-key-here
 
 3. Test functionality:
    - Extension popup opens
-   - Background scripts run
+   - Background service worker runs
    - Features work as expected
 
 4. Test archive (optional):

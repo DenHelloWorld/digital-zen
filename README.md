@@ -109,13 +109,13 @@ For **Chrome, Edge, Brave, Opera, Vivaldi**:
 npm run build
 ```
 
-For **Firefox**:
+For **Firefox**: The same command builds Firefox version too:
 
 ```bash
-npm run build:firefox
+npm run build
 ```
 
-This will compile the Angular application and background scripts into the `dist/browser` folder.
+This will compile the Angular application and background scripts into both `dist/chromium/` and `dist/firefox/` folders.
 Both commands run tests automatically before building.
 
 5. **Load the extension in your browser**
@@ -148,26 +148,19 @@ Digital Zen uses a **dual-build system** that creates separate, optimized builds
 
 **Build for all browsers:**
 ```bash
-npm run build:all
+npm run build
 ```
 
 This creates:
 - `dist/chromium/` - For Chrome, Edge, Brave, Opera, Vivaldi
 - `dist/firefox/` - For Firefox (includes .zip archive)
 
-**Build for specific browser:**
-```bash
-npm run build              # Chromium only → dist/chromium/
-npm run build:chromium     # Chromium only → dist/chromium/
-npm run build:firefox      # Firefox only → dist/firefox/
-```
-
 **Production build:**
 ```bash
 npm run build:prod
 ```
 
-This builds for both browsers with production patches applied.
+This builds for both browsers with production patches applied (OAuth credentials and API keys from `.env` file).
 
 ### Output Directories
 
@@ -196,7 +189,7 @@ For detailed installation instructions for each browser, see the **[Browser Inst
 
 **Quick start for Firefox:**
 
-1. Build the extension: `npm run build:firefox`
+1. Build the extension: `npm run build`
 2. Navigate to `about:debugging#/runtime/this-firefox`
 3. Click "Load Temporary Add-on..."
 4. Select `dist/firefox/manifest.json`
@@ -209,13 +202,8 @@ The following npm scripts are available in this project:
 | Script | Description |
 |--------|-------------|
 | `start` | Starts the Angular development server for local development |
-| `build` | Builds for Chromium browsers only → `dist/chromium/` (includes tests) |
-| `build:all` | Builds for both Chromium and Firefox → `dist/chromium/` + `dist/firefox/` (includes tests) |
-| `build:chromium` | Builds for Chromium browsers only → `dist/chromium/` (includes tests) |
-| `build:firefox` | Builds for Firefox only → `dist/firefox/` with archive (includes tests) |
+| `build` | Builds for both Chromium and Firefox → `dist/chromium/` + `dist/firefox/` (includes tests) |
 | `build:prod` | Production build for both browsers with environment patching (includes tests) |
-| `patch-manifest` | Patches manifest.json with OAuth credentials from environment variables |
-| `patch-config` | Patches API configuration with credentials from environment variables |
 | `test` | Runs unit tests with Karma in watch mode |
 | `test:ci` | Runs tests once in headless mode with coverage (for CI/CD) |
 | `test:headless` | Runs tests once in headless mode without coverage |
