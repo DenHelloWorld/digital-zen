@@ -211,9 +211,11 @@ https://abcdefghijklmnopqrstuvwxyzabcdef.chromiumapp.org/oauth2
 
 2. **Create .xpi file:**
    ```bash
-   cd dist/browser
+   cd dist/firefox
    zip -r ../digital-zen-firefox.xpi . -x "*.DS_Store"
    ```
+
+   **Note:** The build process already creates a .xpi file in `dist/firefox/web-ext-artifacts/` automatically.
 
 3. **Install .xpi in Firefox:**
    - Go to `about:debugging#/runtime/this-firefox`

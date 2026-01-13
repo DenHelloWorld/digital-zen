@@ -4,6 +4,8 @@
 
 The Digital Zen extension communicates with a backend API for user data synchronization. This requires proper API key configuration.
 
+**⚠️ Security Warning:** The `API_SECRET_KEY` configured here will be embedded in the built extension and is **not truly secret**. Any user can extract this key from the installed extension files. This key should only be used for basic API access control, not as a primary security mechanism. For production deployments, implement proper server-side authentication using per-user tokens (OAuth/JWT) instead of relying on a shared secret in client code.
+
 ## Configuration Steps
 
 ### 1. Set up Environment Variables
@@ -125,7 +127,10 @@ The backend API validates this header against the configured `API_SECRET_KEY` in
 3. **Check compiled config has the key:**
 
    ```bash
-   grep apiKey dist/browser/modules/common/constants/api-config.const.js
+   # For Chromium build
+   grep apiKey dist/chromium/modules/common/constants/api-config.const.js
+   # For Firefox build
+   grep apiKey dist/firefox/modules/common/constants/api-config.const.js
    ```
 
    Should show: `apiKey: "your_actual_key_here"`
