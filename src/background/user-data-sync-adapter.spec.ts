@@ -781,8 +781,8 @@ describe('UserDataSyncAdapter', () => {
 
       // Mock chrome.storage.local.get to return user credentials using correct enum keys
       const CHROME_STORAGE_KEY_ENUM_VALUES = {
-        userEmail: 'test@example.com',
-        userId: 'user-123',
+        user_email: 'test@example.com',
+        user_id: 'user-123',
       };
 
       mockChromeStorage.local.get.and.callFake(() => {
