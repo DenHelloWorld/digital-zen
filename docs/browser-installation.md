@@ -13,7 +13,7 @@ Digital Zen works on all Chromium-based browsers and Firefox:
 - ✅ **Brave** - **Fully supported**
 - ✅ **Opera** - **Fully supported**
 - ✅ **Vivaldi** - **Fully supported**
-- ✅ **Mozilla Firefox** (WebExtensions API) - **Fully supported** (use `npm run build:firefox`)
+- ✅ **Mozilla Firefox** (WebExtensions API) - **Fully supported**
 - ✅ **Other Chromium-based browsers** - **Fully supported**
 
 ## Prerequisites
@@ -27,7 +27,7 @@ Before installing the extension, ensure you have:
    - **Important:** Never commit `.env` file to git (it's in `.gitignore`)
 
 2. Built the extension using `npm run build` or `npm run build:prod`
-3. The `dist/browser` folder exists in your project directory
+3. The `dist/chromium/` folder (for Chromium browsers) or `dist/firefox/` folder (for Firefox) exists in your project directory
 
 **Example .env file:**
 ```env
@@ -48,7 +48,7 @@ OAUTH_CLIENT_ID=your-client-id.apps.googleusercontent.com
 3. **Load the Extension**
    - Click the **"Load unpacked"** button
    - Navigate to your project directory
-   - Select the `dist/browser` folder
+   - Select the `dist/chromium` folder
    - Click **"Select Folder"** (or "Open" on Mac)
 
 4. **Verify Installation**
@@ -68,7 +68,7 @@ OAUTH_CLIENT_ID=your-client-id.apps.googleusercontent.com
 3. **Load the Extension**
    - Click the **"Load unpacked"** button
    - Navigate to your project directory
-   - Select the `dist/browser` folder
+   - Select the `dist/chromium` folder
    - Click **"Select Folder"** (or "Open" on Mac)
 
 4. **Verify Installation**
@@ -88,7 +88,7 @@ OAUTH_CLIENT_ID=your-client-id.apps.googleusercontent.com
 3. **Load the Extension**
    - Click the **"Load unpacked"** button
    - Navigate to your project directory
-   - Select the `dist/browser` folder
+   - Select the `dist/chromium` folder
    - Click **"Select Folder"** (or "Open" on Mac)
 
 4. **Verify Installation**
@@ -108,7 +108,7 @@ OAUTH_CLIENT_ID=your-client-id.apps.googleusercontent.com
 3. **Load the Extension**
    - Click the **"Load unpacked"** button
    - Navigate to your project directory
-   - Select the `dist/browser` folder
+   - Select the `dist/chromium` folder
    - Click **"Select Folder"** (or "Open" on Mac)
 
 4. **Verify Installation**
@@ -128,7 +128,7 @@ OAUTH_CLIENT_ID=your-client-id.apps.googleusercontent.com
 3. **Load the Extension**
    - Click the **"Load unpacked"** button
    - Navigate to your project directory
-   - Select the `dist/browser` folder
+   - Select the `dist/chromium` folder
    - Click **"Select Folder"** (or "Open" on Mac)
 
 4. **Verify Installation**
@@ -139,25 +139,24 @@ OAUTH_CLIENT_ID=your-client-id.apps.googleusercontent.com
 
 **✅ Firefox Support Now Available!**
 
-Digital Zen includes a Firefox-specific build with Manifest V3 event pages (background.scripts).
+Digital Zen includes a Firefox-specific build with a bundled background service worker.
 
-**Important:** Firefox Manifest V3 does NOT support `background.service_worker`. It uses `background.scripts` array (event pages) instead. The build system automatically converts the manifest for Firefox compatibility.
+**Important:** Firefox requires the background script to be bundled without ES6 modules. The build system automatically creates an appropriate build for Firefox compatibility.
 
-**Two Installation Methods:**
+**Installation Steps:**
 
-#### Method 1: Using Firefox Build Script (Recommended)
-
-1. **Build for Firefox:**
+1. **Build the extension:**
    ```bash
-   npm run build:firefox
+   npm run build
    ```
    
    This will:
    - Run all tests
    - Build the Angular application
-   - Bundle the background script into a single IIFE (Immediately Invoked Function Expression)
+   - Create both Chromium and Firefox builds
+   - For Firefox: Bundle the background script into a single IIFE (Immediately Invoked Function Expression)
    - Automatically patch the manifest.json for Firefox compatibility
-   - Convert `background.service_worker` to `background.scripts` array
+   - Remove `background.type` field
    - Remove Chrome-specific fields (`oauth2`, `key`)
 
 2. **Load in Firefox:**
@@ -176,25 +175,9 @@ Digital Zen includes a Firefox-specific build with Manifest V3 event pages (back
 
 **⚠️ Firefox Limitations:**
 - **Extension Key:** The permanent extension ID feature (via `key` field) is Chrome-specific and removed in Firefox builds.
+- **Temporary Extensions:** Extensions loaded this way are temporary and will be removed when Firefox is restarted
 
 **✅ OAuth Authentication:** Works in Firefox! OAuth client ID is provided via `extension-config.ts` (universal approach for all browsers).
-
-#### Method 2: Manual Build (For Advanced Users)
-
-**Note:** Firefox requires a specific build configuration. Always use the Firefox build script (Method 1) for proper compatibility.
-
-If you still want to build manually:
-
-1. **Build the extension:**
-   ```bash
-   npm run build:firefox
-   ```
-
-2. **Load in Firefox:**
-   - Navigate to `about:debugging#/runtime/this-firefox`
-   - Click **"Load Temporary Add-on..."**
-   - Select the `manifest.json` file from `dist/firefox/`
-   - Click **"Open"**
 
 #### Important Notes for Firefox:
    - **Temporary Extensions:** Extensions loaded this way are temporary and will be removed when Firefox is restarted
@@ -223,11 +206,13 @@ A `.xpi` file is a ZIP archive containing your extension files. Here's how to cr
 
 3. **Navigate to the build directory and create the .xpi**:
    ```bash
-   cd dist/browser
+   cd dist/firefox
    web-ext build
    ```
 
-4. The `.xpi` file will be created in `dist/browser/web-ext-artifacts/`
+4. The `.xpi` file will be created in `dist/firefox/web-ext-artifacts/`
+
+**Note:** The build command `npm run build` automatically runs `web-ext build` for Firefox, so the archive is already created during the build process.
 
 **Method 2: Manual ZIP Creation**
 
@@ -238,7 +223,7 @@ A `.xpi` file is a ZIP archive containing your extension files. Here's how to cr
 
 2. **Navigate to the build directory**:
    ```bash
-   cd dist/browser
+   cd dist/firefox
    ```
 
 3. **Create a .xpi file** (the extension MUST be zipped from within the folder, not the folder itself):
@@ -253,7 +238,7 @@ A `.xpi` file is a ZIP archive containing your extension files. Here's how to cr
    Compress-Archive -Path * -DestinationPath ..\digital-zen.xpi
    ```
    
-   **Note:** The `dist/browser` folder from `npm run build` should already be clean and only contain necessary extension files. The exclusions above are extra precautions.
+   **Note:** The `dist/firefox` folder from `npm run build` should already be clean and only contain necessary extension files. The exclusions above are extra precautions.
 
 4. The `.xpi` file will be in the `dist/` folder
 
@@ -278,7 +263,7 @@ A `.xpi` file is a ZIP archive containing your extension files. Here's how to cr
 | Brave | `brave://extensions/` | Top-right toggle | Load unpacked | - |
 | Opera | `opera://extensions/` | Top-right button | Load unpacked | - |
 | Vivaldi | `vivaldi://extensions/` | Top-right toggle | Load unpacked | - |
-| Firefox | `about:debugging#/runtime/this-firefox` | Not needed | Load Temporary Add-on... | Use `npm run build:firefox` for full support |
+| Firefox | `about:debugging#/runtime/this-firefox` | Not needed | Load Temporary Add-on... | Use `dist/firefox/` folder |
 
 ## Common Issues and Troubleshooting
 
@@ -298,55 +283,33 @@ A `.xpi` file is a ZIP archive containing your extension files. Here's how to cr
 
 **Solution:**
 1. Ensure you've run `npm run build` first
-2. Verify the `dist/browser` folder exists and contains `manifest.json`
+2. Verify the `dist/chromium/` folder (for Chromium browsers) or `dist/firefox/` folder (for Firefox) exists and contains `manifest.json`
 3. Check that `manifest.json` is valid JSON (the build process validates this)
 
-### Firefox: "background.service_worker is currently disabled"
+### Firefox: Background Worker Issues
 
-**Problem:** When loading the extension in Firefox, you get the error: "background.service_worker is currently disabled. Add background.scripts."
+**Problem:** When loading the extension in Firefox, you get errors related to the background worker.
 
-**Root Cause:** Firefox Manifest V3 does NOT support `background.service_worker`. It uses `background.scripts` array (event pages) instead.
+**Root Cause:** Firefox requires the background script to be bundled without ES6 modules.
 
 **Solution:**
 
-✅ **Use the Firefox build script:**
+✅ **Use the standard build command:**
 
 ```bash
-npm run build:firefox
+npm run build
 ```
 
 This automatically:
-- Bundles the background script into a single IIFE file
-- Converts `service_worker` to `scripts` array in manifest
+- Bundles the background script into a single IIFE file for Firefox
+- Removes `background.type` field from manifest
 - Removes Chrome-specific fields (`oauth2`, `key`)
 - Creates a fully working Firefox build in `dist/firefox/`
 
 **Technical Details:**
-- Firefox Manifest V3 uses `background.scripts` (event pages)
-- Chromium uses `background.service_worker` (service workers)
+- Firefox supports `background.service_worker` in Manifest V3 (Firefox 146+)
+- However, Firefox requires the background script to be bundled without ES6 modules
 - The build script handles these differences automatically
-- Both browsers run the same bundled IIFE background code
-
-### Firefox: "Failed to communicate with background service"
-
-**Problem:** Extension loads but background service doesn't work properly.
-
-**Solution:**
-
-✅ **Use the Firefox build script:**
-
-```bash
-npm run build:firefox
-```
-
-This automatically:
-- Bundles the background script into a single IIFE file
-- Configures proper event page architecture for Firefox (`background.scripts`)
-- Creates a fully working Firefox build
-
-The standard Chromium build uses service workers that don't work in Firefox. The Firefox build script solves this by using event pages with bundled code.
-
-**Why this happens:** Firefox and Chrome use different background architectures in Manifest V3. Firefox uses event pages (`background.scripts`), while Chrome uses service workers (`background.service_worker`). The Firefox build creates the correct configuration automatically.
 
 ### Extension Not Appearing in Toolbar
 
