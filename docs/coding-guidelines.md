@@ -100,7 +100,7 @@ import { AlertComponent } from './alert.component';
 - Better tooling support
 - Smaller bundles (no selector matching at runtime)
 
-**Status:** Experimental feature in development, RFC expected in 2025, broader release in Angular v20+.
+**Status (as of Angular v21 / Jan 2026):** Still an experimental / in-development feature and not yet part of the stable Angular v21 API. Follow the Angular roadmap and related RFC discussions for the latest status and eventual stable release version.
 
 **Official References:**
 - [Angular Roadmap](https://angular.dev/roadmap)
