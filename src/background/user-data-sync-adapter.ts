@@ -7,6 +7,7 @@ import { StorageAdapter } from './storage-adapter';
 import { logger } from '../modules/common/helpers/logger';
 import { CHROME_STORAGE_KEY_ENUM } from '../modules/common/enums/chrome-storage-key.enum';
 import { createDefaultPeriod } from '../modules/common/constants/websites.const';
+import { DEFAULT_PERIOD_ID } from '../modules/common/constants/default-period-id.const';
 
 /**
  * User Data Sync Adapter for Background Service
@@ -206,7 +207,7 @@ export class UserDataSyncAdapter {
    *
    * @param userEmail User email
    * @param userId User ID
-   * @param periods Array of periods to save
+   * @param periods Array of periods to save (default period will be filtered out)
    * @returns Promise that resolves when data is saved
    */
   static async saveUserData(
@@ -221,10 +222,13 @@ export class UserDataSyncAdapter {
 
     const url = API_URLS.USER;
 
+    // Filter out default period - it should only exist locally
+    const periodsToSync = periods.filter(p => p.id !== DEFAULT_PERIOD_ID);
+
     const requestBody: IUserDataSync.SaveRequest = {
       user_email: userEmail,
       user_id: userId,
-      periods: periods,
+      periods: periodsToSync,
     };
 
     const response = await fetch(url, {
@@ -246,7 +250,7 @@ export class UserDataSyncAdapter {
 
   /**
    * Sync all periods to backend
-   * Retrieves user credentials from storage and syncs all periods
+   * Retrieves user credentials from storage and syncs all periods (excluding default period)
    *
    * @returns Promise that resolves when sync is complete
    */
@@ -270,9 +274,12 @@ export class UserDataSyncAdapter {
       // Get all periods from local storage
       const periods = await StorageAdapter.getPeriods();
 
+      // Filter out default period before syncing to backend
+      const periodsToSync = periods.filter(p => p.id !== DEFAULT_PERIOD_ID);
+
       // Save to backend
-      UserDataSyncAdapter.logger.info('Syncing periods to backend:', periods.length);
-      await this.saveUserData(userEmail, userId, periods);
+      UserDataSyncAdapter.logger.info('Syncing periods to backend:', periodsToSync.length);
+      await this.saveUserData(userEmail, userId, periodsToSync);
     } catch (error) {
       UserDataSyncAdapter.logger.error('Failed to sync periods to backend:', error);
       // Don't throw - this is a background operation and shouldn't block the main flow
