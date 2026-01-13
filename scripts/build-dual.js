@@ -27,8 +27,8 @@ const { execSync } = require('child_process');
 // Parse command line arguments
 // By default, ALWAYS build both browsers
 const args = process.argv.slice(2);
-const BUILD_CHROMIUM = true;  // Always build Chromium
-const BUILD_FIREFOX = true;   // Always build Firefox
+const BUILD_CHROMIUM = true; // Always build Chromium
+const BUILD_FIREFOX = true; // Always build Firefox
 
 const extensionConfigPath = path.join(__dirname, '..', 'src', 'extension-config.ts');
 const apiConfigPath = path.join(
@@ -92,7 +92,11 @@ function copyDir(src, dest) {
 /**
  * Build for a specific browser target
  */
-function buildForBrowser(browserType, angularAlreadyBuilt = false, backgroundAlreadyBundled = false) {
+function buildForBrowser(
+  browserType,
+  angularAlreadyBuilt = false,
+  backgroundAlreadyBundled = false
+) {
   const isFirefox = browserType === 'firefox';
   const targetDir = path.join(__dirname, '..', 'dist', browserType);
   const tempBuildDir = path.join(__dirname, '..', 'dist', 'browser');
@@ -128,7 +132,7 @@ function buildForBrowser(browserType, angularAlreadyBuilt = false, backgroundAlr
   // Step 3: Copy to target directory
   console.log('');
   console.log(`📁 Copying build to dist/${browserType}/...`);
-  
+
   // Remove old target directory if exists
   if (fs.existsSync(targetDir)) {
     fs.rmSync(targetDir, { recursive: true, force: true });
@@ -155,11 +159,11 @@ function buildForBrowser(browserType, angularAlreadyBuilt = false, backgroundAlr
     if (manifest.background?.service_worker) {
       const workerFile = manifest.background.service_worker;
       manifest.background = {
-        scripts: [workerFile]
+        scripts: [workerFile],
       };
       console.log('✅ Converted service_worker to scripts array (Firefox MV3)');
     }
-    
+
     if (manifest.oauth2) {
       delete manifest.oauth2;
       console.log('✅ Removed oauth2 field (Chrome-specific)');
@@ -212,7 +216,9 @@ function buildForBrowser(browserType, angularAlreadyBuilt = false, backgroundAlr
     console.log(`      → Use dist/${browserType}/web-ext-artifacts/*.zip`);
   } else {
     console.log('🌐 Chromium browsers installation:');
-    console.log('   → Navigate to chrome://extensions/ (or edge://extensions/, brave://extensions/, etc.)');
+    console.log(
+      '   → Navigate to chrome://extensions/ (or edge://extensions/, brave://extensions/, etc.)'
+    );
     console.log('   → Enable "Developer mode"');
     console.log('   → Click "Load unpacked"');
     console.log(`   → Select dist/${browserType}/ folder`);
@@ -227,7 +233,7 @@ try {
   console.log('🏗️  Digital Zen Extension - Dual Build System');
   console.log('━'.repeat(60));
   console.log('');
-  
+
   if (BUILD_CHROMIUM && BUILD_FIREFOX) {
     console.log('📦 Building for: Chromium + Firefox');
   } else if (BUILD_CHROMIUM) {
@@ -291,7 +297,7 @@ try {
   console.log('');
   console.log('📦 Building Angular app...');
   execSync('ng build', { stdio: 'inherit', cwd: path.join(__dirname, '..') });
-  
+
   console.log('');
   console.log('📦 Bundling background script (IIFE format for all browsers)...');
   execSync(
@@ -302,7 +308,7 @@ try {
   // Step 5: Build for each target browser
   let angularBuilt = true;
   let backgroundBundled = true;
-  
+
   if (BUILD_CHROMIUM) {
     buildForBrowser('chromium', angularBuilt, backgroundBundled);
   }
@@ -326,7 +332,6 @@ try {
     console.log('   ✅ dist/firefox/web-ext-artifacts/*.zip - Firefox (archive)');
   }
   console.log('');
-
 } catch (error) {
   console.error('');
   console.error('❌ Build failed:', error.message);

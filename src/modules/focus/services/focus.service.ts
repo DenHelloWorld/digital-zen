@@ -160,10 +160,10 @@ export class FocusService {
               credentials[CHROME_STORAGE_KEY_ENUM.USER_ID]
             );
 
-            // If user is NOT logged in and has no periods, add default period with unique ID
+            // If user is NOT logged in and has no periods, add default period
             // If user IS logged in, periods will be synced from backend (or default added there if none exist)
             if (!isLoggedIn && periods.length === 0) {
-              this.#periods.set([createDefaultPeriod()]);
+              this.addPeriod(createDefaultPeriod());
             } else {
               this.#periods.set(periods);
             }

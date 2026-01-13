@@ -108,19 +108,13 @@ export class UserDataSyncAdapter {
 
         UserDataSyncAdapter.logger.info('Periods synced successfully from backend');
       } else {
-        UserDataSyncAdapter.logger.info(
-          'No periods found on backend, syncing local state'
-        );
+        UserDataSyncAdapter.logger.info('No periods found on backend, syncing local state');
 
         const localPeriods = await StorageAdapter.getPeriods();
-        const defaultPeriod = localPeriods.find(
-          p => p.id === DEFAULT_PERIOD_ID
-        );
+        const defaultPeriod = localPeriods.find(p => p.id === DEFAULT_PERIOD_ID);
 
         if (!defaultPeriod) {
-          UserDataSyncAdapter.logger.info(
-            'Default period not found locally, creating it'
-          );
+          UserDataSyncAdapter.logger.info('Default period not found locally, creating it');
 
           const newDefaultPeriod = createDefaultPeriod();
           await StorageAdapter.replaceAllPeriods([newDefaultPeriod]);
@@ -129,12 +123,9 @@ export class UserDataSyncAdapter {
         } else {
           await StorageAdapter.replaceAllPeriods([defaultPeriod]);
 
-          UserDataSyncAdapter.logger.info(
-            'Backend empty — keeping only local default period'
-          );
+          UserDataSyncAdapter.logger.info('Backend empty — keeping only local default period');
         }
       }
-
     } catch (error) {
       UserDataSyncAdapter.logger.error('Sync failed:', error);
       throw error;
