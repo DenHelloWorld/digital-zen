@@ -77,15 +77,25 @@ export class UserDataSyncAdapter {
         UserDataSyncAdapter.logger.info('User found, syncing periods');
       }
 
-      // Sync periods from backend - replace local periods entirely with backend data
+      // Sync periods from backend - replace local periods with backend data
+      // but preserve the default period (it's local-only)
       if (userData.periods && userData.periods.length > 0) {
         UserDataSyncAdapter.logger.info(
           'Syncing periods from backend, count:',
           userData.periods.length
         );
 
-        // Atomically replace all local periods with backend data
-        await StorageAdapter.replaceAllPeriods(userData.periods);
+        // Get current local periods to check if default period exists
+        const localPeriods = await StorageAdapter.getPeriods();
+        const defaultPeriod = localPeriods.find(p => p.id === DEFAULT_PERIOD_ID);
+
+        // Combine backend periods with local default period if it exists
+        const periodsToStore = defaultPeriod
+          ? [defaultPeriod, ...userData.periods]
+          : userData.periods;
+
+        // Atomically replace all local periods with combined data
+        await StorageAdapter.replaceAllPeriods(periodsToStore);
 
         UserDataSyncAdapter.logger.info('Periods synced successfully from backend');
       } else {

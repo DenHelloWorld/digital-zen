@@ -184,10 +184,73 @@ describe('UserDataSyncAdapter', () => {
           } as Response)
         );
 
+        // Mock getPeriods to return no local periods (no default period exists yet)
+        (StorageAdapter.getPeriods as jasmine.Spy).and.returnValue(Promise.resolve([]));
+
         await UserDataSyncAdapter.syncUserData('test@example.com', 'user-123');
 
         expect(StorageAdapter.replaceAllPeriods).toHaveBeenCalledTimes(1);
         expect(StorageAdapter.replaceAllPeriods).toHaveBeenCalledWith(mockPeriods);
+      });
+
+      it('should preserve default period when syncing from backend', async () => {
+        const defaultPeriod: IFocus.Period = {
+          id: DEFAULT_PERIOD_ID,
+          name: 'Default Period',
+          description: 'Default period',
+          startFrom: new Date('2024-01-01T09:00:00.000Z'),
+          endTo: new Date('2024-01-01T17:00:00.000Z'),
+          isFocused: false,
+          focusedTimes: [],
+          daysOfWeek: [1, 2, 3, 4, 5],
+          sessionStartTime: null,
+          webSites: [],
+        };
+
+        const backendPeriods: IFocus.Period[] = [
+          {
+            id: 'period-1',
+            name: 'Work Period',
+            description: 'Work hours',
+            startFrom: new Date('2024-01-01T09:00:00.000Z'),
+            endTo: new Date('2024-01-01T17:00:00.000Z'),
+            isFocused: false,
+            focusedTimes: [],
+            daysOfWeek: [1, 2, 3, 4, 5],
+            sessionStartTime: null,
+            webSites: [],
+          },
+        ];
+
+        const mockResponse: IUserDataSync.Response = {
+          user: {
+            id: 1,
+            email: 'test@example.com',
+            user_id: 'user-123',
+          },
+          periods: backendPeriods,
+        };
+
+        fetchSpy.and.returnValue(
+          Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve({ data: mockResponse }),
+          } as Response)
+        );
+
+        // Mock getPeriods to return default period that exists locally
+        (StorageAdapter.getPeriods as jasmine.Spy).and.returnValue(
+          Promise.resolve([defaultPeriod])
+        );
+
+        await UserDataSyncAdapter.syncUserData('test@example.com', 'user-123');
+
+        expect(StorageAdapter.replaceAllPeriods).toHaveBeenCalledTimes(1);
+        // Should preserve default period and add backend periods
+        expect(StorageAdapter.replaceAllPeriods).toHaveBeenCalledWith([
+          defaultPeriod,
+          ...backendPeriods,
+        ]);
       });
 
       it('should not sync periods when none exist', async () => {
