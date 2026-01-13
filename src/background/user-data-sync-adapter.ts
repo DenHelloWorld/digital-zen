@@ -7,6 +7,7 @@ import { StorageAdapter } from './storage-adapter';
 import { logger } from '../modules/common/helpers/logger';
 import { CHROME_STORAGE_KEY_ENUM } from '../modules/common/enums/chrome-storage-key.enum';
 import { createDefaultPeriod } from '../modules/common/constants/websites.const';
+import { DEFAULT_PERIOD_ID } from '../modules/common/constants/default-period-id.const';
 
 /**
  * User Data Sync Adapter for Background Service
@@ -31,12 +32,21 @@ export class UserDataSyncAdapter {
   }
 
   /**
-   * Synchronize user data with backend
-   * Fetches user data from API and creates user if doesn't exist
+   * Synchronizes user state with backend API.
+   *
+   * - Fetches user data from backend (by email / userId)
+   * - Creates user on backend if it does not exist
+   * - Reconciles local periods with backend state:
+   *   - Backend periods fully replace local custom periods
+   *   - Default period is always preserved locally
+   *   - If backend has no periods, only the local default period is kept
+   * - Ensures that a local default period exists
+   * - Stores user credentials in chrome local storage
+   *
+   * Default period is local-only and is never persisted to backend.
    *
    * @param userEmail User email
-   * @param userId User ID (sub from Google Auth)
-   * @returns Promise that resolves when sync is complete
+   * @param userId User ID (Google sub)
    */
   static async syncUserData(userEmail: string, userId: string): Promise<void> {
     try {
@@ -76,26 +86,55 @@ export class UserDataSyncAdapter {
         UserDataSyncAdapter.logger.info('User found, syncing periods');
       }
 
-      // Sync periods from backend - replace local periods entirely with backend data
+      // Sync periods from backend - replace local periods with backend data
+      // but preserve the default period (it's local-only)
       if (userData.periods && userData.periods.length > 0) {
         UserDataSyncAdapter.logger.info(
           'Syncing periods from backend, count:',
           userData.periods.length
         );
 
-        // Atomically replace all local periods with backend data
-        await StorageAdapter.replaceAllPeriods(userData.periods);
+        // Get current local periods to check if default period exists
+        const localPeriods = await StorageAdapter.getPeriods();
+        const defaultPeriod = localPeriods.find(p => p.id === DEFAULT_PERIOD_ID);
+
+        // Combine backend periods with local default period if it exists
+        const periodsToStore = defaultPeriod
+          ? [defaultPeriod, ...userData.periods]
+          : userData.periods;
+
+        // Atomically replace all local periods with combined data
+        await StorageAdapter.replaceAllPeriods(periodsToStore);
 
         UserDataSyncAdapter.logger.info('Periods synced successfully from backend');
       } else {
-        // No periods on backend - add default period for new users
-        UserDataSyncAdapter.logger.info('No periods found on backend, adding default period');
+        UserDataSyncAdapter.logger.info(
+          'No periods found on backend, syncing local state'
+        );
 
-        const defaultPeriod = createDefaultPeriod();
+        const localPeriods = await StorageAdapter.getPeriods();
+        const defaultPeriod = localPeriods.find(
+          p => p.id === DEFAULT_PERIOD_ID
+        );
 
-        await StorageAdapter.savePeriod(defaultPeriod);
-        UserDataSyncAdapter.logger.info('Default period added for new user');
+        if (!defaultPeriod) {
+          UserDataSyncAdapter.logger.info(
+            'Default period not found locally, creating it'
+          );
+
+          const newDefaultPeriod = createDefaultPeriod();
+          await StorageAdapter.replaceAllPeriods([newDefaultPeriod]);
+
+          UserDataSyncAdapter.logger.info('Default period created and set as only period');
+        } else {
+          await StorageAdapter.replaceAllPeriods([defaultPeriod]);
+
+          UserDataSyncAdapter.logger.info(
+            'Backend empty — keeping only local default period'
+          );
+        }
       }
+
     } catch (error) {
       UserDataSyncAdapter.logger.error('Sync failed:', error);
       throw error;
@@ -206,7 +245,7 @@ export class UserDataSyncAdapter {
    *
    * @param userEmail User email
    * @param userId User ID
-   * @param periods Array of periods to save
+   * @param periods Array of periods to save (default period will be filtered out)
    * @returns Promise that resolves when data is saved
    */
   static async saveUserData(
@@ -221,10 +260,13 @@ export class UserDataSyncAdapter {
 
     const url = API_URLS.USER;
 
+    // Filter out default period - it should only exist locally
+    const periodsToSync = periods.filter(p => p.id !== DEFAULT_PERIOD_ID);
+
     const requestBody: IUserDataSync.SaveRequest = {
       user_email: userEmail,
       user_id: userId,
-      periods: periods,
+      periods: periodsToSync,
     };
 
     const response = await fetch(url, {
@@ -246,7 +288,7 @@ export class UserDataSyncAdapter {
 
   /**
    * Sync all periods to backend
-   * Retrieves user credentials from storage and syncs all periods
+   * Retrieves user credentials from storage and syncs all periods (excluding default period)
    *
    * @returns Promise that resolves when sync is complete
    */
@@ -270,9 +312,12 @@ export class UserDataSyncAdapter {
       // Get all periods from local storage
       const periods = await StorageAdapter.getPeriods();
 
+      // Filter out default period before syncing to backend
+      const periodsToSync = periods.filter(p => p.id !== DEFAULT_PERIOD_ID);
+
       // Save to backend
-      UserDataSyncAdapter.logger.info('Syncing periods to backend:', periods.length);
-      await this.saveUserData(userEmail, userId, periods);
+      UserDataSyncAdapter.logger.info('Syncing periods to backend:', periodsToSync.length);
+      await this.saveUserData(userEmail, userId, periodsToSync);
     } catch (error) {
       UserDataSyncAdapter.logger.error('Failed to sync periods to backend:', error);
       // Don't throw - this is a background operation and shouldn't block the main flow
