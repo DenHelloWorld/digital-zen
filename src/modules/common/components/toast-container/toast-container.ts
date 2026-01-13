@@ -1,3 +1,4 @@
+import { CommonModule } from '@angular/common';
 import { DzToastService } from './toast.service';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { TOAST_TYPE_ENUM, POSITIONS_ENUM } from '../../enums';
@@ -23,6 +24,10 @@ import { UI_TEXT, ICONS } from '../../constants';
   styleUrls: ['./toast-container.scss'],
   templateUrl: './toast-container.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [
+    // angular modules
+    CommonModule,
+  ],
 })
 export class DzToastContainerComponent {
   /** @guideline DZ_02 - Dependency injection with inject() */

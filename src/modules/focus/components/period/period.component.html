@@ -1,3 +1,17 @@
+<!-- Template fragment for icon -->
+<ng-template #icon let-iconHref="href" let-iconClass="class">
+  <svg [class]="iconClass || 'dz-icon'" aria-hidden="true" focusable="false">
+    <use [attr.href]="iconHref"></use>
+  </svg>
+</ng-template>
+
+<!-- Template fragment for banner icon -->
+<ng-template #bannerIcon let-iconHref="href">
+  <div class="dz-banner__icon">
+    <ng-container *ngTemplateOutlet="icon; context: { href: iconHref }"></ng-container>
+  </div>
+</ng-template>
+
 @let p = period();
 
 @if (isEditing()) {
@@ -26,20 +40,19 @@
           [title]="'Period when focus is activatable'"
           class="dz-box dz-box--line-container shadow shadow--hoverless"
         >
-          <svg class="dz-icon dz-icon--line-container" aria-hidden="true" focusable="false">
-            <use [attr.href]="icons.CHRONIC"></use>
-          </svg>
+          <ng-container
+            *ngTemplateOutlet="
+              icon;
+              context: { href: icons.CHRONIC, class: 'dz-icon dz-icon--line-container' }
+            "
+          ></ng-container>
 
           <dz-time-line [startFrom]="p.startFrom" [endTo]="p.endTo" />
         </div>
       }
 
       <div class="dz-banner dz-banner--info">
-        <div class="dz-banner__icon">
-          <svg class="dz-icon" aria-hidden="true" focusable="false">
-            <use [attr.href]="icons.INFO"></use>
-          </svg>
-        </div>
+        <ng-container *ngTemplateOutlet="bannerIcon; context: { href: icons.INFO }"></ng-container>
         <div class="dz-banner__content">
           <div class="dz-banner__message">
             {{ p.description }}
@@ -89,9 +102,9 @@
               [attr.aria-label]="uiText.PERIOD.ARIA_LABELS.CONFIRM_DELETE"
               (click)="onConfirmDelete()"
             >
-              <svg class="dz-icon" aria-hidden="true" focusable="false">
-                <use [attr.href]="icons.DELETE"></use>
-              </svg>
+              <ng-container
+                *ngTemplateOutlet="icon; context: { href: icons.DELETE }"
+              ></ng-container>
             </button>
             <button
               type="button"
@@ -100,9 +113,7 @@
               [attr.aria-label]="uiText.PERIOD.ARIA_LABELS.CANCEL_DELETE"
               (click)="onCancelDelete()"
             >
-              <svg class="dz-icon" aria-hidden="true" focusable="false">
-                <use [attr.href]="icons.CLOSE"></use>
-              </svg>
+              <ng-container *ngTemplateOutlet="icon; context: { href: icons.CLOSE }"></ng-container>
             </button>
           </div>
         } @else {
@@ -113,9 +124,7 @@
             [attr.aria-label]="uiText.PERIOD.ARIA_LABELS.EDIT_PERIOD"
             (click)="onEdit()"
           >
-            <svg class="dz-icon" aria-hidden="true" focusable="false">
-              <use [attr.href]="icons.EDIT"></use>
-            </svg>
+            <ng-container *ngTemplateOutlet="icon; context: { href: icons.EDIT }"></ng-container>
           </button>
 
           @if (totalPeriodsCount() > 1 && !isCurrent()) {
@@ -126,9 +135,9 @@
               [attr.aria-label]="uiText.PERIOD.ARIA_LABELS.DELETE_PERIOD"
               (click)="onDelete()"
             >
-              <svg class="dz-icon" aria-hidden="true" focusable="false">
-                <use [attr.href]="icons.DELETE"></use>
-              </svg>
+              <ng-container
+                *ngTemplateOutlet="icon; context: { href: icons.DELETE }"
+              ></ng-container>
             </button>
           }
 
@@ -145,9 +154,9 @@
               [disabled]="isFocusActive()"
               (click)="onActivate()"
             >
-              <svg class="dz-icon" aria-hidden="true" focusable="false">
-                <use [attr.href]="icons.POWER_SWITCHER"></use>
-              </svg>
+              <ng-container
+                *ngTemplateOutlet="icon; context: { href: icons.POWER_SWITCHER }"
+              ></ng-container>
             </button>
           }
         }

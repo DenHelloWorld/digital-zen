@@ -1,3 +1,4 @@
+import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, signal, WritableSignal } from '@angular/core';
 import { PeriodFormComponent } from './components/period-form';
 import { ICONS, UI_TEXT } from '../common';
@@ -18,6 +19,8 @@ import { ICONS, UI_TEXT } from '../common';
   templateUrl: './menu.component.html',
   styleUrls: ['./menu.component.scss'],
   imports: [
+    // angular modules
+    CommonModule,
     // components
     PeriodFormComponent,
   ],

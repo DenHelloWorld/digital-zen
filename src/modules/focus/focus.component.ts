@@ -1,3 +1,4 @@
+import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, Signal } from '@angular/core';
 import { FocusService } from './services';
 import {
@@ -34,6 +35,8 @@ import { PeriodComponent } from './components/period/period.component';
   templateUrl: './focus.component.html',
   styleUrls: ['./focus.component.scss'],
   imports: [
+    // angular modules
+    CommonModule,
     // pipes
     CleanUrlPipe,
     // components

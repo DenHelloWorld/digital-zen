@@ -1,3 +1,4 @@
+import { CommonModule } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -38,6 +39,8 @@ import { FocusService } from '../../services';
   styleUrls: ['./period.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
+    // angular modules
+    CommonModule,
     // components
     TimeLineComponent,
     WeekdaysSelectorComponent,

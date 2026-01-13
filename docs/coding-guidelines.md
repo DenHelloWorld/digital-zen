@@ -4,8 +4,8 @@ This document describes all coding patterns, conventions, and best practices use
 
 **Primary Source:** We follow official Angular documentation for standard patterns. Custom guidelines (DZ_10-DZ_12, DZ_18-DZ_20) are project-specific conventions.
 
-**Version:** 1.0.4  
-**Last Updated:** January 9, 2026
+**Version:** 1.1.0  
+**Last Updated:** January 13, 2026
 
 ---
 
@@ -23,6 +23,9 @@ This document describes all coding patterns, conventions, and best practices use
 
 ## Table of Contents
 
+0. [⚠️ Important: Angular Future Changes and Project Strategy](#️-important-angular-future-changes-and-project-strategy)
+   - [Angular Component Structure Changes (2025+)](#angular-component-structure-changes-2025)
+   - [Project Strategy: Template Fragments Over Components](#project-strategy-template-fragments-over-components)
 1. [Angular Patterns](#angular-patterns)
    - [DZ_01: Standalone Components](#dz_01-standalone-components)
    - [DZ_02: Dependency Injection with inject()](#dz_02-dependency-injection-with-inject)
@@ -60,6 +63,87 @@ This document describes all coding patterns, conventions, and best practices use
     - [DZ_19: Import Organization with Barrel Exports](#dz_19-import-organization-with-barrel-exports)
 14. [UI Components](#ui-components)
     - [DZ_20: Banner Styles for Messages](#dz_20-banner-styles-for-messages)
+    - [DZ_21: Template Fragments for Code Reuse](#dz_21-template-fragments-for-code-reuse)
+
+---
+
+## ⚠️ Important: Angular Future Changes and Project Strategy
+
+### Angular Component Structure Changes (2025+)
+
+The Angular team has announced significant changes to component structure planned for 2025 and beyond:
+
+#### Selectorless Components (Expected in Angular v20+)
+
+The Angular team is developing **"selectorless components"** - a major change that will allow developers to use component class names directly in templates instead of selector strings.
+
+**Current approach:**
+```typescript
+@Component({
+  selector: 'app-alert',
+  template: '<p>Alert!</p>',
+})
+```
+Template: `<app-alert />`
+
+**Future selectorless approach:**
+```typescript
+import { AlertComponent } from './alert.component';
+@Component({
+  template: '<AlertComponent />'
+})
+```
+
+**Benefits:**
+- Reduces boilerplate (no need to maintain selectors)
+- Improves build performance (single-file compilation)
+- Better tooling support
+- Smaller bundles (no selector matching at runtime)
+
+**Status (as of Angular v21 / Jan 2026):** Still an experimental / in-development feature and not yet part of the stable Angular v21 API. Follow the Angular roadmap and related RFC discussions for the latest status and eventual stable release version.
+
+**Official References:**
+- [Angular Roadmap](https://angular.dev/roadmap)
+- [Selectorless Components Explanation (GitHub Gist)](https://gist.github.com/mgechev/1cba27ab086c567e0a29615430c99479)
+- [Angular 2025 Vision](https://ipnet-ee.com/news/angular-team-reveals-2025-vision-focused-usability-innovation/)
+
+### Project Strategy: Template Fragments Over Components
+
+**Decision:** For code reuse in templates, we prefer using **ng-template fragments** over creating separate components.
+
+**Rationale:**
+1. **Future-proofing:** Avoids creating components that may need restructuring when selectorless components become standard
+2. **Simplicity:** Template fragments are lightweight and avoid component overhead for simple reuse
+3. **Flexibility:** Easier to refactor when Angular's component model stabilizes
+4. **Performance:** No additional change detection overhead for simple template reuse
+
+**When to use Template Fragments:**
+- ✅ Repeated SVG icon patterns
+- ✅ Repeated UI elements within same component (buttons, banners, etc.)
+- ✅ Simple template snippets that don't require complex logic
+- ✅ Code that appears multiple times in a single template
+
+**When to use Components:**
+- ✅ Complex reusable UI with its own state and logic
+- ✅ Features that need to be shared across multiple parent components
+- ✅ Elements that require lifecycle hooks
+- ✅ Code that benefits from OnPush change detection isolation
+
+**Example of Template Fragment (DZ_21):**
+
+```html
+<!-- Template fragment for icon -->
+<ng-template #icon let-iconHref="href">
+  <svg class="dz-icon" aria-hidden="true" focusable="false">
+    <use [attr.href]="iconHref"></use>
+  </svg>
+</ng-template>
+
+<!-- Usage -->
+<ng-container *ngTemplateOutlet="icon; context: { href: icons.DELETE }"></ng-container>
+```
+
+**Note:** This strategy may be revised once Angular v20+ selectorless components are stable and their final implementation is clear.
 
 ---
 
@@ -1585,6 +1669,117 @@ export class ToastComponent {
 
 ---
 
+### DZ_21: Template Fragments for Code Reuse
+
+**Guideline:** Use `ng-template` fragments for repeating template patterns within a single component instead of creating separate components.
+
+**Rationale:** 
+- Reduces boilerplate for simple template reuse
+- Avoids creating components that may need refactoring when Angular's selectorless components become standard
+- Lightweight solution for template-only patterns
+- No additional change detection overhead
+
+**Official Documentation:** [Angular ng-template](https://angular.dev/api/core/ng-template)
+
+**Implementation:**
+
+**Basic Template Fragment:**
+
+```html
+<!-- Define reusable template fragment -->
+<ng-template #icon let-iconHref="href">
+  <svg class="dz-icon" aria-hidden="true" focusable="false">
+    <use [attr.href]="iconHref"></use>
+  </svg>
+</ng-template>
+
+<!-- Use the fragment -->
+<ng-container *ngTemplateOutlet="icon; context: { href: icons.DELETE }"></ng-container>
+```
+
+**Template Fragment with Multiple Parameters:**
+
+```html
+<!-- Define fragment with class and size parameters -->
+<ng-template #icon let-iconHref="href" let-iconClass="class" let-width="width" let-height="height">
+  <svg
+    [class]="iconClass || 'dz-icon'"
+    aria-hidden="true"
+    focusable="false"
+    [attr.width]="width"
+    [attr.height]="height"
+  >
+    <use [attr.href]="iconHref" [attr.width]="width" [attr.height]="height" />
+  </svg>
+</ng-template>
+
+<!-- Use with custom parameters -->
+<ng-container
+  *ngTemplateOutlet="
+    icon;
+    context: { href: icons.PLUS, class: 'dz-icon dz-icon--shadow', width: 20, height: 20 }
+  "
+></ng-container>
+```
+
+**Nested Template Fragments:**
+
+```html
+<!-- Base icon fragment -->
+<ng-template #icon let-iconHref="href">
+  <svg class="dz-icon" aria-hidden="true" focusable="false">
+    <use [attr.href]="iconHref"></use>
+  </svg>
+</ng-template>
+
+<!-- Banner icon fragment using base icon -->
+<ng-template #bannerIcon let-iconHref="href">
+  <div class="dz-banner__icon">
+    <ng-container *ngTemplateOutlet="icon; context: { href: iconHref }"></ng-container>
+  </div>
+</ng-template>
+
+<!-- Use nested fragment -->
+<div class="dz-banner dz-banner--error">
+  <ng-container *ngTemplateOutlet="bannerIcon; context: { href: icons.ERROR }"></ng-container>
+  <div class="dz-banner__content">
+    <div class="dz-banner__message">{{ errorMessage }}</div>
+  </div>
+</div>
+```
+
+**Key Points:**
+
+- ✅ Use for repeated SVG icons, buttons, banners within same component
+- ✅ Define template parameters with `let-paramName="paramName"`
+- ✅ Pass context using `context: { paramName: value }`
+- ✅ Use `*ngTemplateOutlet` to render the fragment **(this is the only allowed legacy structural directive; Angular 17–21 does not yet provide a modern `@`-syntax alternative for template rendering, so DZ_06 still applies to all other control flow)**
+- ✅ Import `CommonModule` to use `*ngTemplateOutlet` when rendering template fragments
+- ✅ Name fragments descriptively (e.g., `#icon`, `#bannerIcon`, `#errorBanner`)
+- ❌ Don't overuse for complex logic (create component instead)
+- ❌ Don't use across multiple components (create shared component instead)
+
+**When NOT to use Template Fragments:**
+
+Create a component instead when:
+- Template has complex logic or state management
+- Code needs to be shared across multiple parent components
+- Lifecycle hooks are required
+- Independent change detection is beneficial
+
+**Examples in Codebase:**
+
+- `src/modules/focus/components/period/period.component.html` - Icon fragment
+- `src/modules/menu/components/period-form/period-form.component.html` - Error banner fragment
+- `src/modules/common/components/dynamic-input/dynamic-input.component.html` - Icon fragment
+- `src/modules/common/components/toast-container/toast-container.html` - Icon fragment
+
+**See Also:**
+- [Angular Future Changes and Project Strategy](#️-important-angular-future-changes-and-project-strategy) - Context for this pattern
+- [DZ_01: Standalone Components](#dz_01-standalone-components) - When to use components instead
+
+---
+
 ## Summary
 
 This document covers all major coding patterns used in Digital Zen:
@@ -1594,7 +1789,7 @@ This document covers all major coding patterns used in Digital Zen:
 - Follow official Angular documentation as primary source
 - See links to official docs at the top of this document
 
-**Project-Specific Conventions (DZ_10-DZ_12, DZ_18-DZ_20):**
+**Project-Specific Conventions (DZ_10-DZ_12, DZ_18-DZ_21):**
 
 - UI Text Management (DZ_10) - Digital Zen specific
 - Universal Logger (DZ_11) - Digital Zen specific
@@ -1602,13 +1797,15 @@ This document covers all major coding patterns used in Digital Zen:
 - Organized Imports (DZ_18) - Digital Zen specific
 - Import Organization with Barrel Exports (DZ_19) - Digital Zen specific
 - Banner Styles for Messages (DZ_20) - Digital Zen specific
+- Template Fragments for Code Reuse (DZ_21) - Digital Zen specific
 
 ### When writing code:
 
 1. **Reference official Angular docs** for standard patterns (Components, Signals, Forms, etc.)
-2. **Follow project-specific guidelines** (DZ_10-DZ_12, DZ_18-DZ_20) for UI text, logging, styling, and imports
-3. **Add JSDoc comments** with guideline references (e.g., `@guideline DZ_01, DZ_04`)
-4. **Keep documentation synchronized** with actual code implementation
+2. **Follow project-specific guidelines** (DZ_10-DZ_12, DZ_18-DZ_21) for UI text, logging, styling, imports, and template reuse
+3. **Use template fragments** (DZ_21) for simple code reuse within components
+4. **Add JSDoc comments** with guideline references (e.g., `@guideline DZ_01, DZ_04`)
+5. **Keep documentation synchronized** with actual code implementation
 
 ### Quick Reference for JSDoc
 
@@ -1629,6 +1826,6 @@ This document covers all major coding patterns used in Digital Zen:
 
 ---
 
-**Last Updated:** January 8, 2026  
+**Last Updated:** January 13, 2026  
 **Maintained by:** Digital Zen Development Team  
 **Primary Source:** [Angular Official Documentation](https://angular.dev/)

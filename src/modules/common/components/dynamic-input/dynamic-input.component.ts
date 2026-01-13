@@ -1,3 +1,4 @@
+import { CommonModule } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -31,7 +32,10 @@ import { ICONS, UI_TEXT } from '../../constants';
   selector: 'dz-dynamic-input',
   templateUrl: 'dynamic-input.component.html',
   styleUrls: ['dynamic-input.component.scss'],
-  imports: [],
+  imports: [
+    // angular modules
+    CommonModule,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DynamicInputComponent<T> implements OnInit {

@@ -1,11 +1,16 @@
+<!-- Template fragment for icon -->
+<ng-template #icon let-iconHref="href">
+  <svg class="dz-icon" aria-hidden="true" focusable="false">
+    <use [attr.href]="iconHref"></use>
+  </svg>
+</ng-template>
+
 <!-- Error banner template -->
 <ng-template #errorBanner let-message="message">
   <div class="dz-form__error">
     <div class="dz-banner dz-banner--error dz-banner--sm">
       <div class="dz-banner__icon">
-        <svg class="dz-icon" aria-hidden="true" focusable="false">
-          <use [attr.href]="icons.ERROR"></use>
-        </svg>
+        <ng-container *ngTemplateOutlet="icon; context: { href: icons.ERROR }"></ng-container>
       </div>
       <div class="dz-banner__content">
         <div class="dz-banner__message">{{ message }}</div>
