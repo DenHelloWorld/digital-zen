@@ -125,7 +125,10 @@ The backend API validates this header against the configured `API_SECRET_KEY` in
 3. **Check compiled config has the key:**
 
    ```bash
-   grep apiKey dist/browser/modules/common/constants/api-config.const.js
+   # For Chromium build
+   grep apiKey dist/chromium/modules/common/constants/api-config.const.js
+   # For Firefox build
+   grep apiKey dist/firefox/modules/common/constants/api-config.const.js
    ```
 
    Should show: `apiKey: "your_actual_key_here"`

@@ -98,9 +98,9 @@ This is a condensed, actionable checklist derived from the full readiness report
 #### Final Build
 
 - [ ] Run `npm run build:prod`
-- [ ] Verify dist/browser folder contents
+- [ ] Verify dist/chromium folder contents
 - [ ] Test built extension in Chrome
-- [ ] Create zip file of dist/browser folder
+- [ ] Create zip file of dist/chromium folder for Chrome Web Store
 
 #### Upload & Submit
 
