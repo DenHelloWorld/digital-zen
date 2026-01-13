@@ -798,28 +798,24 @@ describe('UserDataSyncAdapter', () => {
 
       await UserDataSyncAdapter.syncPeriodsToBackend();
 
-      // Verify fetch was called
-      if (fetchSpy.calls.count() > 0) {
-        const fetchOptions = fetchSpy.calls.mostRecent().args[1];
+      // Verify fetch was called (user credentials are mocked, so a backend sync is expected)
+      expect(fetchSpy.calls.count()).toBeGreaterThan(0);
 
-        if (fetchOptions && fetchOptions.body) {
-          const requestBody = JSON.parse(fetchOptions.body);
+      const fetchOptions = fetchSpy.calls.mostRecent().args[1];
+      expect(fetchOptions).toBeDefined();
+      expect(fetchOptions.body).toBeDefined();
 
-          // Should only sync 1 period (default period filtered out)
-          expect(requestBody.periods.length).toBe(1);
-          expect(requestBody.periods[0].id).toBe('period-1');
+      const requestBody = JSON.parse(fetchOptions.body);
 
-          // Verify default period is NOT in the request
-          const hasDefaultPeriod = requestBody.periods.some(
-            (p: IFocus.Period) => p.id === DEFAULT_PERIOD_ID
-          );
-          expect(hasDefaultPeriod).toBe(false);
-        }
-      } else {
-        // If no fetch was called, it means user is not logged in, which is okay for this implementation
-        // The test should still pass
-        expect(true).toBe(true);
-      }
+      // Should only sync 1 period (default period filtered out)
+      expect(requestBody.periods.length).toBe(1);
+      expect(requestBody.periods[0].id).toBe('period-1');
+
+      // Verify default period is NOT in the request
+      const hasDefaultPeriod = requestBody.periods.some(
+        (p: IFocus.Period) => p.id === DEFAULT_PERIOD_ID
+      );
+      expect(hasDefaultPeriod).toBe(false);
     });
   });
 });
