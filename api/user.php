@@ -22,11 +22,11 @@ $requestMethod = $_SERVER['REQUEST_METHOD'];
 if ($requestMethod === 'GET') {
     // Get user data
     handleGetUserData($database);
-    
+
 } else if ($requestMethod === 'POST') {
     // Save user data
     handleSaveUserData($database);
-    
+
 } else {
     // Method not allowed
     sendErrorResponse('Method not allowed', 405);
@@ -34,7 +34,7 @@ if ($requestMethod === 'GET') {
 
 /**
  * Handle GET request - retrieve user data
- * 
+ *
  * @param PDO $database Database connection
  * @return void
  */
@@ -44,20 +44,20 @@ function handleGetUserData($database) {
     if (isset($_GET['user_email'])) {
         $userEmail = $_GET['user_email'];
     }
-    
+
     $userId = '';
     if (isset($_GET['user_id'])) {
         $userId = $_GET['user_id'];
     }
-    
+
     // Check that at least one parameter is provided
     if (empty($userEmail) && empty($userId)) {
         sendErrorResponse('user_email or user_id is required');
     }
-    
+
     // Find user in database
     $user = findUser($database, $userEmail, $userId);
-    
+
     if (!$user) {
         // User not found, return empty data
         sendSuccessResponse([
@@ -66,10 +66,10 @@ function handleGetUserData($database) {
         ]);
         return;
     }
-    
+
     // Get all periods for this user
     $periods = getUserPeriods($database, $user['id']);
-    
+
     // Send response with user data
     sendSuccessResponse([
         'user' => [
@@ -83,45 +83,43 @@ function handleGetUserData($database) {
 
 /**
  * Handle POST request - save user data
- * 
+ *
  * @param PDO $database Database connection
  * @return void
  */
 function handleSaveUserData($database) {
     // Get data from request body
     $requestData = getRequestBody();
-    
+
     // Check required fields
     if (!isset($requestData['user_email'])) {
         sendErrorResponse('user_email is required');
     }
-    
+
     if (!isset($requestData['user_id'])) {
         sendErrorResponse('user_id is required');
     }
-    
+
     $userEmail = $requestData['user_email'];
     $userId = $requestData['user_id'];
-    
+
     // Find or create user
     $user = findUser($database, $userEmail, $userId);
-    
+
     if (!$user) {
         // Create new user
         $user = createUser($database, $userEmail, $userId);
     }
-    
+
     // Get periods from request (if provided)
     $periods = [];
     if (isset($requestData['periods']) && is_array($requestData['periods'])) {
         $periods = $requestData['periods'];
     }
-    
+
     // Save periods for this user
-    if (!empty($periods)) {
-        saveUserPeriods($database, $user['id'], $periods);
-    }
-    
+    saveUserPeriods($database, $user['id'], $periods);
+
     // Send success response
     sendSuccessResponse([
         'message' => 'Data saved successfully',
@@ -131,7 +129,7 @@ function handleSaveUserData($database) {
 
 /**
  * Create new user
- * 
+ *
  * @param PDO $database Database connection
  * @param string $email User email
  * @param string $userId User external ID
@@ -140,20 +138,20 @@ function handleSaveUserData($database) {
 function createUser($database, $email, $userId) {
     // Prepare SQL query
     $query = "INSERT INTO users (user_email, user_external_id) VALUES (:email, :user_id)";
-    
+
     // Prepare statement
     $statement = $database->prepare($query);
-    
+
     // Bind parameters
     $statement->bindParam(':email', $email);
     $statement->bindParam(':user_id', $userId);
-    
+
     // Execute query
     $statement->execute();
-    
+
     // Get inserted user ID
     $insertedId = $database->lastInsertId();
-    
+
     // Return user data
     return [
         'id' => $insertedId,
@@ -164,7 +162,7 @@ function createUser($database, $email, $userId) {
 
 /**
  * Get all periods for user
- * 
+ *
  * @param PDO $database Database connection
  * @param int $userId User ID
  * @return array Array of periods with their websites and focused times
@@ -176,26 +174,26 @@ function getUserPeriods($database, $userId) {
     $statement->bindParam(':user_id', $userId);
     $statement->execute();
     $periods = $statement->fetchAll();
-    
+
     // For each period, get websites and focused times
     $result = [];
     foreach ($periods as $period) {
         $periodId = $period['id'];
-        
+
         // Get websites for this period
         $websitesQuery = "SELECT * FROM websites WHERE period_id = :period_id";
         $websitesStatement = $database->prepare($websitesQuery);
         $websitesStatement->bindParam(':period_id', $periodId);
         $websitesStatement->execute();
         $websites = $websitesStatement->fetchAll();
-        
+
         // Get focused times for this period
         $timesQuery = "SELECT * FROM focused_times WHERE period_id = :period_id";
         $timesStatement = $database->prepare($timesQuery);
         $timesStatement->bindParam(':period_id', $periodId);
         $timesStatement->execute();
         $focusedTimes = $timesStatement->fetchAll();
-        
+
         // Format period data
         $periodData = [
             'id' => $period['id'],
@@ -209,7 +207,7 @@ function getUserPeriods($database, $userId) {
             'webSites' => [],
             'focusedTimes' => []
         ];
-        
+
         // Format websites
         foreach ($websites as $website) {
             $periodData['webSites'][] = [
@@ -223,7 +221,7 @@ function getUserPeriods($database, $userId) {
                 'isBlocked' => (bool)$website['is_blocked']
             ];
         }
-        
+
         // Format focused times
         foreach ($focusedTimes as $time) {
             $periodData['focusedTimes'][] = [
@@ -233,17 +231,17 @@ function getUserPeriods($database, $userId) {
                 'endTo' => $time['end_to']
             ];
         }
-        
+
         $result[] = $periodData;
     }
-    
+
     return $result;
 }
 
 /**
  * Save periods for user
  * This function uses database transaction to ensure data consistency
- * 
+ *
  * @param PDO $database Database connection
  * @param int $userId User ID
  * @param array $periods Array of periods to save
@@ -253,27 +251,27 @@ function saveUserPeriods($database, $userId, $periods) {
     // Start database transaction for data consistency
     // If any operation fails, all changes will be rolled back
     $database->beginTransaction();
-    
+
     try {
         // Delete all existing periods for this user first
         $deleteQuery = "DELETE FROM periods WHERE user_id = :user_id";
         $deleteStatement = $database->prepare($deleteQuery);
         $deleteStatement->bindParam(':user_id', $userId);
         $deleteStatement->execute();
-        
+
         // Insert each period
         foreach ($periods as $period) {
             // Insert period
             $periodQuery = "INSERT INTO periods (
-                id, user_id, period_name, period_description, 
+                id, user_id, period_name, period_description,
                 start_from, end_to, days_of_week, is_focused, session_start_time
             ) VALUES (
-                :id, :user_id, :name, :description, 
+                :id, :user_id, :name, :description,
                 :start_from, :end_to, :days_of_week, :is_focused, :session_start_time
             )";
-            
+
             $periodStatement = $database->prepare($periodQuery);
-            
+
             $periodId = $period['id'];
             $periodName = $period['name'];
             $periodDescription = $period['description'] ?? '';
@@ -282,7 +280,7 @@ function saveUserPeriods($database, $userId, $periods) {
             $daysOfWeek = json_encode($period['daysOfWeek'] ?? []);
             $isFocused = isset($period['isFocused']) ? (int)$period['isFocused'] : 0;
             $sessionStartTime = $period['sessionStartTime'] ?? null;
-            
+
             $periodStatement->bindParam(':id', $periodId);
             $periodStatement->bindParam(':user_id', $userId);
             $periodStatement->bindParam(':name', $periodName);
@@ -292,9 +290,9 @@ function saveUserPeriods($database, $userId, $periods) {
             $periodStatement->bindParam(':days_of_week', $daysOfWeek);
             $periodStatement->bindParam(':is_focused', $isFocused);
             $periodStatement->bindParam(':session_start_time', $sessionStartTime);
-            
+
             $periodStatement->execute();
-            
+
             // Insert websites for this period
             if (isset($period['webSites']) && is_array($period['webSites'])) {
                 foreach ($period['webSites'] as $website) {
@@ -305,9 +303,9 @@ function saveUserPeriods($database, $userId, $periods) {
                         :id, :period_id, :name, :description,
                         :url, :image_url, :icon_url, :type, :is_blocked
                     )";
-                    
+
                     $websiteStatement = $database->prepare($websiteQuery);
-                    
+
                     $websiteId = $website['id'];
                     $websiteName = $website['name'];
                     $websiteDescription = $website['description'] ?? '';
@@ -316,7 +314,7 @@ function saveUserPeriods($database, $userId, $periods) {
                     $iconUrl = $website['iconUrl'] ?? '';
                     $websiteType = $website['type'] ?? 'Default';
                     $isBlocked = isset($website['isBlocked']) ? (int)$website['isBlocked'] : 0;
-                    
+
                     $websiteStatement->bindParam(':id', $websiteId);
                     $websiteStatement->bindParam(':period_id', $periodId);
                     $websiteStatement->bindParam(':name', $websiteName);
@@ -326,11 +324,11 @@ function saveUserPeriods($database, $userId, $periods) {
                     $websiteStatement->bindParam(':icon_url', $iconUrl);
                     $websiteStatement->bindParam(':type', $websiteType);
                     $websiteStatement->bindParam(':is_blocked', $isBlocked);
-                    
+
                     $websiteStatement->execute();
                 }
             }
-            
+
             // Insert focused times for this period
             if (isset($period['focusedTimes']) && is_array($period['focusedTimes'])) {
                 foreach ($period['focusedTimes'] as $time) {
@@ -339,30 +337,30 @@ function saveUserPeriods($database, $userId, $periods) {
                     ) VALUES (
                         :id, :period_id, :start_from, :end_to
                     )";
-                    
+
                     $timeStatement = $database->prepare($timeQuery);
-                    
+
                     $timeId = $time['id'];
                     $timeStartFrom = $time['startFrom'] ?? null;
                     $timeEndTo = $time['endTo'] ?? null;
-                    
+
                     $timeStatement->bindParam(':id', $timeId);
                     $timeStatement->bindParam(':period_id', $periodId);
                     $timeStatement->bindParam(':start_from', $timeStartFrom);
                     $timeStatement->bindParam(':end_to', $timeEndTo);
-                    
+
                     $timeStatement->execute();
                 }
             }
         }
-        
+
         // All operations successful - commit transaction
         $database->commit();
-        
+
     } catch (Exception $error) {
         // Something went wrong - rollback all changes
         $database->rollBack();
-        
+
         // Re-throw the error to be handled by caller
         throw $error;
     }
