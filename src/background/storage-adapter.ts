@@ -1,6 +1,7 @@
 import { IFocus } from '../modules/common/models/focus.model';
 import { CHROME_STORAGE_KEY_ENUM } from '../modules/common/enums/chrome-storage-key.enum';
 import { logger } from '../modules/common/helpers/logger';
+import { toWallTimeISO, fromWallTimeISO } from '../modules/common/helpers/time.helper';
 
 /**
  * The type of data that is actually stored in storage (ISO strings instead of Date)
@@ -109,53 +110,29 @@ export class StorageAdapter {
   }
 
   private static toStorageFormat(period: IFocus.Period): StoredPeriod {
-    const toISOStringSafe = (d: Date | string | null) => {
-      if (!d) return null;
-      if (d instanceof Date) {
-        // Check if the Date is valid before converting to ISO string
-        if (isNaN(d.getTime())) {
-          StorageAdapter.logger.warn('Invalid Date detected in period, skipping:', d);
-          return null;
-        }
-        return d.toISOString();
-      }
-      return String(d);
-    };
-
     return {
       ...period,
-      startFrom: toISOStringSafe(period.startFrom),
-      endTo: toISOStringSafe(period.endTo),
-      sessionStartTime: toISOStringSafe(period.sessionStartTime),
+      startFrom: toWallTimeISO(period.startFrom),
+      endTo: toWallTimeISO(period.endTo),
+      sessionStartTime: toWallTimeISO(period.sessionStartTime),
       focusedTimes: (period.focusedTimes || []).map(ft => ({
         ...ft,
-        startFrom: toISOStringSafe(ft.startFrom),
-        endTo: toISOStringSafe(ft.endTo),
+        startFrom: toWallTimeISO(ft.startFrom),
+        endTo: toWallTimeISO(ft.endTo),
       })),
     };
   }
 
   private static fromStorageFormat(stored: StoredPeriod): IFocus.Period {
-    const toDateSafe = (s: string | null): Date | null => {
-      if (!s) return null;
-      const date = new Date(s);
-      // Return null if the date is invalid
-      if (isNaN(date.getTime())) {
-        StorageAdapter.logger.warn('Invalid date string detected in storage, skipping:', s);
-        return null;
-      }
-      return date;
-    };
-
     return {
       ...stored,
-      startFrom: toDateSafe(stored.startFrom),
-      endTo: toDateSafe(stored.endTo),
-      sessionStartTime: toDateSafe(stored.sessionStartTime),
+      startFrom: fromWallTimeISO(stored.startFrom),
+      endTo: fromWallTimeISO(stored.endTo),
+      sessionStartTime: fromWallTimeISO(stored.sessionStartTime),
       focusedTimes: (stored.focusedTimes || []).map(ft => ({
         ...ft,
-        startFrom: toDateSafe(ft.startFrom),
-        endTo: toDateSafe(ft.endTo),
+        startFrom: fromWallTimeISO(ft.startFrom),
+        endTo: fromWallTimeISO(ft.endTo),
       })),
     };
   }

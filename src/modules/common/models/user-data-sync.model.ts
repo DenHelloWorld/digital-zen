@@ -24,6 +24,6 @@ export namespace IUserDataSync {
   export interface SaveRequest {
     user_email: string;
     user_id: string;
-    periods: IFocus.Period[];
+    periods: IFocus.Api.Upsert.Period[];
   }
 }

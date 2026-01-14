@@ -147,15 +147,18 @@ Digital Zen uses a **dual-build system** that creates separate, optimized builds
 ### Quick Start
 
 **Build for all browsers:**
+
 ```bash
 npm run build
 ```
 
 This creates:
+
 - `dist/chromium/` - For Chrome, Edge, Brave, Opera, Vivaldi
 - `dist/firefox/` - For Firefox (includes .zip archive)
 
 **Production build:**
+
 ```bash
 npm run build:prod
 ```
@@ -166,11 +169,11 @@ This builds for both browsers with production patches applied (OAuth credentials
 
 ### Output Directories
 
-| Directory | Browser | Description |
-|-----------|---------|-------------|
-| `dist/chromium/` | Chrome, Edge, Brave, Opera, Vivaldi | Chromium build with service worker |
-| `dist/firefox/` | Firefox | Firefox build with bundled background script |
-| `dist/firefox/web-ext-artifacts/*.zip` | Firefox | Firefox archive ready for distribution |
+| Directory                              | Browser                             | Description                                  |
+| -------------------------------------- | ----------------------------------- | -------------------------------------------- |
+| `dist/chromium/`                       | Chrome, Edge, Brave, Opera, Vivaldi | Chromium build with service worker           |
+| `dist/firefox/`                        | Firefox                             | Firefox build with bundled background script |
+| `dist/firefox/web-ext-artifacts/*.zip` | Firefox                             | Firefox archive ready for distribution       |
 
 ### Testing the Build Locally
 
@@ -201,19 +204,19 @@ For detailed installation instructions for each browser, see the **[Browser Inst
 
 The following npm scripts are available in this project:
 
-| Script | Description |
-|--------|-------------|
-| `start` | Starts the Angular development server for local development |
-| `build` | Builds for both Chromium and Firefox → `dist/chromium/` + `dist/firefox/` (includes tests) |
-| `build:prod` | Production build for both browsers with environment patching (includes tests) |
-| `test` | Runs unit tests with Karma in watch mode |
-| `test:ci` | Runs tests once in headless mode with coverage (for CI/CD) |
-| `test:headless` | Runs tests once in headless mode without coverage |
-| `lint` | Runs ESLint to check code quality and style issues |
-| `lint:fix` | Runs ESLint and automatically fixes fixable issues |
-| `format` | Formats all code files using Prettier |
-| `format:check` | Checks if all files are formatted according to Prettier rules |
-| `ng` | Access to Angular CLI commands |
+| Script          | Description                                                                                |
+| --------------- | ------------------------------------------------------------------------------------------ |
+| `start`         | Starts the Angular development server for local development                                |
+| `build`         | Builds for both Chromium and Firefox → `dist/chromium/` + `dist/firefox/` (includes tests) |
+| `build:prod`    | Production build for both browsers with environment patching (includes tests)              |
+| `test`          | Runs unit tests with Karma in watch mode                                                   |
+| `test:ci`       | Runs tests once in headless mode with coverage (for CI/CD)                                 |
+| `test:headless` | Runs tests once in headless mode without coverage                                          |
+| `lint`          | Runs ESLint to check code quality and style issues                                         |
+| `lint:fix`      | Runs ESLint and automatically fixes fixable issues                                         |
+| `format`        | Formats all code files using Prettier                                                      |
+| `format:check`  | Checks if all files are formatted according to Prettier rules                              |
+| `ng`            | Access to Angular CLI commands                                                             |
 
 📖 **[Complete Build Documentation](./docs/build-system.md)** - For detailed build system architecture and troubleshooting.
 

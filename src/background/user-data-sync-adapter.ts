@@ -8,6 +8,7 @@ import { logger } from '../modules/common/helpers/logger';
 import { CHROME_STORAGE_KEY_ENUM } from '../modules/common/enums/chrome-storage-key.enum';
 import { createDefaultPeriod } from '../modules/common/constants/websites.const';
 import { DEFAULT_PERIOD_ID } from '../modules/common/constants/default-period-id.const';
+import { fromWallTimeISO, toWallTimeISO } from '../modules/common/helpers/time.helper';
 
 /**
  * User Data Sync Adapter for Background Service
@@ -89,9 +90,21 @@ export class UserDataSyncAdapter {
       // Sync periods from backend - replace local periods with backend data
       // but preserve the default period (it's local-only)
       if (userData.periods && userData.periods.length > 0) {
+        const sanitizedBackendPeriods = userData.periods.map(p => ({
+          ...p,
+          startFrom: fromWallTimeISO(p.startFrom),
+          endTo: fromWallTimeISO(p.endTo),
+          sessionStartTime: fromWallTimeISO(p.sessionStartTime),
+          focusedTimes: p.focusedTimes?.map(ft => ({
+            ...ft,
+            startFrom: fromWallTimeISO(ft.startFrom),
+            endTo: fromWallTimeISO(ft.endTo),
+          })),
+        })) as IFocus.Period[];
+
         UserDataSyncAdapter.logger.info(
           'Syncing periods from backend, count:',
-          userData.periods.length
+          sanitizedBackendPeriods.length
         );
 
         // Get current local periods to check if default period exists
@@ -100,27 +113,21 @@ export class UserDataSyncAdapter {
 
         // Combine backend periods with local default period if it exists
         const periodsToStore = defaultPeriod
-          ? [defaultPeriod, ...userData.periods]
-          : userData.periods;
+          ? [defaultPeriod, ...sanitizedBackendPeriods]
+          : sanitizedBackendPeriods;
 
         // Atomically replace all local periods with combined data
         await StorageAdapter.replaceAllPeriods(periodsToStore);
 
         UserDataSyncAdapter.logger.info('Periods synced successfully from backend');
       } else {
-        UserDataSyncAdapter.logger.info(
-          'No periods found on backend, syncing local state'
-        );
+        UserDataSyncAdapter.logger.info('No periods found on backend, syncing local state');
 
         const localPeriods = await StorageAdapter.getPeriods();
-        const defaultPeriod = localPeriods.find(
-          p => p.id === DEFAULT_PERIOD_ID
-        );
+        const defaultPeriod = localPeriods.find(p => p.id === DEFAULT_PERIOD_ID);
 
         if (!defaultPeriod) {
-          UserDataSyncAdapter.logger.info(
-            'Default period not found locally, creating it'
-          );
+          UserDataSyncAdapter.logger.info('Default period not found locally, creating it');
 
           const newDefaultPeriod = createDefaultPeriod();
           await StorageAdapter.replaceAllPeriods([newDefaultPeriod]);
@@ -129,12 +136,9 @@ export class UserDataSyncAdapter {
         } else {
           await StorageAdapter.replaceAllPeriods([defaultPeriod]);
 
-          UserDataSyncAdapter.logger.info(
-            'Backend empty — keeping only local default period'
-          );
+          UserDataSyncAdapter.logger.info('Backend empty — keeping only local default period');
         }
       }
-
     } catch (error) {
       UserDataSyncAdapter.logger.error('Sync failed:', error);
       throw error;
@@ -261,7 +265,19 @@ export class UserDataSyncAdapter {
     const url = API_URLS.USER;
 
     // Filter out default period - it should only exist locally
-    const periodsToSync = periods.filter(p => p.id !== DEFAULT_PERIOD_ID);
+    const periodsToSync = periods
+      .filter(p => p.id !== DEFAULT_PERIOD_ID)
+      .map(p => ({
+        ...p,
+        startFrom: toWallTimeISO(p.startFrom),
+        endTo: toWallTimeISO(p.endTo),
+        sessionStartTime: toWallTimeISO(p.sessionStartTime),
+        focusedTimes: p.focusedTimes?.map(ft => ({
+          ...ft,
+          startFrom: toWallTimeISO(ft.startFrom),
+          endTo: toWallTimeISO(ft.endTo),
+        })),
+      })) as unknown as IFocus.Api.Upsert.Period[];
 
     const requestBody: IUserDataSync.SaveRequest = {
       user_email: userEmail,

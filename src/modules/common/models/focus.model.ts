@@ -1,6 +1,30 @@
 import { DayOfWeekShortNameType, DayOfWeekType } from '../enums';
 
 export namespace IFocus {
+  export namespace Api {
+    export namespace Upsert {
+      export interface FocusedTime {
+        id: string;
+        periodId: string;
+        startFrom: string | null;
+        endTo: string | null;
+      }
+
+      export interface Period {
+        id: string;
+        name: string;
+        description: string;
+        startFrom: string | null;
+        endTo: string | null;
+        webSites: string[];
+        daysOfWeek: DayOfWeekType[];
+        focusedTimes: IFocus.Api.Upsert.FocusedTime[];
+        isFocused: boolean;
+        sessionStartTime: string | null;
+      }
+    }
+  }
+
   export interface Period {
     id: string;
     name: string;
