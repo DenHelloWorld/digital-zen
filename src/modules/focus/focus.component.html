@@ -61,16 +61,7 @@
     class="dz-button dz-button--xl dz-button--round shadow"
     [class.dz-button--activated]="currentPeriod()?.isFocused"
   >
-    <svg
-      class="dz-icon"
-      [class.pulse]="currentPeriod()?.isFocused"
-      aria-hidden="true"
-      focusable="false"
-    >
-      <use [attr.href]="icons.PERSON_ZEN"></use>
-    </svg>
-
-    <span class="focus-timer">{{ focusElapsedTimeFormatted() }}</span>
+    <span class="focus-timer">🚀 {{ focusElapsedTimeFormatted() }}</span>
   </button>
 </div>
 
