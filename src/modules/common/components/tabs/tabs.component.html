@@ -1,0 +1,15 @@
+<div class="tab-buttons dz-list dz-list--horizontal">
+  @for (tab of tabs; track $index) {
+    <button
+      class="dz-button shadow dz-button--xs"
+      [class.dz-button--activated]="tab.position() === 'active'"
+      (click)="selectTab(tab)"
+    >
+      {{ tab.title() }}
+    </button>
+  }
+</div>
+
+<div class="tabs-container">
+  <ng-content></ng-content>
+</div>

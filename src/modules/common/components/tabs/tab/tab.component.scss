@@ -1,0 +1,22 @@
+:host {
+  .tab {
+    position: absolute;
+    top: 0;
+    transition: transform 0.5s ease;
+  }
+
+  .tab.to-left {
+    transform: translateX(-100%);
+    overflow: hidden;
+  }
+
+  .tab.to-right {
+    transform: translateX(100%);
+    overflow: hidden;
+  }
+
+  .tab.active {
+    position: static;
+    transform: translateX(0);
+  }
+}

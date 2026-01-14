@@ -1,0 +1,8 @@
+<div
+  class="tab dz-box"
+  [class.to-left]="position() === 'left'"
+  [class.to-right]="position() === 'right'"
+  [class.active]="position() === 'active'"
+>
+  <ng-content />
+</div>
