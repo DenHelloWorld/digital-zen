@@ -106,3 +106,64 @@ export const isCurrentTimeInRange = (
   // Check if current time is within the range [start, end)
   return currentTimeMs >= startTimeMs && currentTimeMs < endTimeMs;
 };
+
+/**
+ * Converts a Date object to a "Wall Time" ISO string (ignoring timezones).
+ * This ensures that if you set 10:00 AM, it remains 10:00 AM regardless of UTC offsets.
+ * The result is a string like "2024-05-20T10:00:00.000" (without the 'Z' suffix).
+ *
+ * @param date - The date object to convert
+ * @returns ISO string without timezone indicator, or null if input is invalid
+ *
+ * @example
+ * ```typescript
+ * const date = new Date('2024-01-14T10:00:00+03:00'); // 10:00 AM local
+ * toWallTimeISO(date); // "2024-01-14T10:00:00.000"
+ * ```
+ */
+export const toWallTimeISO = (date: Date | string | null): string | null => {
+  if (!date) {
+    return null;
+  }
+
+  const d = date instanceof Date ? date : new Date(date);
+
+  if (isNaN(d.getTime())) {
+    return null;
+  }
+
+  // Shift the date by the timezone offset so toISOString() outputs local time as if it were UTC
+  const tzOffsetMs = d.getTimezoneOffset() * 60000;
+  const localTime = new Date(d.getTime() - tzOffsetMs);
+
+  // Remove the 'Z' at the end to mark it as a naive/local date string
+  return localTime.toISOString().slice(0, -1);
+};
+
+/**
+ * Converts a "Wall Time" ISO string back into a Date object.
+ * This ensures the application works with Date objects while preserving the "Wall Time" digits.
+ *
+ * @param dateStr - The ISO string from storage (e.g., "2024-05-20T10:00:00.000")
+ * @returns Date object in local time, or null if input is invalid
+ */
+export const fromWallTimeISO = (dateStr: string | Date | null): Date | null => {
+  if (!dateStr) {
+    return null;
+  }
+
+  // If it's already a Date, just return it (or check for validity)
+  if (dateStr instanceof Date) {
+    return isNaN(dateStr.getTime()) ? null : dateStr;
+  }
+
+  // Important: If string ends with 'Z', remove it to force local time interpretation
+  const normalizedStr = dateStr.endsWith('Z') ? dateStr.slice(0, -1) : dateStr;
+  const date = new Date(normalizedStr);
+
+  if (isNaN(date.getTime())) {
+    return null;
+  }
+
+  return date;
+};
