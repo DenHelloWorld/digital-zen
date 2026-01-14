@@ -358,10 +358,17 @@ export class BackgroundServiceMV3 {
         this.createRedirectRule(domain, index + 1)
       );
 
-      chrome.declarativeNetRequest.updateDynamicRules({
-        removeRuleIds: currentRuleIds,
-        addRules: rulesToAdd,
-      });
+      chrome.declarativeNetRequest.updateDynamicRules(
+        {
+          removeRuleIds: currentRuleIds,
+          addRules: rulesToAdd,
+        },
+        () => {
+          if (domainList.length > 0) {
+            this.reloadBlockedTabs(domainList);
+          }
+        }
+      );
     });
   }
 
@@ -383,6 +390,18 @@ export class BackgroundServiceMV3 {
         resourceTypes: ['main_frame'],
       },
     };
+  }
+
+  private async reloadBlockedTabs(domainList: string[]): Promise<void> {
+    const tabs = await chrome.tabs.query({});
+    for (const tab of tabs) {
+      if (tab.id && tab.url) {
+        const isBlocked = domainList.some(domain => tab.url?.includes(domain));
+        if (isBlocked) {
+          chrome.tabs.reload(tab.id);
+        }
+      }
+    }
   }
 
   private updateExtensionIcon(isFocused: boolean): void {

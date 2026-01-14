@@ -9,7 +9,6 @@ import {
   isHttpUrl,
   isSvgIcon,
   UI_TEXT,
-  CleanUrlPipe,
   cleanUrlHelper,
   WEBSITES_UNBLOCKABLE,
 } from '../common';
@@ -37,8 +36,6 @@ import { PeriodComponent } from './components/period/period.component';
   imports: [
     // angular modules
     CommonModule,
-    // pipes
-    CleanUrlPipe,
     // components
     PeriodComponent,
     LoaderComponent,
