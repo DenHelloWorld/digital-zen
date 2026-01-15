@@ -1,4 +1,4 @@
-import { BackgroundServiceMV3 } from './background-service-MV3';
+import { BackgroundService } from './background-service';
 import { StorageAdapter } from './storage-adapter';
 import { UserDataSyncAdapter } from './user-data-sync-adapter';
 import { IFocus } from '../modules/common/models/focus.model';
@@ -156,7 +156,7 @@ describe('BackgroundServiceMV3', () => {
   describe('Initialization', () => {
     it('should initialize listeners', () => {
       // Initialize service to set up listeners
-      new BackgroundServiceMV3();
+      new BackgroundService();
 
       expect(mockChrome.runtime.onMessage.addListener).toHaveBeenCalled();
       expect(mockChrome.tabs.onActivated.addListener).toHaveBeenCalled();
@@ -165,7 +165,7 @@ describe('BackgroundServiceMV3', () => {
 
     it('should initialize alarms', () => {
       // Initialize service to set up alarms
-      new BackgroundServiceMV3();
+      new BackgroundService();
 
       expect(mockChrome.alarms.onAlarm.addListener).toHaveBeenCalled();
     });
@@ -189,7 +189,7 @@ describe('BackgroundServiceMV3', () => {
       );
 
       // Initialize service - it calls restoreCurrentPeriod() internally
-      new BackgroundServiceMV3();
+      new BackgroundService();
 
       // Wait for the getCurrentPeriod promise to resolve
       await getCurrentPeriodSpy.calls.mostRecent().returnValue;
@@ -221,7 +221,7 @@ describe('BackgroundServiceMV3', () => {
       );
 
       // Initialize service
-      new BackgroundServiceMV3();
+      new BackgroundService();
 
       // Wait for both promises to resolve
       await getCurrentPeriodSpy.calls.mostRecent().returnValue;
@@ -239,7 +239,7 @@ describe('BackgroundServiceMV3', () => {
       );
 
       // Initialize service
-      new BackgroundServiceMV3();
+      new BackgroundService();
 
       // Wait for promises to resolve
       await getCurrentPeriodSpy.calls.mostRecent().returnValue;
@@ -261,7 +261,7 @@ describe('BackgroundServiceMV3', () => {
 
     beforeEach(() => {
       // Initialize service to set up message listeners
-      new BackgroundServiceMV3();
+      new BackgroundService();
       messageListener = mockChrome.runtime.onMessage.addListener.calls.mostRecent().args[0];
     });
 
@@ -1139,7 +1139,7 @@ describe('BackgroundServiceMV3', () => {
 
     beforeEach(() => {
       // Initialize service to set up tab listeners
-      new BackgroundServiceMV3();
+      new BackgroundService();
       tabActivatedListener = mockChrome.tabs.onActivated.addListener.calls.mostRecent().args[0];
       tabUpdatedListener = mockChrome.tabs.onUpdated.addListener.calls.mostRecent().args[0];
     });
@@ -1204,7 +1204,7 @@ describe('BackgroundServiceMV3', () => {
   describe('Blocking rules', () => {
     beforeEach(() => {
       // Initialize service
-      new BackgroundServiceMV3();
+      new BackgroundService();
     });
 
     it('should create redirect rule for domain', async () => {
@@ -1312,7 +1312,7 @@ describe('BackgroundServiceMV3', () => {
   describe('Icon management', () => {
     beforeEach(() => {
       // Initialize service
-      new BackgroundServiceMV3();
+      new BackgroundService();
     });
 
     it('should set colored icon when starting focus', async () => {

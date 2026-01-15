@@ -20,7 +20,7 @@ type FocusOperationResult = { success: true } | { success: false; error: FOCUS_E
  * @class BackgroundService
  * @description The main service class that manages the extension's background tasks and data persistence.
  */
-export class BackgroundServiceMV3 {
+export class BackgroundService {
   #currentPeriod: IFocus.Period | null = null;
   #sessionStartTime: Date | null = null;
   readonly #logger = logger.createLogger('BackgroundService');
@@ -258,7 +258,7 @@ export class BackgroundServiceMV3 {
     const now = new Date();
 
     if (!isCurrentTimeInRange(now, period.startFrom, period.endTo)) {
-        return { success: false, error: FOCUS_ERROR_ENUM.PERIOD_OUTSIDE_TIME_RANGE };
+      return { success: false, error: FOCUS_ERROR_ENUM.PERIOD_OUTSIDE_TIME_RANGE };
     }
 
     this.#currentPeriod = period;

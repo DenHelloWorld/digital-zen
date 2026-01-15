@@ -1,3 +1,3 @@
-import { BackgroundServiceMV3 } from './background/background-service-MV3';
+import { BackgroundService } from './background/background-service';
 
-new BackgroundServiceMV3();
+new BackgroundService();
