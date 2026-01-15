@@ -68,7 +68,7 @@ export class TimeLineComponent implements OnInit, OnDestroy {
       }
 
       this.#now.set(currentTime);
-    }, 60_000);
+    }, 10_000);
   }
 
   public ngOnDestroy(): void {

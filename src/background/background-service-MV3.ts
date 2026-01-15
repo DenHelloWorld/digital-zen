@@ -248,9 +248,6 @@ export class BackgroundServiceMV3 {
   }
 
   private async startFocus(period: IFocus.Period): Promise<FocusOperationResult> {
-    // Use the period's startFrom date to determine the day of week, falling back to current date.
-    // This prevents race conditions when tests run near midnight, where the day could change
-    // between when the period is created and when startFocus is executed.
     const dayToCheck = period.startFrom || new Date();
     const today = dayToCheck.getDay();
 
@@ -258,20 +255,10 @@ export class BackgroundServiceMV3 {
       return { success: false, error: FOCUS_ERROR_ENUM.PERIOD_NOT_SCHEDULED_TODAY };
     }
 
-    // Check if current time is within the period's time range
     const now = new Date();
-    // Prefer absolute date comparison when both boundaries are provided (this
-    // matches how tests construct periods using Date.now()). If either boundary
-    // is null, fall back to time-of-day comparison helper which supports nulls.
-    if (period.startFrom && period.endTo) {
-      // Use inclusive start and end checks to match expected behavior in tests
-      if (now < period.startFrom || now > period.endTo) {
+
+    if (!isCurrentTimeInRange(now, period.startFrom, period.endTo)) {
         return { success: false, error: FOCUS_ERROR_ENUM.PERIOD_OUTSIDE_TIME_RANGE };
-      }
-    } else {
-      if (!isCurrentTimeInRange(now, period.startFrom, period.endTo)) {
-        return { success: false, error: FOCUS_ERROR_ENUM.PERIOD_OUTSIDE_TIME_RANGE };
-      }
     }
 
     this.#currentPeriod = period;
