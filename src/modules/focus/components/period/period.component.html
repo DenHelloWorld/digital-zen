@@ -116,7 +116,7 @@
               <ng-container *ngTemplateOutlet="icon; context: { href: icons.CLOSE }"></ng-container>
             </button>
           </div>
-        } @else {
+        } @else if (!period().isFocused) {
           <button
             type="button"
             class="dz-button dz-button--sm shadow"
@@ -141,7 +141,7 @@
             </button>
           }
 
-          @if (!isCurrent()) {
+          @if (!isCurrent() && !period().isFocused) {
             <button
               type="button"
               class="dz-button dz-button--sm dz-button--round dz-button--activated shadow"
