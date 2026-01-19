@@ -248,21 +248,19 @@ export class BackgroundService {
   }
 
   private async startFocus(period: IFocus.Period): Promise<FocusOperationResult> {
-    const dayToCheck = period.startFrom || new Date();
-    const today = dayToCheck.getDay();
+    const now = new Date();
+    const today = now.getDay();
 
     if (period.daysOfWeek && !period.daysOfWeek.includes(today)) {
       return { success: false, error: FOCUS_ERROR_ENUM.PERIOD_NOT_SCHEDULED_TODAY };
     }
-
-    const now = new Date();
 
     if (!isCurrentTimeInRange(now, period.startFrom, period.endTo)) {
       return { success: false, error: FOCUS_ERROR_ENUM.PERIOD_OUTSIDE_TIME_RANGE };
     }
 
     this.#currentPeriod = period;
-    this.#sessionStartTime = new Date();
+    this.#sessionStartTime = now;
     this.#currentPeriod.isFocused = true;
     this.#currentPeriod.sessionStartTime = this.#sessionStartTime;
 
@@ -284,6 +282,7 @@ export class BackgroundService {
     }
 
     const endTime = new Date();
+
     if (this.#sessionStartTime) {
       const newFocusedTime: IFocus.FocusedTime = {
         id: Date.now().toString(),
