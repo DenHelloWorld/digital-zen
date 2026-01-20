@@ -340,6 +340,7 @@ export class PeriodFormComponent implements OnInit {
         focusedTimes: periodData.focusedTimes,
         isFocused: periodData.isFocused,
         sessionStartTime: periodData.sessionStartTime,
+        blockBehaviour: periodData.blockBehaviour,
       });
 
       // Set selected days
@@ -348,6 +349,13 @@ export class PeriodFormComponent implements OnInit {
 
       // Set selected websites
       this.selectedWebSites.set(periodData.webSites);
+
+      if (periodData.blockBehaviour) {
+        const found = this.blockOptions.find(opt => opt.id === periodData.blockBehaviour);
+        if (found) {
+          this.selectedBlockBehaviours.set([found]);
+        }
+      }
     }
   }
 
