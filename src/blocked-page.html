@@ -4,7 +4,6 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Blocked</title>
-    <!-- No favicon to prevent bookmark icon replacement -->
     <style>
       body {
         font-family: sans-serif;
@@ -24,12 +23,19 @@
         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         text-align: center;
       }
+      #timer {
+        font-weight: bold;
+        color: #ef4444;
+      }
     </style>
   </head>
   <body>
     <div class="box">
       <h1>⛔ Access Blocked</h1>
       <p>This website is blocked during your Digital Zen focus session.</p>
+      <p>This tab will close automatically in <span id="timer">20</span> seconds.</p>
     </div>
+
+    <script src="blocked-timer.js"></script>
   </body>
 </html>

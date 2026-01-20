@@ -117,6 +117,13 @@ export class BackgroundService {
               sendResponse(logoutResult);
               break;
             }
+            case CHROME_COMMAND_ENUM.CLOSE_TAB: {
+              if (sender.tab && sender.tab.id) {
+                await chrome.tabs.remove(sender.tab.id);
+                return;
+              }
+              break;
+            }
             default:
               sendResponse({ success: false, error: FOCUS_ERROR_ENUM.UNKNOWN_COMMAND });
           }

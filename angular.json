@@ -27,8 +27,8 @@
                 "input": "public"
               },
               "src/manifest.json",
-              "src/background.js",
               "src/blocked-page.html",
+              "src/blocked-timer.js",
               {
                 "glob": "**/*",
                 "input": "src/icons",
