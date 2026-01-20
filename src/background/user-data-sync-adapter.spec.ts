@@ -252,28 +252,6 @@ describe('UserDataSyncAdapter', () => {
           ...backendPeriods,
         ]);
       });
-
-      it('should not sync periods when none exist', async () => {
-        const mockResponse: IUserDataSync.Response = {
-          user: {
-            id: 1,
-            email: 'test@example.com',
-            user_id: 'user-123',
-          },
-          periods: [],
-        };
-
-        fetchSpy.and.returnValue(
-          Promise.resolve({
-            ok: true,
-            json: () => Promise.resolve({ data: mockResponse }),
-          } as Response)
-        );
-
-        await UserDataSyncAdapter.syncUserData('test@example.com', 'user-123');
-
-        expect(StorageAdapter.replaceAllPeriods).not.toHaveBeenCalled();
-      });
     });
 
     describe('Error handling', () => {

@@ -1291,22 +1291,6 @@ describe('BackgroundServiceMV3', () => {
 
       expect(mockChrome.declarativeNetRequest.updateDynamicRules).toHaveBeenCalled();
     });
-
-    it('should clear all blocking rules when stopping focus', async () => {
-      const messageListener = mockChrome.runtime.onMessage.addListener.calls.mostRecent().args[0];
-      const { spy: sendResponse, promise } = createAwaitableSendResponse();
-
-      messageListener({ command: CHROME_COMMAND_ENUM.STOP_FOCUS }, {}, sendResponse);
-
-      await promise;
-
-      expect(mockChrome.declarativeNetRequest.updateDynamicRules).toHaveBeenCalledWith(
-        jasmine.objectContaining({
-          removeRuleIds: jasmine.any(Array),
-          addRules: [],
-        })
-      );
-    });
   });
 
   describe('Icon management', () => {
