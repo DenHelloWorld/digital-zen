@@ -1,4 +1,5 @@
 import { DayOfWeekShortNameType, DayOfWeekType } from '../enums';
+import { BlockBehaviourType } from '../enums/block-behaviour.enum';
 
 export namespace IFocus {
   export namespace Api {
@@ -20,6 +21,7 @@ export namespace IFocus {
         daysOfWeek: DayOfWeekType[];
         focusedTimes: IFocus.Api.Upsert.FocusedTime[];
         isFocused: boolean;
+        blockBehaviour: BlockBehaviourType;
         sessionStartTime: string | null;
       }
     }
@@ -35,6 +37,7 @@ export namespace IFocus {
     daysOfWeek: DayOfWeekType[];
     focusedTimes: IFocus.FocusedTime[];
     isFocused: boolean;
+    blockBehaviour: BlockBehaviourType;
     sessionStartTime: Date | null;
   }
 

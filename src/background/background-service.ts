@@ -13,6 +13,7 @@ import { FOCUS_ERROR_ENUM } from '../modules/common/enums/focus-error.enum';
 import { isCurrentTimeAfter, isCurrentTimeInRange } from '../modules/common/helpers/time.helper';
 import { logger } from '../modules/common/helpers/logger';
 import { filterBlockableWebsites } from '../modules/common/helpers/filter-blockable-websites.helper';
+import { BLOCK_BEHAVIOUR_ENUM } from '../modules/common/enums/block-behaviour.enum';
 
 type FocusOperationResult = { success: true } | { success: false; error: FOCUS_ERROR_ENUM };
 
@@ -428,6 +429,7 @@ export class BackgroundService {
       endTo: null,
       isFocused: true,
       focusedTimes: [],
+      blockBehaviour: BLOCK_BEHAVIOUR_ENUM.ALLOW,
       daysOfWeek: [0, 1, 2, 3, 4, 5, 6],
       sessionStartTime: null,
       webSites: [

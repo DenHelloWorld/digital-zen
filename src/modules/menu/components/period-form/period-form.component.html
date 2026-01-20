@@ -60,6 +60,22 @@
   <div class="dz-form__field">
     <span class="dz-form__hint">
       <span class="dz-form__required">{{ uiText.COMMON.REQUIRED_MARKER }}</span>
+      Block Behavior
+    </span>
+
+    <dz-multi-selector
+      [(selectedEntities)]="selectedBlockBehaviours"
+      [isOnlySingleSelectable]="true"
+      [entities]="blockOptions"
+      [labelKey]="'name'"
+      [idKey]="'id'"
+      orientation="horizontal"
+    />
+  </div>
+
+  <div class="dz-form__field">
+    <span class="dz-form__hint">
+      <span class="dz-form__required">{{ uiText.COMMON.REQUIRED_MARKER }}</span>
       {{ uiText.PERIOD_FORM.LABELS.DAYS_OF_WEEK }}
     </span>
 

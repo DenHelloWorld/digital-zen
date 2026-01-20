@@ -6,6 +6,7 @@ import { QUICK_FOCUS_ID } from '../modules/common/constants/quick-focus-id.const
 import { CHROME_COMMAND_ENUM } from '../modules/common/enums/chrome-command.enum';
 import { CHROME_ALARM_ENUM } from '../modules/common/enums/chrome-alarm-name.enum';
 import { FOCUS_ERROR_ENUM } from '../modules/common/enums/focus-error.enum';
+import { BLOCK_BEHAVIOUR_ENUM } from '../modules/common/enums/block-behaviour.enum';
 
 describe('BackgroundServiceMV3', () => {
   let mockChrome: {
@@ -178,6 +179,7 @@ describe('BackgroundServiceMV3', () => {
         startFrom: new Date('2024-01-01T09:00:00.000'),
         endTo: new Date('2024-01-01T17:00:00.000'),
         isFocused: false,
+        blockBehaviour: BLOCK_BEHAVIOUR_ENUM.BLOCK,
         focusedTimes: [],
         daysOfWeek: [1, 2, 3, 4, 5],
         sessionStartTime: null,
@@ -206,6 +208,7 @@ describe('BackgroundServiceMV3', () => {
           startFrom: new Date('2024-01-01T09:00:00.000'),
           endTo: new Date('2024-01-01T17:00:00.000'),
           isFocused: false,
+          blockBehaviour: BLOCK_BEHAVIOUR_ENUM.BLOCK,
           focusedTimes: [],
           daysOfWeek: [1, 2, 3, 4, 5],
           sessionStartTime: null,
@@ -274,6 +277,7 @@ describe('BackgroundServiceMV3', () => {
           startFrom: new Date('2024-01-01T09:00:00.000'),
           endTo: new Date('2024-01-01T17:00:00.000'),
           isFocused: false,
+          blockBehaviour: BLOCK_BEHAVIOUR_ENUM.BLOCK,
           focusedTimes: [],
           daysOfWeek: [1, 2, 3, 4, 5],
           sessionStartTime: null,
@@ -302,6 +306,7 @@ describe('BackgroundServiceMV3', () => {
           id: 'existing-period',
           name: 'Existing Period',
           description: 'Existing description',
+          blockBehaviour: BLOCK_BEHAVIOUR_ENUM.BLOCK,
           startFrom: new Date('2024-01-01T09:00:00.000'),
           endTo: new Date('2024-01-01T17:00:00.000'),
           isFocused: false,
@@ -358,6 +363,7 @@ describe('BackgroundServiceMV3', () => {
           endTo: new Date('2024-01-01T17:00:00.000'),
           isFocused: true,
           focusedTimes: [],
+          blockBehaviour: BLOCK_BEHAVIOUR_ENUM.BLOCK,
           daysOfWeek: [1, 2, 3, 4, 5],
           sessionStartTime: new Date('2024-01-01T09:30:00.000'),
           webSites: [],
@@ -387,6 +393,7 @@ describe('BackgroundServiceMV3', () => {
       it('should update a period', async () => {
         const updatedPeriod: IFocus.Period = {
           id: 'period-1',
+          blockBehaviour: BLOCK_BEHAVIOUR_ENUM.BLOCK,
           name: 'Updated Period',
           description: 'Updated description',
           startFrom: new Date('2024-01-01T10:00:00.000'),
@@ -417,6 +424,7 @@ describe('BackgroundServiceMV3', () => {
         const currentPeriod: IFocus.Period = {
           id: 'current-period',
           name: 'Current Period',
+          blockBehaviour: BLOCK_BEHAVIOUR_ENUM.BLOCK,
           description: 'Current description',
           startFrom: new Date('2024-01-01T09:00:00.000'),
           endTo: new Date('2024-01-01T17:00:00.000'),
@@ -467,6 +475,7 @@ describe('BackgroundServiceMV3', () => {
         const period: IFocus.Period = {
           id: 'test-period',
           name: 'Test Period',
+          blockBehaviour: BLOCK_BEHAVIOUR_ENUM.BLOCK,
           description: 'Test description',
           startFrom: createTodayDate(-1), // 1 hour ago
           endTo: createTodayDate(+1), // 1 hour from now
@@ -531,6 +540,7 @@ describe('BackgroundServiceMV3', () => {
           id: 'test-period',
           name: 'Test Period',
           description: 'Test description',
+          blockBehaviour: BLOCK_BEHAVIOUR_ENUM.BLOCK,
           startFrom: createTodayDate(-1), // 1 hour ago
           endTo: createTodayDate(+1), // 1 hour from now
           isFocused: false,
@@ -565,6 +575,7 @@ describe('BackgroundServiceMV3', () => {
           id: 'test-period',
           name: 'Test Period',
           description: 'Test description',
+          blockBehaviour: BLOCK_BEHAVIOUR_ENUM.BLOCK,
           startFrom: createTodayDate(+1), // 1 hour from now
           endTo: createTodayDate(+2), // 2 hours from now
           isFocused: false,
@@ -599,6 +610,7 @@ describe('BackgroundServiceMV3', () => {
           id: 'test-period',
           name: 'Test Period',
           description: 'Test description',
+          blockBehaviour: BLOCK_BEHAVIOUR_ENUM.BLOCK,
           startFrom: createTodayDate(-1), // 1 hour ago
           endTo: createTodayDate(+1), // 1 hour from now
           isFocused: false,
@@ -648,6 +660,7 @@ describe('BackgroundServiceMV3', () => {
           focusedTimes: [],
           daysOfWeek: [dayOfWeek], // Scheduled for the day of startFrom
           sessionStartTime: null,
+          blockBehaviour: BLOCK_BEHAVIOUR_ENUM.BLOCK,
           webSites: [],
         };
 
@@ -725,6 +738,7 @@ describe('BackgroundServiceMV3', () => {
           endTo: createTodayDate(+1),
           isFocused: false,
           focusedTimes: [],
+          blockBehaviour: BLOCK_BEHAVIOUR_ENUM.BLOCK,
           daysOfWeek: [today],
           sessionStartTime: null,
           webSites: [],
@@ -754,6 +768,7 @@ describe('BackgroundServiceMV3', () => {
         const period: IFocus.Period = {
           id: 'test-period',
           name: 'Test Period',
+          blockBehaviour: BLOCK_BEHAVIOUR_ENUM.BLOCK,
           description: 'Test description',
           startFrom: createTodayDate(-1),
           endTo: createTodayDate(+1),
@@ -826,6 +841,7 @@ describe('BackgroundServiceMV3', () => {
           endTo: null,
           isFocused: true,
           focusedTimes: [],
+          blockBehaviour: BLOCK_BEHAVIOUR_ENUM.BLOCK,
           daysOfWeek: [0, 1, 2, 3, 4, 5, 6],
           sessionStartTime: new Date(),
           webSites: [],
@@ -907,6 +923,7 @@ describe('BackgroundServiceMV3', () => {
           description: 'New current description',
           startFrom: new Date('2024-01-01T09:00:00.000'),
           endTo: new Date('2024-01-01T17:00:00.000'),
+          blockBehaviour: BLOCK_BEHAVIOUR_ENUM.BLOCK,
           isFocused: false,
           focusedTimes: [],
           daysOfWeek: [1, 2, 3, 4, 5],
@@ -956,6 +973,7 @@ describe('BackgroundServiceMV3', () => {
         const currentPeriod: IFocus.Period = {
           id: 'current-period',
           name: 'Current Period',
+          blockBehaviour: BLOCK_BEHAVIOUR_ENUM.BLOCK,
           description: 'Current description',
           startFrom: new Date('2024-01-01T09:00:00.000'),
           endTo: new Date('2024-01-01T17:00:00.000'),
@@ -976,6 +994,7 @@ describe('BackgroundServiceMV3', () => {
           focusedTimes: [],
           daysOfWeek: [1, 2, 3, 4, 5],
           sessionStartTime: null,
+          blockBehaviour: BLOCK_BEHAVIOUR_ENUM.BLOCK,
           webSites: [],
         };
 
@@ -1066,6 +1085,7 @@ describe('BackgroundServiceMV3', () => {
           isFocused: false,
           focusedTimes: [],
           daysOfWeek: [1, 2, 3, 4, 5],
+          blockBehaviour: BLOCK_BEHAVIOUR_ENUM.BLOCK,
           sessionStartTime: null,
           webSites: [
             {
@@ -1215,6 +1235,7 @@ describe('BackgroundServiceMV3', () => {
         description: 'Test description',
         startFrom: createTodayDate(-1),
         endTo: createTodayDate(+1),
+        blockBehaviour: BLOCK_BEHAVIOUR_ENUM.BLOCK,
         isFocused: false,
         focusedTimes: [],
         daysOfWeek: [today],
@@ -1262,6 +1283,7 @@ describe('BackgroundServiceMV3', () => {
         focusedTimes: [],
         daysOfWeek: [today],
         sessionStartTime: null,
+        blockBehaviour: BLOCK_BEHAVIOUR_ENUM.BLOCK,
         webSites: [
           {
             id: 'ws-1',
@@ -1310,6 +1332,7 @@ describe('BackgroundServiceMV3', () => {
         isFocused: false,
         focusedTimes: [],
         daysOfWeek: [today],
+        blockBehaviour: BLOCK_BEHAVIOUR_ENUM.BLOCK,
         sessionStartTime: null,
         webSites: [],
       };

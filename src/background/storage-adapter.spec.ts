@@ -1,6 +1,7 @@
 import { StorageAdapter } from './storage-adapter';
 import { IFocus } from '../modules/common/models/focus.model';
 import { CHROME_STORAGE_KEY_ENUM } from '../modules/common/enums/chrome-storage-key.enum';
+import { BLOCK_BEHAVIOUR_ENUM } from '../modules/common/enums/block-behaviour.enum';
 
 describe('StorageAdapter', () => {
   let mockChromeStorage: {
@@ -39,6 +40,7 @@ describe('StorageAdapter', () => {
           startFrom: '2024-01-01T09:00:00.000Z',
           endTo: '2024-01-01T17:00:00.000Z',
           isFocused: false,
+          blockBehaviour: BLOCK_BEHAVIOUR_ENUM.BLOCK,
           focusedTimes: [],
           daysOfWeek: [1, 2, 3, 4, 5],
           sessionStartTime: null,
@@ -48,6 +50,7 @@ describe('StorageAdapter', () => {
         const newPeriod: IFocus.Period = {
           id: 'new-period',
           name: 'New Period',
+          blockBehaviour: BLOCK_BEHAVIOUR_ENUM.BLOCK,
           description: 'New description',
           startFrom: new Date('2024-01-02T09:00:00.000Z'),
           endTo: new Date('2024-01-02T17:00:00.000Z'),
@@ -77,6 +80,7 @@ describe('StorageAdapter', () => {
           id: 'test-period',
           name: 'Test Period',
           description: 'Test description',
+          blockBehaviour: BLOCK_BEHAVIOUR_ENUM.BLOCK,
           startFrom: null,
           endTo: null,
           isFocused: false,
@@ -107,6 +111,7 @@ describe('StorageAdapter', () => {
           endTo: new Date('2024-01-01T17:00:00.000Z'),
           isFocused: false,
           focusedTimes: [],
+          blockBehaviour: BLOCK_BEHAVIOUR_ENUM.BLOCK,
           daysOfWeek: [1, 2, 3, 4, 5],
           sessionStartTime: null,
           webSites: [],
@@ -126,6 +131,7 @@ describe('StorageAdapter', () => {
         const period: IFocus.Period = {
           id: 'test-period',
           name: 'Test Period',
+          blockBehaviour: BLOCK_BEHAVIOUR_ENUM.BLOCK,
           description: 'Test description',
           startFrom: new Date('2024-01-01T09:00:00.000Z'),
           endTo: new Date('2024-01-01T17:00:00.000Z'),
@@ -149,6 +155,7 @@ describe('StorageAdapter', () => {
         const period: IFocus.Period = {
           id: 'test-period',
           name: 'Test Period',
+          blockBehaviour: BLOCK_BEHAVIOUR_ENUM.BLOCK,
           description: 'Test description',
           startFrom: new Date('invalid'),
           endTo: new Date('invalid'),
@@ -183,6 +190,7 @@ describe('StorageAdapter', () => {
           isFocused: false,
           focusedTimes: [],
           daysOfWeek: [1, 2, 3, 4, 5],
+          blockBehaviour: BLOCK_BEHAVIOUR_ENUM.BLOCK,
           sessionStartTime: null,
           webSites: [],
         };
@@ -194,6 +202,7 @@ describe('StorageAdapter', () => {
           startFrom: new Date('2024-01-02T09:00:00.000Z'),
           endTo: new Date('2024-01-02T17:00:00.000Z'),
           isFocused: false,
+          blockBehaviour: BLOCK_BEHAVIOUR_ENUM.BLOCK,
           focusedTimes: [],
           daysOfWeek: [1, 2, 3, 4, 5],
           sessionStartTime: null,
@@ -231,6 +240,7 @@ describe('StorageAdapter', () => {
         const period: IFocus.Period = {
           id: 'current-period',
           name: 'Current Period',
+          blockBehaviour: BLOCK_BEHAVIOUR_ENUM.BLOCK,
           description: 'Current description',
           startFrom: new Date('2024-01-01T09:00:00.000Z'),
           endTo: new Date('2024-01-01T17:00:00.000Z'),

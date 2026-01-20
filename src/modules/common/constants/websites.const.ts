@@ -2,6 +2,7 @@ import { IFocus } from '../models/focus.model';
 import { ICONS } from './icons.const';
 import { ALL_DAYS_OF_WEEK_DAYS } from './days-of-week.const';
 import { DEFAULT_PERIOD_ID } from './default-period-id.const';
+import { BLOCK_BEHAVIOUR_ENUM } from '../enums/block-behaviour.enum';
 
 /**
  * Website constants for Digital Zen Chrome Extension
@@ -173,6 +174,7 @@ export function createDefaultPeriod(): IFocus.Period {
     webSites: [...WEBSITES_SOCIAL_MEDIA],
     daysOfWeek: [...ALL_DAYS_OF_WEEK_DAYS],
     focusedTimes: [],
+    blockBehaviour: BLOCK_BEHAVIOUR_ENUM.BLOCK,
     isFocused: false,
     sessionStartTime: null,
   };
