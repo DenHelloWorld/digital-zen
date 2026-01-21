@@ -16,6 +16,7 @@ import { filterBlockableWebsites } from '../modules/common/helpers/filter-blocka
 import { BLOCK_BEHAVIOUR_ENUM } from '../modules/common/enums/block-behaviour.enum';
 import { BlockerService } from './blocker-service';
 import { AlarmAdapter } from './alarm-adapter';
+import { ExtensionIconAdapter } from './extension-icon-adapter';
 
 type FocusOperationResult = { success: true } | { success: false; error: FOCUS_ERROR_ENUM };
 
@@ -335,15 +336,7 @@ export class BackgroundService {
   }
 
   private updateExtensionIcon(isFocused: boolean): void {
-    const iconPrefix = isFocused ? 'icon-spa-colored' : 'icon-spa-transparent';
-    chrome.action.setIcon({
-      path: {
-        '16': `${iconPrefix}-16x16.png`,
-        '32': `${iconPrefix}-32x32.png`,
-        '48': `${iconPrefix}-48x48.png`,
-        '128': `${iconPrefix}-128x128.png`,
-      },
-    });
+    ExtensionIconAdapter.setIcon(isFocused);
   }
 
   private async getActiveTab(): Promise<chrome.tabs.Tab | null> {
