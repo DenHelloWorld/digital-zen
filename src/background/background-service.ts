@@ -429,7 +429,7 @@ export class BackgroundService {
       endTo: null,
       isFocused: true,
       focusedTimes: [],
-      blockBehaviour: BLOCK_BEHAVIOUR_ENUM.ALLOW,
+      blockBehaviour: BLOCK_BEHAVIOUR_ENUM.BLOCK,
       daysOfWeek: [0, 1, 2, 3, 4, 5, 6],
       sessionStartTime: null,
       webSites: [

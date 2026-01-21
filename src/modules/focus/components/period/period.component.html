@@ -51,7 +51,7 @@
         </div>
       }
 
-      <div class="dz-banner dz-banner--info">
+      <div class="dz-banner dz-banner--sm dz-banner--info">
         <ng-container *ngTemplateOutlet="bannerIcon; context: { href: icons.INFO }"></ng-container>
         <div class="dz-banner__content">
           <div class="dz-banner__message">
@@ -64,11 +64,36 @@
         <dz-weekdays-selector [selectedDays]="selectedDays()" [isSelectable]="false" />
       </div>
 
+      <div
+        class="dz-banner dz-banner--sm"
+        [class.dz-banner--error]="p.blockBehaviour === blockBehaviours.BLOCK"
+        [class.dz-banner--warn]="p.blockBehaviour === blockBehaviours.WARN"
+      >
+        <ng-container
+          *ngTemplateOutlet="
+            bannerIcon;
+            context: {
+              href: p.blockBehaviour === blockBehaviours.BLOCK ? icons.BLOCK : icons.WARNING,
+            }
+          "
+        ></ng-container>
+
+        <div class="dz-banner__content">
+          <div class="dz-banner__message">
+            {{
+              p.blockBehaviour === blockBehaviours.BLOCK
+                ? uiText.PERIOD.BLOCK_BEHAVIOUR.BANNER_BLOCK
+                : uiText.PERIOD.BLOCK_BEHAVIOUR.BANNER_WARN
+            }}
+          </div>
+        </div>
+      </div>
+
       <ul class="dz-list dz-list--horizontal dz-list--full" aria-labelledby="social-title">
         @for (site of p.webSites; track site.id) {
           <li>
             <button
-              class="dz-button dz-button--md shadow"
+              class="dz-button dz-button--sm shadow"
               [class.dz-button--square]="site.iconUrl || site.imageUrl"
               [class.dz-button--error]="site.isBlocked"
               [class.shadow--activated]="site.isBlocked"
@@ -77,7 +102,7 @@
             >
               @if (site.iconUrl) {
                 <svg class="dz-icon dz-icon--shadow" aria-hidden="true" focusable="false">
-                  <use width="24" height="24" [attr.href]="site.iconUrl"></use>
+                  <use [attr.href]="site.iconUrl"></use>
                 </svg>
               } @else if (site.imageUrl) {
                 <img class="dz-icon dz-icon--shadow" [src]="site.imageUrl" [alt]="site.name" />

@@ -17,6 +17,7 @@ import { TimeLineComponent } from '../time-line/time-line.component';
 import { WeekdaysSelectorComponent } from '../../../common/components/weekdays-selector/weekdays-selector.component';
 import { PeriodFormComponent } from '../../../menu/components/period-form';
 import { FocusService } from '../../services';
+import { BLOCK_BEHAVIOUR_ENUM } from '../../../common/enums/block-behaviour.enum';
 
 /**
  * Period display and management component
@@ -51,7 +52,6 @@ export class PeriodComponent {
   /** @guideline DZ_02, DZ_08, DZ_09 - Dependency injection with inject(), private #, readonly */
   readonly #focusService: FocusService = inject(FocusService);
 
-  protected readonly allDays: Readonly<IFocus.DayOfWeek>[] = [...ALL_DAYS_OF_WEEK];
   /** @guideline DZ_04 - Computed signal (derived state) */
   protected readonly selectedDays: Signal<IFocus.DayOfWeek[]> = computed(() => {
     const selected = this.period().daysOfWeek;
@@ -65,6 +65,8 @@ export class PeriodComponent {
   /** @guideline DZ_10 - UI text constants */
   protected readonly uiText = UI_TEXT;
   protected readonly icons = ICONS;
+  protected readonly allDays: Readonly<IFocus.DayOfWeek>[] = [...ALL_DAYS_OF_WEEK];
+  protected readonly blockBehaviours: typeof BLOCK_BEHAVIOUR_ENUM = BLOCK_BEHAVIOUR_ENUM;
 
   /** @guideline DZ_04 - InputSignal for component inputs */
   public readonly period: InputSignal<IFocus.Period> = input.required<IFocus.Period>();

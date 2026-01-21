@@ -117,7 +117,6 @@ export class PeriodFormComponent implements OnInit {
   protected blockOptions = [
     { id: BLOCK_BEHAVIOUR_ENUM.BLOCK, name: 'Block' },
     { id: BLOCK_BEHAVIOUR_ENUM.WARN, name: 'Warn' },
-    { id: BLOCK_BEHAVIOUR_ENUM.ALLOW, name: 'Allow' },
   ];
 
   protected selectedBlockBehaviours = signal<{ id: BlockBehaviourType; name: string }[]>([
