@@ -15,6 +15,7 @@ import { logger } from '../modules/common/helpers/logger';
 import { filterBlockableWebsites } from '../modules/common/helpers/filter-blockable-websites.helper';
 import { BLOCK_BEHAVIOUR_ENUM } from '../modules/common/enums/block-behaviour.enum';
 import { BlockerService } from './blocker-service';
+import { AlarmAdapter } from './alarm-adapter';
 
 type FocusOperationResult = { success: true } | { success: false; error: FOCUS_ERROR_ENUM };
 
@@ -152,7 +153,7 @@ export class BackgroundService {
    * Initializing alarms for focus control
    */
   private initializeAlarms(): void {
-    chrome.alarms.onAlarm.addListener(async alarm => {
+    AlarmAdapter.addListener(async alarm => {
       if (alarm.name === CHROME_ALARM_ENUM.CHECK_FOCUS_END) {
         const current = await StorageAdapter.getCurrentPeriod();
         if (current?.isFocused && current.endTo && isCurrentTimeAfter(new Date(), current.endTo)) {
@@ -189,7 +190,7 @@ export class BackgroundService {
    * Check every minute
    * */
   private scheduleAlarm(): void {
-    chrome.alarms.create(CHROME_ALARM_ENUM.CHECK_FOCUS_END, { periodInMinutes: 1 });
+    AlarmAdapter.create(CHROME_ALARM_ENUM.CHECK_FOCUS_END, { periodInMinutes: 1 });
   }
 
   private async addPeriod(period: IFocus.Period): Promise<void> {
