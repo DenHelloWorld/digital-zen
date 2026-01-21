@@ -14,6 +14,7 @@ import { isCurrentTimeAfter, isCurrentTimeInRange } from '../modules/common/help
 import { logger } from '../modules/common/helpers/logger';
 import { filterBlockableWebsites } from '../modules/common/helpers/filter-blockable-websites.helper';
 import { BLOCK_BEHAVIOUR_ENUM } from '../modules/common/enums/block-behaviour.enum';
+import { BlockerService } from './blocker-service';
 
 type FocusOperationResult = { success: true } | { success: false; error: FOCUS_ERROR_ENUM };
 
@@ -25,6 +26,7 @@ export class BackgroundService {
   #currentPeriod: IFocus.Period | null = null;
   #sessionStartTime: Date | null = null;
   readonly #logger = logger.createLogger('BackgroundService');
+  readonly #blocker = new BlockerService();
 
   constructor() {
     this.initializeListeners();
@@ -180,10 +182,10 @@ export class BackgroundService {
 
     if (this.#currentPeriod?.isFocused) {
       const blockableWebsites = filterBlockableWebsites(this.#currentPeriod.webSites);
-      this.updateBlockRules(blockableWebsites.filter(s => s.isBlocked).map(s => s.url));
+      this.#blocker.updateBlockRules(blockableWebsites.filter(s => s.isBlocked).map(s => s.url));
       this.scheduleAlarm();
     } else {
-      this.updateBlockRules([]);
+      this.#blocker.clearRules();
     }
   }
 
@@ -225,7 +227,7 @@ export class BackgroundService {
 
       if (period.isFocused) {
         const blockableWebsites = filterBlockableWebsites(period.webSites);
-        this.updateBlockRules(blockableWebsites.filter(s => s.isBlocked).map(s => s.url));
+        this.#blocker.updateBlockRules(blockableWebsites.filter(s => s.isBlocked).map(s => s.url));
         this.scheduleAlarm();
       }
     }
@@ -247,7 +249,7 @@ export class BackgroundService {
 
     if (updatedPeriod.isFocused) {
       const blockableWebsites = filterBlockableWebsites(updatedWebSites);
-      this.updateBlockRules(blockableWebsites.filter(s => s.isBlocked).map(s => s.url));
+      this.#blocker.updateBlockRules(blockableWebsites.filter(s => s.isBlocked).map(s => s.url));
       this.#currentPeriod = updatedPeriod;
     }
 
@@ -276,7 +278,9 @@ export class BackgroundService {
     await StorageAdapter.savePeriod(this.#currentPeriod);
 
     const blockableWebsites = filterBlockableWebsites(period.webSites);
-    this.updateBlockRules(blockableWebsites.filter(site => site.isBlocked).map(site => site.url));
+    this.#blocker.updateBlockRules(
+      blockableWebsites.filter(site => site.isBlocked).map(site => site.url)
+    );
     this.updateExtensionIcon(true);
     this.scheduleAlarm();
 
@@ -311,7 +315,7 @@ export class BackgroundService {
     await StorageAdapter.savePeriod(this.#currentPeriod);
     await StorageAdapter.saveCurrentPeriod(this.#currentPeriod);
 
-    this.updateBlockRules([]);
+    this.#blocker.clearRules();
     this.updateExtensionIcon(false);
 
     // Sync to backend (including new focusedTime)
@@ -342,59 +346,6 @@ export class BackgroundService {
       return await this.stopFocus();
     } else {
       return await this.startQuickFocus(url);
-    }
-  }
-
-  private updateBlockRules(domainList: string[]): void {
-    chrome.declarativeNetRequest.getDynamicRules(dynamicRules => {
-      const currentRuleIds = dynamicRules.map(r => r.id);
-      const rulesToAdd = domainList.map((domain, index) =>
-        this.createRedirectRule(domain, index + 1)
-      );
-
-      chrome.declarativeNetRequest.updateDynamicRules(
-        {
-          removeRuleIds: currentRuleIds,
-          addRules: rulesToAdd,
-        },
-        () => {
-          if (domainList.length > 0) {
-            this.reloadBlockedTabs(domainList);
-          }
-        }
-      );
-    });
-  }
-
-  private createRedirectRule(domain: string, ruleId: number): chrome.declarativeNetRequest.Rule {
-    const cleanDomain = domain
-      .replace(/^https?:\/\//, '')
-      .split('/')[0]
-      .replace(/^www\./, '');
-
-    return {
-      id: ruleId,
-      priority: 1,
-      action: {
-        type: 'redirect',
-        redirect: { url: chrome.runtime.getURL('blocked-page.html') },
-      },
-      condition: {
-        requestDomains: [cleanDomain],
-        resourceTypes: ['main_frame'],
-      },
-    };
-  }
-
-  private async reloadBlockedTabs(domainList: string[]): Promise<void> {
-    const tabs = await chrome.tabs.query({});
-    for (const tab of tabs) {
-      if (tab.id && tab.url) {
-        const isBlocked = domainList.some(domain => tab.url?.includes(domain));
-        if (isBlocked) {
-          chrome.tabs.reload(tab.id);
-        }
-      }
     }
   }
 
