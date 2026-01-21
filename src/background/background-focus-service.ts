@@ -19,8 +19,9 @@ export class BackgroundFocusService {
     const current = await StorageAdapter.getCurrentPeriod();
     if (current && current.webSites) {
       const blockableWebsites = filterBlockableWebsites(current.webSites);
-      this.#blocker.updateBlockRules(
-        blockableWebsites.filter(site => site.isBlocked).map(site => site.url)
+      this.#blocker.updateBlockRulesWithBehaviour(
+        blockableWebsites.filter(site => site.isBlocked).map(site => site.url),
+        current.blockBehaviour
       );
     }
   }
@@ -48,8 +49,9 @@ export class BackgroundFocusService {
     await StorageAdapter.savePeriod(period);
 
     const blockableWebsites = filterBlockableWebsites(period.webSites);
-    this.#blocker.updateBlockRules(
-      blockableWebsites.filter(site => site.isBlocked).map(site => site.url)
+    this.#blocker.updateBlockRulesWithBehaviour(
+      blockableWebsites.filter(site => site.isBlocked).map(site => site.url),
+      period.blockBehaviour
     );
     ExtensionIconAdapter.setIcon(true);
     AlarmAdapter.create(CHROME_ALARM_ENUM.CHECK_FOCUS_END, { periodInMinutes: 1 });

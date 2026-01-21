@@ -1,23 +1,37 @@
+import { BLOCK_BEHAVIOUR_ENUM } from '../modules/common/enums/block-behaviour.enum';
+
 export class BlockerService {
   public updateBlockRules(domainList: string[]): void {
-    chrome.declarativeNetRequest.getDynamicRules(dynamicRules => {
-      const currentRuleIds = dynamicRules.map(r => r.id);
-      const rulesToAdd = domainList.map((domain, index) =>
-        this.#createRedirectRule(domain, index + 1)
-      );
+    this.updateBlockRulesWithBehaviour(domainList, BLOCK_BEHAVIOUR_ENUM.BLOCK);
+  }
 
-      chrome.declarativeNetRequest.updateDynamicRules(
-        {
-          removeRuleIds: currentRuleIds,
-          addRules: rulesToAdd,
-        },
-        () => {
-          if (domainList.length > 0) {
-            this.#reloadBlockedTabs(domainList);
+  public updateBlockRulesWithBehaviour(
+    domainList: string[],
+    behaviour: BLOCK_BEHAVIOUR_ENUM
+  ): void {
+    if (behaviour === BLOCK_BEHAVIOUR_ENUM.BLOCK) {
+      chrome.declarativeNetRequest.getDynamicRules(dynamicRules => {
+        const currentRuleIds = dynamicRules.map(r => r.id);
+        const rulesToAdd = domainList.map((domain, index) =>
+          this.#createRedirectRule(domain, index + 1)
+        );
+
+        chrome.declarativeNetRequest.updateDynamicRules(
+          {
+            removeRuleIds: currentRuleIds,
+            addRules: rulesToAdd,
+          },
+          () => {
+            if (domainList.length > 0) {
+              this.#reloadBlockedTabs(domainList);
+            }
           }
-        }
-      );
-    });
+        );
+      });
+    } else if (behaviour === BLOCK_BEHAVIOUR_ENUM.WARN) {
+      this.#injectWarnToTabs(domainList);
+      this.clearRules();
+    }
   }
 
   public clearRules(): void {
@@ -60,5 +74,18 @@ export class BlockerService {
         }
       }
     }
+  }
+
+  #injectWarnToTabs(domainList: string[]): void {
+    chrome.tabs.query({}, tabs => {
+      for (const tab of tabs) {
+        if (tab.id && tab.url && domainList.some(domain => tab.url?.includes(domain))) {
+          chrome.scripting.executeScript({
+            target: { tabId: tab.id },
+            files: ['warn-injector.js'],
+          });
+        }
+      }
+    });
   }
 }
