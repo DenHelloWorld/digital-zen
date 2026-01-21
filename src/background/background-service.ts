@@ -2,19 +2,15 @@
 import { StorageAdapter } from './storage-adapter';
 import { UserDataSyncAdapter } from './user-data-sync-adapter';
 import { GoogleAuthAdapter } from './google-auth-adapter';
-import { IFocus } from '../modules/common/models/focus.model';
-import { QUICK_FOCUS_ID } from '../modules/common/constants/quick-focus-id.const';
+import { IFocus } from '../modules/common/models';
 import {
   CHROME_COMMAND_ENUM,
   ChromeCommandType,
-} from '../modules/common/enums/chrome-command.enum';
-import { CHROME_ALARM_ENUM } from '../modules/common/enums/chrome-alarm-name.enum';
-import { FOCUS_ERROR_ENUM } from '../modules/common/enums/focus-error.enum';
-import { isCurrentTimeAfter, isCurrentTimeInRange } from '../modules/common/helpers/time.helper';
-import { logger } from '../modules/common/helpers/logger';
-import { filterBlockableWebsites } from '../modules/common/helpers/filter-blockable-websites.helper';
-import { BLOCK_BEHAVIOUR_ENUM } from '../modules/common/enums/block-behaviour.enum';
-import { BlockerService } from './blocker-service';
+  CHROME_ALARM_ENUM,
+  FOCUS_ERROR_ENUM,
+} from '../modules/common/enums';
+import { isCurrentTimeAfter, logger } from '../modules/common/helpers';
+import { BackgroundFocusService } from './background-focus-service';
 import { AlarmAdapter } from './alarm-adapter';
 import { ExtensionIconAdapter } from './extension-icon-adapter';
 
@@ -26,7 +22,7 @@ type FocusOperationResult = { success: true } | { success: false; error: FOCUS_E
  */
 export class BackgroundService {
   readonly #logger = logger.createLogger('BackgroundService');
-  readonly #blocker = new BlockerService();
+  readonly #focusService = new BackgroundFocusService();
 
   constructor() {
     this.initializeListeners();
@@ -62,7 +58,7 @@ export class BackgroundService {
               const periods = await StorageAdapter.getPeriods();
               const periodToStart = periods.find(p => p.id === message.periodId);
               if (periodToStart) {
-                const result = await this.startFocus(periodToStart);
+                const result = await this.#focusService.startFocus(periodToStart);
                 sendResponse(result);
               } else {
                 sendResponse({ success: false, error: FOCUS_ERROR_ENUM.PERIOD_NOT_FOUND });
@@ -70,17 +66,17 @@ export class BackgroundService {
               break;
             }
             case CHROME_COMMAND_ENUM.STOP_FOCUS: {
-              const result = await this.stopFocus();
+              const result = await this.#focusService.stopFocus();
               sendResponse(result);
               break;
             }
             case CHROME_COMMAND_ENUM.TOGGLE_FOCUS: {
-              const result = await this.toggleFocus();
+              const result = await this.#focusService.toggleFocus();
               sendResponse(result);
               break;
             }
             case CHROME_COMMAND_ENUM.TOGGLE_QUICK_FOCUS: {
-              const result = await this.toggleQuickFocus(message.siteUrl);
+              const result = await this.#focusService.toggleQuickFocus(message.siteUrl);
               sendResponse(result);
               break;
             }
@@ -158,7 +154,7 @@ export class BackgroundService {
       if (alarm.name === CHROME_ALARM_ENUM.CHECK_FOCUS_END) {
         const current = await StorageAdapter.getCurrentPeriod();
         if (current?.isFocused && current.endTo && isCurrentTimeAfter(new Date(), current.endTo)) {
-          await this.stopFocus();
+          await this.#focusService.stopFocus();
         }
       }
     });
@@ -179,11 +175,10 @@ export class BackgroundService {
     this.updateExtensionIcon(!!current?.isFocused);
 
     if (current?.isFocused) {
-      const blockableWebsites = filterBlockableWebsites(current.webSites);
-      this.#blocker.updateBlockRules(blockableWebsites.filter(s => s.isBlocked).map(s => s.url));
+      this.#focusService.updateBlockRulesForCurrentPeriod();
       this.scheduleAlarm();
     } else {
-      this.#blocker.clearRules();
+      this.#focusService.clearBlockRules();
     }
   }
 
@@ -209,7 +204,7 @@ export class BackgroundService {
 
     await StorageAdapter.removePeriod(periodId);
 
-    if (current?.id === periodId) await this.stopFocus();
+    if (current?.id === periodId) await this.#focusService.stopFocus();
     await this.restoreCurrentPeriod();
     await UserDataSyncAdapter.syncPeriodsToBackend();
   }
@@ -221,8 +216,7 @@ export class BackgroundService {
     if (current && current.id === period.id) {
       await StorageAdapter.saveCurrentPeriod(period);
       if (period.isFocused) {
-        const blockableWebsites = filterBlockableWebsites(period.webSites);
-        this.#blocker.updateBlockRules(blockableWebsites.filter(s => s.isBlocked).map(s => s.url));
+        this.#focusService.updateBlockRulesForCurrentPeriod();
         this.scheduleAlarm();
       }
     }
@@ -244,95 +238,9 @@ export class BackgroundService {
     await StorageAdapter.saveCurrentPeriod(updatedPeriod);
 
     if (updatedPeriod.isFocused) {
-      const blockableWebsites = filterBlockableWebsites(updatedWebSites);
-      this.#blocker.updateBlockRules(blockableWebsites.filter(s => s.isBlocked).map(s => s.url));
+      this.#focusService.updateBlockRulesForCurrentPeriod();
     }
     await UserDataSyncAdapter.syncPeriodsToBackend();
-  }
-
-  private async startFocus(period: IFocus.Period): Promise<FocusOperationResult> {
-    const now = new Date();
-    const today = now.getDay();
-
-    if (period.daysOfWeek && !period.daysOfWeek.includes(today)) {
-      return { success: false, error: FOCUS_ERROR_ENUM.PERIOD_NOT_SCHEDULED_TODAY };
-    }
-
-    if (!isCurrentTimeInRange(now, period.startFrom, period.endTo)) {
-      return { success: false, error: FOCUS_ERROR_ENUM.PERIOD_OUTSIDE_TIME_RANGE };
-    }
-
-    period.isFocused = true;
-    period.sessionStartTime = now;
-
-    await StorageAdapter.saveCurrentPeriod(period);
-    await StorageAdapter.savePeriod(period);
-
-    const blockableWebsites = filterBlockableWebsites(period.webSites);
-    this.#blocker.updateBlockRules(
-      blockableWebsites.filter(site => site.isBlocked).map(site => site.url)
-    );
-    this.updateExtensionIcon(true);
-    this.scheduleAlarm();
-
-    return { success: true };
-  }
-
-  private async stopFocus(): Promise<FocusOperationResult> {
-    const current = await StorageAdapter.getCurrentPeriod();
-
-    if (!current || !current.isFocused) {
-      // Already inactive - this is the desired state, so return success
-      return { success: true };
-    }
-
-    const endTime = new Date();
-
-    if (current.sessionStartTime) {
-      const newFocusedTime: IFocus.FocusedTime = {
-        id: Date.now().toString(),
-        periodId: current.id,
-        startFrom: current.sessionStartTime,
-        endTo: endTime,
-      };
-      current.focusedTimes = [...(current.focusedTimes || []), newFocusedTime];
-    }
-
-    current.isFocused = false;
-    current.sessionStartTime = null;
-    await StorageAdapter.savePeriod(current);
-    await StorageAdapter.saveCurrentPeriod(current);
-
-    this.#blocker.clearRules();
-    this.updateExtensionIcon(false);
-    await UserDataSyncAdapter.syncPeriodsToBackend();
-
-    return { success: true };
-  }
-
-  private async toggleFocus(): Promise<FocusOperationResult> {
-    const current = await StorageAdapter.getCurrentPeriod();
-
-    if (!current) {
-      // No period to toggle - this is a no-op, return success
-      return { success: true };
-    }
-
-    if (current.isFocused) {
-      return await this.stopFocus();
-    } else {
-      return await this.startFocus(current);
-    }
-  }
-
-  private async toggleQuickFocus(url: string): Promise<FocusOperationResult> {
-    const current = await StorageAdapter.getCurrentPeriod();
-
-    if (current && current.id === QUICK_FOCUS_ID && current.isFocused) {
-      return await this.stopFocus();
-    } else {
-      return await this.startQuickFocus(url);
-    }
   }
 
   private updateExtensionIcon(isFocused: boolean): void {
@@ -348,36 +256,6 @@ export class BackgroundService {
     return tabs.length ? tabs[0] : null;
   }
 
-  private async startQuickFocus(url: string): Promise<FocusOperationResult> {
-    const domain = url.replace(/^https?:\/\//, '').split('/')[0];
-    const quickPeriod: IFocus.Period = {
-      id: QUICK_FOCUS_ID,
-      name: `Focus: ${domain}`,
-      description: 'Quick focus session',
-      startFrom: new Date(),
-      endTo: null,
-      isFocused: true,
-      focusedTimes: [],
-      blockBehaviour: BLOCK_BEHAVIOUR_ENUM.BLOCK,
-      daysOfWeek: [0, 1, 2, 3, 4, 5, 6],
-      sessionStartTime: null,
-      webSites: [
-        {
-          id: 'ws-' + Date.now(),
-          type: IFocus.EWebSiteType.DEFAULT,
-          name: domain,
-          description: '',
-          url: url,
-          imageUrl: '',
-          iconUrl: '',
-          isBlocked: true,
-        },
-      ],
-    };
-
-    return await this.startFocus(quickPeriod);
-  }
-
   private async setCurrentPeriod(periodId: string): Promise<FocusOperationResult> {
     const periods = await StorageAdapter.getPeriods();
     const periodToSet = periods.find(p => p.id === periodId);
@@ -389,7 +267,7 @@ export class BackgroundService {
     const current = await StorageAdapter.getCurrentPeriod();
 
     if (current?.isFocused) {
-      await this.stopFocus();
+      await this.#focusService.stopFocus();
       const updatedPeriods = await StorageAdapter.getPeriods();
       const freshPeriod = updatedPeriods.find(p => p.id === periodId);
 
