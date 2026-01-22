@@ -14,7 +14,7 @@ export class AlarmAdapter {
    */
   static addListener(handler: AlarmHandler): void {
     if (this.handlers.length === 0) {
-      chrome.alarms.onAlarm.addListener(this.dispatch);
+      chrome.alarms.onAlarm.addListener(alarm => this.dispatch(alarm));
     }
     this.handlers.push(handler);
   }
@@ -41,6 +41,11 @@ export class AlarmAdapter {
    * @param alarm Chrome alarm event
    */
   private static async dispatch(alarm: chrome.alarms.Alarm) {
+    if (!this.handlers) {
+      console.warn('AlarmAdapter: handlers is undefined');
+      return;
+    }
+
     for (const handler of this.handlers) {
       await handler(alarm);
     }

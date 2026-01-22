@@ -1,0 +1,42 @@
+<style>
+  .dz-banner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background: #fffbe6;
+    color: #7c5a00;
+    width: max-content;
+    max-width: 96vw;
+    min-width: 260px;
+    padding: 10px 24px;
+    border-radius: 20px;
+    font-size: 16px;
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 999999;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    border: 1.5px solid #fbbf24;
+    font-family: sans-serif;
+  }
+  .dz-banner__close {
+    margin-left: 16px;
+    padding: 6px 14px;
+    background: #fac02f;
+    border-radius: 16px;
+    border: none;
+    cursor: pointer;
+    color: inherit;
+  }
+  .dz-banner__message {
+    padding: 0;
+    margin: 0;
+  }
+</style>
+
+<div class="dz-banner dz-banner--warn">
+  <p class="dz-banner__message">This site may distract you from your focus session.</p>
+  <button class="dz-banner__close" id="dz-close-btn">Continue (hide warning)</button>
+</div>

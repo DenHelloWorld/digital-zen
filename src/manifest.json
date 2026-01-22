@@ -22,11 +22,7 @@
   "host_permissions": ["<all_urls>"],
   "web_accessible_resources": [
     {
-      "resources": [
-        "blocked-page.html",
-        "blocked-timer.js",
-        "warn-injector.js"
-      ],
+      "resources": ["blocked-page.html", "blocked-timer.js", "banner.html", "inject-loader.js"],
       "matches": ["<all_urls>"]
     }
   ],

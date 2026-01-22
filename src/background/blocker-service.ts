@@ -1,4 +1,5 @@
 import { BLOCK_BEHAVIOUR_ENUM } from '../modules/common/enums/block-behaviour.enum';
+import { CHROME_COMMAND_ENUM } from '../modules/common/enums/chrome-command.enum';
 
 export class BlockerService {
   public updateBlockRules(domainList: string[]): void {
@@ -42,6 +43,8 @@ export class BlockerService {
         addRules: [],
       });
     });
+
+    this.#hideWarnInTabs();
   }
 
   #createRedirectRule(domain: string, ruleId: number): chrome.declarativeNetRequest.Rule {
@@ -76,14 +79,37 @@ export class BlockerService {
     }
   }
 
+  #hideWarnInTabs(): void {
+    chrome.tabs.query({}, tabs => {
+      for (const tab of tabs) {
+        if (tab.id) {
+          chrome.tabs.sendMessage(tab.id, { action: CHROME_COMMAND_ENUM.HIDE_BANNER }).catch(() => {
+            /* empty */
+          });
+        }
+      }
+    });
+  }
+
   #injectWarnToTabs(domainList: string[]): void {
     chrome.tabs.query({}, tabs => {
       for (const tab of tabs) {
         if (tab.id && tab.url && domainList.some(domain => tab.url?.includes(domain))) {
-          chrome.scripting.executeScript({
-            target: { tabId: tab.id },
-            files: ['warn-injector.js'],
-          });
+          chrome.scripting.executeScript(
+            {
+              target: { tabId: tab.id },
+              files: ['inject-loader.js'],
+            },
+            () => {
+              if (tab.id) {
+                chrome.tabs
+                  .sendMessage(tab.id, { action: CHROME_COMMAND_ENUM.SHOW_BANNER })
+                  .catch(() => {
+                    /* empty */
+                  });
+              }
+            }
+          );
         }
       }
     });
