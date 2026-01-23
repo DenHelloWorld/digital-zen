@@ -100,7 +100,9 @@
               [title]="site.name"
               (click)="onToggleBlockedWebsite(site)"
             >
-              @if (site.iconUrl) {
+              @if (isHttpUrl(site.iconUrl)) {
+                <img class="dz-icon dz-icon--shadow" [src]="site.iconUrl" [alt]="site.name" />
+              } @else if (site.iconUrl) {
                 <svg class="dz-icon dz-icon--shadow" aria-hidden="true" focusable="false">
                   <use [attr.href]="site.iconUrl"></use>
                 </svg>

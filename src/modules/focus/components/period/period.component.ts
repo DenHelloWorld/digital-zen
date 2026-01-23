@@ -12,7 +12,7 @@ import {
   signal,
   WritableSignal,
 } from '@angular/core';
-import { ALL_DAYS_OF_WEEK, ICONS, IFocus, UI_TEXT } from '../../../common';
+import { ALL_DAYS_OF_WEEK, ICONS, IFocus, isHttpUrl, UI_TEXT } from '../../../common';
 import { TimeLineComponent } from '../time-line/time-line.component';
 import { WeekdaysSelectorComponent } from '../../../common/components/weekdays-selector/weekdays-selector.component';
 import { PeriodFormComponent } from '../../../menu/components/period-form';
@@ -67,6 +67,7 @@ export class PeriodComponent {
   protected readonly icons = ICONS;
   protected readonly allDays: Readonly<IFocus.DayOfWeek>[] = [...ALL_DAYS_OF_WEEK];
   protected readonly blockBehaviours: typeof BLOCK_BEHAVIOUR_ENUM = BLOCK_BEHAVIOUR_ENUM;
+  protected readonly isHttpUrl = isHttpUrl;
 
   /** @guideline DZ_04 - InputSignal for component inputs */
   public readonly period: InputSignal<IFocus.Period> = input.required<IFocus.Period>();
