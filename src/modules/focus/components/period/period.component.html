@@ -98,6 +98,7 @@
               [class.dz-button--error]="site.isBlocked"
               [class.shadow--activated]="site.isBlocked"
               [title]="site.name"
+              [disabled]="!isCurrent()"
               (click)="onToggleBlockedWebsite(site)"
             >
               @if (isHttpUrl(site.iconUrl)) {
