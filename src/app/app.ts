@@ -23,6 +23,7 @@ import {
 import { FocusComponent } from '../modules/focus/focus.component';
 import { AuthService } from '../modules/auth';
 import { PeriodFormComponent } from '../modules/menu/components/period-form';
+import { PomodoroComponent } from '../modules/pomodoro/pomodoro.component';
 
 /**
  * Root application component for Digital Zen Chrome Extension
@@ -49,6 +50,7 @@ import { PeriodFormComponent } from '../modules/menu/components/period-form';
     // components
     ThemeSwitcherComponent,
     FocusComponent,
+    PomodoroComponent,
     DzToastContainerComponent,
     LoaderComponent,
     PeriodFormComponent,
