@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { UI_TEXT } from '../common';
+import { ICONS, UI_TEXT } from '../common';
+import { ProgressBorderDirective } from '../common/directives/progress-border.directive';
 
 /**
  * Pomodoro timer component
@@ -18,8 +19,15 @@ import { UI_TEXT } from '../common';
   templateUrl: './pomodoro.component.html',
   styleUrls: ['./pomodoro.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule],
+  standalone: true,
+  imports: [
+    // angular modules
+    CommonModule,
+    // directives
+    ProgressBorderDirective,
+  ],
 })
 export class PomodoroComponent {
   protected readonly uiText = UI_TEXT;
+  protected readonly icons = ICONS;
 }

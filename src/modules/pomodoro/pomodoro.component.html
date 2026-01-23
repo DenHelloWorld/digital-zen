@@ -4,3 +4,25 @@
     <use [attr.href]="iconHref"></use>
   </svg>
 </ng-template>
+
+<div
+  class="dz-box"
+  dzProgressBorder
+  [progress]="0.5"
+  [config]="{ color: '#e53935', thickness: 10 }"
+>
+  Test
+</div>
+
+<div class="dz-box">
+  <button
+    dzProgressBorder
+    [progress]="0.6"
+    [config]="{ color: 'red', thickness: 10, trackColor: 'green' }"
+    class="dz-button dz-button--round dz-button--lg"
+  >
+    <svg class="dz-icon" aria-hidden="true" focusable="false">
+      <use [attr.href]="icons.MOON" />
+    </svg>
+  </button>
+</div>
