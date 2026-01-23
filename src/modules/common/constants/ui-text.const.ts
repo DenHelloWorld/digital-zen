@@ -19,6 +19,7 @@ export const UI_TEXT = Object.freeze({
     ADD_NEW_PERIOD_TITLE: 'Add new period',
     LOGIN_GOOGLE_TITLE: 'Login with Google',
     LOGOUT_GOOGLE_TITLE: 'Logout from Google',
+    POMODORO_MENU_TITLE: 'Pomodoro timer',
   },
 
   // Menu Component

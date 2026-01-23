@@ -1,5 +1,5 @@
 const TYPES = ['feat', 'fix', 'chore', 'refactor', 'style', 'docs', 'perf', 'test'];
-const SCOPES = ['core', 'common', 'focus', 'auth', 'menu', 'background', 'api'];
+const SCOPES = ['core', 'common', 'focus', 'auth', 'menu', 'background', 'api', 'pomodoro'];
 
 module.exports = {
   extends: ['@commitlint/config-conventional'],
