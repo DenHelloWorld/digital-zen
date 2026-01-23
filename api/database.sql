@@ -25,6 +25,7 @@ CREATE TABLE IF NOT EXISTS periods (
     days_of_week JSON,
     is_focused BOOLEAN DEFAULT 0,
     session_start_time DATETIME,
+    block_behaviour VARCHAR(32) DEFAULT 'block',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,

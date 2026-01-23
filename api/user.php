@@ -204,6 +204,7 @@ function getUserPeriods($database, $userId) {
             'daysOfWeek' => json_decode($period['days_of_week'], true),
             'isFocused' => (bool)$period['is_focused'],
             'sessionStartTime' => $period['session_start_time'],
+            'blockBehaviour' => $period['block_behaviour'],
             'webSites' => [],
             'focusedTimes' => []
         ];
@@ -264,10 +265,10 @@ function saveUserPeriods($database, $userId, $periods) {
             // Insert period
             $periodQuery = "INSERT INTO periods (
                 id, user_id, period_name, period_description,
-                start_from, end_to, days_of_week, is_focused, session_start_time
+                start_from, end_to, days_of_week, is_focused, session_start_time, block_behaviour
             ) VALUES (
                 :id, :user_id, :name, :description,
-                :start_from, :end_to, :days_of_week, :is_focused, :session_start_time
+                :start_from, :end_to, :days_of_week, :is_focused, :session_start_time, :block_behaviour
             )";
 
             $periodStatement = $database->prepare($periodQuery);
@@ -280,6 +281,7 @@ function saveUserPeriods($database, $userId, $periods) {
             $daysOfWeek = json_encode($period['daysOfWeek'] ?? []);
             $isFocused = isset($period['isFocused']) ? (int)$period['isFocused'] : 0;
             $sessionStartTime = $period['sessionStartTime'] ?? null;
+            $blockBehaviour = $period['blockBehaviour'] ?? 'block';
 
             $periodStatement->bindParam(':id', $periodId);
             $periodStatement->bindParam(':user_id', $userId);
@@ -290,6 +292,7 @@ function saveUserPeriods($database, $userId, $periods) {
             $periodStatement->bindParam(':days_of_week', $daysOfWeek);
             $periodStatement->bindParam(':is_focused', $isFocused);
             $periodStatement->bindParam(':session_start_time', $sessionStartTime);
+            $periodStatement->bindParam(':block_behaviour', $blockBehaviour);
 
             $periodStatement->execute();
 

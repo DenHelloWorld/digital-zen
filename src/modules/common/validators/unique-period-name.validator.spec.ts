@@ -1,6 +1,7 @@
 import { FormControl } from '@angular/forms';
 import { uniquePeriodNameValidator } from './unique-period-name.validator';
 import { IFocus } from '../models/focus.model';
+import { BLOCK_BEHAVIOUR_ENUM } from '../enums/block-behaviour.enum';
 
 describe('uniquePeriodNameValidator', () => {
   // Helper function to create mock periods
@@ -8,13 +9,14 @@ describe('uniquePeriodNameValidator', () => {
     id,
     name,
     description: '',
-    startFrom: null,
-    endTo: null,
-    webSites: [],
-    daysOfWeek: [],
-    focusedTimes: [],
+    blockBehaviour: BLOCK_BEHAVIOUR_ENUM.BLOCK,
+    startFrom: new Date(),
+    endTo: new Date(),
     isFocused: false,
+    focusedTimes: [],
+    daysOfWeek: [1],
     sessionStartTime: null,
+    webSites: [],
   });
 
   describe('Unique names (valid)', () => {

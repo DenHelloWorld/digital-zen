@@ -13,6 +13,8 @@ export enum CHROME_COMMAND_ENUM {
   START_GOOGLE_AUTH = 'startGoogleAuth',
   LOGOUT_GOOGLE_AUTH = 'logoutGoogleAuth',
   CLOSE_TAB = 'closeTab',
+  SHOW_BANNER = 'showBanner',
+  HIDE_BANNER = 'hideBanner',
 }
 
 export type ChromeCommandType =
@@ -29,4 +31,5 @@ export type ChromeCommandType =
   | CHROME_COMMAND_ENUM.SYNC_USER_DATA
   | CHROME_COMMAND_ENUM.START_GOOGLE_AUTH
   | CHROME_COMMAND_ENUM.LOGOUT_GOOGLE_AUTH
-  | CHROME_COMMAND_ENUM.CLOSE_TAB;
+  | CHROME_COMMAND_ENUM.CLOSE_TAB
+  | CHROME_COMMAND_ENUM.SHOW_BANNER;

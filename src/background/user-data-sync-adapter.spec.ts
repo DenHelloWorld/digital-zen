@@ -5,6 +5,7 @@ import { API_URLS } from '../modules/common/constants/api-urls.const';
 import { DEFAULT_PERIOD_ID } from '../modules/common/constants/default-period-id.const';
 import { IUserDataSync } from '../modules/common/models/user-data-sync.model';
 import { IFocus } from '../modules/common/models/focus.model';
+import { BLOCK_BEHAVIOUR_ENUM } from '../modules/common/enums/block-behaviour.enum';
 
 describe('UserDataSyncAdapter', () => {
   let originalFetch: typeof globalThis.fetch;
@@ -146,6 +147,7 @@ describe('UserDataSyncAdapter', () => {
             id: 'period-1',
             name: 'Work Period',
             description: 'Work hours',
+            blockBehaviour: BLOCK_BEHAVIOUR_ENUM.BLOCK,
             startFrom: new Date('2024-01-01T09:00:00.000Z'),
             endTo: new Date('2024-01-01T17:00:00.000Z'),
             isFocused: false,
@@ -164,6 +166,7 @@ describe('UserDataSyncAdapter', () => {
             focusedTimes: [],
             daysOfWeek: [1, 2, 3, 4, 5, 6, 0],
             sessionStartTime: null,
+            blockBehaviour: BLOCK_BEHAVIOUR_ENUM.BLOCK,
             webSites: [],
           },
         ];
@@ -203,6 +206,7 @@ describe('UserDataSyncAdapter', () => {
           isFocused: false,
           focusedTimes: [],
           daysOfWeek: [1, 2, 3, 4, 5],
+          blockBehaviour: BLOCK_BEHAVIOUR_ENUM.BLOCK,
           sessionStartTime: null,
           webSites: [],
         };
@@ -215,6 +219,7 @@ describe('UserDataSyncAdapter', () => {
             startFrom: new Date('2024-01-01T09:00:00.000Z'),
             endTo: new Date('2024-01-01T17:00:00.000Z'),
             isFocused: false,
+            blockBehaviour: BLOCK_BEHAVIOUR_ENUM.BLOCK,
             focusedTimes: [],
             daysOfWeek: [1, 2, 3, 4, 5],
             sessionStartTime: null,
@@ -506,6 +511,7 @@ describe('UserDataSyncAdapter', () => {
             id: 'period-1',
             name: 'Work Period',
             description: 'Work hours',
+            blockBehaviour: BLOCK_BEHAVIOUR_ENUM.BLOCK,
             startFrom: new Date('2024-01-01T09:00:00.000Z'),
             endTo: new Date('2024-01-01T17:00:00.000Z'),
             isFocused: false,
@@ -611,6 +617,7 @@ describe('UserDataSyncAdapter', () => {
             id: 'period-1',
             name: 'Morning Period',
             description: 'Morning hours',
+            blockBehaviour: BLOCK_BEHAVIOUR_ENUM.BLOCK,
             startFrom: new Date('2024-01-01T06:00:00.000Z'),
             endTo: new Date('2024-01-01T09:00:00.000Z'),
             isFocused: false,
@@ -623,6 +630,7 @@ describe('UserDataSyncAdapter', () => {
             id: 'period-2',
             name: 'Work Period',
             description: 'Work hours',
+            blockBehaviour: BLOCK_BEHAVIOUR_ENUM.BLOCK,
             startFrom: new Date('2024-01-01T09:00:00.000Z'),
             endTo: new Date('2024-01-01T17:00:00.000Z'),
             isFocused: false,
@@ -635,6 +643,7 @@ describe('UserDataSyncAdapter', () => {
             id: 'period-3',
             name: 'Evening Period',
             description: 'Evening hours',
+            blockBehaviour: BLOCK_BEHAVIOUR_ENUM.BLOCK,
             startFrom: new Date('2024-01-01T18:00:00.000Z'),
             endTo: new Date('2024-01-01T21:00:00.000Z'),
             isFocused: false,
@@ -668,6 +677,7 @@ describe('UserDataSyncAdapter', () => {
             id: DEFAULT_PERIOD_ID,
             name: 'Default Period',
             description: 'Default period (should be filtered)',
+            blockBehaviour: BLOCK_BEHAVIOUR_ENUM.BLOCK,
             startFrom: new Date('2024-01-01T09:00:00.000Z'),
             endTo: new Date('2024-01-01T17:00:00.000Z'),
             isFocused: false,
@@ -680,6 +690,7 @@ describe('UserDataSyncAdapter', () => {
             id: 'period-1',
             name: 'Work Period',
             description: 'Work hours',
+            blockBehaviour: BLOCK_BEHAVIOUR_ENUM.BLOCK,
             startFrom: new Date('2024-01-01T09:00:00.000Z'),
             endTo: new Date('2024-01-01T17:00:00.000Z'),
             isFocused: false,
@@ -719,6 +730,7 @@ describe('UserDataSyncAdapter', () => {
             id: DEFAULT_PERIOD_ID,
             name: 'Default Period',
             description: 'Default period (should be filtered)',
+            blockBehaviour: BLOCK_BEHAVIOUR_ENUM.BLOCK,
             startFrom: new Date('2024-01-01T09:00:00.000Z'),
             endTo: new Date('2024-01-01T17:00:00.000Z'),
             isFocused: false,
@@ -796,6 +808,7 @@ describe('UserDataSyncAdapter', () => {
           id: DEFAULT_PERIOD_ID,
           name: 'Default Period',
           description: 'Default period',
+          blockBehaviour: BLOCK_BEHAVIOUR_ENUM.BLOCK,
           startFrom: new Date('2024-01-01T09:00:00.000Z'),
           endTo: new Date('2024-01-01T17:00:00.000Z'),
           isFocused: false,
@@ -808,6 +821,7 @@ describe('UserDataSyncAdapter', () => {
           id: 'period-1',
           name: 'Work Period',
           description: 'Work hours',
+          blockBehaviour: BLOCK_BEHAVIOUR_ENUM.BLOCK,
           startFrom: new Date('2024-01-01T09:00:00.000Z'),
           endTo: new Date('2024-01-01T17:00:00.000Z'),
           isFocused: false,

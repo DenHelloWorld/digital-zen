@@ -16,30 +16,34 @@ import {
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 
-import { map, distinctUntilChanged } from 'rxjs';
+import { distinctUntilChanged, map } from 'rxjs';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import {
   ALL_DAYS_OF_WEEK,
   arrayMinLengthValidator,
+  ICONS,
   IFocus,
   IFocusForm,
   logger,
-  requiredTrimmedValidator,
-  timeRangeValidator,
-  UI_TEXT,
-  ICONS,
-  WEBSITE_FACEBOOK,
-  WEBSITE_TIKTOK,
-  uniquePeriodNameValidator,
-  TIME_RANGES,
   MANUAL_TIME_RANGE,
   noUnblockableWebsitesValidator,
+  requiredTrimmedValidator,
+  TIME_RANGES,
+  timeRangeValidator,
+  UI_TEXT,
+  uniquePeriodNameValidator,
   VALIDATION_ERROR_KEYS,
+  WEBSITE_FACEBOOK,
+  WEBSITE_TIKTOK,
 } from '../../../common';
 import { WeekdaysSelectorComponent } from '../../../common/components/weekdays-selector/weekdays-selector.component';
 import { FocusService } from '../../../focus/services';
 import { DynamicInputComponent } from '../../../common/components/dynamic-input/dynamic-input.component';
 import { MultiSelectorComponent } from '../../../common/components/multi-selector/multi-selector.component';
+import {
+  BLOCK_BEHAVIOUR_ENUM,
+  BlockBehaviourType,
+} from '../../../common/enums/block-behaviour.enum';
 
 /**
  * Period form component for creating and editing focus periods
@@ -110,6 +114,14 @@ export class PeriodFormComponent implements OnInit {
     'type',
   ];
 
+  protected blockOptions = [
+    { id: BLOCK_BEHAVIOUR_ENUM.BLOCK, name: 'Block' },
+    { id: BLOCK_BEHAVIOUR_ENUM.WARN, name: 'Warn' },
+  ];
+
+  protected selectedBlockBehaviours = signal<{ id: BlockBehaviourType; name: string }[]>([
+    this.blockOptions[0],
+  ]);
   protected selectedTimeRanges: WritableSignal<IFocus.TimeRange[]> = signal<IFocus.TimeRange[]>([]);
   protected selectedDays: WritableSignal<IFocus.DayOfWeek[]> = signal<IFocus.DayOfWeek[]>([]);
   protected selectedWebSites: WritableSignal<IFocus.WebSite[]> = signal<IFocus.WebSite[]>([
@@ -142,6 +154,13 @@ export class PeriodFormComponent implements OnInit {
       .pipe(takeUntilDestroyed(this.#destroyRef))
       .subscribe((value: IFocus.WebSite[]) => {
         this.form.controls.webSites.setValue(value);
+      });
+
+    toObservable(this.selectedBlockBehaviours, { injector: this.#injector })
+      .pipe(takeUntilDestroyed(this.#destroyRef))
+      .subscribe(value => {
+        this.form.controls.blockBehaviour.setValue(value[0].id);
+        console.log('Block behaviour set to:', value[0].id);
       });
 
     effect(
@@ -187,6 +206,7 @@ export class PeriodFormComponent implements OnInit {
         startFrom: this.#timeStringToDate(rawValue.startFrom),
         endTo: this.#timeStringToDate(rawValue.endTo),
         webSites: webSitesWithFavicons,
+        blockBehaviour: rawValue.blockBehaviour,
         daysOfWeek: rawValue.daysOfWeek,
         focusedTimes: rawValue.focusedTimes,
         isFocused: rawValue.isFocused,
@@ -292,6 +312,9 @@ export class PeriodFormComponent implements OnInit {
         focusedTimes: this.#fb.nonNullable.control([]),
         isFocused: this.#fb.nonNullable.control(false),
         sessionStartTime: this.#fb.control<Date | null>(null),
+        blockBehaviour: this.#fb.nonNullable.control<BlockBehaviourType>(
+          BLOCK_BEHAVIOUR_ENUM.BLOCK
+        ),
       },
       { validators: timeRangeValidator('startFrom', 'endTo') }
     );
@@ -316,6 +339,7 @@ export class PeriodFormComponent implements OnInit {
         focusedTimes: periodData.focusedTimes,
         isFocused: periodData.isFocused,
         sessionStartTime: periodData.sessionStartTime,
+        blockBehaviour: periodData.blockBehaviour,
       });
 
       // Set selected days
@@ -324,6 +348,13 @@ export class PeriodFormComponent implements OnInit {
 
       // Set selected websites
       this.selectedWebSites.set(periodData.webSites);
+
+      if (periodData.blockBehaviour) {
+        const found = this.blockOptions.find(opt => opt.id === periodData.blockBehaviour);
+        if (found) {
+          this.selectedBlockBehaviours.set([found]);
+        }
+      }
     }
   }
 

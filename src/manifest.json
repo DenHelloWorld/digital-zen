@@ -9,7 +9,8 @@
     "storage",
     "unlimitedStorage",
     "activeTab",
-    "identity"
+    "identity",
+    "scripting"
   ],
   "oauth2": {
     "client_id": "__OAUTH_CLIENT_ID__",
@@ -21,7 +22,7 @@
   "host_permissions": ["<all_urls>"],
   "web_accessible_resources": [
     {
-      "resources": ["blocked-page.html", "blocked-timer.js"],
+      "resources": ["blocked-page.html", "blocked-timer.js", "banner.html", "inject-loader.js"],
       "matches": ["<all_urls>"]
     }
   ],

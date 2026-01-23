@@ -69,6 +69,10 @@ export const UI_TEXT = Object.freeze({
     },
     ACTIVATE_BUTTON: 'Activate',
     ACTIVATE_DISABLED_TOOLTIP: 'Stop focus to activate this period',
+    BLOCK_BEHAVIOUR: {
+      BANNER_BLOCK: 'Tabs will be closed for the websites below',
+      BANNER_WARN: 'Warning overlay will appear on these websites',
+    },
   },
 
   // Dynamic Input Component
