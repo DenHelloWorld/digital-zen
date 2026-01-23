@@ -2,10 +2,6 @@ import { BLOCK_BEHAVIOUR_ENUM } from '../modules/common/enums/block-behaviour.en
 import { CHROME_COMMAND_ENUM } from '../modules/common/enums/chrome-command.enum';
 
 export class BlockerService {
-  public updateBlockRules(domainList: string[]): void {
-    this.updateBlockRulesWithBehaviour(domainList, BLOCK_BEHAVIOUR_ENUM.BLOCK);
-  }
-
   public updateBlockRulesWithBehaviour(
     domainList: string[],
     behaviour: BLOCK_BEHAVIOUR_ENUM
