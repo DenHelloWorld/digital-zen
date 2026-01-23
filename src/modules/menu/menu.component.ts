@@ -1,6 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, signal, WritableSignal } from '@angular/core';
-import { PeriodFormComponent } from './components/period-form';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { ICONS, UI_TEXT } from '../common';
 
 /**
@@ -21,23 +20,10 @@ import { ICONS, UI_TEXT } from '../common';
   imports: [
     // angular modules
     CommonModule,
-    // components
-    PeriodFormComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MenuComponent {
-  /** @guideline DZ_04 - Writable signal for local state */
-  protected isAddPeriodFormShow: WritableSignal<boolean> = signal(false);
-  /** @guideline DZ_10 - UI text constants */
   protected readonly uiText = UI_TEXT;
   protected readonly icons = ICONS;
-
-  protected onAddClick(): void {
-    this.isAddPeriodFormShow.set(true);
-  }
-
-  protected onFormCompleted(): void {
-    this.isAddPeriodFormShow.set(false);
-  }
 }

@@ -4,17 +4,3 @@
     <use [attr.href]="iconHref"></use>
   </svg>
 </ng-template>
-
-<div class="dz-box">
-  @if (isAddPeriodFormShow()) {
-    <dz-period-form mode="create" (completed)="onFormCompleted()" />
-  } @else {
-    <button
-      class="dz-button dz-button--md dz-button--fit shadow dz-button--mb"
-      (click)="onAddClick()"
-    >
-      {{ uiText.MENU.ADD_PERIOD_BUTTON }}
-      <ng-container *ngTemplateOutlet="icon; context: { href: icons.PLUS }"></ng-container>
-    </button>
-  }
-</div>
