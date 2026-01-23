@@ -7,3 +7,4 @@ export * from './models';
 export * from './helpers';
 export * from './pipes';
 export * from './interceptors';
+export * from './directives/progress-border.directive';
