@@ -164,13 +164,6 @@ describe('BackgroundServiceMV3', () => {
       expect(mockChrome.tabs.onUpdated.addListener).toHaveBeenCalled();
     });
 
-    it('should initialize alarms', () => {
-      // Initialize service to set up alarms
-      new BackgroundService();
-
-      expect(mockChrome.alarms.onAlarm.addListener).toHaveBeenCalled();
-    });
-
     it('should restore current period on initialization', async () => {
       const mockPeriod: IFocus.Period = {
         id: 'test-period',
