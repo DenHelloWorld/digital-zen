@@ -1,11 +1,11 @@
 import { UserDataSyncAdapter } from './user-data-sync-adapter';
 import { StorageAdapter } from './storage-adapter';
-import { API_CONFIG } from '../modules/common/constants/api-config.const';
-import { API_URLS } from '../modules/common/constants/api-urls.const';
-import { DEFAULT_PERIOD_ID } from '../modules/common/constants/default-period-id.const';
-import { IUserDataSync } from '../modules/common/models/user-data-sync.model';
-import { IFocus } from '../modules/common/models/focus.model';
-import { BLOCK_BEHAVIOUR_ENUM } from '../modules/common/enums/block-behaviour.enum';
+import { API_CONFIG } from '../../modules/common/constants/api-config.const';
+import { API_URLS } from '../../modules/common/constants/api-urls.const';
+import { DEFAULT_PERIOD_ID } from '../../modules/common/constants/default-period-id.const';
+import { IUserDataSync } from '../../modules/common/models/user-data-sync.model';
+import { IFocus } from '../../modules/common/models/focus.model';
+import { BLOCK_BEHAVIOUR_ENUM } from '../../modules/common/enums/block-behaviour.enum';
 
 describe('UserDataSyncAdapter', () => {
   let originalFetch: typeof globalThis.fetch;

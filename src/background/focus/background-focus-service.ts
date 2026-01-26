@@ -1,13 +1,13 @@
-import { IFocus } from '../modules/common/models';
-import { QUICK_FOCUS_ID } from '../modules/common/constants';
-import { CHROME_ALARM_ENUM, FOCUS_ERROR_ENUM } from '../modules/common/enums';
-import { isCurrentTimeInRange } from '../modules/common/helpers';
-import { filterBlockableWebsites } from '../modules/common/helpers';
-import { BLOCK_BEHAVIOUR_ENUM } from '../modules/common/enums/block-behaviour.enum';
-import { StorageAdapter } from './storage-adapter';
-import { UserDataSyncAdapter } from './user-data-sync-adapter';
-import { AlarmAdapter } from './alarm-adapter';
-import { ExtensionIconAdapter } from './extension-icon-adapter';
+import { IFocus } from '../../modules/common/models';
+import { QUICK_FOCUS_ID } from '../../modules/common/constants';
+import { CHROME_ALARM_ENUM, FOCUS_ERROR_ENUM } from '../../modules/common/enums';
+import { isCurrentTimeInRange } from '../../modules/common/helpers';
+import { filterBlockableWebsites } from '../../modules/common/helpers';
+import { BLOCK_BEHAVIOUR_ENUM } from '../../modules/common/enums/block-behaviour.enum';
+import { StorageAdapter } from '../common/storage-adapter';
+import { UserDataSyncAdapter } from '../common/user-data-sync-adapter';
+import { AlarmAdapter } from '../common/alarm-adapter';
+import { ExtensionIconAdapter } from '../common/extension-icon-adapter';
 import { BlockerService } from './blocker-service';
 
 export type FocusOperationResult = { success: true } | { success: false; error: FOCUS_ERROR_ENUM };

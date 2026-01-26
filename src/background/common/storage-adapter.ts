@@ -1,7 +1,8 @@
-import { IFocus } from '../modules/common/models/focus.model';
-import { CHROME_STORAGE_KEY_ENUM } from '../modules/common/enums/chrome-storage-key.enum';
-import { logger } from '../modules/common/helpers/logger';
-import { toWallTimeISO, fromWallTimeISO } from '../modules/common/helpers/time.helper';
+import { IFocus } from '../../modules/common/models/focus.model';
+import { CHROME_STORAGE_KEY_ENUM } from '../../modules/common/enums/chrome-storage-key.enum';
+import { logger } from '../../modules/common/helpers/logger';
+import { toWallTimeISO, fromWallTimeISO } from '../../modules/common/helpers/time.helper';
+import { IPomodoro } from '../../modules/common/models/pomodoro.model';
 
 /**
  * The type of data that is actually stored in storage (ISO strings instead of Date)
@@ -21,12 +22,19 @@ interface StoredFocusedTime extends Omit<IFocus.FocusedTime, 'startFrom' | 'endT
   endTo: string | null;
 }
 
+/**
+ * Internal storage format for Pomodoro State (Date -> string)
+ */
+interface StoredPomodoroState extends Omit<IPomodoro.State, 'startedAt' | 'pausedAt'> {
+  startedAt: string | null;
+  pausedAt: string | null;
+}
+
 export class StorageAdapter {
   private static readonly logger = logger.createLogger('StorageAdapter');
   private static writeQueue: Promise<unknown> = Promise.resolve();
 
-  // === Public API ===
-
+  // === Focus API ===
   static async savePeriod(period: IFocus.Period): Promise<void> {
     return this.enqueue(async () => {
       const stored = this.toStorageFormat(period);
@@ -54,12 +62,6 @@ export class StorageAdapter {
     });
   }
 
-  /**
-   * Replace all periods in storage with new periods
-   * This is an atomic operation that clears existing periods and sets new ones
-   *
-   * @param periods Array of periods to save
-   */
   static async replaceAllPeriods(periods: IFocus.Period[]): Promise<void> {
     return this.enqueue(async () => {
       const storedPeriods = periods.map(p => this.toStorageFormat(p));
@@ -99,6 +101,46 @@ export class StorageAdapter {
     const raw = rawObj as StoredPeriod;
 
     return this.fromStorageFormat(raw);
+  }
+
+  // === Pomodoro API ===
+
+  static async savePomodoroSettings(settings: IPomodoro.Settings): Promise<void> {
+    return this.enqueue(async () => {
+      await chrome.storage.local.set({ [CHROME_STORAGE_KEY_ENUM.POMODORO_SETTINGS]: settings });
+    });
+  }
+
+  static async getPomodoroSettings(): Promise<IPomodoro.Settings | null> {
+    const result = await chrome.storage.local.get(CHROME_STORAGE_KEY_ENUM.POMODORO_SETTINGS);
+    const settings = result[CHROME_STORAGE_KEY_ENUM.POMODORO_SETTINGS] as
+      | IPomodoro.Settings
+      | undefined;
+    return settings || null;
+  }
+
+  static async savePomodoroState(state: IPomodoro.State): Promise<void> {
+    return this.enqueue(async () => {
+      const stored: StoredPomodoroState = {
+        ...state,
+        startedAt: toWallTimeISO(state.startedAt),
+        pausedAt: toWallTimeISO(state.pausedAt),
+      };
+      await chrome.storage.local.set({ [CHROME_STORAGE_KEY_ENUM.POMODORO_STATE]: stored });
+    });
+  }
+
+  static async getPomodoroState(): Promise<IPomodoro.State | null> {
+    const result = await chrome.storage.local.get(CHROME_STORAGE_KEY_ENUM.POMODORO_STATE);
+    const raw = result[CHROME_STORAGE_KEY_ENUM.POMODORO_STATE] as StoredPomodoroState;
+
+    if (!raw) return null;
+
+    return {
+      ...raw,
+      startedAt: fromWallTimeISO(raw.startedAt),
+      pausedAt: fromWallTimeISO(raw.pausedAt),
+    };
   }
 
   // === Private helpers ===
