@@ -71,6 +71,16 @@
   </form>
 </aside>
 
-<main class="timer"></main>
+<main class="timer">
+  @let progress = 0.95;
+  <div
+    dzProgressBorder
+    [progress]="progress"
+    [config]="{ thickness: 12 }"
+    class="timer__progress shadow round square"
+  >
+    0:57
+  </div>
+</main>
 
 <footer class="actions"></footer>

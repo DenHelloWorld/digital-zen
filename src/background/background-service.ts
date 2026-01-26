@@ -163,11 +163,25 @@ export class BackgroundService {
    */
   private initializeAlarms(): void {
     AlarmAdapter.addListener(async alarm => {
-      if (alarm.name === CHROME_ALARM_ENUM.CHECK_FOCUS_END) {
-        const current = await StorageAdapter.getCurrentPeriod();
-        if (current?.isFocused && current.endTo && isCurrentTimeAfter(new Date(), current.endTo)) {
-          await this.#focusService.stopFocus();
+      switch (alarm.name) {
+        case CHROME_ALARM_ENUM.CHECK_FOCUS_END: {
+          const current = await StorageAdapter.getCurrentPeriod();
+          if (
+            current?.isFocused &&
+            current.endTo &&
+            isCurrentTimeAfter(new Date(), current.endTo)
+          ) {
+            await this.#focusService.stopFocus();
+          }
+          break;
         }
+
+        case CHROME_ALARM_ENUM.POMODORO_TICK:
+          await this.#pomodoroService.tick();
+          break;
+
+        default:
+          this.#logger.warn(`Unknown alarm received: ${alarm.name}`);
       }
     });
   }

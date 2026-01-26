@@ -1,10 +1,11 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ICONS, logger, UI_TEXT } from '../common';
+import { ICONS, logger, ProgressBorderDirective, UI_TEXT } from '../common';
 import { ValueStepperComponent } from '../common/components/value-stepper/value-stepper.component';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { IPomodoro } from '../common/models/pomodoro.model';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { PomodoroService } from './services/pomodoro.service';
 
 /**
  * Pomodoro timer component
@@ -30,12 +31,14 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
     // components
     ValueStepperComponent,
     ReactiveFormsModule,
+    ProgressBorderDirective,
   ],
 })
 export class PomodoroComponent implements OnInit {
   readonly #destroyRef = inject(DestroyRef);
   readonly #fb = inject(FormBuilder);
   readonly #logger = logger.createLogger('PomodoroComponent');
+  readonly #pomodoroService = inject(PomodoroService);
   protected readonly uiText = UI_TEXT;
   protected readonly icons = ICONS;
 
@@ -43,11 +46,16 @@ export class PomodoroComponent implements OnInit {
 
   public ngOnInit(): void {
     this.#initForm();
+    this.#pomodoroService.startSession();
 
     this.form.valueChanges.pipe(takeUntilDestroyed(this.#destroyRef)).subscribe(value => {
       this.#logger.info(value);
     });
   }
+
+  // public startSession(): void {
+  //   this.#pomodoroService.startSession();
+  // }
 
   #initForm(): void {
     const baseStep: IPomodoro.StepConfig = {

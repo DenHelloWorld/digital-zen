@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, Signal } from '@angular/core';
-import { FocusService } from './services';
+import { FocusService } from './services/focus.service';
 import {
   LoaderComponent,
   ICONS,
