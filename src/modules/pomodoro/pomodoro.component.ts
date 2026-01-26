@@ -1,7 +1,10 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ICONS, UI_TEXT } from '../common';
-import { ProgressBorderDirective } from '../common/directives/progress-border.directive';
+import { ICONS, logger, UI_TEXT } from '../common';
+import { ValueStepperComponent } from '../common/components/value-stepper/value-stepper.component';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { IPomodoro } from '../common/models/pomodoro.model';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 /**
  * Pomodoro timer component
@@ -23,11 +26,63 @@ import { ProgressBorderDirective } from '../common/directives/progress-border.di
   imports: [
     // angular modules
     CommonModule,
-    // directives
-    ProgressBorderDirective,
+
+    // components
+    ValueStepperComponent,
+    ReactiveFormsModule,
   ],
 })
-export class PomodoroComponent {
+export class PomodoroComponent implements OnInit {
+  readonly #destroyRef = inject(DestroyRef);
+  readonly #fb = inject(FormBuilder);
+  readonly #logger = logger.createLogger('PomodoroComponent');
   protected readonly uiText = UI_TEXT;
   protected readonly icons = ICONS;
+
+  protected form: FormGroup<IPomodoro.SettingsForm>;
+
+  public ngOnInit(): void {
+    this.#initForm();
+
+    this.form.valueChanges.pipe(takeUntilDestroyed(this.#destroyRef)).subscribe(value => {
+      this.#logger.info(value);
+    });
+  }
+
+  #initForm(): void {
+    const baseStep: IPomodoro.StepConfig = {
+      step: 1,
+      quickStep: 5,
+      min: 1,
+      max: 60,
+    };
+
+    this.form = this.#fb.group<IPomodoro.SettingsForm>({
+      workDurationMin: this.#fb.nonNullable.control<number>(25, [
+        Validators.required,
+        Validators.min(1),
+        Validators.max(90),
+      ]),
+      shortBreakMin: this.#fb.nonNullable.control<number>(5, [
+        Validators.required,
+        Validators.min(1),
+        Validators.max(15),
+      ]),
+      longBreakMin: this.#fb.nonNullable.control<number>(15, [
+        Validators.required,
+        Validators.min(1),
+        Validators.max(30),
+      ]),
+      // cyclesBeforeLongBreak: this.#fb.nonNullable.control<number>(4, [
+      //   Validators.required,
+      //   Validators.min(1),
+      // ]),
+
+      workStepConfig: this.#fb.nonNullable.control({ ...baseStep, max: 90 }),
+      shortBreakStepConfig: this.#fb.nonNullable.control({ ...baseStep, max: 15 }),
+      longBreakStepConfig: this.#fb.nonNullable.control({ ...baseStep, max: 30 }),
+
+      // autoStartNext: this.#fb.nonNullable.control<boolean>(false),
+    });
+  }
 }

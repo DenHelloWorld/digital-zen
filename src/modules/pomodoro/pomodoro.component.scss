@@ -1,8 +1,30 @@
 :host {
+  display: grid;
   width: 100%;
   height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
+  padding: var(--spacing);
+  //gap: var(--spacing-lg);
+
+  // Две колонки: настройки (300px) и всё остальное (резиновое)
+  grid-template-columns: 45% 1fr;
+
+  // Две строки: таймер (занимает верх) и футер (низ)
+  grid-template-rows: 1fr auto;
+
+  grid-template-areas:
+    'settings timer'
+    'actions actions';
+}
+
+.settings {
+  grid-area: settings;
+}
+
+.timer {
+  grid-area: timer;
+}
+
+.actions {
+  grid-area: actions;
+  height: var(--header-height);
 }

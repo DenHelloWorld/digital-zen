@@ -1,0 +1,47 @@
+:host {
+  .dz-stepper {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    justify-content: center;
+    gap: var(--spacing);
+    border-radius: var(--radius);
+    background-color: var(--color-component-bg-light);
+    overflow: hidden;
+
+    &__main,
+    &__footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    &__main {
+      padding: 0 var(--spacing-xs);
+      font-size: var(--font-size-xl);
+    }
+
+    &__footer {
+      .dz-button {
+        flex: 1;
+        border-radius: 0;
+      }
+    }
+
+    .dz-button {
+      text-wrap: nowrap;
+
+      &--left {
+        .dz-icon {
+          transform: rotate(90deg);
+        }
+      }
+
+      &--right {
+        .dz-icon {
+          transform: rotate(-90deg);
+        }
+      }
+    }
+  }
+}

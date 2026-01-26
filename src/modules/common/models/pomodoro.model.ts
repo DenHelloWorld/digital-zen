@@ -1,3 +1,5 @@
+import { FormControl } from '@angular/forms';
+
 export namespace IPomodoro {
   /** Configuration for value increments and bounds in steppers */
   export interface StepConfig {
@@ -31,6 +33,17 @@ export namespace IPomodoro {
 
     /** Whether to automatically transition to the next phase */
     autoStartNext: boolean;
+  }
+
+  export interface SettingsForm {
+    workDurationMin: FormControl<number>;
+    shortBreakMin: FormControl<number>;
+    longBreakMin: FormControl<number>;
+    // cyclesBeforeLongBreak: FormControl<number>;
+    workStepConfig: FormControl<StepConfig>;
+    shortBreakStepConfig: FormControl<StepConfig>;
+    longBreakStepConfig: FormControl<StepConfig>;
+    // autoStartNext: FormControl<boolean>;
   }
 
   /** Current real-time state of the timer */

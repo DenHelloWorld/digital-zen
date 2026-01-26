@@ -1,0 +1,67 @@
+<ng-template #icon let-iconHref="href">
+  <svg class="dz-icon" aria-hidden="true" focusable="false">
+    <use [attr.href]="iconHref"></use>
+  </svg>
+</ng-template>
+
+<div class="shadow shadow--hoverless dz-stepper">
+  <header class="dz-stepper__header">
+    {{ title() }}
+  </header>
+
+  <main class="dz-stepper__main">
+    <button
+      class="dz-button dz-button--sm dz-button--round dz-button--activated dz-button--left"
+      [class.shadow]="!isDecrementDisabled()"
+      [class.dz-button--error]="isDecrementDisabled()"
+      [disabled]="isDecrementDisabled()"
+      (click)="decrement()"
+    >
+      <ng-container
+        *ngTemplateOutlet="icon; context: { href: icons.ARROW_DROP_DOWN }"
+      ></ng-container>
+    </button>
+
+    <div class="dz-stepper__value-wrapper">
+      <span class="dz-stepper__value">{{ value() }} {{ valueLabel() }}</span>
+    </div>
+
+    <button
+      class="dz-button dz-button--sm dz-button--round dz-button--activated dz-button--right"
+      [class.shadow]="!isIncrementDisabled()"
+      [class.dz-button--error]="isIncrementDisabled()"
+      [disabled]="isIncrementDisabled()"
+      (click)="increment()"
+    >
+      <ng-container
+        *ngTemplateOutlet="icon; context: { href: icons.ARROW_DROP_DOWN }"
+      ></ng-container>
+    </button>
+  </main>
+
+  <footer class="dz-stepper__footer">
+    @if (quickStep() > 0) {
+      <button
+        class="dz-button dz-button--sm dz-button--activated dz-button--round"
+        [class.dz-button--error]="isQuickDecrementDisabled()"
+        [disabled]="isQuickDecrementDisabled()"
+        (click)="adjust(-quickStep())"
+      >
+        <ng-container *ngTemplateOutlet="icon; context: { href: icons.MINUS }"></ng-container>
+
+        {{ quickStep() }} {{ valueLabel() }}
+      </button>
+
+      <button
+        class="dz-button dz-button--sm dz-button--activated dz-button--round"
+        [class.dz-button--error]="isQuickIncrementDisabled()"
+        [disabled]="isQuickIncrementDisabled()"
+        (click)="adjust(quickStep())"
+      >
+        <ng-container *ngTemplateOutlet="icon; context: { href: icons.PLUS }"></ng-container>
+
+        {{ quickStep() }} {{ valueLabel() }}
+      </button>
+    }
+  </footer>
+</div>

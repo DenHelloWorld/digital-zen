@@ -5,24 +5,72 @@
   </svg>
 </ng-template>
 
-<div
-  class="dz-box"
-  dzProgressBorder
-  [progress]="0.5"
-  [config]="{ color: '#e53935', thickness: 10 }"
->
-  Test
-</div>
+<!--<div-->
+<!--  class="dz-box"-->
+<!--  dzProgressBorder-->
+<!--  [progress]="0.5"-->
+<!--  [config]="{ color: '#e53935', thickness: 10 }"-->
+<!--&gt;-->
+<!--  Test-->
+<!--</div>-->
 
-<div class="dz-box">
-  <button
-    dzProgressBorder
-    [progress]="0.6"
-    [config]="{ color: 'red', thickness: 10, trackColor: 'green' }"
-    class="dz-button dz-button--round dz-button--lg"
-  >
-    <svg class="dz-icon" aria-hidden="true" focusable="false">
-      <use [attr.href]="icons.MOON" />
-    </svg>
-  </button>
-</div>
+<!--<div class="dz-box">-->
+<!--  <button-->
+<!--    dzProgressBorder-->
+<!--    [progress]="0.6"-->
+<!--    [config]="{ color: 'red', thickness: 10, trackColor: 'green' }"-->
+<!--    class="dz-button dz-button&#45;&#45;round dz-button&#45;&#45;lg"-->
+<!--  >-->
+<!--    <svg class="dz-icon" aria-hidden="true" focusable="false">-->
+<!--      <use [attr.href]="icons.MOON" />-->
+<!--    </svg>-->
+<!--  </button>-->
+<!--</div>-->
+
+<aside class="settings">
+  <form class="dz-form" [formGroup]="form">
+    @let workStepConfig = form.controls.workStepConfig.value;
+    @let shortBreakStepConfig = form.controls.shortBreakStepConfig.value;
+    @let longBreakStepConfig = form.controls.longBreakStepConfig.value;
+
+    <div class="dz-form__field">
+      <dz-value-stepper
+        title="Session Length"
+        valueLabel="min"
+        formControlName="workDurationMin"
+        [min]="workStepConfig.min"
+        [max]="workStepConfig.max"
+        [step]="workStepConfig.step"
+        [quickStep]="workStepConfig.quickStep"
+      />
+    </div>
+
+    <div class="dz-form__field">
+      <dz-value-stepper
+        valueLabel="min"
+        title="Break Length"
+        formControlName="shortBreakMin"
+        [min]="shortBreakStepConfig.min"
+        [max]="shortBreakStepConfig.max"
+        [step]="shortBreakStepConfig.step"
+        [quickStep]="shortBreakStepConfig.quickStep"
+      />
+    </div>
+
+    <div class="dz-form__field">
+      <dz-value-stepper
+        valueLabel="min"
+        title="Long Break Length"
+        formControlName="longBreakMin"
+        [min]="longBreakStepConfig.min"
+        [max]="longBreakStepConfig.max"
+        [step]="longBreakStepConfig.step"
+        [quickStep]="longBreakStepConfig.quickStep"
+      />
+    </div>
+  </form>
+</aside>
+
+<main class="timer"></main>
+
+<footer class="actions"></footer>
