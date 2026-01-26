@@ -1,7 +1,8 @@
-import { inject, Injectable } from '@angular/core';
+import { inject, Injectable, signal } from '@angular/core';
 import {
   CHROME_COMMAND_ENUM,
   CHROME_STORAGE_KEY_ENUM,
+  ChromeCommandType,
   ChromeStorageService,
   logger,
 } from '../../common';
@@ -11,6 +12,32 @@ interface InitialStorageSchema {
   [CHROME_STORAGE_KEY_ENUM.POMODORO_STATE]: IPomodoro.State;
   [CHROME_STORAGE_KEY_ENUM.POMODORO_SETTINGS]: IPomodoro.Settings;
 }
+
+const initialSettings: IPomodoro.Settings = {
+  workDurationMin: 20,
+  shortBreakMin: 5,
+  longBreakMin: 15,
+  cyclesBeforeLongBreak: 2,
+  autoStartNext: false,
+  workStepConfig: {
+    step: 1,
+    quickStep: 5,
+    min: 1,
+    max: 90,
+  },
+  shortBreakStepConfig: {
+    step: 1,
+    quickStep: 5,
+    min: 1,
+    max: 15,
+  },
+  longBreakStepConfig: {
+    step: 1,
+    quickStep: 5,
+    min: 1,
+    max: 30,
+  },
+};
 
 /**
  * Service for managing Pomodoro sessions and settings
@@ -36,6 +63,12 @@ export class PomodoroService {
   /** @guideline DZ_11 - Universal Logger usage */
   readonly #logger = logger.createLogger('PomodoroService');
 
+  readonly #state = signal<IPomodoro.State | null>(null);
+  readonly #settings = signal<IPomodoro.Settings>(initialSettings);
+
+  public readonly state = this.#state.asReadonly();
+  public readonly settings = this.#settings.asReadonly();
+
   constructor() {
     this.#syncInitialState();
     this.#listenToStorageChanges();
@@ -43,26 +76,11 @@ export class PomodoroService {
 
   public startSession() {
     if (this.#isChromeRuntime) {
-      const settings = {
-        workDurationMin: 1,
-        /** Current short break duration in minutes */
-        shortBreakMin: 1,
-        /** Current long break duration in minutes */
-        longBreakMin: 5,
-        /** Number of work cycles required to trigger a long break */
-        cyclesBeforeLongBreak: 2,
-
-        /** Stepper constraints for work session settings */
-        // workStepConfig: StepConfig;
-        // /** Stepper constraints for short break settings */
-        // shortBreakStepConfig: StepConfig;
-        // /** Stepper constraints for long break settings */
-        // longBreakStepConfig: StepConfig;
-        //
-        // /** Whether to automatically transition to the next phase */
-        // autoStartNext: boolean;
-      };
-      chrome.runtime.sendMessage({ command: CHROME_COMMAND_ENUM.START_POMODORO, settings });
+      const settings: IPomodoro.Settings = this.settings();
+      chrome.runtime.sendMessage<{ command: ChromeCommandType; settings: IPomodoro.Settings }>({
+        command: CHROME_COMMAND_ENUM.START_POMODORO,
+        settings,
+      });
     }
   }
 
@@ -78,8 +96,14 @@ export class PomodoroService {
           const state = result[CHROME_STORAGE_KEY_ENUM.POMODORO_STATE];
           const settings = result[CHROME_STORAGE_KEY_ENUM.POMODORO_SETTINGS];
 
-          this.#logger.info('state', state);
-          this.#logger.info('settings', settings);
+          if (settings) {
+            this.#settings.set(settings);
+            this.#logger.info('settings', settings);
+          }
+          if (state) {
+            this.#state.set(state);
+            this.#logger.info('state', state);
+          }
         }
       );
     }
@@ -90,15 +114,19 @@ export class PomodoroService {
       chrome.storage.onChanged.addListener((changes, areaName) => {
         if (areaName === 'local') {
           if (changes[CHROME_STORAGE_KEY_ENUM.POMODORO_SETTINGS]) {
-            const newSettings = changes[CHROME_STORAGE_KEY_ENUM.POMODORO_SETTINGS];
+            const newSettings = changes[CHROME_STORAGE_KEY_ENUM.POMODORO_SETTINGS]
+              .newValue as IPomodoro.Settings;
             if (newSettings) {
+              this.#settings.set(newSettings);
               this.#logger.info('newSettings', newSettings);
             }
           }
 
           if (changes[CHROME_STORAGE_KEY_ENUM.POMODORO_STATE]) {
-            const newState = changes[CHROME_STORAGE_KEY_ENUM.POMODORO_STATE];
+            const newState = changes[CHROME_STORAGE_KEY_ENUM.POMODORO_STATE]
+              .newValue as IPomodoro.State;
             if (newState) {
+              this.#state.set(newState);
               this.#logger.info('newState', newState);
             }
           }

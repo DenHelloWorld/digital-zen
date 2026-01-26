@@ -84,6 +84,7 @@ export const ICONS = Object.freeze({
   ERROR: '#icon-error',
   /** Icon representing a block action */
   BLOCK: '#icon-block',
+  PAUSE: '#icon-pause',
 } as const);
 
 /**

@@ -1,10 +1,17 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  effect,
+  inject,
+  Injector,
+  OnInit,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ICONS, logger, ProgressBorderDirective, UI_TEXT } from '../common';
+import { ICONS, ProgressBorderDirective, UI_TEXT } from '../common';
 import { ValueStepperComponent } from '../common/components/value-stepper/value-stepper.component';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { IPomodoro } from '../common/models/pomodoro.model';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { PomodoroService } from './services/pomodoro.service';
 
 /**
@@ -35,62 +42,81 @@ import { PomodoroService } from './services/pomodoro.service';
   ],
 })
 export class PomodoroComponent implements OnInit {
-  readonly #destroyRef = inject(DestroyRef);
+  readonly #injector = inject(Injector);
   readonly #fb = inject(FormBuilder);
-  readonly #logger = logger.createLogger('PomodoroComponent');
   readonly #pomodoroService = inject(PomodoroService);
+
   protected readonly uiText = UI_TEXT;
   protected readonly icons = ICONS;
+
+  protected readonly pomodoroState = this.#pomodoroService.state;
+  protected readonly pomodoroSettings = this.#pomodoroService.settings;
+
+  protected readonly timeLeftSec = computed(() => this.pomodoroState()?.timeLeftSec);
+  protected readonly isRunning = computed(() => this.pomodoroState()?.isRunning);
+  // protected readonly isRunning = signal(false);
+  protected readonly isPaused = computed(() => this.pomodoroState()?.isPaused);
+  protected readonly phase = computed(() => this.pomodoroState()?.phase);
 
   protected form: FormGroup<IPomodoro.SettingsForm>;
 
   public ngOnInit(): void {
-    this.#initForm();
-    this.#pomodoroService.startSession();
+    if (this.pomodoroSettings()) {
+      this.#initForm();
+    }
 
-    this.form.valueChanges.pipe(takeUntilDestroyed(this.#destroyRef)).subscribe(value => {
-      this.#logger.info(value);
-    });
+    /**
+     * @guideline DZ_04
+     * Reactive effect to synchronize form interactivity with timer state.
+     * Prevents configuration changes while a Pomodoro session is active.
+     */
+    effect(
+      () => {
+        const isRunning = this.isRunning();
+        const method = isRunning ? 'disable' : 'enable';
+
+        this.form.controls.workDurationMin[method]();
+        this.form.controls.shortBreakMin[method]();
+        this.form.controls.longBreakMin[method]();
+      },
+      { injector: this.#injector }
+    );
   }
 
-  // public startSession(): void {
-  //   this.#pomodoroService.startSession();
-  // }
+  public startSession(): void {
+    this.#pomodoroService.startSession();
+    // this.isRunning.set(true);
+  }
 
   #initForm(): void {
-    const baseStep: IPomodoro.StepConfig = {
-      step: 1,
-      quickStep: 5,
-      min: 1,
-      max: 60,
-    };
+    const initSettings = this.pomodoroSettings();
 
     this.form = this.#fb.group<IPomodoro.SettingsForm>({
-      workDurationMin: this.#fb.nonNullable.control<number>(25, [
+      workDurationMin: this.#fb.nonNullable.control<number>(initSettings.workDurationMin, [
         Validators.required,
-        Validators.min(1),
-        Validators.max(90),
+        Validators.min(initSettings.workStepConfig.min),
+        Validators.max(initSettings.workStepConfig.max),
       ]),
-      shortBreakMin: this.#fb.nonNullable.control<number>(5, [
+      shortBreakMin: this.#fb.nonNullable.control<number>(initSettings.shortBreakMin, [
         Validators.required,
-        Validators.min(1),
-        Validators.max(15),
+        Validators.min(initSettings.shortBreakStepConfig.min),
+        Validators.max(initSettings.shortBreakStepConfig.max),
       ]),
-      longBreakMin: this.#fb.nonNullable.control<number>(15, [
+      longBreakMin: this.#fb.nonNullable.control<number>(initSettings.longBreakMin, [
         Validators.required,
-        Validators.min(1),
-        Validators.max(30),
+        Validators.min(initSettings.longBreakStepConfig.min),
+        Validators.max(initSettings.longBreakStepConfig.max),
       ]),
-      // cyclesBeforeLongBreak: this.#fb.nonNullable.control<number>(4, [
-      //   Validators.required,
-      //   Validators.min(1),
-      // ]),
 
-      workStepConfig: this.#fb.nonNullable.control({ ...baseStep, max: 90 }),
-      shortBreakStepConfig: this.#fb.nonNullable.control({ ...baseStep, max: 15 }),
-      longBreakStepConfig: this.#fb.nonNullable.control({ ...baseStep, max: 30 }),
+      cyclesBeforeLongBreak: this.#fb.nonNullable.control<number>(4, [
+        Validators.required,
+        Validators.min(1),
+      ]),
+      autoStartNext: this.#fb.nonNullable.control<boolean>(initSettings.autoStartNext),
 
-      // autoStartNext: this.#fb.nonNullable.control<boolean>(false),
+      workStepConfig: this.#fb.nonNullable.control(initSettings.workStepConfig),
+      shortBreakStepConfig: this.#fb.nonNullable.control(initSettings.shortBreakStepConfig),
+      longBreakStepConfig: this.#fb.nonNullable.control(initSettings.longBreakStepConfig),
     });
   }
 }

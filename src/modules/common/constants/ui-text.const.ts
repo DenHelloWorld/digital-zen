@@ -138,4 +138,21 @@ export const UI_TEXT = Object.freeze({
       ERROR_MESSAGE: 'An error occurred. Please try again.',
     },
   },
+
+  POMODORO: {
+    TITLES: {
+      SESSION_LENGTH: 'Session Length',
+      BREAK_LENGTH: 'Break Length',
+      LONG_BREAK_LENGTH: 'Long Break Length',
+    },
+    BUTTONS: {
+      START: 'Start Studying',
+      RESUME: 'Resume',
+      PAUSE: 'Pause',
+      RESET: 'Reset',
+    },
+    UNITS: {
+      MINUTES: 'min',
+    },
+  },
 });

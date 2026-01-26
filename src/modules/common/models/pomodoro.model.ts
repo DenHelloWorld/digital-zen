@@ -39,11 +39,11 @@ export namespace IPomodoro {
     workDurationMin: FormControl<number>;
     shortBreakMin: FormControl<number>;
     longBreakMin: FormControl<number>;
-    // cyclesBeforeLongBreak: FormControl<number>;
+    cyclesBeforeLongBreak: FormControl<number>;
     workStepConfig: FormControl<StepConfig>;
     shortBreakStepConfig: FormControl<StepConfig>;
     longBreakStepConfig: FormControl<StepConfig>;
-    // autoStartNext: FormControl<boolean>;
+    autoStartNext: FormControl<boolean>;
   }
 
   /** Current real-time state of the timer */
