@@ -11,7 +11,15 @@
         [class.dz-button--activated]="isSelected(entity)"
         (click)="toggle(entity)"
       >
-        {{ getLabel(entity) | titlecase }}
+        @if (itemTemplate()) {
+          <ng-container
+            [ngTemplateOutlet]="itemTemplate()!"
+            [ngTemplateOutletContext]="{ $implicit: entity }"
+          >
+          </ng-container>
+        } @else {
+          {{ getLabel(entity) | titlecase }}
+        }
       </button>
     </li>
   }

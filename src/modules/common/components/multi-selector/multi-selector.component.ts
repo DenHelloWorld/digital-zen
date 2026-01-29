@@ -1,12 +1,14 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  contentChild,
   input,
   InputSignal,
   model,
   ModelSignal,
+  TemplateRef,
 } from '@angular/core';
-import { TitleCasePipe } from '@angular/common';
+import { NgTemplateOutlet, TitleCasePipe } from '@angular/common';
 
 /**
  * Generic multi-selector component for selecting multiple items from a list
@@ -27,6 +29,8 @@ import { TitleCasePipe } from '@angular/common';
   templateUrl: './multi-selector.component.html',
   styleUrls: ['./multi-selector.component.scss'],
   imports: [
+    // angular
+    NgTemplateOutlet,
     // pipes
     TitleCasePipe,
   ],
@@ -51,6 +55,8 @@ export class MultiSelectorComponent<T> {
 
   /** @guideline DZ_04 - ModelSignal for two-way binding */
   public readonly selectedEntities: ModelSignal<T[] | undefined> = model<T[]>();
+
+  public readonly itemTemplate = contentChild<TemplateRef<{ $implicit: T }>>('itemTemplate');
 
   protected isSelected = (item: T): boolean => {
     const selected = this.selectedEntities() ?? [];
