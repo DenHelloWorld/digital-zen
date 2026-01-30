@@ -32,17 +32,18 @@ import { IStepBarOption, StepBarComponent } from '../common/components/step-bar/
   templateUrl: './pomodoro.component.html',
   styleUrls: ['./pomodoro.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  standalone: true,
   imports: [
     // angular modules
     CommonModule,
+    ReactiveFormsModule,
 
     // components
     ValueStepperComponent,
-    ReactiveFormsModule,
-    ProgressBorderDirective,
     MultiSelectorComponent,
     StepBarComponent,
+
+    // directives
+    ProgressBorderDirective,
   ],
 })
 export class PomodoroComponent implements OnInit {
@@ -79,7 +80,6 @@ export class PomodoroComponent implements OnInit {
 
   protected readonly timeLeftSec = computed(() => this.pomodoroState()?.timeLeftSec);
   protected readonly isRunning = computed(() => this.pomodoroState()?.isRunning);
-  // protected readonly isRunning = signal(false);
   protected readonly isPaused = computed(() => this.pomodoroState()?.isPaused);
   protected readonly currentPhase = computed(() => {
     return [
@@ -136,7 +136,6 @@ export class PomodoroComponent implements OnInit {
 
   public startSession(): void {
     this.#pomodoroService.startSession();
-    // this.isRunning.set(true);
   }
 
   #initForm(): void {

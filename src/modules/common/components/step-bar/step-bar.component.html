@@ -6,7 +6,11 @@
 
 <ul class="dz-step-bar__list" [class]="'dz-step-bar__list--' + orientation()">
   @for (option of options(); track option.value; let last = $last) {
-    <li class="dz-step-bar__container" [title]="option.label">
+    <li
+      class="dz-step-bar__container"
+      [class]="'dz-step-bar__container--' + orientation()"
+      [title]="option.label"
+    >
       <button
         class="dz-button dz-button--md"
         [disabled]="isDisabled()"
