@@ -45,6 +45,7 @@ export class MultiSelectorComponent<T> {
   public readonly orientation: InputSignal<'vertical' | 'horizontal'> = input<
     'vertical' | 'horizontal'
   >('vertical');
+  public readonly size = input<'sm' | 'md' | 'lg'>('sm');
   public readonly isSelectable: InputSignal<boolean> = input<boolean>(true);
   public readonly highlightedId: InputSignal<T[keyof T] | null> = input<T[keyof T] | null>(null);
   /**

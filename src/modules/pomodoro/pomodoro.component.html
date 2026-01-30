@@ -52,12 +52,30 @@
 <main class="timer">
   @let progress = 0.95;
   <div
+    class="timer__progress shadow round square"
     dzProgressBorder
     [progress]="progress"
-    [config]="{ thickness: 12 }"
-    class="timer__progress shadow round square"
+    [progressConfig]="{ thickness: 12 }"
   >
     {{ timeLeftSec() }}
+  </div>
+
+  <div class="timer__phase">
+    <dz-multi-selector
+      [isSelectable]="false"
+      [entities]="allPhases"
+      [selectedEntities]="currentPhase()"
+      [labelKey]="'phase'"
+      [idKey]="'phase'"
+      size="md"
+      orientation="horizontal"
+    >
+      <ng-template #itemTemplate let-item>
+        @if (item.icon) {
+          <ng-container *ngTemplateOutlet="icon; context: { href: item.icon }" />
+        }
+      </ng-template>
+    </dz-multi-selector>
   </div>
 </main>
 

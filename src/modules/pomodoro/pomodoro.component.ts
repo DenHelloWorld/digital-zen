@@ -13,6 +13,7 @@ import { ValueStepperComponent } from '../common/components/value-stepper/value-
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { IPomodoro } from '../common/models/pomodoro.model';
 import { PomodoroService } from './services/pomodoro.service';
+import { MultiSelectorComponent } from '../common/components/multi-selector/multi-selector.component';
 
 /**
  * Pomodoro timer component
@@ -39,6 +40,7 @@ import { PomodoroService } from './services/pomodoro.service';
     ValueStepperComponent,
     ReactiveFormsModule,
     ProgressBorderDirective,
+    MultiSelectorComponent,
   ],
 })
 export class PomodoroComponent implements OnInit {
@@ -48,6 +50,27 @@ export class PomodoroComponent implements OnInit {
 
   protected readonly uiText = UI_TEXT;
   protected readonly icons = ICONS;
+  protected readonly allPhases: {
+    phase: IPomodoro.IPomodoroPhase;
+    icon: string | null;
+  }[] = [
+    {
+      phase: IPomodoro.EPomodoroPhase.IDLE,
+      icon: this.icons.PAUSE,
+    },
+    {
+      phase: IPomodoro.EPomodoroPhase.LONG_BREAK,
+      icon: this.icons.PILLOW,
+    },
+    {
+      phase: IPomodoro.EPomodoroPhase.WORK,
+      icon: this.icons.SCHOOL,
+    },
+    {
+      phase: IPomodoro.EPomodoroPhase.SHORT_BREAK,
+      icon: this.icons.COFFEE,
+    },
+  ];
 
   protected readonly pomodoroState = this.#pomodoroService.state;
   protected readonly pomodoroSettings = this.#pomodoroService.settings;
@@ -56,7 +79,14 @@ export class PomodoroComponent implements OnInit {
   protected readonly isRunning = computed(() => this.pomodoroState()?.isRunning);
   // protected readonly isRunning = signal(false);
   protected readonly isPaused = computed(() => this.pomodoroState()?.isPaused);
-  protected readonly phase = computed(() => this.pomodoroState()?.phase);
+  protected readonly currentPhase = computed(() => {
+    return [
+      {
+        phase: this.pomodoroState()?.phase ?? IPomodoro.EPomodoroPhase.IDLE,
+        icon: null,
+      },
+    ];
+  });
 
   protected form: FormGroup<IPomodoro.SettingsForm>;
 

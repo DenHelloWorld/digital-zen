@@ -16,7 +16,7 @@ export interface ProgressBorderConfig {
   trackColor?: string;
 }
 
-const DEFAULT_CONFIG: Required<ProgressBorderConfig> = {
+const DEFAULT_PROGRESS_CONFIG: Required<ProgressBorderConfig> = {
   color: '',
   thickness: 4,
   trackColor: '',
@@ -33,7 +33,7 @@ export class ProgressBorderDirective implements OnInit, OnDestroy {
   #resizeObserver?: ResizeObserver;
   #themeObserver?: MutationObserver;
 
-  public readonly config = input<ProgressBorderConfig>();
+  public readonly progressConfig = input<ProgressBorderConfig>();
   public readonly progress = input<number>();
 
   ngOnInit(): void {
@@ -46,7 +46,7 @@ export class ProgressBorderDirective implements OnInit, OnDestroy {
     effect(
       () => {
         const p = this.progress() ?? 0;
-        void this.config();
+        void this.progressConfig();
 
         const clamped = Math.min(Math.max(p, 0), 1);
         this.#progressSignal.set(clamped);
@@ -71,7 +71,7 @@ export class ProgressBorderDirective implements OnInit, OnDestroy {
     const computed = window.getComputedStyle(el);
 
     const varAccent = computed.getPropertyValue('--color-zen-accent').trim() || '#ac37ff';
-    const cfg = { ...DEFAULT_CONFIG, ...this.config() };
+    const cfg = { ...DEFAULT_PROGRESS_CONFIG, ...this.progressConfig() };
     const strokeColor = cfg.color || varAccent;
 
     const trackColor = cfg.trackColor || `color-mix(in srgb, ${strokeColor}, transparent 80%)`;

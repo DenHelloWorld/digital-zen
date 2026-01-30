@@ -59,7 +59,7 @@ export namespace IPomodoro {
     totalCycles: number;
 
     /** Current active phase of the Pomodoro (Work, Break, etc.) */
-    phase: EPomodoroPhase;
+    phase: IPomodoroPhase;
 
     /** Remaining time in seconds for the current phase */
     timeLeftSec: number;
@@ -95,7 +95,7 @@ export namespace IPomodoro {
   }
 
   /** Union type representing valid Pomodoro phases */
-  export type TPomodoroPhase =
+  export type IPomodoroPhase =
     | EPomodoroPhase.WORK
     | EPomodoroPhase.SHORT_BREAK
     | EPomodoroPhase.LONG_BREAK
