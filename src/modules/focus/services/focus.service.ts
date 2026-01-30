@@ -53,9 +53,9 @@ export class FocusService {
   /** @guideline DZ_08 - Private readonly field for runtime check */
   readonly #isChromeRuntime: boolean = !!chrome.runtime;
   /** @guideline DZ_02, DZ_08, DZ_09 - Dependency injection with inject(), private #, readonly */
-  readonly #toastService: DzToastService = inject(DzToastService);
-  readonly #chromeStorageService: ChromeStorageService = inject(ChromeStorageService);
-  readonly #destroyRef: DestroyRef = inject(DestroyRef);
+  readonly #toastService = inject(DzToastService);
+  readonly #chromeStorageService = inject(ChromeStorageService);
+  readonly #destroyRef = inject(DestroyRef);
   /** @guideline DZ_11 - Universal Logger usage */
   readonly #logger = logger.createLogger('FocusService');
 
@@ -120,7 +120,7 @@ export class FocusService {
     return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
   });
 
-  public constructor() {
+  constructor() {
     this.#syncInitialState();
     this.#listenToStorageChanges();
     this.#getActiveTab();

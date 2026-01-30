@@ -24,7 +24,7 @@ export class ThemeService {
   readonly #chromeStorageService: ChromeStorageService = inject(ChromeStorageService);
 
   /** @guideline DZ_04, DZ_08 - Private writable signal for internal state */
-  readonly #theme: WritableSignal<ColorSchemaType> = signal(COLOR_SCHEMA_ENUM.LIGHT);
+  readonly #theme: WritableSignal<ColorSchemaType> = signal(COLOR_SCHEMA_ENUM.DARK);
   /** @guideline DZ_04 - Public readonly signal for consumers */
   public readonly theme: Signal<ColorSchemaType> = this.#theme.asReadonly();
 

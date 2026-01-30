@@ -1,5 +1,5 @@
-import { BLOCK_BEHAVIOUR_ENUM } from '../modules/common/enums/block-behaviour.enum';
-import { CHROME_COMMAND_ENUM } from '../modules/common/enums/chrome-command.enum';
+import { BLOCK_BEHAVIOUR_ENUM } from '../../modules/common/enums/block-behaviour.enum';
+import { CHROME_COMMAND_ENUM } from '../../modules/common/enums/chrome-command.enum';
 
 export class BlockerService {
   public updateBlockRulesWithBehaviour(

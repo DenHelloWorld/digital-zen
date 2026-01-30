@@ -1,6 +1,6 @@
 import { BackgroundService } from './background-service';
-import { StorageAdapter } from './storage-adapter';
-import { UserDataSyncAdapter } from './user-data-sync-adapter';
+import { StorageAdapter } from './common/storage-adapter';
+import { UserDataSyncAdapter } from './common/user-data-sync-adapter';
 import { IFocus } from '../modules/common/models/focus.model';
 import { QUICK_FOCUS_ID } from '../modules/common/constants/quick-focus-id.const';
 import { CHROME_COMMAND_ENUM } from '../modules/common/enums/chrome-command.enum';

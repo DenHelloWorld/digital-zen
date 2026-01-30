@@ -37,7 +37,7 @@ import {
   WEBSITE_TIKTOK,
 } from '../../../common';
 import { WeekdaysSelectorComponent } from '../../../common/components/weekdays-selector/weekdays-selector.component';
-import { FocusService } from '../../services';
+import { FocusService } from '../../services/focus.service';
 import { DynamicInputComponent } from '../../../common/components/dynamic-input/dynamic-input.component';
 import { MultiSelectorComponent } from '../../../common/components/multi-selector/multi-selector.component';
 import {

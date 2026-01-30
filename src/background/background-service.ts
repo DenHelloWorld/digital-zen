@@ -1,7 +1,7 @@
 /// <reference types="chrome"/>
-import { StorageAdapter } from './storage-adapter';
-import { UserDataSyncAdapter } from './user-data-sync-adapter';
-import { GoogleAuthAdapter } from './google-auth-adapter';
+import { StorageAdapter } from './common/storage-adapter';
+import { UserDataSyncAdapter } from './common/user-data-sync-adapter';
+import { GoogleAuthAdapter } from './common/google-auth-adapter';
 import { IFocus } from '../modules/common/models';
 import {
   CHROME_COMMAND_ENUM,
@@ -10,9 +10,10 @@ import {
   FOCUS_ERROR_ENUM,
 } from '../modules/common/enums';
 import { isCurrentTimeAfter, logger } from '../modules/common/helpers';
-import { BackgroundFocusService } from './background-focus-service';
-import { AlarmAdapter } from './alarm-adapter';
-import { ExtensionIconAdapter } from './extension-icon-adapter';
+import { BackgroundFocusService } from './focus/background-focus-service';
+import { AlarmAdapter } from './common/alarm-adapter';
+import { ExtensionIconAdapter } from './common/extension-icon-adapter';
+import { BackgroundPomodoroService } from './pomodoro/background-pomodoro.service';
 
 type FocusOperationResult = { success: true } | { success: false; error: FOCUS_ERROR_ENUM };
 
@@ -23,6 +24,7 @@ type FocusOperationResult = { success: true } | { success: false; error: FOCUS_E
 export class BackgroundService {
   readonly #logger = logger.createLogger('BackgroundService');
   readonly #focusService = new BackgroundFocusService();
+  readonly #pomodoroService = new BackgroundPomodoroService();
 
   constructor() {
     this.initializeListeners();
@@ -123,6 +125,16 @@ export class BackgroundService {
               }
               break;
             }
+            case CHROME_COMMAND_ENUM.START_POMODORO: {
+              await this.#pomodoroService.start(message.settings);
+              sendResponse({ success: true });
+              break;
+            }
+            case CHROME_COMMAND_ENUM.STOP_POMODORO: {
+              await this.#pomodoroService.stop();
+              sendResponse({ success: true });
+              break;
+            }
             default:
               sendResponse({ success: false, error: FOCUS_ERROR_ENUM.UNKNOWN_COMMAND });
           }
@@ -151,11 +163,25 @@ export class BackgroundService {
    */
   private initializeAlarms(): void {
     AlarmAdapter.addListener(async alarm => {
-      if (alarm.name === CHROME_ALARM_ENUM.CHECK_FOCUS_END) {
-        const current = await StorageAdapter.getCurrentPeriod();
-        if (current?.isFocused && current.endTo && isCurrentTimeAfter(new Date(), current.endTo)) {
-          await this.#focusService.stopFocus();
+      switch (alarm.name) {
+        case CHROME_ALARM_ENUM.CHECK_FOCUS_END: {
+          const current = await StorageAdapter.getCurrentPeriod();
+          if (
+            current?.isFocused &&
+            current.endTo &&
+            isCurrentTimeAfter(new Date(), current.endTo)
+          ) {
+            await this.#focusService.stopFocus();
+          }
+          break;
         }
+
+        case CHROME_ALARM_ENUM.POMODORO_TICK:
+          await this.#pomodoroService.tick();
+          break;
+
+        default:
+          this.#logger.warn(`Unknown alarm received: ${alarm.name}`);
       }
     });
   }

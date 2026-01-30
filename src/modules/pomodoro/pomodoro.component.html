@@ -5,24 +5,107 @@
   </svg>
 </ng-template>
 
-<div
-  class="dz-box"
-  dzProgressBorder
-  [progress]="0.5"
-  [config]="{ color: '#e53935', thickness: 10 }"
->
-  Test
-</div>
+<aside class="settings">
+  <form class="dz-form" [formGroup]="form">
+    @let workStepConfig = form.controls.workStepConfig.value;
+    @let shortBreakStepConfig = form.controls.shortBreakStepConfig.value;
+    @let longBreakStepConfig = form.controls.longBreakStepConfig.value;
 
-<div class="dz-box">
-  <button
+    <div class="dz-form__field">
+      <dz-value-stepper
+        [title]="uiText.POMODORO.TITLES.SESSION_LENGTH"
+        [valueLabel]="uiText.POMODORO.UNITS.MINUTES"
+        formControlName="workDurationMin"
+        [min]="workStepConfig.min"
+        [max]="workStepConfig.max"
+        [step]="workStepConfig.step"
+        [quickStep]="workStepConfig.quickStep"
+      />
+    </div>
+
+    <div class="dz-form__field">
+      <dz-value-stepper
+        [title]="uiText.POMODORO.TITLES.BREAK_LENGTH"
+        [valueLabel]="uiText.POMODORO.UNITS.MINUTES"
+        formControlName="shortBreakMin"
+        [min]="shortBreakStepConfig.min"
+        [max]="shortBreakStepConfig.max"
+        [step]="shortBreakStepConfig.step"
+        [quickStep]="shortBreakStepConfig.quickStep"
+      />
+    </div>
+
+    <div class="dz-form__field">
+      <dz-value-stepper
+        [title]="uiText.POMODORO.TITLES.LONG_BREAK_LENGTH"
+        [valueLabel]="uiText.POMODORO.UNITS.MINUTES"
+        formControlName="longBreakMin"
+        [min]="longBreakStepConfig.min"
+        [max]="longBreakStepConfig.max"
+        [step]="longBreakStepConfig.step"
+        [quickStep]="longBreakStepConfig.quickStep"
+      />
+    </div>
+  </form>
+</aside>
+
+<main class="timer">
+  @let progress = 0.95;
+  <div
+    class="timer__progress shadow round square"
     dzProgressBorder
-    [progress]="0.6"
-    [config]="{ color: 'red', thickness: 10, trackColor: 'green' }"
-    class="dz-button dz-button--round dz-button--lg"
+    [progress]="progress"
+    [progressConfig]="{ thickness: 12 }"
   >
-    <svg class="dz-icon" aria-hidden="true" focusable="false">
-      <use [attr.href]="icons.MOON" />
-    </svg>
-  </button>
-</div>
+    {{ timeLeftSec() }}
+  </div>
+
+  <div class="timer__phase">
+    <dz-multi-selector
+      [isSelectable]="false"
+      [entities]="allPhases"
+      [selectedEntities]="currentPhase()"
+      [labelKey]="'phase'"
+      [idKey]="'phase'"
+      size="md"
+      orientation="horizontal"
+    >
+      <ng-template #itemTemplate let-item>
+        @if (item.icon) {
+          <ng-container *ngTemplateOutlet="icon; context: { href: item.icon }" />
+        }
+      </ng-template>
+    </dz-multi-selector>
+  </div>
+</main>
+
+<footer class="actions">
+  @if (!isRunning()) {
+    <button
+      (click)="startSession()"
+      class="dz-button dz-button--md dz-button--activated dz-button--full shadow"
+    >
+      {{ uiText.POMODORO.BUTTONS.START }}
+    </button>
+  } @else {
+    <div class="dz-button-group" style="display: flex; gap: 8px; width: 100%">
+      @if (isPaused()) {
+        <button class="dz-button dz-button--md dz-button--activated dz-button--full shadow">
+          {{ uiText.POMODORO.BUTTONS.RESUME }}
+        </button>
+      } @else {
+        <button class="dz-button dz-button--md shadow dz-button--full">
+          <ng-container *ngTemplateOutlet="icon; context: { href: icons.PAUSE }"></ng-container>
+
+          {{ uiText.POMODORO.BUTTONS.PAUSE }}
+        </button>
+      }
+
+      <button class="dz-button dz-button--md dz-button--warn dz-button--full shadow">
+        <ng-container *ngTemplateOutlet="icon; context: { href: icons.RESET }"></ng-container>
+
+        {{ uiText.POMODORO.BUTTONS.RESET }}
+      </button>
+    </div>
+  }
+</footer>

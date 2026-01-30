@@ -7,11 +7,20 @@
     <li class="dz-list__item" [class.dz-list__item--highlighted]="isHighlighted(entity)">
       <button
         [disabled]="isReadonly(entity)"
-        class="dz-button dz-button--sm"
+        class="dz-button"
         [class.dz-button--activated]="isSelected(entity)"
+        [class]="'dz-button--' + size()"
         (click)="toggle(entity)"
       >
-        {{ getLabel(entity) | titlecase }}
+        @if (itemTemplate()) {
+          <ng-container
+            [ngTemplateOutlet]="itemTemplate()!"
+            [ngTemplateOutletContext]="{ $implicit: entity }"
+          >
+          </ng-container>
+        } @else {
+          {{ getLabel(entity) | titlecase }}
+        }
       </button>
     </li>
   }

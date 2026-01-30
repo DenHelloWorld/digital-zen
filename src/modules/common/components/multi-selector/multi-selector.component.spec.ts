@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MultiSelectorComponent } from './multi-selector.component';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 
 /**
  * MultiSelectorComponent Tests
@@ -20,6 +21,22 @@ interface TestEntity {
   name: string;
 }
 
+@Component({
+  standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [MultiSelectorComponent],
+  template: `
+    <dz-multi-selector [entities]="entities" labelKey="name" idKey="id">
+      <ng-template #itemTemplate let-item>
+        <span class="custom-content">{{ item.name }} - custom</span>
+      </ng-template>
+    </dz-multi-selector>
+  `,
+})
+class TestHostComponent {
+  entities = [{ id: 99, name: 'custom item' }]; // Уникальный ID, чтобы не было NG0955
+}
+
 describe('MultiSelectorComponent', () => {
   let component: MultiSelectorComponent<TestEntity>;
   let fixture: ComponentFixture<MultiSelectorComponent<TestEntity>>;
@@ -32,7 +49,7 @@ describe('MultiSelectorComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [MultiSelectorComponent], // Standalone component in imports
+      imports: [MultiSelectorComponent, TestHostComponent], // Standalone component in imports
     }).compileComponents();
 
     fixture = TestBed.createComponent(MultiSelectorComponent<TestEntity>);
@@ -366,6 +383,36 @@ describe('MultiSelectorComponent', () => {
       fixture.detectChanges();
 
       expect(component['isSelected'](mockEntities[0])).toBe(true);
+    });
+  });
+
+  describe('Custom Content Projection', () => {
+    let hostFixture: ComponentFixture<TestHostComponent>;
+
+    beforeEach(() => {
+      hostFixture = TestBed.createComponent(TestHostComponent);
+      hostFixture.detectChanges();
+    });
+
+    it('should display custom template content when provided', () => {
+      const compiled = hostFixture.nativeElement as HTMLElement;
+      const customElement = compiled.querySelector('.custom-content');
+
+      expect(customElement).toBeTruthy();
+      expect(customElement?.textContent).toContain('custom item - custom');
+    });
+
+    it('should verify itemTemplate signal is populated in host', () => {
+      const compiled = hostFixture.nativeElement as HTMLElement;
+      const customElement = compiled.querySelector('.custom-content');
+      expect(customElement).not.toBeNull();
+    });
+
+    it('should render default label in the main component fixture (no template)', () => {
+      const compiled = fixture.nativeElement as HTMLElement;
+      const button = compiled.querySelector('button');
+      expect(button?.textContent?.trim()).toBe('Item One');
+      expect(component.itemTemplate()).toBeUndefined();
     });
   });
 });

@@ -10,7 +10,7 @@ import { By } from '@angular/platform-browser';
     <div
       dzProgressBorder
       [progress]="progress()"
-      [config]="config()"
+      [progressConfig]="config()"
       style="width: 100px; height: 100px;"
     ></div>
   `,

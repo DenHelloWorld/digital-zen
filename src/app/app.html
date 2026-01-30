@@ -3,7 +3,8 @@
     <button
       [title]="uiText.HEADER.FOCUS_MENU_TITLE"
       (click)="setViewType(viewTypes.FOCUS)"
-      class="dz-button dz-button--round dz-button--md"
+      class="dz-button dz-button--md"
+      [class.dz-button--activated]="currentViewType() === viewTypes.FOCUS"
     >
       <svg class="dz-icon" aria-hidden="true" focusable="false">
         <use [attr.href]="icons.PERSON_ZEN"></use>
@@ -13,7 +14,8 @@
     <button
       [title]="uiText.HEADER.ADD_NEW_PERIOD_TITLE"
       (click)="setViewType(viewTypes.ADD_PERIOD)"
-      class="dz-button dz-button--round dz-button--md"
+      class="dz-button dz-button--md"
+      [class.dz-button--activated]="currentViewType() === viewTypes.ADD_PERIOD"
     >
       <svg class="dz-icon" aria-hidden="true" focusable="false">
         <use [attr.href]="icons.PLUS"></use>
@@ -21,26 +23,15 @@
     </button>
 
     <button
-      disabled
       [title]="uiText.HEADER.POMODORO_MENU_TITLE"
       (click)="setViewType(viewTypes.POMODORO)"
-      class="dz-button dz-button--round dz-button--md"
+      class="dz-button dz-button--md"
+      [class.dz-button--activated]="currentViewType() === viewTypes.POMODORO"
     >
       <svg class="dz-icon" aria-hidden="true" focusable="false">
-        <use [attr.href]="icons.CHRONIC"></use>
+        <use [attr.href]="icons.TOMATO"></use>
       </svg>
     </button>
-
-    <a [href]="websites.PRIVACY_POLICY.url" target="_blank" rel="noopener noreferrer">
-      <button
-        [title]="uiText.FOOTER.PRIVACY_POLICY_ARIA_LABEL"
-        class="dz-button dz-button--round dz-button--md"
-      >
-        <svg class="dz-icon" aria-hidden="true" focusable="false">
-          <use [attr.href]="icons.PRIVACY_TIP"></use>
-        </svg>
-      </button>
-    </a>
 
     <button
       [title]="
@@ -50,7 +41,7 @@
       "
       (click)="isGoogleAuthenticated() ? logoutFromGoogle() : loginWithGoogle()"
       [disabled]="isGoogleAuthPending()"
-      class="dz-button dz-button--round dz-button--md"
+      class="dz-button dz-button--md"
     >
       @if (isGoogleAuthPending()) {
         <dz-loader />
@@ -60,6 +51,14 @@
         </svg>
       }
     </button>
+
+    <a [href]="websites.PRIVACY_POLICY.url" target="_blank" rel="noopener noreferrer">
+      <button [title]="uiText.FOOTER.PRIVACY_POLICY_ARIA_LABEL" class="dz-button dz-button--xs">
+        <svg class="dz-icon" aria-hidden="true" focusable="false">
+          <use [attr.href]="icons.PRIVACY_TIP"></use>
+        </svg>
+      </button>
+    </a>
   </nav>
 
   <dz-theme-switcher />
