@@ -1,0 +1,24 @@
+<ng-template #icon let-iconHref="href">
+  <svg class="dz-icon" aria-hidden="true" focusable="false">
+    <use [attr.href]="iconHref"></use>
+  </svg>
+</ng-template>
+
+<ul class="dz-step-bar__list" [class]="'dz-step-bar__list--' + orientation()">
+  @for (option of options(); track option.value; let last = $last) {
+    <li class="dz-step-bar__container" [title]="option.label">
+      <button
+        class="dz-button dz-button--md"
+        [disabled]="isDisabled()"
+        [class.dz-button--activated]="currentOption()?.value === option.value"
+        (click)="setCurrentOption(option)"
+      >
+        <ng-container *ngTemplateOutlet="icon; context: { href: option.icon }" />
+      </button>
+
+      @if (!last) {
+        <span class="dz-step-bar__separator"></span>
+      }
+    </li>
+  }
+</ul>

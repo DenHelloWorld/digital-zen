@@ -80,6 +80,7 @@
 </main>
 
 <footer class="actions">
+  <dz-step-bar [options]="cyclesBarOptions()" [currentOption]="currentCycleBarOption()" />
   @if (!isRunning()) {
     <button
       (click)="startSession()"

@@ -14,6 +14,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { IPomodoro } from '../common/models/pomodoro.model';
 import { PomodoroService } from './services/pomodoro.service';
 import { MultiSelectorComponent } from '../common/components/multi-selector/multi-selector.component';
+import { IStepBarOption, StepBarComponent } from '../common/components/step-bar/step-bar.component';
 
 /**
  * Pomodoro timer component
@@ -41,6 +42,7 @@ import { MultiSelectorComponent } from '../common/components/multi-selector/mult
     ReactiveFormsModule,
     ProgressBorderDirective,
     MultiSelectorComponent,
+    StepBarComponent,
   ],
 })
 export class PomodoroComponent implements OnInit {
@@ -86,6 +88,25 @@ export class PomodoroComponent implements OnInit {
         icon: null,
       },
     ];
+  });
+  protected currentCycleBarOption = computed(() => {
+    const options = this.cyclesBarOptions();
+    const currentIndex = (this.pomodoroState()?.currentCycle ?? 1) - 1;
+
+    return options[currentIndex] ?? null;
+  });
+  protected readonly cyclesBarOptions = computed<IStepBarOption[]>(() => {
+    const { totalCycles: total = 0 } = this.pomodoroState() ?? {};
+
+    return Array.from({ length: total }, (_, i) => {
+      const isLast = i === total - 1;
+
+      return {
+        label: isLast ? 'Finish' : `Study ${i + 1}`,
+        value: i + 1,
+        icon: isLast ? this.icons.CHECK : this.icons.SCHOOL,
+      };
+    });
   });
 
   protected form: FormGroup<IPomodoro.SettingsForm>;
