@@ -18,24 +18,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 
 import { distinctUntilChanged, map } from 'rxjs';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
-import {
-  ALL_DAYS_OF_WEEK,
-  arrayMinLengthValidator,
-  ICONS,
-  IFocus,
-  IFocusForm,
-  logger,
-  MANUAL_TIME_RANGE,
-  noUnblockableWebsitesValidator,
-  requiredTrimmedValidator,
-  TIME_RANGES,
-  timeRangeValidator,
-  UI_TEXT,
-  uniquePeriodNameValidator,
-  VALIDATION_ERROR_KEYS,
-  WEBSITE_FACEBOOK,
-  WEBSITE_TIKTOK,
-} from '../../../common';
+
 import { WeekdaysSelectorComponent } from '../../../common/components/weekdays-selector/weekdays-selector.component';
 import { FocusService } from '../../services/focus.service';
 import { DynamicInputComponent } from '../../../common/components/dynamic-input/dynamic-input.component';
@@ -44,6 +27,20 @@ import {
   BLOCK_BEHAVIOUR_ENUM,
   BlockBehaviourType,
 } from '../../../common/enums/block-behaviour.enum';
+import { logger } from '../../../common/helpers/logger';
+import { IFocus } from '../../../common/models/focus.model';
+import { UI_TEXT } from '../../../common/constants/ui-text.const';
+import { IFocusForm } from '../../../common/models/focus-form.model';
+import { ICONS } from '../../../common/constants/icons.const';
+import { VALIDATION_ERROR_KEYS } from '../../../common/constants/validation-errors.const';
+import { MANUAL_TIME_RANGE, TIME_RANGES } from '../../../common/constants/time-ranges.const';
+import { WEBSITE_FACEBOOK, WEBSITE_TIKTOK } from '../../../common/constants/websites.const';
+import { requiredTrimmedValidator } from '../../../common/validators/required-trimmed.validator';
+import { uniquePeriodNameValidator } from '../../../common/validators/unique-period-name.validator';
+import { arrayMinLengthValidator } from '../../../common/validators/array-min-length.validator';
+import { noUnblockableWebsitesValidator } from '../../../common/validators/no-unblockable-websites.validator';
+import { timeRangeValidator } from '../../../common/validators/time-range.validator';
+import { ALL_DAYS_OF_WEEK } from '../../../common/constants/days-of-week.const';
 
 /**
  * Period form component for creating and editing focus periods

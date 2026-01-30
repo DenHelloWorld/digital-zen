@@ -7,24 +7,22 @@ import {
   signal,
   WritableSignal,
 } from '@angular/core';
-import {
-  IFocus,
-  QUICK_FOCUS_ID,
-  TOAST_TYPE_ENUM,
-  TOAST_MESSAGES_ENUM,
-  POSITIONS_ENUM,
-  createDefaultPeriod,
-  ChromeStorageService,
-  FOCUS_ERROR_ENUM,
-  logger,
-  cleanUrlHelper,
-  isImageIcon,
-  isSvgIcon,
-  CHROME_COMMAND_ENUM,
-  CHROME_STORAGE_KEY_ENUM,
-  DzToastService,
-  WEBSITES_UNBLOCKABLE,
-} from '../../common';
+import { CHROME_STORAGE_KEY_ENUM } from '../../common/enums/chrome-storage-key.enum';
+import { IFocus } from '../../common/models/focus.model';
+import { logger } from '../../common/helpers/logger';
+import { DzToastService } from '../../common/components';
+import { ChromeStorageService } from '../../common/services/chrome-storage.service';
+import { QUICK_FOCUS_ID } from '../../common/constants/quick-focus-id.const';
+import { WEBSITES_UNBLOCKABLE } from '../../common/constants/websites.const';
+import { CHROME_COMMAND_ENUM } from '../../common/enums/chrome-command.enum';
+import { TOAST_TYPE_ENUM } from '../../common/enums/toast-type.enum';
+import { POSITIONS_ENUM } from '../../common/enums/positions.enum';
+import { FOCUS_ERROR_ENUM } from '../../common/enums/focus-error.enum';
+import { TOAST_MESSAGES_ENUM } from '../../common/enums/toast-messages.enum';
+import { cleanUrlHelper } from '../../common/helpers/clean-url.helper';
+import { isSvgIcon } from '../../common/helpers/is-svg-icon.helper';
+import { isImageIcon } from '../../common/helpers/is-image-icon.helper';
+import { createDefaultPeriodHelper } from '../../common/helpers/create-default-period.helper';
 
 interface InitialStorageSchema {
   [CHROME_STORAGE_KEY_ENUM.CURRENT_PERIOD]: IFocus.Period;
@@ -69,25 +67,11 @@ export class FocusService {
   /** @guideline DZ_08 - Private field */
   #timerIntervalId: ReturnType<typeof setInterval> | null = null;
 
-  /** @guideline DZ_04 - Public computed signals for consumers */
-  public readonly currentPeriod: Signal<IFocus.Period | null> = computed(() => {
-    return this.#currentPeriod();
-  });
-  public readonly periods: Signal<IFocus.Period[] | null> = computed(
-    () => this.#periods()?.filter(p => p.id !== QUICK_FOCUS_ID) ?? null
-  );
-  public readonly quickPeriod: Signal<IFocus.Period[] | null> = computed(
-    () => this.#periods()?.filter(p => p.id === QUICK_FOCUS_ID) ?? null
-  );
-  public readonly activeTab: Signal<chrome.tabs.Tab | undefined> = computed(() => {
-    return this.#activeTab();
-  });
-
   /**
    * Computed signal that returns the elapsed focus time in milliseconds.
    * Returns 0 if focus is not active or sessionStartTime is not set.
    */
-  public readonly focusElapsedTime: Signal<number> = computed(() => {
+  readonly #focusElapsedTime: Signal<number> = computed(() => {
     const period = this.#currentPeriod();
     const currentTime = this.#currentTime();
 
@@ -98,11 +82,20 @@ export class FocusService {
     return currentTime - period.sessionStartTime.getTime();
   });
 
+  public readonly currentPeriod: Signal<IFocus.Period | null> = this.#currentPeriod.asReadonly();
+  public readonly activeTab: Signal<chrome.tabs.Tab | undefined> = this.#activeTab.asReadonly();
+
+  public readonly periods: Signal<IFocus.Period[] | null> = computed(
+    () => this.#periods()?.filter(p => p.id !== QUICK_FOCUS_ID) ?? null
+  );
+  public readonly quickPeriod: Signal<IFocus.Period[] | null> = computed(
+    () => this.#periods()?.filter(p => p.id === QUICK_FOCUS_ID) ?? null
+  );
   /**
    * Formatted focus time as a string (MM:SS or HH:MM:SS).
    */
   public readonly focusElapsedTimeFormatted: Signal<string> = computed(() => {
-    const elapsed = this.focusElapsedTime();
+    const elapsed = this.#focusElapsedTime();
 
     if (elapsed <= 0) {
       return '00:00';
@@ -129,7 +122,7 @@ export class FocusService {
 
   #syncInitialState(): void {
     if (!this.#isChromeRuntime) {
-      this.#periods.set([createDefaultPeriod()]);
+      this.#periods.set([createDefaultPeriodHelper()]);
       return;
     }
 
@@ -163,7 +156,7 @@ export class FocusService {
             // If user is NOT logged in and has no periods, add default period
             // If user IS logged in, periods will be synced from backend (or default added there if none exist)
             if (!isLoggedIn && periods.length === 0) {
-              this.addPeriod(createDefaultPeriod());
+              this.addPeriod(createDefaultPeriodHelper());
             } else {
               this.#periods.set(periods);
             }

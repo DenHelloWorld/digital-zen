@@ -50,14 +50,13 @@
 </aside>
 
 <main class="timer">
-  @let progress = 0.95;
   <div
     class="timer__progress shadow round square"
     dzProgressBorder
-    [progress]="progress"
+    [progress]="progress()"
     [progressConfig]="{ thickness: 12 }"
   >
-    {{ timeLeftSec() }}
+    {{ timeLeftFormatted() }}
   </div>
 
   <div class="timer__phase">
@@ -83,26 +82,32 @@
   <dz-step-bar [options]="cyclesBarOptions()" [currentOption]="currentCycleBarOption()" />
   @if (!isRunning()) {
     <button
-      (click)="startSession()"
       class="dz-button dz-button--md dz-button--activated dz-button--full shadow"
+      (click)="startSession()"
     >
       {{ uiText.POMODORO.BUTTONS.START }}
     </button>
   } @else {
     <div class="dz-button-group" style="display: flex; gap: 8px; width: 100%">
       @if (isPaused()) {
-        <button class="dz-button dz-button--md dz-button--activated dz-button--full shadow">
+        <button
+          class="dz-button dz-button--md dz-button--activated dz-button--full shadow"
+          (click)="resumeSession()"
+        >
           {{ uiText.POMODORO.BUTTONS.RESUME }}
         </button>
       } @else {
-        <button class="dz-button dz-button--md shadow dz-button--full">
+        <button class="dz-button dz-button--md shadow dz-button--full" (click)="pauseSession()">
           <ng-container *ngTemplateOutlet="icon; context: { href: icons.PAUSE }"></ng-container>
 
           {{ uiText.POMODORO.BUTTONS.PAUSE }}
         </button>
       }
 
-      <button class="dz-button dz-button--md dz-button--warn dz-button--full shadow">
+      <button
+        class="dz-button dz-button--md dz-button--warn dz-button--full shadow"
+        (click)="stopSession()"
+      >
         <ng-container *ngTemplateOutlet="icon; context: { href: icons.RESET }"></ng-container>
 
         {{ uiText.POMODORO.BUTTONS.RESET }}

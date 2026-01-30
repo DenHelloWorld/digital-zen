@@ -1,18 +1,17 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, Signal } from '@angular/core';
 import { FocusService } from './services/focus.service';
-import {
-  LoaderComponent,
-  ICONS,
-  IFocus,
-  isImageIcon,
-  isHttpUrl,
-  isSvgIcon,
-  UI_TEXT,
-  cleanUrlHelper,
-  WEBSITES_UNBLOCKABLE,
-} from '../common';
+
 import { PeriodComponent } from './components/period/period.component';
+import { LoaderComponent } from '../common/components';
+import { IFocus } from '../common/models/focus.model';
+import { cleanUrlHelper } from '../common/helpers/clean-url.helper';
+import { WEBSITES_UNBLOCKABLE } from '../common/constants/websites.const';
+import { UI_TEXT } from '../common/constants/ui-text.const';
+import { ICONS } from '../common/constants/icons.const';
+import { isImageIcon } from '../common/helpers/is-image-icon.helper';
+import { isHttpUrl } from '../common/helpers/is-http-url.helper';
+import { isSvgIcon } from '../common/helpers/is-svg-icon.helper';
 
 /**
  * Focus management component

@@ -1,0 +1,21 @@
+import { IFocus } from '../models/focus.model';
+import { DEFAULT_PERIOD_ID } from '../constants/default-period-id.const';
+import { ALL_DAYS_OF_WEEK_DAYS } from '../constants/days-of-week.const';
+import { BLOCK_BEHAVIOUR_ENUM } from '../enums/block-behaviour.enum';
+import { WEBSITES_SOCIAL_MEDIA } from '../constants/websites.const';
+
+export const createDefaultPeriodHelper = (): IFocus.Period => {
+  return {
+    id: DEFAULT_PERIOD_ID,
+    name: 'Work Hours Social Media Block',
+    description: 'Disables access to social media during work hours',
+    startFrom: new Date(new Date().setHours(9, 0, 0, 0)),
+    endTo: new Date(new Date().setHours(17, 0, 0, 0)),
+    webSites: [...WEBSITES_SOCIAL_MEDIA],
+    daysOfWeek: [...ALL_DAYS_OF_WEEK_DAYS],
+    focusedTimes: [],
+    blockBehaviour: BLOCK_BEHAVIOUR_ENUM.WARN,
+    isFocused: false,
+    sessionStartTime: null,
+  };
+};

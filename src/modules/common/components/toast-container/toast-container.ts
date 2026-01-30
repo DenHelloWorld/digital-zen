@@ -1,8 +1,10 @@
 import { CommonModule } from '@angular/common';
 import { DzToastService } from './toast.service';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { TOAST_TYPE_ENUM, POSITIONS_ENUM } from '../../enums';
-import { UI_TEXT, ICONS } from '../../constants';
+import { POSITIONS_ENUM } from '../../enums/positions.enum';
+import { TOAST_TYPE_ENUM } from '../../enums/toast-type.enum';
+import { UI_TEXT } from '../../constants/ui-text.const';
+import { ICONS } from '../../constants/icons.const';
 
 /**
  * Toast notification container component

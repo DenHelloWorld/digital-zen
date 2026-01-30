@@ -1,8 +1,5 @@
 import { IFocus } from '../models/focus.model';
 import { ICONS } from './icons.const';
-import { ALL_DAYS_OF_WEEK_DAYS } from './days-of-week.const';
-import { DEFAULT_PERIOD_ID } from './default-period-id.const';
-import { BLOCK_BEHAVIOUR_ENUM } from '../enums/block-behaviour.enum';
 
 /**
  * Website constants for Digital Zen Chrome Extension
@@ -157,25 +154,3 @@ export const WEBSITE_PRIVACY_POLICY: Readonly<IFocus.WebSite> = {
 export const WEBSITES_UNBLOCKABLE: Readonly<readonly IFocus.WebSite[]> = Object.freeze([
   WEBSITE_PRIVACY_POLICY,
 ]);
-
-/**
- * Creates a default period with a constant ID for blocking social media during work hours
- * This period is stored only locally and NOT synchronized with the backend API
- *
- * @returns A default period instance with constant ID
- */
-export function createDefaultPeriod(): IFocus.Period {
-  return {
-    id: DEFAULT_PERIOD_ID,
-    name: 'Work Hours Social Media Block',
-    description: 'Disables access to social media during work hours',
-    startFrom: new Date(new Date().setHours(9, 0, 0, 0)),
-    endTo: new Date(new Date().setHours(17, 0, 0, 0)),
-    webSites: [...WEBSITES_SOCIAL_MEDIA],
-    daysOfWeek: [...ALL_DAYS_OF_WEEK_DAYS],
-    focusedTimes: [],
-    blockBehaviour: BLOCK_BEHAVIOUR_ENUM.WARN,
-    isFocused: false,
-    sessionStartTime: null,
-  };
-}

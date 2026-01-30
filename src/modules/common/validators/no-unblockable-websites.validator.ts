@@ -1,7 +1,9 @@
 import { AbstractControl, ValidationErrors } from '@angular/forms';
-import { IFocus } from '../models';
-import { cleanUrlHelper } from '../helpers';
-import { WEBSITES_UNBLOCKABLE, VALIDATION_ERROR_KEYS } from '../constants';
+
+import { WEBSITES_UNBLOCKABLE } from '../constants/websites.const';
+import { VALIDATION_ERROR_KEYS } from '../constants/validation-errors.const';
+import { cleanUrlHelper } from '../helpers/clean-url.helper';
+import { IFocus } from '../models/focus.model';
 
 /**
  * Validator that checks if an array of websites contains any UNBLOCKABLE websites.

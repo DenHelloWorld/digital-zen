@@ -2,18 +2,23 @@
 import { StorageAdapter } from './common/storage-adapter';
 import { UserDataSyncAdapter } from './common/user-data-sync-adapter';
 import { GoogleAuthAdapter } from './common/google-auth-adapter';
-import { IFocus } from '../modules/common/models';
-import {
-  CHROME_COMMAND_ENUM,
-  ChromeCommandType,
-  CHROME_ALARM_ENUM,
-  FOCUS_ERROR_ENUM,
-} from '../modules/common/enums';
-import { isCurrentTimeAfter, logger } from '../modules/common/helpers';
+
 import { BackgroundFocusService } from './focus/background-focus-service';
 import { AlarmAdapter } from './common/alarm-adapter';
 import { ExtensionIconAdapter } from './common/extension-icon-adapter';
 import { BackgroundPomodoroService } from './pomodoro/background-pomodoro.service';
+import { FOCUS_ERROR_ENUM } from '../modules/common/enums/focus-error.enum';
+import { logger } from '../modules/common/helpers/logger';
+import {
+  CHROME_COMMAND_ENUM,
+  ChromeCommandType,
+} from '../modules/common/enums/chrome-command.enum';
+import { CHROME_ALARM_ENUM } from '../modules/common/enums/chrome-alarm-name.enum';
+import { isCurrentTimeAfter } from '../modules/common/helpers/time.helper';
+import { IFocus } from '../modules/common/models/focus.model';
+import { DEFAULT_POMODORO_SETTINGS } from '../modules/common/constants/default-pomodoro-settings.const';
+import { createDefaultPomodoroStateHelper } from '../modules/common/helpers/create-default-pomodoro-state.helper';
+import { ALARM_PERIOD_IN_MINUTES } from '../modules/common/constants/alarm-period-in-mionutes.const';
 
 type FocusOperationResult = { success: true } | { success: false; error: FOCUS_ERROR_ENUM };
 
@@ -30,6 +35,7 @@ export class BackgroundService {
     this.initializeListeners();
     this.initializeAlarms();
     this.restoreCurrentPeriod();
+    this.initializePomodoroDefaults();
   }
 
   /**
@@ -126,12 +132,32 @@ export class BackgroundService {
               break;
             }
             case CHROME_COMMAND_ENUM.START_POMODORO: {
-              await this.#pomodoroService.start(message.settings);
+              await this.#pomodoroService.start();
               sendResponse({ success: true });
               break;
             }
             case CHROME_COMMAND_ENUM.STOP_POMODORO: {
               await this.#pomodoroService.stop();
+              sendResponse({ success: true });
+              break;
+            }
+            case CHROME_COMMAND_ENUM.PAUSE_POMODORO: {
+              await this.#pomodoroService.pause();
+              sendResponse({ success: true });
+              break;
+            }
+            case CHROME_COMMAND_ENUM.RESUME_POMODORO: {
+              await this.#pomodoroService.resume();
+              sendResponse({ success: true });
+              break;
+            }
+            case CHROME_COMMAND_ENUM.SET_POMODORO_SETTINGS: {
+              await this.#pomodoroService.setPomodoroSettings(message.settings);
+              sendResponse({ success: true });
+              break;
+            }
+            case CHROME_COMMAND_ENUM.SET_POMODORO_STATE: {
+              await this.#pomodoroService.setPomodoroState(message.state);
               sendResponse({ success: true });
               break;
             }
@@ -155,6 +181,10 @@ export class BackgroundService {
       if (changeInfo.status === 'complete' && tab.active && tab.url) {
         chrome.storage.local.set({ tab_url: tab.url });
       }
+    });
+
+    chrome.runtime.onInstalled.addListener(() => {
+      this.initializePomodoroDefaults();
     });
   }
 
@@ -212,7 +242,9 @@ export class BackgroundService {
    * Check every minute
    * */
   private scheduleAlarm(): void {
-    AlarmAdapter.create(CHROME_ALARM_ENUM.CHECK_FOCUS_END, { periodInMinutes: 1 });
+    AlarmAdapter.create(CHROME_ALARM_ENUM.CHECK_FOCUS_END, {
+      periodInMinutes: ALARM_PERIOD_IN_MINUTES,
+    });
   }
 
   private async addPeriod(period: IFocus.Period): Promise<void> {
@@ -319,6 +351,23 @@ export class BackgroundService {
     } catch (error) {
       this.#logger.error('User data sync failed:', error);
       return { success: false, error: FOCUS_ERROR_ENUM.GENERIC_ERROR };
+    }
+  }
+
+  private async initializePomodoroDefaults(): Promise<void> {
+    let settings = await StorageAdapter.getPomodoroSettings();
+    const state = await StorageAdapter.getPomodoroState();
+
+    if (!settings) {
+      await StorageAdapter.savePomodoroSettings(DEFAULT_POMODORO_SETTINGS);
+      settings = DEFAULT_POMODORO_SETTINGS;
+      this.#logger.info('Pomodoro settings initialized');
+    }
+
+    if (!state) {
+      const initialState = createDefaultPomodoroStateHelper(settings);
+      await StorageAdapter.savePomodoroState(initialState);
+      this.#logger.info('Pomodoro state initialized');
     }
   }
 }

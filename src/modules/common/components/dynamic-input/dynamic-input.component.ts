@@ -11,7 +11,8 @@ import {
   signal,
   WritableSignal,
 } from '@angular/core';
-import { ICONS, UI_TEXT } from '../../constants';
+import { UI_TEXT } from '../../constants/ui-text.const';
+import { ICONS } from '../../constants/icons.const';
 
 /**
  * Dynamic input component for managing a list of entities with add/remove/edit capabilities

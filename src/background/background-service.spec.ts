@@ -7,6 +7,7 @@ import { CHROME_COMMAND_ENUM } from '../modules/common/enums/chrome-command.enum
 import { CHROME_ALARM_ENUM } from '../modules/common/enums/chrome-alarm-name.enum';
 import { FOCUS_ERROR_ENUM } from '../modules/common/enums/focus-error.enum';
 import { BLOCK_BEHAVIOUR_ENUM } from '../modules/common/enums/block-behaviour.enum';
+import { ALARM_PERIOD_IN_MINUTES } from '../modules/common/constants/alarm-period-in-mionutes.const';
 
 describe('BackgroundServiceMV3', () => {
   let mockChrome: {
@@ -627,7 +628,7 @@ describe('BackgroundServiceMV3', () => {
         await promise;
 
         expect(mockChrome.alarms.create).toHaveBeenCalledWith(CHROME_ALARM_ENUM.CHECK_FOCUS_END, {
-          periodInMinutes: 1,
+          periodInMinutes: ALARM_PERIOD_IN_MINUTES,
         });
       });
 

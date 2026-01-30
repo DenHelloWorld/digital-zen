@@ -12,7 +12,7 @@ import {
 } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { getTimeInMilliseconds } from '../../../common/helpers/time.helper';
-import { UI_TEXT } from '../../../common/constants';
+import { UI_TEXT } from '../../../common/constants/ui-text.const';
 
 @Component({
   selector: 'dz-time-line',
