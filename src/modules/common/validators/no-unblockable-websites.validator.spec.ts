@@ -1,8 +1,11 @@
 import { FormControl } from '@angular/forms';
-import { IFocus } from '../models';
-import { ICONS, WEBSITE_PRIVACY_POLICY, VALIDATION_ERROR_KEYS } from '../constants';
+
 import { noUnblockableWebsitesValidator } from './no-unblockable-websites.validator';
-import { cleanUrlHelper } from '../helpers';
+import { cleanUrlHelper } from '../helpers/clean-url.helper';
+import { IFocus } from '../models/focus.model';
+import { WEBSITE_PRIVACY_POLICY } from '../constants/websites.const';
+import { ICONS } from '../constants/icons.const';
+import { VALIDATION_ERROR_KEYS } from '../constants/validation-errors.const';
 
 describe('noUnblockableWebsitesValidator', () => {
   // Helper constant for cleaned privacy policy URL

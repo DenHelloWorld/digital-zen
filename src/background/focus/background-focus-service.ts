@@ -10,7 +10,7 @@ import { IFocus } from '../../modules/common/models/focus.model';
 import { isCurrentTimeInRange } from '../../modules/common/helpers/time.helper';
 import { CHROME_ALARM_ENUM } from '../../modules/common/enums/chrome-alarm-name.enum';
 import { QUICK_FOCUS_ID } from '../../modules/common/constants/quick-focus-id.const';
-import { ALARM_PERIOD_IN_MINUTES } from '../../modules/common/constants/alarm-period-in-mionutes.const';
+import { ALARM_PERIOD_IN_MINUTES } from '../../modules/common/constants/alarm-period-in-minutes.const';
 
 export type FocusOperationResult = { success: true } | { success: false; error: FOCUS_ERROR_ENUM };
 

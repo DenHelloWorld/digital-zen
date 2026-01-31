@@ -4,7 +4,7 @@ import { AlarmAdapter } from '../common/alarm-adapter';
 import { logger } from '../../modules/common/helpers/logger';
 import { CHROME_ALARM_ENUM } from '../../modules/common/enums/chrome-alarm-name.enum';
 import { FINISHED_CYCLE } from '../../modules/common/constants/finished-cycle.const';
-import { ALARM_PERIOD_IN_MINUTES } from '../../modules/common/constants/alarm-period-in-mionutes.const';
+import { ALARM_PERIOD_IN_MINUTES } from '../../modules/common/constants/alarm-period-in-minutes.const';
 
 export class BackgroundPomodoroService {
   readonly #logger = logger.createLogger('BackgroundPomodoroService');

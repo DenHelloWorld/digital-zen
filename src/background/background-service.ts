@@ -18,7 +18,7 @@ import { isCurrentTimeAfter } from '../modules/common/helpers/time.helper';
 import { IFocus } from '../modules/common/models/focus.model';
 import { DEFAULT_POMODORO_SETTINGS } from '../modules/common/constants/default-pomodoro-settings.const';
 import { createDefaultPomodoroStateHelper } from '../modules/common/helpers/create-default-pomodoro-state.helper';
-import { ALARM_PERIOD_IN_MINUTES } from '../modules/common/constants/alarm-period-in-mionutes.const';
+import { ALARM_PERIOD_IN_MINUTES } from '../modules/common/constants/alarm-period-in-minutes.const';
 
 type FocusOperationResult = { success: true } | { success: false; error: FOCUS_ERROR_ENUM };
 
