@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { ICONS, UI_TEXT } from '../common';
+import { UI_TEXT } from '../common/constants/ui-text.const';
+import { ICONS } from '../common/constants/icons.const';
 
 /**
  * Menu component for adding new focus periods

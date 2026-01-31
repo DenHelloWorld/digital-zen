@@ -6,9 +6,10 @@ import {
   model,
   ModelSignal,
 } from '@angular/core';
-import { IFocus } from '../../models';
+
 import { MultiSelectorComponent } from '../multi-selector/multi-selector.component';
-import { ALL_DAYS_OF_WEEK } from '../../constants';
+import { IFocus } from '../../models/focus.model';
+import { ALL_DAYS_OF_WEEK } from '../../constants/days-of-week.const';
 
 /**
  * Weekdays selector component for choosing days of the week

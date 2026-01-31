@@ -1,6 +1,7 @@
 import { Injectable, signal, computed, WritableSignal, Signal } from '@angular/core';
-import { IToast } from '../../models';
-import { TOAST_TYPE_ENUM, POSITIONS_ENUM } from '../../enums';
+import { IToast } from '../../models/toast.model';
+import { TOAST_TYPE_ENUM } from '../../enums/toast-type.enum';
+import { POSITIONS_ENUM } from '../../enums/positions.enum';
 
 @Injectable({
   providedIn: 'root',

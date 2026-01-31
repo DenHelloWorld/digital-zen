@@ -1,5 +1,5 @@
 import { CleanUrlPipe } from './clear-url.pipe';
-import { cleanUrlHelper } from '../helpers';
+import { cleanUrlHelper } from '../helpers/clean-url.helper';
 
 describe('CleanUrlPipe', () => {
   let pipe: CleanUrlPipe;

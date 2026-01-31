@@ -1,14 +1,16 @@
-import { IFocus } from '../../modules/common/models';
-import { QUICK_FOCUS_ID } from '../../modules/common/constants';
-import { CHROME_ALARM_ENUM, FOCUS_ERROR_ENUM } from '../../modules/common/enums';
-import { isCurrentTimeInRange } from '../../modules/common/helpers';
-import { filterBlockableWebsites } from '../../modules/common/helpers';
 import { BLOCK_BEHAVIOUR_ENUM } from '../../modules/common/enums/block-behaviour.enum';
 import { StorageAdapter } from '../common/storage-adapter';
 import { UserDataSyncAdapter } from '../common/user-data-sync-adapter';
 import { AlarmAdapter } from '../common/alarm-adapter';
 import { ExtensionIconAdapter } from '../common/extension-icon-adapter';
 import { BlockerService } from './blocker-service';
+import { FOCUS_ERROR_ENUM } from '../../modules/common/enums/focus-error.enum';
+import { filterBlockableWebsites } from '../../modules/common/helpers/filter-blockable-websites.helper';
+import { IFocus } from '../../modules/common/models/focus.model';
+import { isCurrentTimeInRange } from '../../modules/common/helpers/time.helper';
+import { CHROME_ALARM_ENUM } from '../../modules/common/enums/chrome-alarm-name.enum';
+import { QUICK_FOCUS_ID } from '../../modules/common/constants/quick-focus-id.const';
+import { ALARM_PERIOD_IN_MINUTES } from '../../modules/common/constants/alarm-period-in-minutes.const';
 
 export type FocusOperationResult = { success: true } | { success: false; error: FOCUS_ERROR_ENUM };
 
@@ -54,7 +56,9 @@ export class BackgroundFocusService {
       period.blockBehaviour
     );
     ExtensionIconAdapter.setIcon(true);
-    AlarmAdapter.create(CHROME_ALARM_ENUM.CHECK_FOCUS_END, { periodInMinutes: 1 });
+    AlarmAdapter.create(CHROME_ALARM_ENUM.CHECK_FOCUS_END, {
+      periodInMinutes: ALARM_PERIOD_IN_MINUTES,
+    });
 
     return { success: true };
   }

@@ -1,5 +1,6 @@
-import { DayOfWeekShortNameType, DayOfWeekType } from '../enums';
 import { BlockBehaviourType } from '../enums/block-behaviour.enum';
+import { DayOfWeekType } from '../enums/day-of-week.enum';
+import { DayOfWeekShortNameType } from '../enums/day-of-week-short-name.enum';
 
 export namespace IFocus {
   export namespace Api {

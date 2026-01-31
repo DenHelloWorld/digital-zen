@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { ICONS } from '../../constants';
+import { ICONS } from '../../constants/icons.const';
 
 /**
  * Loading spinner component

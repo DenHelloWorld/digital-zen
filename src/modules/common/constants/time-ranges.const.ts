@@ -1,4 +1,4 @@
-import { IFocus } from '../models';
+import { IFocus } from '../models/focus.model';
 
 export const MANUAL_TIME_RANGE: Readonly<IFocus.TimeRange> = Object.freeze({
   id: 'MANUAL_RANGE',

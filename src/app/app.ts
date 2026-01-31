@@ -7,23 +7,22 @@ import {
   WritableSignal,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import {
-  COLOR_SCHEMA_ENUM,
-  ColorSchemaType,
-  ICONS,
-  LoaderComponent,
-  ThemeService,
-  ThemeSwitcherComponent,
-  UI_TEXT,
-  VIEW_ENUM,
-  ViewType,
-  WEBSITE_PRIVACY_POLICY,
-  DzToastContainerComponent,
-} from '../modules/common';
+
 import { FocusComponent } from '../modules/focus/focus.component';
 import { AuthService } from '../modules/auth';
 import { PomodoroComponent } from '../modules/pomodoro/pomodoro.component';
 import { PeriodFormComponent } from '../modules/focus/components/period-form/period-form.component';
+import {
+  DzToastContainerComponent,
+  LoaderComponent,
+  ThemeSwitcherComponent,
+} from '../modules/common/components';
+import { ThemeService } from '../modules/common/services/theme.service';
+import { COLOR_SCHEMA_ENUM, ColorSchemaType } from '../modules/common/enums/color-schema.enum';
+import { VIEW_ENUM, ViewType } from '../modules/common/enums/view.enum';
+import { UI_TEXT } from '../modules/common/constants/ui-text.const';
+import { ICONS } from '../modules/common/constants/icons.const';
+import { WEBSITE_PRIVACY_POLICY } from '../modules/common/constants/websites.const';
 
 /**
  * Root application component for Digital Zen Chrome Extension

@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { cleanUrlHelper } from '../helpers';
+import { cleanUrlHelper } from '../helpers/clean-url.helper';
 
 @Pipe({
   name: 'cleanUrl',

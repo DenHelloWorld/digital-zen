@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { DynamicInputComponent } from './dynamic-input.component';
-import { ICONS, UI_TEXT } from '../../constants';
+import { UI_TEXT } from '../../constants/ui-text.const';
+import { ICONS } from '../../constants/icons.const';
 
 /**
  * DynamicInputComponent Tests

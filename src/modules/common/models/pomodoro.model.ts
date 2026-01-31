@@ -22,7 +22,7 @@ export namespace IPomodoro {
     /** Current long break duration in minutes */
     longBreakMin: number;
     /** Number of work cycles required to trigger a long break */
-    cyclesBeforeLongBreak: number;
+    cyclesBeforeLongBreak: 1 | 2 | 3 | 4 | 5;
 
     /** Stepper constraints for work session settings */
     workStepConfig: StepConfig;
@@ -32,18 +32,18 @@ export namespace IPomodoro {
     longBreakStepConfig: StepConfig;
 
     /** Whether to automatically transition to the next phase */
-    autoStartNext: boolean;
+    pauseAfterPhaseEnd: boolean;
   }
 
   export interface SettingsForm {
     workDurationMin: FormControl<number>;
     shortBreakMin: FormControl<number>;
     longBreakMin: FormControl<number>;
-    cyclesBeforeLongBreak: FormControl<number>;
+    cyclesBeforeLongBreak: FormControl<1 | 2 | 3 | 4 | 5>;
     workStepConfig: FormControl<StepConfig>;
     shortBreakStepConfig: FormControl<StepConfig>;
     longBreakStepConfig: FormControl<StepConfig>;
-    autoStartNext: FormControl<boolean>;
+    pauseAfterPhaseEnd: FormControl<boolean>;
   }
 
   /** Current real-time state of the timer */

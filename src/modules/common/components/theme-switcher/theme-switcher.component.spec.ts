@@ -1,9 +1,10 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { signal } from '@angular/core';
 import { ThemeSwitcherComponent } from './theme-switcher.component';
-import { ThemeService } from '../../services';
-import { COLOR_SCHEMA_ENUM, ColorSchemaType } from '../../enums';
-import { ICONS, UI_TEXT } from '../../constants';
+import { ThemeService } from '../../services/theme.service';
+import { COLOR_SCHEMA_ENUM, ColorSchemaType } from '../../enums/color-schema.enum';
+import { UI_TEXT } from '../../constants/ui-text.const';
+import { ICONS } from '../../constants/icons.const';
 
 /**
  * ThemeSwitcherComponent Tests

@@ -9,8 +9,9 @@ import {
 import { NG_VALUE_ACCESSOR, ControlValueAccessor } from '@angular/forms';
 import { forwardRef } from '@angular/core';
 import { KEY_EVENTS_ENUM } from '../../enums/key-events.enum';
-import { ICONS, UI_TEXT } from '../../constants';
 import { NgTemplateOutlet } from '@angular/common';
+import { UI_TEXT } from '../../constants/ui-text.const';
+import { ICONS } from '../../constants/icons.const';
 
 @Component({
   selector: 'dz-value-stepper',

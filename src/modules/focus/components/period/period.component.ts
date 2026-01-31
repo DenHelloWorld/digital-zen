@@ -12,12 +12,17 @@ import {
   signal,
   WritableSignal,
 } from '@angular/core';
-import { ALL_DAYS_OF_WEEK, ICONS, IFocus, isHttpUrl, UI_TEXT } from '../../../common';
+
 import { TimeLineComponent } from '../time-line/time-line.component';
 import { WeekdaysSelectorComponent } from '../../../common/components/weekdays-selector/weekdays-selector.component';
 import { FocusService } from '../../services/focus.service';
 import { BLOCK_BEHAVIOUR_ENUM } from '../../../common/enums/block-behaviour.enum';
 import { PeriodFormComponent } from '../period-form/period-form.component';
+import { IFocus } from '../../../common/models/focus.model';
+import { UI_TEXT } from '../../../common/constants/ui-text.const';
+import { ICONS } from '../../../common/constants/icons.const';
+import { ALL_DAYS_OF_WEEK } from '../../../common/constants/days-of-week.const';
+import { isHttpUrl } from '../../../common/helpers/is-http-url.helper';
 
 /**
  * Period display and management component

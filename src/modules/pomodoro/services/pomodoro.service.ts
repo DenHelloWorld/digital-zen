@@ -1,43 +1,17 @@
-import { inject, Injectable, signal } from '@angular/core';
-import {
-  CHROME_COMMAND_ENUM,
-  CHROME_STORAGE_KEY_ENUM,
-  ChromeCommandType,
-  ChromeStorageService,
-  logger,
-} from '../../common';
+import { computed, DestroyRef, inject, Injectable, signal } from '@angular/core';
+
 import { IPomodoro } from '../../common/models/pomodoro.model';
+import { CHROME_STORAGE_KEY_ENUM } from '../../common/enums/chrome-storage-key.enum';
+import { ChromeStorageService } from '../../common/services/chrome-storage.service';
+import { logger } from '../../common/helpers/logger';
+import { CHROME_COMMAND_ENUM, ChromeCommandType } from '../../common/enums/chrome-command.enum';
+import { DEFAULT_POMODORO_SETTINGS } from '../../common/constants/default-pomodoro-settings.const';
+import { createDefaultPomodoroStateHelper } from '../../common/helpers/create-default-pomodoro-state.helper';
 
 interface InitialStorageSchema {
   [CHROME_STORAGE_KEY_ENUM.POMODORO_STATE]: IPomodoro.State;
   [CHROME_STORAGE_KEY_ENUM.POMODORO_SETTINGS]: IPomodoro.Settings;
 }
-
-const initialSettings: IPomodoro.Settings = {
-  workDurationMin: 20,
-  shortBreakMin: 5,
-  longBreakMin: 15,
-  cyclesBeforeLongBreak: 2,
-  autoStartNext: false,
-  workStepConfig: {
-    step: 1,
-    quickStep: 5,
-    min: 1,
-    max: 90,
-  },
-  shortBreakStepConfig: {
-    step: 1,
-    quickStep: 5,
-    min: 1,
-    max: 15,
-  },
-  longBreakStepConfig: {
-    step: 1,
-    quickStep: 5,
-    min: 1,
-    max: 30,
-  },
-};
 
 /**
  * Service for managing Pomodoro sessions and settings
@@ -62,24 +36,116 @@ export class PomodoroService {
   readonly #chromeStorageService = inject(ChromeStorageService);
   /** @guideline DZ_11 - Universal Logger usage */
   readonly #logger = logger.createLogger('PomodoroService');
+  readonly #destroyRef = inject(DestroyRef);
 
-  readonly #state = signal<IPomodoro.State | null>(null);
-  readonly #settings = signal<IPomodoro.Settings>(initialSettings);
+  readonly #state = signal<IPomodoro.State>(
+    createDefaultPomodoroStateHelper(DEFAULT_POMODORO_SETTINGS)
+  );
+  readonly #settings = signal<IPomodoro.Settings>(DEFAULT_POMODORO_SETTINGS);
 
   public readonly state = this.#state.asReadonly();
   public readonly settings = this.#settings.asReadonly();
 
+  readonly #timeLeftSec = computed(() => {
+    const state = this.#state();
+
+    if (state.isPaused || !state.isRunning || !state.startedAt) {
+      return state.timeLeftSec;
+    }
+
+    const now = this.#currentTime();
+    const nowSync = new Date(now).setMilliseconds(0);
+    const startTime = new Date(state.startedAt).getTime();
+
+    const elapsed = Math.floor((nowSync - startTime) / 1000);
+    return Math.max(0, state.timeLeftSec - elapsed);
+  });
+
+  public readonly timeLeftFormatted = computed(() => {
+    const totalSeconds = this.#timeLeftSec();
+    const m = (totalSeconds / 60) | 0;
+    const s = totalSeconds % 60;
+    return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+  });
+
+  public readonly progress = computed(() => {
+    const total = this.#state().totalTimeSec;
+    const current = this.#timeLeftSec();
+    return total > 0 ? current / total : 0;
+  });
+
+  readonly #currentTime = signal(Date.now());
+  #timerIntervalId: ReturnType<typeof setInterval> | null = null;
+
   constructor() {
     this.#syncInitialState();
     this.#listenToStorageChanges();
+    this.#startTimer();
+  }
+
+  /**
+   * Start a timer that updates the current time signal every second.
+   * This is used to automatically update the focus elapsed time.
+   */
+  #startTimer(): void {
+    this.#timerIntervalId = setInterval(() => {
+      this.#currentTime.set(Date.now());
+    }, 100);
+
+    this.#destroyRef.onDestroy(() => {
+      if (this.#timerIntervalId) {
+        clearInterval(this.#timerIntervalId);
+        this.#timerIntervalId = null;
+      }
+    });
+  }
+
+  public setSessionSettings(settings: IPomodoro.Settings) {
+    if (this.#isChromeRuntime) {
+      chrome.runtime.sendMessage<{ command: ChromeCommandType; settings: IPomodoro.Settings }>({
+        command: CHROME_COMMAND_ENUM.SET_POMODORO_SETTINGS,
+        settings,
+      });
+    }
+  }
+
+  public setSessionState(state: IPomodoro.State) {
+    if (this.#isChromeRuntime) {
+      chrome.runtime.sendMessage<{ command: ChromeCommandType; state: IPomodoro.State }>({
+        command: CHROME_COMMAND_ENUM.SET_POMODORO_STATE,
+        state,
+      });
+    }
   }
 
   public startSession() {
     if (this.#isChromeRuntime) {
-      const settings: IPomodoro.Settings = this.settings();
-      chrome.runtime.sendMessage<{ command: ChromeCommandType; settings: IPomodoro.Settings }>({
+      chrome.runtime.sendMessage<{ command: ChromeCommandType }>({
         command: CHROME_COMMAND_ENUM.START_POMODORO,
-        settings,
+      });
+    }
+  }
+
+  public stopSession() {
+    if (this.#isChromeRuntime) {
+      chrome.runtime.sendMessage<{ command: ChromeCommandType }>({
+        command: CHROME_COMMAND_ENUM.STOP_POMODORO,
+      });
+    }
+  }
+
+  public pauseSession() {
+    if (this.#isChromeRuntime) {
+      chrome.runtime.sendMessage<{ command: ChromeCommandType }>({
+        command: CHROME_COMMAND_ENUM.PAUSE_POMODORO,
+      });
+    }
+  }
+
+  public resumeSession() {
+    if (this.#isChromeRuntime) {
+      chrome.runtime.sendMessage<{ command: ChromeCommandType }>({
+        command: CHROME_COMMAND_ENUM.RESUME_POMODORO,
       });
     }
   }
@@ -98,11 +164,9 @@ export class PomodoroService {
 
           if (settings) {
             this.#settings.set(settings);
-            this.#logger.info('settings', settings);
           }
           if (state) {
             this.#state.set(state);
-            this.#logger.info('state', state);
           }
         }
       );

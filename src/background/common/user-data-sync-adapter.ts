@@ -6,9 +6,9 @@ import { IFocus } from '../../modules/common/models/focus.model';
 import { StorageAdapter } from './storage-adapter';
 import { logger } from '../../modules/common/helpers/logger';
 import { CHROME_STORAGE_KEY_ENUM } from '../../modules/common/enums/chrome-storage-key.enum';
-import { createDefaultPeriod } from '../../modules/common/constants/websites.const';
 import { DEFAULT_PERIOD_ID } from '../../modules/common/constants/default-period-id.const';
 import { fromWallTimeISO, toWallTimeISO } from '../../modules/common/helpers/time.helper';
+import { createDefaultPeriodHelper } from '../../modules/common/helpers/create-default-period.helper';
 
 /**
  * User Data Sync Adapter for Background Service
@@ -129,7 +129,7 @@ export class UserDataSyncAdapter {
         if (!defaultPeriod) {
           UserDataSyncAdapter.logger.info('Default period not found locally, creating it');
 
-          const newDefaultPeriod = createDefaultPeriod();
+          const newDefaultPeriod = createDefaultPeriodHelper();
           await StorageAdapter.replaceAllPeriods([newDefaultPeriod]);
 
           UserDataSyncAdapter.logger.info('Default period created and set as only period');

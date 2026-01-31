@@ -1,7 +1,8 @@
-import { IFocus } from '../models';
 import { FormControl } from '@angular/forms';
-import { DayOfWeekType } from '../enums';
+
 import { BlockBehaviourType } from '../enums/block-behaviour.enum';
+import { IFocus } from './focus.model';
+import { DayOfWeekType } from '../enums/day-of-week.enum';
 
 export namespace IFocusForm {
   export interface UpsertPeriod {
