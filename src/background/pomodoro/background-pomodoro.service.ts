@@ -129,6 +129,7 @@ export class BackgroundPomodoroService {
         totalTimeSec: settings.workDurationMin * 60,
         totalCycles: settings.cyclesBeforeLongBreak,
         pausedAt: null,
+        startedAt: null,
       });
     }
   }
