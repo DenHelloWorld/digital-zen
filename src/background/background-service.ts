@@ -35,7 +35,6 @@ export class BackgroundService {
     this.initializeListeners();
     this.initializeAlarms();
     this.restoreCurrentPeriod();
-    this.initializePomodoroDefaults();
   }
 
   /**
@@ -185,6 +184,7 @@ export class BackgroundService {
 
     chrome.runtime.onInstalled.addListener(() => {
       this.initializePomodoroDefaults();
+      this.#logger.info('Pomodoro defaults initialized via onInstalled');
     });
   }
 

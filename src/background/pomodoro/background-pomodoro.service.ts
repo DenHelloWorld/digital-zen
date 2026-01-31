@@ -146,10 +146,6 @@ export class BackgroundPomodoroService {
       const elapsedSec = Math.floor((now - startTime) / 1000);
 
       state.timeLeftSec = Math.max(0, state.timeLeftSec - elapsedSec);
-      if (state.timeLeftSec < 0) {
-        state.timeLeftSec = 0;
-      }
-
       state.isPaused = true;
       state.pausedAt = new Date();
 
