@@ -142,6 +142,8 @@ export class BackgroundPomodoroService {
     const state = await StorageAdapter.getPomodoroState();
 
     if (state && state.isRunning && !state.isPaused && state.startedAt) {
+      AlarmAdapter.clear(CHROME_ALARM_ENUM.POMODORO_TICK);
+
       const now = Date.now();
       const startTime = new Date(state.startedAt).getTime();
       const elapsedSec = Math.floor((now - startTime) / 1000);
@@ -169,6 +171,10 @@ export class BackgroundPomodoroService {
       state.startedAt = now;
 
       await StorageAdapter.savePomodoroState(state);
+
+      AlarmAdapter.create(CHROME_ALARM_ENUM.POMODORO_TICK, {
+        periodInMinutes: ALARM_PERIOD_IN_MINUTES,
+      });
     }
   }
   /**
