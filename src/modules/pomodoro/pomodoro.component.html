@@ -10,6 +10,7 @@
     @let workStepConfig = form.controls.workStepConfig.value;
     @let shortBreakStepConfig = form.controls.shortBreakStepConfig.value;
     @let longBreakStepConfig = form.controls.longBreakStepConfig.value;
+    @let cyclesBeforeLongBreakConfig = form.controls.cyclesBeforeLongBreakConfig.value;
 
     <div class="dz-form__field">
       <dz-value-stepper
@@ -47,6 +48,19 @@
         [max]="longBreakStepConfig.max"
         [step]="longBreakStepConfig.step"
         [quickStep]="longBreakStepConfig.quickStep"
+      />
+    </div>
+
+    <div class="dz-form__field">
+      <dz-value-stepper
+        [title]="uiText.POMODORO.TITLES.CYCLES_BEFORE_LONG_BREAK"
+        [titleIcon]="icons.SCHOOL"
+        [valueLabel]="uiText.POMODORO.UNITS.CYCLES"
+        formControlName="cyclesBeforeLongBreak"
+        [min]="cyclesBeforeLongBreakConfig.min"
+        [max]="cyclesBeforeLongBreakConfig.max"
+        [step]="cyclesBeforeLongBreakConfig.step"
+        [quickStep]="cyclesBeforeLongBreakConfig.quickStep"
       />
     </div>
   </form>
@@ -87,6 +101,8 @@
       class="dz-button dz-button--md dz-button--activated dz-button--full shadow"
       (click)="startSession()"
     >
+      <ng-container *ngTemplateOutlet="icon; context: { href: icons.PLAY_ARROW }"></ng-container>
+
       {{ uiText.POMODORO.BUTTONS.START }}
     </button>
   } @else {
@@ -96,20 +112,22 @@
           class="dz-button dz-button--md dz-button--activated dz-button--full shadow"
           (click)="resumeSession()"
         >
+          <ng-container *ngTemplateOutlet="icon; context: { href: icons.RESUME }"></ng-container>
+
           {{ uiText.POMODORO.BUTTONS.RESUME }}
         </button>
       } @else {
-        <button class="dz-button dz-button--md shadow dz-button--full" (click)="pauseSession()">
+        <button
+          class="dz-button dz-button--md dz-button--resume dz-button--ghost dz-button--activated dz-button--full"
+          (click)="pauseSession()"
+        >
           <ng-container *ngTemplateOutlet="icon; context: { href: icons.PAUSE }"></ng-container>
 
           {{ uiText.POMODORO.BUTTONS.PAUSE }}
         </button>
       }
 
-      <button
-        class="dz-button dz-button--md dz-button--warn dz-button--full shadow"
-        (click)="stopSession()"
-      >
+      <button class="dz-button dz-button--md dz-button--warn shadow" (click)="resetSession()">
         <ng-container *ngTemplateOutlet="icon; context: { href: icons.RESET }"></ng-container>
 
         {{ uiText.POMODORO.BUTTONS.RESET }}

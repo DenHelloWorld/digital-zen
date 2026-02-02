@@ -42,7 +42,7 @@
   </main>
 
   <footer class="dz-stepper__footer">
-    @if (quickStep() > 0) {
+    @if (quickStep() > step()) {
       <button
         class="dz-button dz-button--sm dz-button--activated dz-button--round"
         [class.dz-button--error]="isQuickDecrementDisabled()"

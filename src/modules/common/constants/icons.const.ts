@@ -53,6 +53,8 @@ export const ICONS = Object.freeze({
   COFFEE: '#icon-coffee',
   CHAIR: '#icon-chair',
   NETWORK_INTELLIGENCE: '#icon-network-intelligence',
+  PLAY_ARROW: '#icon-play-arrow',
+  RESUME: '#icon-resume',
 } as const);
 
 /**

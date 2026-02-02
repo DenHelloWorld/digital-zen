@@ -150,6 +150,14 @@ export class PomodoroService {
     }
   }
 
+  public resetSession() {
+    if (this.#isChromeRuntime) {
+      chrome.runtime.sendMessage<{ command: ChromeCommandType }>({
+        command: CHROME_COMMAND_ENUM.RESET_POMODORO,
+      });
+    }
+  }
+
   #syncInitialState(): void {
     if (this.#isChromeRuntime) {
       this.#chromeStorageService.getMany<InitialStorageSchema>(

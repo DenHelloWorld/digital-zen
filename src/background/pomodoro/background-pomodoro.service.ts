@@ -108,7 +108,7 @@ export class BackgroundPomodoroService {
    * Fully stops the Pomodoro session, clears active alarms, and resets the state to default.
    *  @returns {Promise<void>}
    */
-  public async stop(): Promise<void> {
+  public async stop(isReset = false): Promise<void> {
     AlarmAdapter.clear(CHROME_ALARM_ENUM.POMODORO_TICK);
 
     const state = await StorageAdapter.getPomodoroState();
@@ -119,7 +119,7 @@ export class BackgroundPomodoroService {
         ...state,
         isRunning: false,
         isPaused: false,
-        currentCycle: FINISHED_CYCLE,
+        currentCycle: isReset ? 1 : FINISHED_CYCLE,
         phase: IPomodoro.EPomodoroPhase.IDLE,
         timeLeftSec: settings.workDurationMin * SECONDS_IN_MINUTE,
         totalTimeSec: settings.workDurationMin * SECONDS_IN_MINUTE,
@@ -128,6 +128,9 @@ export class BackgroundPomodoroService {
         startedAt: null,
       });
     }
+  }
+  public async reset(): Promise<void> {
+    return await this.stop(true);
   }
   /**
    * Pauses the timer execution.

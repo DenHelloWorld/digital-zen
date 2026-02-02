@@ -30,6 +30,7 @@ export namespace IPomodoro {
     shortBreakStepConfig: StepConfig;
     /** Stepper constraints for long break settings */
     longBreakStepConfig: StepConfig;
+    cyclesBeforeLongBreakConfig: StepConfig;
 
     /** Whether to automatically transition to the next phase */
     pauseAfterPhaseEnd: boolean;
@@ -43,6 +44,7 @@ export namespace IPomodoro {
     workStepConfig: FormControl<StepConfig>;
     shortBreakStepConfig: FormControl<StepConfig>;
     longBreakStepConfig: FormControl<StepConfig>;
+    cyclesBeforeLongBreakConfig: FormControl<StepConfig>;
     pauseAfterPhaseEnd: FormControl<boolean>;
   }
 

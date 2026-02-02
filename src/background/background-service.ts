@@ -140,6 +140,11 @@ export class BackgroundService {
               sendResponse({ success: true });
               break;
             }
+            case CHROME_COMMAND_ENUM.RESET_POMODORO: {
+              await this.#pomodoroService.reset();
+              sendResponse({ success: true });
+              break;
+            }
             case CHROME_COMMAND_ENUM.PAUSE_POMODORO: {
               await this.#pomodoroService.pause();
               sendResponse({ success: true });
