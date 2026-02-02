@@ -9,6 +9,17 @@
     background-color: var(--color-component-bg-light);
     overflow: hidden;
 
+    &__header {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--spacing-xs);
+
+      .dz-icon {
+        width: 1rem;
+      }
+    }
     &__main,
     &__footer {
       display: flex;

@@ -5,7 +5,7 @@
   </svg>
 </ng-template>
 
-<aside class="settings">
+<aside class="settings unselectable">
   <form class="dz-form" [formGroup]="form">
     @let workStepConfig = form.controls.workStepConfig.value;
     @let shortBreakStepConfig = form.controls.shortBreakStepConfig.value;
@@ -14,6 +14,7 @@
     <div class="dz-form__field">
       <dz-value-stepper
         [title]="uiText.POMODORO.TITLES.SESSION_LENGTH"
+        [titleIcon]="icons.NETWORK_INTELLIGENCE"
         [valueLabel]="uiText.POMODORO.UNITS.MINUTES"
         formControlName="workDurationMin"
         [min]="workStepConfig.min"
@@ -26,6 +27,7 @@
     <div class="dz-form__field">
       <dz-value-stepper
         [title]="uiText.POMODORO.TITLES.BREAK_LENGTH"
+        [titleIcon]="icons.COFFEE"
         [valueLabel]="uiText.POMODORO.UNITS.MINUTES"
         formControlName="shortBreakMin"
         [min]="shortBreakStepConfig.min"
@@ -38,6 +40,7 @@
     <div class="dz-form__field">
       <dz-value-stepper
         [title]="uiText.POMODORO.TITLES.LONG_BREAK_LENGTH"
+        [titleIcon]="icons.CHAIR"
         [valueLabel]="uiText.POMODORO.UNITS.MINUTES"
         formControlName="longBreakMin"
         [min]="longBreakStepConfig.min"
@@ -49,12 +52,12 @@
   </form>
 </aside>
 
-<main class="timer">
+<main class="timer shadow shadow--hoverless dz-box unselectable">
   <div
     class="timer__progress shadow round square"
     dzProgressBorder
     [progress]="progress()"
-    [progressConfig]="{ thickness: 12 }"
+    [progressConfig]="{ thickness: 10 }"
   >
     {{ timeLeftFormatted() }}
   </div>
@@ -66,7 +69,7 @@
       [selectedEntities]="currentPhase()"
       [labelKey]="'phase'"
       [idKey]="'phase'"
-      size="md"
+      size="lg"
       orientation="horizontal"
     >
       <ng-template #itemTemplate let-item>
@@ -78,7 +81,7 @@
   </div>
 </main>
 
-<footer class="actions">
+<footer class="actions dz-box shadow shadow--hoverless">
   <dz-step-bar [options]="cyclesBarOptions()" [currentOption]="currentCycleBarOption()" />
   @if (!isRunning()) {
     <button

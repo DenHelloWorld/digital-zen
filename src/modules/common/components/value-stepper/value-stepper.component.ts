@@ -53,6 +53,7 @@ export class ValueStepperComponent implements ControlValueAccessor {
   });
 
   public readonly title = input.required<string>();
+  public readonly titleIcon = input<string | null>(null);
   public readonly valueLabel = input.required<string>();
   public readonly min = input<number>(-Infinity);
   public readonly max = input<number>(Infinity);
