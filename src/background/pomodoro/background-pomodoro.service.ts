@@ -4,7 +4,8 @@ import { AlarmAdapter } from '../common/alarm-adapter';
 import { logger } from '../../modules/common/helpers/logger';
 import { CHROME_ALARM_ENUM } from '../../modules/common/enums/chrome-alarm-name.enum';
 import { FINISHED_CYCLE } from '../../modules/common/constants/finished-cycle.const';
-import { ALARM_PERIOD_IN_MINUTES } from '../../modules/common/constants/alarm-period-in-minutes.const';
+
+const SECONDS_IN_MINUTE = 60;
 
 export class BackgroundPomodoroService {
   readonly #logger = logger.createLogger('BackgroundPomodoroService');
@@ -26,8 +27,8 @@ export class BackgroundPomodoroService {
       state.totalCycles = settings.cyclesBeforeLongBreak;
 
       if (!state.isRunning) {
-        state.timeLeftSec = settings.workDurationMin * 60;
-        state.totalTimeSec = settings.workDurationMin * 60;
+        state.timeLeftSec = settings.workDurationMin * SECONDS_IN_MINUTE;
+        state.totalTimeSec = settings.workDurationMin * SECONDS_IN_MINUTE;
       }
 
       await StorageAdapter.savePomodoroState(state);
@@ -72,16 +73,17 @@ export class BackgroundPomodoroService {
       currentCycle: 1,
       totalCycles: settings.cyclesBeforeLongBreak,
       phase: IPomodoro.EPomodoroPhase.WORK,
-      timeLeftSec: settings.workDurationMin * 60,
-      totalTimeSec: settings.workDurationMin * 60,
+      timeLeftSec: settings.workDurationMin * SECONDS_IN_MINUTE,
+      totalTimeSec: settings.workDurationMin * SECONDS_IN_MINUTE,
       startedAt: now,
       pausedAt: null,
     };
 
     await StorageAdapter.savePomodoroState(initialState);
 
+    const alarmTime = Date.now() + initialState.timeLeftSec * 1000;
     AlarmAdapter.create(CHROME_ALARM_ENUM.POMODORO_TICK, {
-      periodInMinutes: ALARM_PERIOD_IN_MINUTES,
+      when: alarmTime,
     });
   }
 
@@ -91,7 +93,7 @@ export class BackgroundPomodoroService {
    * If the calculated duration exceeds total time, transitions to the next phase.
    * @returns {Promise<void>}
    */
-  public async tick(): Promise<void> {
+  public async handleAlarmTrigger(): Promise<void> {
     const state = await StorageAdapter.getPomodoroState();
     const settings = await StorageAdapter.getPomodoroSettings();
 
@@ -99,13 +101,7 @@ export class BackgroundPomodoroService {
       return;
     }
 
-    const now = Date.now();
-    const startTime = new Date(state.startedAt).getTime();
-    const elapsedSec = Math.floor((now - startTime) / 1000);
-
-    if (elapsedSec >= state.timeLeftSec) {
-      await this.#switchPhase(state, settings);
-    }
+    await this.#switchPhase(state, settings);
   }
 
   /**
@@ -123,10 +119,10 @@ export class BackgroundPomodoroService {
         ...state,
         isRunning: false,
         isPaused: false,
-        currentCycle: 1,
-        phase: IPomodoro.EPomodoroPhase.WORK,
-        timeLeftSec: settings.workDurationMin * 60,
-        totalTimeSec: settings.workDurationMin * 60,
+        currentCycle: FINISHED_CYCLE,
+        phase: IPomodoro.EPomodoroPhase.IDLE,
+        timeLeftSec: settings.workDurationMin * SECONDS_IN_MINUTE,
+        totalTimeSec: settings.workDurationMin * SECONDS_IN_MINUTE,
         totalCycles: settings.cyclesBeforeLongBreak,
         pausedAt: null,
         startedAt: null,
@@ -173,7 +169,7 @@ export class BackgroundPomodoroService {
       await StorageAdapter.savePomodoroState(state);
 
       AlarmAdapter.create(CHROME_ALARM_ENUM.POMODORO_TICK, {
-        periodInMinutes: ALARM_PERIOD_IN_MINUTES,
+        when: Date.now() + state.timeLeftSec * 1000,
       });
     }
   }
@@ -210,24 +206,32 @@ export class BackgroundPomodoroService {
    * @private
    */
   #updateStateToNextPhase(state: IPomodoro.State, settings: IPomodoro.Settings): void {
-    if (state.phase !== IPomodoro.EPomodoroPhase.WORK) {
-      state.phase = IPomodoro.EPomodoroPhase.WORK;
-      state.timeLeftSec = settings.workDurationMin * 60;
-    } else {
-      state.phase = IPomodoro.EPomodoroPhase.SHORT_BREAK;
-      state.timeLeftSec = settings.shortBreakMin * 60;
-      state.currentCycle++;
+    switch (state.phase) {
+      case IPomodoro.EPomodoroPhase.WORK:
+        if (state.currentCycle >= settings.cyclesBeforeLongBreak) {
+          state.phase = IPomodoro.EPomodoroPhase.LONG_BREAK;
+          state.timeLeftSec = settings.longBreakMin * SECONDS_IN_MINUTE;
+          state.currentCycle = FINISHED_CYCLE;
+        } else {
+          state.phase = IPomodoro.EPomodoroPhase.SHORT_BREAK;
+          state.timeLeftSec = settings.shortBreakMin * SECONDS_IN_MINUTE;
+        }
+        break;
 
-      if (state.currentCycle > settings.cyclesBeforeLongBreak) {
-        state.phase = IPomodoro.EPomodoroPhase.LONG_BREAK;
-        state.timeLeftSec = settings.longBreakMin * 60;
-        state.currentCycle = FINISHED_CYCLE;
-      }
+      case IPomodoro.EPomodoroPhase.SHORT_BREAK:
+        state.phase = IPomodoro.EPomodoroPhase.WORK;
+        state.timeLeftSec = settings.workDurationMin * SECONDS_IN_MINUTE;
+        state.currentCycle++;
+        break;
     }
 
     state.totalTimeSec = state.timeLeftSec;
     const now = new Date();
     now.setMilliseconds(0);
     state.startedAt = now;
+
+    AlarmAdapter.create(CHROME_ALARM_ENUM.POMODORO_TICK, {
+      when: Date.now() + state.timeLeftSec * 1000,
+    });
   }
 }

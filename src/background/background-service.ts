@@ -207,7 +207,7 @@ export class BackgroundService {
         }
 
         case CHROME_ALARM_ENUM.POMODORO_TICK:
-          await this.#pomodoroService.tick();
+          await this.#pomodoroService.handleAlarmTrigger();
           break;
 
         default:

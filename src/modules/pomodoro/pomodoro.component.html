@@ -73,9 +73,7 @@
       orientation="horizontal"
     >
       <ng-template #itemTemplate let-item>
-        @if (item.icon) {
-          <ng-container *ngTemplateOutlet="icon; context: { href: item.icon }" />
-        }
+        <ng-container *ngTemplateOutlet="icon; context: { href: item.icon }" />
       </ng-template>
     </dz-multi-selector>
   </div>
@@ -83,6 +81,7 @@
 
 <footer class="actions dz-box shadow shadow--hoverless">
   <dz-step-bar [options]="cyclesBarOptions()" [currentOption]="currentCycleBarOption()" />
+
   @if (!isRunning()) {
     <button
       class="dz-button dz-button--md dz-button--activated dz-button--full shadow"

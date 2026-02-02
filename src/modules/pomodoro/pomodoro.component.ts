@@ -60,9 +60,10 @@ export class PomodoroComponent implements OnInit {
 
   protected readonly uiText = UI_TEXT;
   protected readonly icons = ICONS;
+  protected readonly phase = IPomodoro.EPomodoroPhase;
   protected readonly allPhases: {
     phase: IPomodoro.IPomodoroPhase;
-    icon: string | null;
+    icon: string;
   }[] = [
     {
       phase: IPomodoro.EPomodoroPhase.WORK,
@@ -96,7 +97,7 @@ export class PomodoroComponent implements OnInit {
     const state = this.pomodoroState();
     const options = this.cyclesBarOptions();
 
-    if (!state || !state.isRunning) {
+    if (!state) {
       return null;
     }
 
@@ -104,18 +105,25 @@ export class PomodoroComponent implements OnInit {
   });
   protected readonly cyclesBarOptions = computed<IStepBarOption[]>(() => {
     const state = this.pomodoroState();
-    const totalCycles = state?.totalCycles ?? this.pomodoroSettings().cyclesBeforeLongBreak;
+    const isSessionEnds = state?.currentCycle === FINISHED_CYCLE && !state?.isRunning;
 
-    const steps: IStepBarOption[] = Array.from({ length: totalCycles }, (_, i) => ({
-      label: `Study ${i + 1}`,
-      value: i + 1,
-      icon: this.icons.SCHOOL,
-    }));
+    const steps: IStepBarOption[] = Array.from({ length: state?.totalCycles }, (_, i) => {
+      const cycleNumber = i + 1;
+      const isCurrentShortBreak =
+        state?.currentCycle === cycleNumber &&
+        state?.phase === IPomodoro.EPomodoroPhase.SHORT_BREAK;
+
+      return {
+        label: `Study ${cycleNumber}`,
+        value: cycleNumber,
+        icon: isCurrentShortBreak ? this.icons.COFFEE : this.icons.SCHOOL,
+      };
+    });
 
     steps.push({
       label: 'Finish',
       value: FINISHED_CYCLE,
-      icon: this.icons.CHECK,
+      icon: isSessionEnds ? this.icons.CHECK : this.icons.CHAIR,
     });
 
     return steps;
