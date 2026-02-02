@@ -24,4 +24,10 @@ export const DEFAULT_POMODORO_SETTINGS: IPomodoro.Settings = {
     min: 1,
     max: 30,
   },
+  cyclesBeforeLongBreakConfig: {
+    step: 1,
+    quickStep: 1,
+    min: 1,
+    max: 5,
+  },
 };

@@ -144,6 +144,7 @@ export const UI_TEXT = Object.freeze({
       SESSION_LENGTH: 'Session Length',
       BREAK_LENGTH: 'Break Length',
       LONG_BREAK_LENGTH: 'Long Break Length',
+      CYCLES_BEFORE_LONG_BREAK: 'Cycles',
     },
     BUTTONS: {
       START: 'Start Studying',
@@ -153,6 +154,7 @@ export const UI_TEXT = Object.freeze({
     },
     UNITS: {
       MINUTES: 'min',
+      CYCLES: 'cyc',
     },
   },
 });

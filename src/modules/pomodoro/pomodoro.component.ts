@@ -148,6 +148,7 @@ export class PomodoroComponent implements OnInit {
         this.form.controls.workDurationMin[method](options);
         this.form.controls.shortBreakMin[method](options);
         this.form.controls.longBreakMin[method](options);
+        this.form.controls.cyclesBeforeLongBreak[method](options);
       },
       { injector: this.#injector }
     );
@@ -180,8 +181,8 @@ export class PomodoroComponent implements OnInit {
     this.#pomodoroService.startSession();
   }
 
-  protected stopSession(): void {
-    this.#pomodoroService.stopSession();
+  protected resetSession(): void {
+    this.#pomodoroService.resetSession();
   }
 
   protected pauseSession(): void {
@@ -222,6 +223,9 @@ export class PomodoroComponent implements OnInit {
       workStepConfig: this.#fb.nonNullable.control(initSettings.workStepConfig),
       shortBreakStepConfig: this.#fb.nonNullable.control(initSettings.shortBreakStepConfig),
       longBreakStepConfig: this.#fb.nonNullable.control(initSettings.longBreakStepConfig),
+      cyclesBeforeLongBreakConfig: this.#fb.nonNullable.control(
+        initSettings.cyclesBeforeLongBreakConfig
+      ),
     });
   }
 }
