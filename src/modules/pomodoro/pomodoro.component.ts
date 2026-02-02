@@ -66,7 +66,7 @@ export class PomodoroComponent implements OnInit {
   }[] = [
     {
       phase: IPomodoro.EPomodoroPhase.WORK,
-      icon: this.icons.SCHOOL,
+      icon: this.icons.NETWORK_INTELLIGENCE,
     },
     {
       phase: IPomodoro.EPomodoroPhase.SHORT_BREAK,
@@ -74,7 +74,7 @@ export class PomodoroComponent implements OnInit {
     },
     {
       phase: IPomodoro.EPomodoroPhase.LONG_BREAK,
-      icon: this.icons.PILLOW,
+      icon: this.icons.CHAIR,
     },
   ];
 
@@ -89,7 +89,6 @@ export class PomodoroComponent implements OnInit {
     return [
       {
         phase: this.pomodoroState()?.phase ?? IPomodoro.EPomodoroPhase.IDLE,
-        icon: null,
       },
     ];
   });
