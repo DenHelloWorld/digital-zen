@@ -39,6 +39,7 @@
         <div
           [title]="'Period when focus is activatable'"
           class="dz-box dz-box--line-container shadow shadow--hoverless"
+          [class.shake]="isOutsideTimeRangeError()"
         >
           <ng-container
             *ngTemplateOutlet="
@@ -60,7 +61,7 @@
         </div>
       </div>
 
-      <div class="weekdays">
+      <div class="weekdays" [class.shake]="isNotScheduledToday()">
         <dz-weekdays-selector [selectedDays]="selectedDays()" [isSelectable]="false" />
       </div>
 
@@ -97,6 +98,7 @@
               [class.dz-button--square]="site.iconUrl || site.imageUrl"
               [class.dz-button--error]="site.isBlocked"
               [class.shadow--activated]="site.isBlocked"
+              [class.shake]="!site.isBlocked && isNoWebsitesError()"
               [title]="site.name"
               [disabled]="!isCurrent()"
               (click)="onToggleBlockedWebsite(site)"

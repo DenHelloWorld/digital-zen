@@ -111,6 +111,7 @@ export const UI_TEXT = Object.freeze({
   // Focus Component
   FOCUS: {
     ADD_CURRENT_TAB_TITLE: 'Add current website to period',
+    ADD_AND_BLOCK_CURRENT_TAB_TITLE: 'Add current website to period and block',
     TOGGLE_FOCUS_TITLE: 'Toggle focus session',
   },
 

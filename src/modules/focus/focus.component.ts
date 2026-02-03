@@ -109,6 +109,10 @@ export class FocusComponent {
     this.#focusService.addCurrentTabToPeriod();
   }
 
+  protected blockCurrentTab(): void {
+    this.#focusService.addCurrentTabToPeriod(true);
+  }
+
   protected onToggleBlockedWebsite(site: IFocus.WebSite): void {
     this.#focusService.toggleBlockedWebsite(site);
   }

@@ -1,4 +1,4 @@
-import { Injectable, signal, computed, WritableSignal, Signal } from '@angular/core';
+import { Injectable, signal, WritableSignal } from '@angular/core';
 import { IToast } from '../../models/toast.model';
 import { TOAST_TYPE_ENUM } from '../../enums/toast-type.enum';
 import { POSITIONS_ENUM } from '../../enums/positions.enum';
@@ -9,7 +9,7 @@ import { POSITIONS_ENUM } from '../../enums/positions.enum';
 export class DzToastService {
   readonly #toasts: WritableSignal<IToast[]> = signal<IToast[]>([]);
 
-  public readonly toasts: Signal<IToast[]> = computed(() => this.#toasts());
+  public readonly toasts = this.#toasts.asReadonly();
 
   public show(toast: Partial<IToast>) {
     const id = Date.now();
@@ -19,6 +19,7 @@ export class DzToastService {
       type: toast.type || TOAST_TYPE_ENUM.INFO,
       position: toast.position || POSITIONS_ENUM.BOTTOM_CENTER,
       durationInMs: toast.durationInMs || 3000,
+      target: toast.target || undefined,
     };
 
     this.#toasts.update(current => [...current, newToast]);

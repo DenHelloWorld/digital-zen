@@ -120,6 +120,212 @@ export class FocusService {
     this.#startTimer();
   }
 
+  public addPeriod(period: IFocus.Period): void {
+    if (this.#isChromeRuntime) {
+      chrome.runtime.sendMessage({ command: CHROME_COMMAND_ENUM.ADD_PERIOD, period });
+    }
+  }
+
+  public removePeriod(id: string): void {
+    if (this.#isChromeRuntime) {
+      chrome.runtime.sendMessage({ command: CHROME_COMMAND_ENUM.REMOVE_PERIOD, id });
+    }
+  }
+
+  public updatePeriod(period: IFocus.Period): void {
+    if (this.#isChromeRuntime) {
+      chrome.runtime.sendMessage({ command: CHROME_COMMAND_ENUM.UPDATE_PERIOD, period });
+    }
+  }
+
+  public toggleQuickFocus(): void {
+    if (this.#isChromeRuntime && this.activeTab()?.url) {
+      chrome.runtime.sendMessage({
+        command: CHROME_COMMAND_ENUM.TOGGLE_QUICK_FOCUS,
+        siteUrl: this.activeTab()?.url,
+      });
+    }
+  }
+
+  public toggleFocus(): void {
+    if (this.#isChromeRuntime) {
+      this.#notifyIfNoSitesBlocked(this.#currentPeriod());
+
+      chrome.runtime.sendMessage({ command: CHROME_COMMAND_ENUM.TOGGLE_FOCUS }, response => {
+        if (chrome.runtime.lastError) {
+          this.#logger.error('Error sending message to background:', chrome.runtime.lastError);
+          this.#toastService.show({
+            message: 'Failed to communicate with background service.',
+            type: TOAST_TYPE_ENUM.ERROR,
+            position: POSITIONS_ENUM.BOTTOM_RIGHT,
+          });
+          return;
+        }
+
+        if (response && !response.success) {
+          if (response.error === FOCUS_ERROR_ENUM.PERIOD_NOT_SCHEDULED_TODAY) {
+            this.#toastService.show({
+              message: TOAST_MESSAGES_ENUM.PERIOD_NOT_SCHEDULED_TODAY,
+              type: TOAST_TYPE_ENUM.WARN,
+              position: POSITIONS_ENUM.BOTTOM_RIGHT,
+              target: `${TOAST_MESSAGES_ENUM.PERIOD_NOT_SCHEDULED_TODAY}${this.#currentPeriod()?.id}`,
+            });
+          } else if (response.error === FOCUS_ERROR_ENUM.PERIOD_OUTSIDE_TIME_RANGE) {
+            this.#toastService.show({
+              message: TOAST_MESSAGES_ENUM.PERIOD_OUTSIDE_TIME_RANGE,
+              type: TOAST_TYPE_ENUM.WARN,
+              position: POSITIONS_ENUM.BOTTOM_RIGHT,
+              target: `${TOAST_MESSAGES_ENUM.PERIOD_OUTSIDE_TIME_RANGE}${this.#currentPeriod()?.id}`,
+            });
+          }
+        }
+      });
+    }
+  }
+
+  #getActiveTab(): void {
+    if (this.#isChromeRuntime) {
+      chrome.runtime.sendMessage({ command: CHROME_COMMAND_ENUM.GET_ACTIVE_TAB }, response => {
+        if (response?.success) {
+          this.#activeTab.set(response.tab);
+        }
+      });
+    }
+  }
+
+  public addCurrentTabToPeriod(isBlocked = false): void {
+    if (!this.#isChromeRuntime) {
+      return;
+    }
+
+    const tab = this.activeTab();
+    const period = this.currentPeriod();
+
+    if (tab?.url && period) {
+      const clearedUrl = cleanUrlHelper(tab.url);
+
+      // Check if the URL matches any UNBLOCKABLE website
+      const isUnblockable = WEBSITES_UNBLOCKABLE.some(
+        site => cleanUrlHelper(site.url) === clearedUrl
+      );
+
+      if (isUnblockable) {
+        this.#toastService.show({
+          message: TOAST_MESSAGES_ENUM.UNBLOCKABLE_WEBSITE,
+          type: TOAST_TYPE_ENUM.ERROR,
+        });
+        return;
+      }
+
+      const iconUrl = tab.favIconUrl ?? this.getGoogleFaviconUrl(clearedUrl);
+
+      const newSite: IFocus.WebSite = {
+        id: clearedUrl,
+        url: clearedUrl,
+        name: tab.title || clearedUrl,
+        iconUrl: isSvgIcon(iconUrl) ? iconUrl : '',
+        description: tab.title || clearedUrl,
+        imageUrl: isImageIcon(iconUrl) ? iconUrl : '',
+        type: IFocus.EWebSiteType.SOCIAL_MEDIA,
+        isBlocked,
+      };
+
+      const siteExists = period.webSites.some(s => s.url === newSite.url);
+      const existingSite = period.webSites.find(s => s.url === newSite.url);
+
+      if (!siteExists) {
+        const updatedPeriod = {
+          ...period,
+          webSites: [...period.webSites, newSite],
+        };
+
+        this.updatePeriod(updatedPeriod);
+        this.#toastService.show({
+          message: TOAST_MESSAGES_ENUM.ADDED,
+          type: TOAST_TYPE_ENUM.ACCENT,
+        });
+      } else if (isBlocked && !existingSite?.isBlocked) {
+        const updatedPeriod = {
+          ...period,
+          webSites: period.webSites.map(s =>
+            s.url === newSite.url ? { ...s, isBlocked: true } : s
+          ),
+        };
+
+        this.updatePeriod(updatedPeriod);
+        this.#toastService.show({
+          message: TOAST_MESSAGES_ENUM.WEBSITE_BLOCKED,
+          type: TOAST_TYPE_ENUM.ACCENT,
+        });
+      } else {
+        this.#toastService.show({
+          message: `${TOAST_MESSAGES_ENUM.ALREADY_ADDED}: ${clearedUrl}`,
+          type: TOAST_TYPE_ENUM.WARN,
+        });
+      }
+    }
+  }
+
+  public toggleBlockedWebsite(site: IFocus.WebSite): void {
+    if (this.#isChromeRuntime) {
+      chrome.runtime.sendMessage({ command: CHROME_COMMAND_ENUM.TOGGLE_BLOCKED_WEBSITE, site });
+    }
+  }
+
+  public getGoogleFaviconUrl(siteUrl: string, size = 32): string {
+    let normalizedUrl = siteUrl.trim();
+    if (!normalizedUrl.startsWith('http://') && !normalizedUrl.startsWith('https://')) {
+      normalizedUrl = 'https://' + normalizedUrl;
+    }
+
+    try {
+      const url = new URL(normalizedUrl);
+      const domain = url.hostname;
+
+      return `https://s2.googleusercontent.com/s2/favicons?domain=${domain}&size=${size}`;
+    } catch (e) {
+      this.#logger.error('Invalid URL provided:', siteUrl, e);
+      return 'favicon.ico';
+    }
+  }
+
+  public setCurrentPeriod(periodId: string): void {
+    if (this.#isChromeRuntime) {
+      chrome.runtime.sendMessage(
+        { command: CHROME_COMMAND_ENUM.SET_CURRENT_PERIOD, periodId },
+        response => {
+          if (chrome.runtime.lastError) {
+            this.#logger.error('Error switching period:', chrome.runtime.lastError);
+            this.#toastService.show({
+              message: TOAST_MESSAGES_ENUM.FAILED_TO_SWITCH_PERIOD,
+              type: TOAST_TYPE_ENUM.ERROR,
+              position: POSITIONS_ENUM.BOTTOM_RIGHT,
+            });
+            return;
+          }
+
+          if (response && !response.success) {
+            const message =
+              response.error === FOCUS_ERROR_ENUM.PERIOD_NOT_FOUND
+                ? TOAST_MESSAGES_ENUM.PERIOD_NOT_FOUND
+                : TOAST_MESSAGES_ENUM.FAILED_TO_ACTIVATE_PERIOD;
+
+            this.#toastService.show({
+              message,
+              type: TOAST_TYPE_ENUM.ERROR,
+              position: POSITIONS_ENUM.BOTTOM_RIGHT,
+            });
+          } else if (response && response.success) {
+            this.#toastService.show({
+              message: TOAST_MESSAGES_ENUM.PERIOD_ACTIVATED,
+              type: TOAST_TYPE_ENUM.ACCENT,
+            });
+          }
+        }
+      );
+    }
+  }
+
   #syncInitialState(): void {
     if (!this.#isChromeRuntime) {
       this.#periods.set([createDefaultPeriodHelper()]);
@@ -239,205 +445,16 @@ export class FocusService {
     };
   }
 
-  public addPeriod(period: IFocus.Period): void {
-    if (this.#isChromeRuntime) {
-      chrome.runtime.sendMessage({ command: CHROME_COMMAND_ENUM.ADD_PERIOD, period });
-    }
-  }
-
-  public removePeriod(id: string): void {
-    if (this.#isChromeRuntime) {
-      chrome.runtime.sendMessage({ command: CHROME_COMMAND_ENUM.REMOVE_PERIOD, id });
-    }
-  }
-
-  public updatePeriod(period: IFocus.Period): void {
-    if (this.#isChromeRuntime) {
-      chrome.runtime.sendMessage({ command: CHROME_COMMAND_ENUM.UPDATE_PERIOD, period });
-    }
-  }
-
-  public toggleQuickFocus(): void {
-    if (this.#isChromeRuntime && this.activeTab()?.url) {
-      chrome.runtime.sendMessage({
-        command: CHROME_COMMAND_ENUM.TOGGLE_QUICK_FOCUS,
-        siteUrl: this.activeTab()?.url,
-      });
-    }
-  }
-
-  public toggleFocus(): void {
-    if (this.#isChromeRuntime) {
-      this.#notifyIfNoSitesBlocked(this.#currentPeriod());
-
-      chrome.runtime.sendMessage({ command: CHROME_COMMAND_ENUM.TOGGLE_FOCUS }, response => {
-        if (chrome.runtime.lastError) {
-          this.#logger.error('Error sending message to background:', chrome.runtime.lastError);
-          this.#toastService.show({
-            message: 'Failed to communicate with background service.',
-            type: TOAST_TYPE_ENUM.ERROR,
-            position: POSITIONS_ENUM.BOTTOM_RIGHT,
-          });
-          return;
-        }
-
-        if (response && !response.success) {
-          if (response.error === FOCUS_ERROR_ENUM.PERIOD_NOT_SCHEDULED_TODAY) {
-            this.#toastService.show({
-              message: TOAST_MESSAGES_ENUM.PERIOD_NOT_SCHEDULED_TODAY,
-              type: TOAST_TYPE_ENUM.WARN,
-              position: POSITIONS_ENUM.BOTTOM_RIGHT,
-            });
-          } else if (response.error === FOCUS_ERROR_ENUM.PERIOD_OUTSIDE_TIME_RANGE) {
-            this.#toastService.show({
-              message: TOAST_MESSAGES_ENUM.PERIOD_OUTSIDE_TIME_RANGE,
-              type: TOAST_TYPE_ENUM.WARN,
-              position: POSITIONS_ENUM.BOTTOM_RIGHT,
-            });
-          }
-        }
-      });
-    }
-  }
-
-  #getActiveTab(): void {
-    if (this.#isChromeRuntime) {
-      chrome.runtime.sendMessage({ command: CHROME_COMMAND_ENUM.GET_ACTIVE_TAB }, response => {
-        if (response?.success) {
-          this.#activeTab.set(response.tab);
-        }
-      });
-    }
-  }
-
-  public addCurrentTabToPeriod(): void {
-    if (!this.#isChromeRuntime) {
-      return;
-    }
-
-    const tab = this.activeTab();
-    const period = this.currentPeriod();
-
-    if (tab?.url && period) {
-      const clearedUrl = cleanUrlHelper(tab.url);
-
-      // Check if the URL matches any UNBLOCKABLE website
-      const isUnblockable = WEBSITES_UNBLOCKABLE.some(
-        site => cleanUrlHelper(site.url) === clearedUrl
-      );
-
-      if (isUnblockable) {
-        this.#toastService.show({
-          message: TOAST_MESSAGES_ENUM.UNBLOCKABLE_WEBSITE,
-          type: TOAST_TYPE_ENUM.ERROR,
-        });
-        return;
-      }
-
-      const iconUrl = tab.favIconUrl ?? this.getGoogleFaviconUrl(clearedUrl);
-
-      const newSite: IFocus.WebSite = {
-        id: clearedUrl,
-        url: clearedUrl,
-        name: tab.title || clearedUrl,
-        iconUrl: isSvgIcon(iconUrl) ? iconUrl : '',
-        description: tab.title || clearedUrl,
-        imageUrl: isImageIcon(iconUrl) ? iconUrl : '',
-        type: IFocus.EWebSiteType.SOCIAL_MEDIA,
-        isBlocked: false,
-      };
-
-      const siteExists = period.webSites.some(s => s.url === newSite.url);
-
-      if (!siteExists) {
-        const updatedPeriod = {
-          ...period,
-          webSites: [...period.webSites, newSite],
-        };
-
-        this.updatePeriod(updatedPeriod);
-        this.#toastService.show({
-          message: TOAST_MESSAGES_ENUM.ADDED,
-          type: TOAST_TYPE_ENUM.ACCENT,
-        });
-      } else {
-        this.#toastService.show({
-          message: `${TOAST_MESSAGES_ENUM.ALREADY_ADDED}: ${clearedUrl}`,
-          type: TOAST_TYPE_ENUM.WARN,
-        });
-      }
-    }
-  }
-
-  public toggleBlockedWebsite(site: IFocus.WebSite): void {
-    if (this.#isChromeRuntime) {
-      chrome.runtime.sendMessage({ command: CHROME_COMMAND_ENUM.TOGGLE_BLOCKED_WEBSITE, site });
-    }
-  }
-
-  public getGoogleFaviconUrl(siteUrl: string, size = 32): string {
-    let normalizedUrl = siteUrl.trim();
-    if (!normalizedUrl.startsWith('http://') && !normalizedUrl.startsWith('https://')) {
-      normalizedUrl = 'https://' + normalizedUrl;
-    }
-
-    try {
-      const url = new URL(normalizedUrl);
-      const domain = url.hostname;
-
-      return `https://s2.googleusercontent.com/s2/favicons?domain=${domain}&size=${size}`;
-    } catch (e) {
-      this.#logger.error('Invalid URL provided:', siteUrl, e);
-      return 'favicon.ico';
-    }
-  }
-
   #notifyIfNoSitesBlocked(period: IFocus.Period | null): void {
     const hasBlockedSites: boolean = period?.webSites.some(site => site.isBlocked) ?? false;
 
     if (!period?.isFocused && !hasBlockedSites) {
       this.#toastService.show({
-        message: `${TOAST_MESSAGES_ENUM.NO_SITES_BLOCKED}`,
+        message: TOAST_MESSAGES_ENUM.NO_SITES_BLOCKED,
         type: TOAST_TYPE_ENUM.WARN,
         position: POSITIONS_ENUM.BOTTOM_RIGHT,
+        target: `${TOAST_MESSAGES_ENUM.NO_SITES_BLOCKED}${period?.id}`,
       });
-    }
-  }
-
-  public setCurrentPeriod(periodId: string): void {
-    if (this.#isChromeRuntime) {
-      chrome.runtime.sendMessage(
-        { command: CHROME_COMMAND_ENUM.SET_CURRENT_PERIOD, periodId },
-        response => {
-          if (chrome.runtime.lastError) {
-            this.#logger.error('Error switching period:', chrome.runtime.lastError);
-            this.#toastService.show({
-              message: TOAST_MESSAGES_ENUM.FAILED_TO_SWITCH_PERIOD,
-              type: TOAST_TYPE_ENUM.ERROR,
-              position: POSITIONS_ENUM.BOTTOM_RIGHT,
-            });
-            return;
-          }
-
-          if (response && !response.success) {
-            const message =
-              response.error === FOCUS_ERROR_ENUM.PERIOD_NOT_FOUND
-                ? TOAST_MESSAGES_ENUM.PERIOD_NOT_FOUND
-                : TOAST_MESSAGES_ENUM.FAILED_TO_ACTIVATE_PERIOD;
-
-            this.#toastService.show({
-              message,
-              type: TOAST_TYPE_ENUM.ERROR,
-              position: POSITIONS_ENUM.BOTTOM_RIGHT,
-            });
-          } else if (response && response.success) {
-            this.#toastService.show({
-              message: TOAST_MESSAGES_ENUM.PERIOD_ACTIVATED,
-              type: TOAST_TYPE_ENUM.ACCENT,
-            });
-          }
-        }
-      );
     }
   }
 }

@@ -55,6 +55,7 @@ export const ICONS = Object.freeze({
   NETWORK_INTELLIGENCE: '#icon-network-intelligence',
   PLAY_ARROW: '#icon-play-arrow',
   RESUME: '#icon-resume',
+  ADD_LINK: '#icon-add-link',
 } as const);
 
 /**
