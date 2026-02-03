@@ -8,4 +8,5 @@ export interface IToast {
   position?: POSITIONS_ENUM;
   durationInMs?: number;
   leaving?: boolean;
+  target?: string;
 }

@@ -23,6 +23,8 @@ import { UI_TEXT } from '../../../common/constants/ui-text.const';
 import { ICONS } from '../../../common/constants/icons.const';
 import { ALL_DAYS_OF_WEEK } from '../../../common/constants/days-of-week.const';
 import { isHttpUrl } from '../../../common/helpers/is-http-url.helper';
+import { DzToastService } from '../../../common/components';
+import { TOAST_MESSAGES_ENUM } from '../../../common/enums/toast-messages.enum';
 
 /**
  * Period display and management component
@@ -56,12 +58,31 @@ import { isHttpUrl } from '../../../common/helpers/is-http-url.helper';
 export class PeriodComponent {
   /** @guideline DZ_02, DZ_08, DZ_09 - Dependency injection with inject(), private #, readonly */
   readonly #focusService: FocusService = inject(FocusService);
+  readonly #toastService: DzToastService = inject(DzToastService);
 
   /** @guideline DZ_04 - Computed signal (derived state) */
   protected readonly selectedDays: Signal<IFocus.DayOfWeek[]> = computed(() => {
     const selected = this.period().daysOfWeek;
     return this.allDays.filter(day => selected.includes(day.day));
   });
+
+  protected isNoWebsitesError = computed(() =>
+    this.#toastService
+      .toasts()
+      .find(t => t.target === `${TOAST_MESSAGES_ENUM.NO_SITES_BLOCKED}${this.period().id}`)
+  );
+  protected isOutsideTimeRangeError = computed(() =>
+    this.#toastService
+      .toasts()
+      .find(t => t.target === `${TOAST_MESSAGES_ENUM.PERIOD_OUTSIDE_TIME_RANGE}${this.period().id}`)
+  );
+  protected isNotScheduledToday = computed(() =>
+    this.#toastService
+      .toasts()
+      .find(
+        t => t.target === `${TOAST_MESSAGES_ENUM.PERIOD_NOT_SCHEDULED_TODAY}${this.period().id}`
+      )
+  );
 
   /** @guideline DZ_04 - Writable signal for local state */
   protected readonly isEditing: WritableSignal<boolean> = signal(false);

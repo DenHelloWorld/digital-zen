@@ -14,7 +14,7 @@ export const WEBSITE_X: Readonly<IFocus.WebSite> = {
   imageUrl: '',
   iconUrl: ICONS.X,
   type: IFocus.EWebSiteType.SOCIAL_MEDIA,
-  isBlocked: false,
+  isBlocked: true,
 };
 
 export const WEBSITE_INST: Readonly<IFocus.WebSite> = {
@@ -25,7 +25,7 @@ export const WEBSITE_INST: Readonly<IFocus.WebSite> = {
   imageUrl: '',
   iconUrl: ICONS.INSTAGRAM,
   type: IFocus.EWebSiteType.SOCIAL_MEDIA,
-  isBlocked: false,
+  isBlocked: true,
 };
 
 export const WEBSITE_FACEBOOK: Readonly<IFocus.WebSite> = {
@@ -36,7 +36,7 @@ export const WEBSITE_FACEBOOK: Readonly<IFocus.WebSite> = {
   imageUrl: '',
   iconUrl: ICONS.FACEBOOK,
   type: IFocus.EWebSiteType.SOCIAL_MEDIA,
-  isBlocked: false,
+  isBlocked: true,
 };
 
 export const WEBSITE_TIKTOK: Readonly<IFocus.WebSite> = {
@@ -47,7 +47,7 @@ export const WEBSITE_TIKTOK: Readonly<IFocus.WebSite> = {
   imageUrl: '',
   iconUrl: ICONS.TIKTOK,
   type: IFocus.EWebSiteType.SOCIAL_MEDIA,
-  isBlocked: false,
+  isBlocked: true,
 };
 
 export const WEBSITE_VK: Readonly<IFocus.WebSite> = {
@@ -58,7 +58,7 @@ export const WEBSITE_VK: Readonly<IFocus.WebSite> = {
   imageUrl: '',
   iconUrl: ICONS.VK,
   type: IFocus.EWebSiteType.SOCIAL_MEDIA,
-  isBlocked: false,
+  isBlocked: true,
 };
 
 export const WEBSITE_TELEGRAM: Readonly<IFocus.WebSite> = {
@@ -69,7 +69,7 @@ export const WEBSITE_TELEGRAM: Readonly<IFocus.WebSite> = {
   imageUrl: '',
   iconUrl: ICONS.TELEGRAM,
   type: IFocus.EWebSiteType.SOCIAL_MEDIA,
-  isBlocked: false,
+  isBlocked: true,
 };
 
 export const WEBSITE_SNAPCHAT: Readonly<IFocus.WebSite> = {
@@ -80,7 +80,7 @@ export const WEBSITE_SNAPCHAT: Readonly<IFocus.WebSite> = {
   imageUrl: '',
   iconUrl: ICONS.SNAPCHAT,
   type: IFocus.EWebSiteType.SOCIAL_MEDIA,
-  isBlocked: false,
+  isBlocked: true,
 };
 
 export const WEBSITE_LINKEDIN: Readonly<IFocus.WebSite> = {
@@ -91,7 +91,7 @@ export const WEBSITE_LINKEDIN: Readonly<IFocus.WebSite> = {
   imageUrl: '',
   iconUrl: ICONS.LINKEDIN,
   type: IFocus.EWebSiteType.SOCIAL_MEDIA,
-  isBlocked: false,
+  isBlocked: true,
 };
 
 export const WEBSITE_PINTEREST: Readonly<IFocus.WebSite> = {
@@ -102,7 +102,7 @@ export const WEBSITE_PINTEREST: Readonly<IFocus.WebSite> = {
   imageUrl: '',
   iconUrl: ICONS.PINTEREST,
   type: IFocus.EWebSiteType.SOCIAL_MEDIA,
-  isBlocked: false,
+  isBlocked: true,
 };
 
 export const WEBSITE_YOUTUBE: Readonly<IFocus.WebSite> = {
@@ -113,7 +113,7 @@ export const WEBSITE_YOUTUBE: Readonly<IFocus.WebSite> = {
   imageUrl: '',
   iconUrl: ICONS.YOUTUBE,
   type: IFocus.EWebSiteType.SOCIAL_MEDIA,
-  isBlocked: false,
+  isBlocked: true,
 };
 
 /**

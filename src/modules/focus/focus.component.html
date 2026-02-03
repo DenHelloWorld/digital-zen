@@ -13,9 +13,8 @@
 
 <div class="dz-actions">
   <button
-    [title]="uiText.FOCUS.ADD_CURRENT_TAB_TITLE"
-    (click)="addCurrentTabToPeriod()"
-    class="dz-button dz-button--sm shadow"
+    disabled
+    class="dz-button dz-button--sm"
     [class.hidden]="!isHttpUrl(activeTab()?.url) || isCurrentTabUnblockable()"
   >
     @if (isSvgIcon(activeTab()?.favIconUrl)) {
@@ -46,11 +45,32 @@
         "
       ></ng-container>
     }
+  </button>
 
+  <button
+    class="dz-button dz-button--sm shadow"
+    [class.hidden]="!isHttpUrl(activeTab()?.url) || isCurrentTabUnblockable()"
+    [title]="uiText.FOCUS.ADD_CURRENT_TAB_TITLE"
+    (click)="addCurrentTabToPeriod()"
+  >
     <ng-container
       *ngTemplateOutlet="
         icon;
-        context: { href: icons.PLUS, class: 'dz-icon dz-icon--shadow', width: 20, height: 20 }
+        context: { href: icons.ADD_LINK, class: 'dz-icon', width: 20, height: 20 }
+      "
+    ></ng-container>
+  </button>
+
+  <button
+    [class.hidden]="!isHttpUrl(activeTab()?.url) || isCurrentTabUnblockable()"
+    [title]="uiText.FOCUS.ADD_AND_BLOCK_CURRENT_TAB_TITLE"
+    class="dz-button dz-button--sm shadow"
+    (click)="blockCurrentTab()"
+  >
+    <ng-container
+      *ngTemplateOutlet="
+        icon;
+        context: { href: icons.BLOCK, class: 'dz-icon', width: 20, height: 20 }
       "
     ></ng-container>
   </button>
