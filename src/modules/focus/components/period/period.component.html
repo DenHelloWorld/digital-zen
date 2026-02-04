@@ -19,11 +19,7 @@
     <dz-period-form mode="edit" [period]="p" (completed)="onFormCompleted()" />
   </div>
 } @else {
-  <details
-    open
-    class="dz-accordion dz-accordion--accent"
-    [class.dz-accordion--accent]="p.isFocused"
-  >
+  <details open class="dz-accordion" [class.dz-accordion--accent]="p.isFocused">
     <summary class="dz-accordion__header">
       <span>
         <h2 class="title">
@@ -99,7 +95,7 @@
               [class.dz-button--error]="site.isBlocked"
               [class.shadow--activated]="site.isBlocked"
               [class.shake]="!site.isBlocked && isNoWebsitesError()"
-              [title]="site.name"
+              [title]="site.url | removeProtocol"
               [disabled]="!isCurrent()"
               (click)="onToggleBlockedWebsite(site)"
             >

@@ -23,6 +23,7 @@ import { cleanUrlHelper } from '../../common/helpers/clean-url.helper';
 import { isSvgIcon } from '../../common/helpers/is-svg-icon.helper';
 import { isImageIcon } from '../../common/helpers/is-image-icon.helper';
 import { createDefaultPeriodHelper } from '../../common/helpers/create-default-period.helper';
+import { ICONS } from '../../common/constants/icons.const';
 
 interface InitialStorageSchema {
   [CHROME_STORAGE_KEY_ENUM.CURRENT_PERIOD]: IFocus.Period;
@@ -222,11 +223,11 @@ export class FocusService {
       const newSite: IFocus.WebSite = {
         id: clearedUrl,
         url: clearedUrl,
-        name: tab.title || clearedUrl,
-        iconUrl: isSvgIcon(iconUrl) ? iconUrl : '',
+        name: clearedUrl,
+        iconUrl: isSvgIcon(iconUrl) ? iconUrl : ICONS.GLOBE,
         description: tab.title || clearedUrl,
         imageUrl: isImageIcon(iconUrl) ? iconUrl : '',
-        type: IFocus.EWebSiteType.SOCIAL_MEDIA,
+        type: IFocus.EWebSiteType.DEFAULT,
         isBlocked,
       };
 

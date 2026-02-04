@@ -14,7 +14,7 @@ import {
   WritableSignal,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 
 import { distinctUntilChanged, map } from 'rxjs';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
@@ -86,6 +86,8 @@ export class PeriodFormComponent implements OnInit {
   readonly #focusService: FocusService = inject(FocusService);
   /** @guideline DZ_11 - Universal Logger usage */
   readonly #logger = logger.createLogger('PeriodFormComponent');
+
+  readonly #maxPeriodNameLength = 100;
 
   /** @guideline DZ_04 - InputSignal for component inputs */
   public readonly mode: InputSignal<'create' | 'edit'> = input<'create' | 'edit'>('create');
@@ -265,6 +267,7 @@ export class PeriodFormComponent implements OnInit {
     this.form.controls.name.setValidators([
       requiredTrimmedValidator,
       uniquePeriodNameValidator(periods, currentPeriodId),
+      Validators.maxLength(this.#maxPeriodNameLength),
     ]);
     this.form.controls.name.updateValueAndValidity();
   }
@@ -297,6 +300,7 @@ export class PeriodFormComponent implements OnInit {
         name: this.#fb.nonNullable.control('', [
           requiredTrimmedValidator,
           uniquePeriodNameValidator(periods, currentPeriodId),
+          Validators.maxLength(this.#maxPeriodNameLength),
         ]),
         description: this.#fb.nonNullable.control('', requiredTrimmedValidator),
         startFrom: this.#fb.control<string | null>(null),
