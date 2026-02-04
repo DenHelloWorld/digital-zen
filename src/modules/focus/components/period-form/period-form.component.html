@@ -156,7 +156,8 @@
       [(entities)]="selectedWebSites"
       [excludeKeys]="excludedSiteKeysArray"
       idKey="id"
-      labelKey="name"
+      labelKey="url"
+      iconKey="iconUrl"
     />
 
     @if (form.controls.webSites.hasError(validationErrorKeys.UNBLOCKABLE_NOT_ALLOWED)) {

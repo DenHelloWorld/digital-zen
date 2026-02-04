@@ -91,6 +91,9 @@ export const UI_TEXT = Object.freeze({
     },
     EMPTY_PLACEHOLDER: 'Empty...',
     ADD_BUTTON: 'Add',
+    ERRORS: {
+      DUPLICATE_FIELD: 'A field with this value already exists',
+    },
   },
 
   // Common

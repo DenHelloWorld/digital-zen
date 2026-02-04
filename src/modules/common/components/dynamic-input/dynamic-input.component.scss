@@ -3,16 +3,10 @@
     margin-bottom: var(--list-gap);
 
     .item {
-      position: relative;
       width: 100%;
       display: flex;
       align-items: center;
       gap: var(--list-gap);
-
-      .delete {
-        position: absolute;
-        right: var(--list-gap);
-      }
     }
   }
 

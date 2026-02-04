@@ -111,6 +111,7 @@ export class PeriodFormComponent implements OnInit {
     'isBlocked',
     'description',
     'type',
+    'name',
   ];
 
   protected blockOptions = [

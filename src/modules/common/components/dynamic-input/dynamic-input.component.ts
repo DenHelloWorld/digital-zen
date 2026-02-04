@@ -44,7 +44,8 @@ export class DynamicInputComponent<T> implements OnInit {
   readonly #initEntities: WritableSignal<T[]> = signal<T[]>([]);
 
   /** @guideline DZ_04 - Writable signals for local state */
-  protected readonly isAdding: WritableSignal<boolean> = signal<boolean>(false);
+  protected readonly duplicateValue = signal<string | null>(null);
+  protected readonly isAdding = signal<boolean>(false);
   protected readonly newEntity = signal<T | null>(null);
   /** @guideline DZ_10 - UI text constants */
   protected readonly uiText = UI_TEXT;
@@ -67,7 +68,7 @@ export class DynamicInputComponent<T> implements OnInit {
   /** @guideline DZ_04 - Computed signal (derived state) */
   protected readonly isNewEntityValid = computed(() => {
     const obj = this.newEntity() as Record<string, unknown>;
-    if (!obj) return false;
+    if (!obj || this.duplicateValue()) return false;
 
     return this.entityKeys()
       .filter((k: string) => k !== this.idKey())
@@ -84,6 +85,7 @@ export class DynamicInputComponent<T> implements OnInit {
   public readonly idKey: InputSignal<keyof T> = input.required<keyof T>();
   public readonly readonlyKeys: InputSignal<T[keyof T][]> = input<T[keyof T][]>([]);
   public readonly excludeKeys: InputSignal<(keyof T)[]> = input<(keyof T)[]>([]);
+  public readonly iconKey: InputSignal<keyof T | null> = input<keyof T | null>(null);
 
   public readonly entities: ModelSignal<T[] | undefined> = model<T[]>();
 
@@ -115,6 +117,16 @@ export class DynamicInputComponent<T> implements OnInit {
 
   protected updateField(key: string, value: T): void {
     this.newEntity.update(current => ({ ...current, [key]: value }) as T);
+
+    if (key === this.labelKey()) {
+      const newVal = String(value).trim().toLowerCase();
+
+      const exists = (this.entities() ?? []).some(
+        item => String(item[this.labelKey()]).trim().toLowerCase() === newVal
+      );
+
+      this.duplicateValue.set(exists ? newVal : null);
+    }
   }
 
   protected resetEntities(): void {
