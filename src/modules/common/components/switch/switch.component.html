@@ -1,0 +1,33 @@
+<ng-template #icon let-iconHref="href">
+  <svg [class]="'dz-icon dz-switch__icon'" aria-hidden="true" focusable="false">
+    <use [attr.href]="iconHref"></use>
+  </svg>
+</ng-template>
+
+<label
+  class="dz-switch shadow"
+  [class.dz-switch--checked]="checked()"
+  [class.dz-switch--disabled]="disabled()"
+  [class.shadow]="!disabled()"
+  [style.--switch-h]="switchHeight()"
+>
+  <input
+    type="checkbox"
+    class="dz-switch__input"
+    [checked]="checked()"
+    [disabled]="disabled()"
+    (change)="onToggle()"
+  />
+
+  <div class="dz-switch__track" aria-hidden="true">
+    <ng-container
+      *ngTemplateOutlet="icon; context: { href: statusIcons().activated }"
+    ></ng-container>
+
+    <span class="dz-switch__thumb"></span>
+
+    <ng-container
+      *ngTemplateOutlet="icon; context: { href: statusIcons().unActivated }"
+    ></ng-container>
+  </div>
+</label>

@@ -4,8 +4,8 @@ export const MANUAL_TIME_RANGE: Readonly<IFocus.TimeRange> = Object.freeze({
   id: 'MANUAL_RANGE',
   name: 'Manual range',
   description: 'Custom time range',
-  startFrom: '',
-  endTo: '',
+  startFrom: '00:00',
+  endTo: '23:59',
 });
 
 export const MORNING_TIME_RANGE: Readonly<IFocus.TimeRange> = Object.freeze({
