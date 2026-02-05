@@ -35,7 +35,7 @@ export const UI_TEXT = Object.freeze({
       DAYS_OF_WEEK: 'Days of week',
       START_FROM: 'Start from',
       END_TO: 'End to',
-      BLOCKED_URLS: 'Blocked URLs',
+      WEBSITES_URLS: 'Websites URLs',
       TIME_RANGE: 'Time Range',
     },
     PLACEHOLDERS: {

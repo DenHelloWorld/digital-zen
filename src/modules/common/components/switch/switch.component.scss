@@ -1,0 +1,111 @@
+@charset "UTF-8";
+
+:host {
+  --sw-size-xs: 14px;
+  --sw-size-sm: 18px;
+  --sw-size-md: 22px;
+  --sw-size-lg: 28px;
+  --sw-size-xl: 36px;
+  --sw-radius: 999px;
+
+  .dz-switch {
+    --padding: 2px;
+    --switch-w: calc(var(--switch-h) * 1.8);
+    --thumb-s: calc(var(--switch-h) - (var(--padding) * 2));
+    --icon-s: calc(var(--switch-h) * 0.6);
+    --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+
+    position: relative;
+    display: block;
+    width: var(--switch-w);
+    height: var(--switch-h);
+    cursor: pointer;
+    user-select: none;
+    border-radius: var(--sw-radius);
+
+    &__input {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+      opacity: 0;
+
+      &:focus-visible + .dz-switch__track {
+        outline: 2px solid var(--color-zen-accent);
+        outline-offset: 3px;
+      }
+    }
+
+    &__track {
+      position: absolute;
+      inset: 0;
+      background-color: var(--color-zen-error);
+      border-radius: var(--sw-radius);
+      transition: var(--transition);
+
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 calc(var(--padding) * 2);
+    }
+
+    &__thumb {
+      position: absolute;
+      top: var(--padding);
+      left: var(--padding);
+      width: var(--thumb-s);
+      height: var(--thumb-s);
+      background-color: var(--color-component-bg-light);
+      border-radius: 99px;
+      transition: var(--transition);
+      z-index: 2;
+      transform-origin: left center;
+      transform: translateX(0) scaleX(1);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    &--checked {
+      .dz-switch__track {
+        background-color: var(--color-zen-accent);
+        opacity: 1;
+      }
+      .dz-switch__thumb {
+        $offset: calc(var(--switch-w) - var(--thumb-s) - (var(--padding) * 2));
+        transform: translateX($offset) scaleX(1);
+        transform-origin: right center;
+      }
+    }
+
+    &:active:not(&--disabled) {
+      transform: scale(0.96);
+
+      .dz-switch__thumb {
+        transform: scaleX(1.3);
+      }
+
+      &.dz-switch--checked .dz-switch__thumb {
+        $offset: calc(var(--switch-w) - var(--thumb-s) - (var(--padding) * 2));
+        transform: translateX($offset) scaleX(1.3);
+      }
+    }
+
+    &--disabled {
+      cursor: not-allowed;
+      opacity: 0.5;
+      filter: grayscale(1);
+    }
+
+    &__icon {
+      width: var(--icon-s);
+      height: var(--icon-s);
+      color: var(--color-on-accent);
+      z-index: 1;
+      pointer-events: none;
+    }
+  }
+}

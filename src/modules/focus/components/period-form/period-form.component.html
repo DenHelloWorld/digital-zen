@@ -43,20 +43,107 @@
     }
   </div>
 
-  <div class="dz-form__field">
+  <div class="dz-form__field dz-form__field">
     <span class="dz-form__hint">
       <span class="dz-form__required">{{ uiText.COMMON.REQUIRED_MARKER }}</span>
       Block Behavior
     </span>
 
-    <dz-multi-selector
-      [(selectedEntities)]="selectedBlockBehaviours"
-      [isOnlySingleSelectable]="true"
-      [entities]="blockOptions"
-      [labelKey]="'name'"
-      [idKey]="'id'"
-      orientation="horizontal"
+    <div class="dz-form__block-behaviour">
+      <dz-switch
+        [(checked)]="selectedBlockBehaviour"
+        size="lg"
+        [statusIcons]="{ activated: icons.WARNING, unActivated: icons.BLOCK }"
+      />
+
+      <div
+        class="dz-banner dz-banner--sm"
+        [class.dz-banner--error]="form.controls.blockBehaviour.value === blockBehaviours.BLOCK"
+        [class.dz-banner--info]="form.controls.blockBehaviour.value === blockBehaviours.WARN"
+      >
+        <div class="dz-banner__content">
+          <div class="dz-banner__message">
+            {{
+              form.controls.blockBehaviour.value === blockBehaviours.BLOCK
+                ? uiText.PERIOD.BLOCK_BEHAVIOUR.BANNER_BLOCK
+                : uiText.PERIOD.BLOCK_BEHAVIOUR.BANNER_WARN
+            }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="dz-form__field">
+    <span class="dz-form__hint">
+      <span class="dz-form__required">{{ uiText.COMMON.REQUIRED_MARKER }}</span>
+      {{ uiText.PERIOD_FORM.LABELS.WEBSITES_URLS }}
+    </span>
+
+    <ng-template #websiteIconTemplate let-site>
+      @let statusRes = siteStatuses()[site.url];
+      @let isOnline = statusRes?.value();
+
+      <button
+        [title]="isOnline ? 'Online' : 'Offline'"
+        class="dz-button dz-button--xs dz-button--activated dz-button--pointerless dz-button--square"
+        [class.dz-button--error]="!isOnline"
+      >
+        @if (isOnline === undefined) {
+          <ng-container *ngTemplateOutlet="icon; context: { href: icons.WIFI_FIND }"></ng-container>
+        } @else if (isOnline) {
+          <ng-container *ngTemplateOutlet="icon; context: { href: icons.WIFI }"></ng-container>
+        } @else {
+          <ng-container *ngTemplateOutlet="icon; context: { href: icons.WIFI_OFF }"></ng-container>
+        }
+      </button>
+
+      <button
+        [title]="site.url"
+        class="dz-button dz-button--sm dz-button--pointerless dz-button--square"
+      >
+        <img
+          #imgRef
+          class="dz-icon"
+          [class.hidden]="imgRef.hidden"
+          [src]="site.imageUrl || getFavicon(site.url)"
+          [alt]="site.url"
+          (error)="imgRef.hidden = true"
+        />
+        @if (imgRef.hidden) {
+          <ng-container *ngTemplateOutlet="icon; context: { href: icons.ERROR }"></ng-container>
+        }
+      </button>
+    </ng-template>
+
+    <dz-dynamic-input
+      [(entities)]="selectedWebSites"
+      [excludeKeys]="excludedSiteKeysArray"
+      idKey="id"
+      labelKey="url"
+      [iconTemplate]="websiteIconTemplate"
     />
+
+    @if (form.controls.webSites.hasError(validationErrorKeys.UNBLOCKABLE_NOT_ALLOWED)) {
+      <ng-container
+        *ngTemplateOutlet="
+          errorBanner;
+          context: {
+            message:
+              uiText.PERIOD_FORM.ERRORS.UNBLOCKABLE_WEBSITE +
+              ': ' +
+              (form.controls.webSites.errors?.['invalidUrls']?.join(', ') || ''),
+          }
+        "
+      ></ng-container>
+    } @else if (form.controls.webSites.invalid) {
+      <ng-container
+        *ngTemplateOutlet="
+          errorBanner;
+          context: { message: uiText.PERIOD_FORM.ERRORS.CHOOSE_WEBSITES }
+        "
+      ></ng-container>
+    }
   </div>
 
   <div class="dz-form__field">
@@ -127,78 +214,6 @@
         *ngTemplateOutlet="
           errorBanner;
           context: { message: uiText.PERIOD_FORM.ERRORS.INVALID_TIME_RANGE }
-        "
-      ></ng-container>
-    }
-  </div>
-
-  <div class="dz-form__field">
-    <span class="dz-form__hint">
-      <span class="dz-form__required">{{ uiText.COMMON.REQUIRED_MARKER }}</span>
-      {{ uiText.PERIOD_FORM.LABELS.BLOCKED_URLS }}
-    </span>
-
-    <ng-template #websiteIconTemplate let-site>
-      @let statusRes = siteStatuses()[site.url];
-      @let isOnline = statusRes?.value();
-
-      <button
-        [title]="isOnline ? 'Online' : 'Offline'"
-        class="dz-button dz-button--xs dz-button--activated dz-button--pointerless dz-button--square"
-        [class.dz-button--error]="!isOnline"
-      >
-        @if (isOnline === undefined) {
-          <ng-container *ngTemplateOutlet="icon; context: { href: icons.WIFI_FIND }"></ng-container>
-        } @else if (isOnline) {
-          <ng-container *ngTemplateOutlet="icon; context: { href: icons.WIFI }"></ng-container>
-        } @else {
-          <ng-container *ngTemplateOutlet="icon; context: { href: icons.WIFI_OFF }"></ng-container>
-        }
-      </button>
-
-      <button
-        [title]="site.url"
-        class="dz-button dz-button--sm dz-button--pointerless dz-button--square"
-      >
-        <img
-          #imgRef
-          class="dz-icon"
-          [class.hidden]="imgRef.hidden"
-          [src]="site.imageUrl || getFavicon(site.url)"
-          [alt]="site.url"
-          (error)="imgRef.hidden = true"
-        />
-        @if (imgRef.hidden) {
-          <ng-container *ngTemplateOutlet="icon; context: { href: icons.ERROR }"></ng-container>
-        }
-      </button>
-    </ng-template>
-
-    <dz-dynamic-input
-      [(entities)]="selectedWebSites"
-      [excludeKeys]="excludedSiteKeysArray"
-      idKey="id"
-      labelKey="url"
-      [iconTemplate]="websiteIconTemplate"
-    />
-
-    @if (form.controls.webSites.hasError(validationErrorKeys.UNBLOCKABLE_NOT_ALLOWED)) {
-      <ng-container
-        *ngTemplateOutlet="
-          errorBanner;
-          context: {
-            message:
-              uiText.PERIOD_FORM.ERRORS.UNBLOCKABLE_WEBSITE +
-              ': ' +
-              (form.controls.webSites.errors?.['invalidUrls']?.join(', ') || ''),
-          }
-        "
-      ></ng-container>
-    } @else if (form.controls.webSites.invalid) {
-      <ng-container
-        *ngTemplateOutlet="
-          errorBanner;
-          context: { message: uiText.PERIOD_FORM.ERRORS.CHOOSE_WEBSITES }
         "
       ></ng-container>
     }

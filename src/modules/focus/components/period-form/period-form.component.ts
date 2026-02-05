@@ -1,7 +1,6 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  computed,
   DestroyRef,
   effect,
   inject,
@@ -14,6 +13,7 @@ import {
   resource,
   ResourceRef,
   signal,
+  untracked,
   WritableSignal,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -46,6 +46,7 @@ import { timeRangeValidator } from '../../../common/validators/time-range.valida
 import { ALL_DAYS_OF_WEEK } from '../../../common/constants/days-of-week.const';
 import { FaviconHelper } from '../../../common/helpers/favicon.helper';
 import { WebsiteConnectivityProvider } from '../../../common/providers/website-connectivity.provider';
+import { SwitchComponent } from '../../../common/components/switch/switch.component';
 
 /**
  * Period form component for creating and editing focus periods
@@ -81,6 +82,7 @@ import { WebsiteConnectivityProvider } from '../../../common/providers/website-c
     WeekdaysSelectorComponent,
     DynamicInputComponent,
     MultiSelectorComponent,
+    SwitchComponent,
   ],
 })
 export class PeriodFormComponent implements OnInit {
@@ -121,13 +123,11 @@ export class PeriodFormComponent implements OnInit {
   ];
 
   protected blockOptions = [
-    { id: BLOCK_BEHAVIOUR_ENUM.BLOCK, name: 'Block' },
-    { id: BLOCK_BEHAVIOUR_ENUM.WARN, name: 'Warn' },
+    { id: BLOCK_BEHAVIOUR_ENUM.WARN, value: true },
+    { id: BLOCK_BEHAVIOUR_ENUM.BLOCK, value: false },
   ];
 
-  protected selectedBlockBehaviours = signal<{ id: BlockBehaviourType; name: string }[]>([
-    this.blockOptions[0],
-  ]);
+  protected selectedBlockBehaviour = signal<boolean>(this.blockOptions[0].value);
   protected selectedTimeRanges: WritableSignal<IFocus.TimeRange[]> = signal<IFocus.TimeRange[]>([]);
   protected selectedDays: WritableSignal<IFocus.DayOfWeek[]> = signal<IFocus.DayOfWeek[]>([]);
   protected selectedWebSites: WritableSignal<IFocus.WebSite[]> = signal<IFocus.WebSite[]>([
@@ -135,23 +135,7 @@ export class PeriodFormComponent implements OnInit {
     WEBSITE_FACEBOOK,
   ]);
 
-  protected readonly siteStatuses = computed(() => {
-    const sites = this.selectedWebSites();
-    const map: Record<string, ResourceRef<boolean | undefined>> = {};
-
-    sites.forEach(site => {
-      if (!this.#siteStatusesCache.has(site.url)) {
-        const res = resource({
-          loader: () => WebsiteConnectivityProvider.isAlive(site.url),
-          injector: this.#injector,
-        });
-        this.#siteStatusesCache.set(site.url, res);
-      }
-      map[site.url] = this.#siteStatusesCache.get(site.url)!;
-    });
-
-    return map;
-  });
+  protected readonly siteStatuses = signal<Record<string, ResourceRef<boolean | undefined>>>({});
 
   public ngOnInit(): void {
     this.#initForm();
@@ -180,10 +164,13 @@ export class PeriodFormComponent implements OnInit {
         this.form.controls.webSites.setValue(value);
       });
 
-    toObservable(this.selectedBlockBehaviours, { injector: this.#injector })
+    toObservable(this.selectedBlockBehaviour, { injector: this.#injector })
       .pipe(takeUntilDestroyed(this.#destroyRef))
       .subscribe(value => {
-        this.form.controls.blockBehaviour.setValue(value[0].id);
+        const option = this.blockOptions.find(v => v.value === value);
+        if (option) {
+          this.form.controls.blockBehaviour.setValue(option.id);
+        }
       });
 
     effect(
@@ -204,6 +191,33 @@ export class PeriodFormComponent implements OnInit {
 
         this.form.controls.startFrom.setValue(timeRange.startFrom);
         this.form.controls.endTo.setValue(timeRange.endTo);
+      },
+      { injector: this.#injector }
+    );
+
+    effect(
+      () => {
+        const sites = this.selectedWebSites();
+        let hasChanged = false;
+        const currentMap = { ...this.siteStatuses() };
+
+        sites.forEach(site => {
+          if (!this.#siteStatusesCache.has(site.url)) {
+            const res = untracked(() =>
+              resource({
+                loader: () => WebsiteConnectivityProvider.isAlive(site.url),
+                injector: this.#injector, // Передаем инжектор обязательно
+              })
+            );
+            this.#siteStatusesCache.set(site.url, res);
+            currentMap[site.url] = res;
+            hasChanged = true;
+          }
+        });
+
+        if (hasChanged) {
+          this.siteStatuses.set(currentMap);
+        }
       },
       { injector: this.#injector }
     );
@@ -381,7 +395,7 @@ export class PeriodFormComponent implements OnInit {
       if (periodData.blockBehaviour) {
         const found = this.blockOptions.find(opt => opt.id === periodData.blockBehaviour);
         if (found) {
-          this.selectedBlockBehaviours.set([found]);
+          this.selectedBlockBehaviour.set(found.value);
         }
       }
     }
@@ -392,4 +406,6 @@ export class PeriodFormComponent implements OnInit {
     const minutes = date.getMinutes().toString().padStart(2, '0');
     return `${hours}:${minutes}`;
   }
+
+  protected readonly blockBehaviours = BLOCK_BEHAVIOUR_ENUM;
 }
