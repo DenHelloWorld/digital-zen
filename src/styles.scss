@@ -104,3 +104,15 @@ a {
 *::-webkit-scrollbar-corner {
   background: transparent;
 }
+
+.dz-button {
+  &--warn {
+    background-color: var(--color-zen-warn);
+    color: var(--color-on-warn);
+  }
+
+  &--pointerless {
+    cursor: auto;
+    pointer-events: auto;
+  }
+}

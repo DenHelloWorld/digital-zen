@@ -73,6 +73,7 @@ export const UI_TEXT = Object.freeze({
     BLOCK_BEHAVIOUR: {
       BANNER_BLOCK: 'Tabs will be closed for the websites below',
       BANNER_WARN: 'Warning overlay will appear on these websites',
+      BANNER_WHITE_LIST: 'Only these websites will be accessible. All others will be blocked',
     },
   },
 

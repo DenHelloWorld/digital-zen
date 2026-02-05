@@ -6,7 +6,7 @@ import { PeriodComponent } from './components/period/period.component';
 import { LoaderComponent } from '../common/components';
 import { IFocus } from '../common/models/focus.model';
 import { cleanUrlHelper } from '../common/helpers/clean-url.helper';
-import { WEBSITES_UNBLOCKABLE } from '../common/constants/websites.const';
+import { WEBSITES_UNACTIVATABLE } from '../common/constants/websites.const';
 import { UI_TEXT } from '../common/constants/ui-text.const';
 import { ICONS } from '../common/constants/icons.const';
 import { isImageIcon } from '../common/helpers/is-image-icon.helper';
@@ -60,6 +60,7 @@ export class FocusComponent {
   protected readonly isFocusActive: Signal<boolean> = computed(
     () => this.currentPeriod()?.isFocused ?? false
   );
+  protected readonly isCurrentTabInCurrentPeriod = this.#focusService.isCurrentTabInCurrentPeriod;
   /** @guideline DZ_04 - Computed signal (derived state) */
   protected readonly displayedPeriods: Signal<IFocus.Period[]> = computed(() => {
     const current = this.currentPeriod();
@@ -91,7 +92,7 @@ export class FocusComponent {
     }
 
     const cleanedUrl = cleanUrlHelper(tab.url);
-    return WEBSITES_UNBLOCKABLE.some(site => cleanUrlHelper(site.url) === cleanedUrl);
+    return WEBSITES_UNACTIVATABLE.some(site => cleanUrlHelper(site.url) === cleanedUrl);
   });
 
   protected readonly isSvgIcon: (url: string | null | undefined) => boolean = isSvgIcon;
@@ -105,9 +106,9 @@ export class FocusComponent {
     this.#focusService.toggleFocus();
   }
 
-  protected addCurrentTabToPeriod(): void {
-    this.#focusService.addCurrentTabToPeriod();
-  }
+  // protected addCurrentTabToPeriod(): void {
+  //   this.#focusService.addCurrentTabToPeriod();
+  // }
 
   protected blockCurrentTab(): void {
     this.#focusService.addCurrentTabToPeriod(true);

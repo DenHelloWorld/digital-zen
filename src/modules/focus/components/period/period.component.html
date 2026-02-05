@@ -55,40 +55,46 @@
       <div
         class="dz-banner dz-banner--sm"
         [class.dz-banner--error]="p.blockBehaviour === blockBehaviours.BLOCK"
-        [class.dz-banner--info]="p.blockBehaviour === blockBehaviours.WARN"
+        [class.dz-banner--info]="p.blockBehaviour === blockBehaviours.WHITELIST"
+        [class.dz-banner--warn]="p.blockBehaviour === blockBehaviours.WARN"
       >
-        <ng-container
-          *ngTemplateOutlet="
-            bannerIcon;
-            context: {
-              href: p.blockBehaviour === blockBehaviours.BLOCK ? icons.BLOCK : icons.WARNING,
-            }
-          "
-        ></ng-container>
-
-        <div class="dz-banner__content">
-          <div class="dz-banner__message">
-            {{
-              p.blockBehaviour === blockBehaviours.BLOCK
-                ? uiText.PERIOD.BLOCK_BEHAVIOUR.BANNER_BLOCK
-                : uiText.PERIOD.BLOCK_BEHAVIOUR.BANNER_WARN
-            }}
-          </div>
-        </div>
+        @switch (p.blockBehaviour) {
+          @case (blockBehaviours.BLOCK) {
+            <ng-container
+              *ngTemplateOutlet="bannerIcon; context: { href: icons.BLOCK }"
+            ></ng-container>
+            <div class="dz-banner__content">
+              <div class="dz-banner__message">{{ uiText.PERIOD.BLOCK_BEHAVIOUR.BANNER_BLOCK }}</div>
+            </div>
+          }
+          @case (blockBehaviours.WHITELIST) {
+            <ng-container
+              *ngTemplateOutlet="bannerIcon; context: { href: icons.PERSON_ZEN }"
+            ></ng-container>
+            <div class="dz-banner__content">
+              <div class="dz-banner__message">
+                {{ uiText.PERIOD.BLOCK_BEHAVIOUR.BANNER_WHITE_LIST }}
+              </div>
+            </div>
+          }
+          @default {
+            <ng-container
+              *ngTemplateOutlet="bannerIcon; context: { href: icons.WARNING }"
+            ></ng-container>
+            <div class="dz-banner__content">
+              <div class="dz-banner__message">{{ uiText.PERIOD.BLOCK_BEHAVIOUR.BANNER_WARN }}</div>
+            </div>
+          }
+        }
       </div>
 
       <ul class="dz-list dz-list--horizontal dz-list--full" aria-labelledby="social-title">
         @for (site of p.webSites; track site.id) {
           <li>
             <button
-              class="dz-button dz-button--sm shadow"
-              [class.dz-button--square]="site.iconUrl || site.imageUrl"
-              [class.dz-button--error]="site.isBlocked"
-              [class.shadow--activated]="site.isBlocked"
-              [class.shake]="!site.isBlocked && isNoWebsitesError()"
+              class="dz-button shadow shadow--hoverless dz-button--sm dz-button--square dz-button--pointerless"
               [title]="site.url | removeProtocol"
               [disabled]="!isCurrent()"
-              (click)="onToggleBlockedWebsite(site)"
             >
               @if (isHttpUrl(site.imageUrl)) {
                 <img class="dz-icon dz-icon--shadow" [src]="site.imageUrl" [alt]="site.name" />

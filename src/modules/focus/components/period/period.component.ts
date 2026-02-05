@@ -69,11 +69,6 @@ export class PeriodComponent {
     return this.allDays.filter(day => selected.includes(day.day));
   });
 
-  protected isNoWebsitesError = computed(() =>
-    this.#toastService
-      .toasts()
-      .find(t => t.target === `${TOAST_MESSAGES_ENUM.NO_SITES_BLOCKED}${this.period().id}`)
-  );
   protected isOutsideTimeRangeError = computed(() =>
     this.#toastService
       .toasts()
@@ -105,10 +100,6 @@ export class PeriodComponent {
   public readonly isFocusActive: InputSignal<boolean> = input.required<boolean>();
 
   public readonly toggleBlockedWebsite: OutputEmitterRef<IFocus.WebSite> = output<IFocus.WebSite>();
-
-  protected onToggleBlockedWebsite(site: IFocus.WebSite): void {
-    this.toggleBlockedWebsite.emit(site);
-  }
 
   protected onEdit(): void {
     this.isEditing.set(true);

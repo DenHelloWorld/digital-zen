@@ -47,31 +47,30 @@
     }
   </button>
 
-  <button
-    class="dz-button dz-button--sm shadow"
-    [class.hidden]="!isHttpUrl(activeTab()?.url) || isCurrentTabUnblockable()"
-    [title]="uiText.FOCUS.ADD_CURRENT_TAB_TITLE"
-    (click)="addCurrentTabToPeriod()"
-  >
-    <ng-container
-      *ngTemplateOutlet="
-        icon;
-        context: { href: icons.ADD_LINK, class: 'dz-icon', width: 20, height: 20 }
-      "
-    ></ng-container>
-  </button>
+  <!--  <button-->
+  <!--    class="dz-button dz-button&#45;&#45;sm shadow"-->
+  <!--    [class.hidden]="!isHttpUrl(activeTab()?.url) || isCurrentTabUnblockable()"-->
+  <!--    [title]="uiText.FOCUS.ADD_CURRENT_TAB_TITLE"-->
+  <!--    (click)="addCurrentTabToPeriod()"-->
+  <!--  >-->
+  <!--    <ng-container-->
+  <!--      *ngTemplateOutlet="-->
+  <!--        icon;-->
+  <!--        context: { href: icons.ADD_LINK, class: 'dz-icon', width: 20, height: 20 }-->
+  <!--      "-->
+  <!--    ></ng-container>-->
+  <!--  </button>-->
 
   <button
     [class.hidden]="!isHttpUrl(activeTab()?.url) || isCurrentTabUnblockable()"
-    [title]="uiText.FOCUS.ADD_AND_BLOCK_CURRENT_TAB_TITLE"
+    [class.dz-button--activated]="isCurrentTabInCurrentPeriod()"
+    [title]="uiText.FOCUS.ADD_CURRENT_TAB_TITLE"
     class="dz-button dz-button--sm shadow"
     (click)="blockCurrentTab()"
   >
+    @let href = isCurrentTabInCurrentPeriod() ? icons.CHECK : icons.ADD_LINK;
     <ng-container
-      *ngTemplateOutlet="
-        icon;
-        context: { href: icons.BLOCK, class: 'dz-icon', width: 20, height: 20 }
-      "
+      *ngTemplateOutlet="icon; context: { href, class: 'dz-icon', width: 20, height: 20 }"
     ></ng-container>
   </button>
 
@@ -95,7 +94,6 @@
             [totalPeriodsCount]="periodsCount()"
             [isCurrent]="isPeriodCurrent(period)"
             [isFocusActive]="isFocusActive()"
-            (toggleBlockedWebsite)="onToggleBlockedWebsite($event)"
           />
         </li>
       }

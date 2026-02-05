@@ -14,7 +14,7 @@ describe('filterBlockableWebsites', () => {
           imageUrl: '',
           iconUrl: ICONS.X,
           type: IFocus.EWebSiteType.SOCIAL_MEDIA,
-          isBlocked: true,
+          isActivated: true,
         },
         {
           id: 'custom',
@@ -24,7 +24,7 @@ describe('filterBlockableWebsites', () => {
           imageUrl: '',
           iconUrl: '',
           type: IFocus.EWebSiteType.DEFAULT,
-          isBlocked: false,
+          isActivated: false,
         },
       ];
 
@@ -44,7 +44,7 @@ describe('filterBlockableWebsites', () => {
           imageUrl: '',
           iconUrl: ICONS.X,
           type: IFocus.EWebSiteType.SOCIAL_MEDIA,
-          isBlocked: true,
+          isActivated: true,
         },
         {
           id: 'privacy',
@@ -54,7 +54,7 @@ describe('filterBlockableWebsites', () => {
           imageUrl: '',
           iconUrl: ICONS.PRIVACY_TIP,
           type: IFocus.EWebSiteType.UNBLOCKABLE,
-          isBlocked: false,
+          isActivated: false,
         },
       ];
 
@@ -75,7 +75,7 @@ describe('filterBlockableWebsites', () => {
           imageUrl: '',
           iconUrl: ICONS.FACEBOOK,
           type: IFocus.EWebSiteType.SOCIAL_MEDIA,
-          isBlocked: true,
+          isActivated: true,
         },
         {
           id: 'privacy',
@@ -85,7 +85,7 @@ describe('filterBlockableWebsites', () => {
           imageUrl: '',
           iconUrl: ICONS.PRIVACY_TIP,
           type: IFocus.EWebSiteType.UNBLOCKABLE,
-          isBlocked: false,
+          isActivated: false,
         },
         {
           id: 'terms',
@@ -95,7 +95,7 @@ describe('filterBlockableWebsites', () => {
           imageUrl: '',
           iconUrl: '',
           type: IFocus.EWebSiteType.UNBLOCKABLE,
-          isBlocked: false,
+          isActivated: false,
         },
       ];
 
@@ -115,7 +115,7 @@ describe('filterBlockableWebsites', () => {
           imageUrl: '',
           iconUrl: ICONS.X,
           type: IFocus.EWebSiteType.SOCIAL_MEDIA,
-          isBlocked: true,
+          isActivated: true,
         },
         {
           id: 'instagram',
@@ -125,7 +125,7 @@ describe('filterBlockableWebsites', () => {
           imageUrl: '',
           iconUrl: ICONS.INSTAGRAM,
           type: IFocus.EWebSiteType.SOCIAL_MEDIA,
-          isBlocked: false,
+          isActivated: false,
         },
       ];
 
@@ -146,7 +146,7 @@ describe('filterBlockableWebsites', () => {
           imageUrl: '',
           iconUrl: '',
           type: IFocus.EWebSiteType.DEFAULT,
-          isBlocked: true,
+          isActivated: true,
         },
         {
           id: 'custom2',
@@ -156,7 +156,7 @@ describe('filterBlockableWebsites', () => {
           imageUrl: '',
           iconUrl: '',
           type: IFocus.EWebSiteType.DEFAULT,
-          isBlocked: false,
+          isActivated: false,
         },
       ];
 
@@ -186,7 +186,7 @@ describe('filterBlockableWebsites', () => {
           imageUrl: '',
           iconUrl: ICONS.PRIVACY_TIP,
           type: IFocus.EWebSiteType.UNBLOCKABLE,
-          isBlocked: false,
+          isActivated: false,
         },
       ];
 
@@ -206,7 +206,7 @@ describe('filterBlockableWebsites', () => {
           imageUrl: '',
           iconUrl: ICONS.PRIVACY_TIP,
           type: IFocus.EWebSiteType.UNBLOCKABLE,
-          isBlocked: true,
+          isActivated: true,
         },
       ];
 
@@ -225,7 +225,7 @@ describe('filterBlockableWebsites', () => {
           imageUrl: '',
           iconUrl: ICONS.X,
           type: IFocus.EWebSiteType.SOCIAL_MEDIA,
-          isBlocked: true,
+          isActivated: true,
         },
         {
           id: 'privacy',
@@ -235,7 +235,7 @@ describe('filterBlockableWebsites', () => {
           imageUrl: '',
           iconUrl: ICONS.PRIVACY_TIP,
           type: IFocus.EWebSiteType.UNBLOCKABLE,
-          isBlocked: false,
+          isActivated: false,
         },
       ];
 
@@ -258,7 +258,7 @@ describe('filterBlockableWebsites', () => {
           imageUrl: '',
           iconUrl: ICONS.X,
           type: IFocus.EWebSiteType.SOCIAL_MEDIA,
-          isBlocked: true,
+          isActivated: true,
         },
       ];
 

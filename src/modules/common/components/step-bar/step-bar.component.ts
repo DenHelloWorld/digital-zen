@@ -23,6 +23,7 @@ export class StepBarComponent {
 
   public readonly options = input.required<IStepBarOption[]>();
   public readonly isDisabled = input<boolean>(true);
+  public readonly isShowSeparators = input<boolean>(true);
   public readonly orientation = input<'horizontal' | 'vertical'>('horizontal');
 
   public readonly currentOption = model<IStepBarOption | null>(null);

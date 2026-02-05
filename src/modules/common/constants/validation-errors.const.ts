@@ -26,8 +26,7 @@ export const VALIDATION_ERROR_KEYS = Object.freeze({
   INVALID_TIME_RANGE: 'invalidTimeRange',
   /** Field is required but empty or whitespace only */
   REQUIRED: 'required',
-  /** Website URL matches an unblockable website */
-  UNBLOCKABLE_NOT_ALLOWED: 'unblockableNotAllowed',
+  UNACTIVATABLE_NOT_ALLOWED: 'unactivatableNotAllowed',
 } as const);
 
 /**

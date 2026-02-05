@@ -20,7 +20,7 @@
         <ng-container *ngTemplateOutlet="icon; context: { href: option.icon }" />
       </button>
 
-      @if (!last) {
+      @if (!last && isShowSeparators()) {
         <span class="dz-step-bar__separator"></span>
       }
     </li>

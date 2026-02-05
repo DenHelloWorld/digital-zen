@@ -293,7 +293,7 @@ export class BackgroundService {
     }
 
     const updatedWebSites = current.webSites.map(site =>
-      site.id === toggledSite.id ? { ...site, isBlocked: !site.isBlocked } : site
+      site.id === toggledSite.id ? { ...site, isActivated: !site.isActivated } : site
     );
 
     const updatedPeriod = { ...current, webSites: updatedWebSites };

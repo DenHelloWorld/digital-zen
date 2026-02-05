@@ -50,24 +50,32 @@
     </span>
 
     <div class="dz-form__block-behaviour">
-      <dz-switch
-        [(checked)]="selectedBlockBehaviour"
-        size="lg"
-        [statusIcons]="{ activated: icons.WARNING, unActivated: icons.BLOCK }"
+      <dz-step-bar
+        [isShowSeparators]="false"
+        [isDisabled]="false"
+        [options]="blockBehaviourBarOptions"
+        [(currentOption)]="currentBlockBehaviourBarOption"
       />
 
       <div
         class="dz-banner dz-banner--sm"
         [class.dz-banner--error]="form.controls.blockBehaviour.value === blockBehaviours.BLOCK"
-        [class.dz-banner--info]="form.controls.blockBehaviour.value === blockBehaviours.WARN"
+        [class.dz-banner--info]="form.controls.blockBehaviour.value === blockBehaviours.WHITELIST"
+        [class.dz-banner--warn]="form.controls.blockBehaviour.value === blockBehaviours.WARN"
       >
         <div class="dz-banner__content">
           <div class="dz-banner__message">
-            {{
-              form.controls.blockBehaviour.value === blockBehaviours.BLOCK
-                ? uiText.PERIOD.BLOCK_BEHAVIOUR.BANNER_BLOCK
-                : uiText.PERIOD.BLOCK_BEHAVIOUR.BANNER_WARN
-            }}
+            @switch (form.controls.blockBehaviour.value) {
+              @case (blockBehaviours.WARN) {
+                {{ uiText.PERIOD.BLOCK_BEHAVIOUR.BANNER_WARN }}
+              }
+              @case (blockBehaviours.WHITELIST) {
+                {{ uiText.PERIOD.BLOCK_BEHAVIOUR.BANNER_WHITE_LIST }}
+              }
+              @default {
+                {{ uiText.PERIOD.BLOCK_BEHAVIOUR.BANNER_BLOCK }}
+              }
+            }
           </div>
         </div>
       </div>
@@ -124,7 +132,7 @@
       [iconTemplate]="websiteIconTemplate"
     />
 
-    @if (form.controls.webSites.hasError(validationErrorKeys.UNBLOCKABLE_NOT_ALLOWED)) {
+    @if (form.controls.webSites.hasError(validationErrorKeys.UNACTIVATABLE_NOT_ALLOWED)) {
       <ng-container
         *ngTemplateOutlet="
           errorBanner;

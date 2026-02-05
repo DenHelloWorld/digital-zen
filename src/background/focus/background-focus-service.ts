@@ -22,7 +22,7 @@ export class BackgroundFocusService {
     if (current && current.webSites) {
       const blockableWebsites = filterBlockableWebsites(current.webSites);
       this.#blocker.updateBlockRulesWithBehaviour(
-        blockableWebsites.filter(site => site.isBlocked).map(site => site.url),
+        blockableWebsites.filter(site => site.isActivated).map(site => site.url),
         current.blockBehaviour
       );
     }
@@ -52,7 +52,7 @@ export class BackgroundFocusService {
 
     const blockableWebsites = filterBlockableWebsites(period.webSites);
     this.#blocker.updateBlockRulesWithBehaviour(
-      blockableWebsites.filter(site => site.isBlocked).map(site => site.url),
+      blockableWebsites.filter(site => site.isActivated).map(site => site.url),
       period.blockBehaviour
     );
     ExtensionIconAdapter.setIcon(true);
@@ -131,7 +131,7 @@ export class BackgroundFocusService {
           url: url,
           imageUrl: '',
           iconUrl: '',
-          isBlocked: true,
+          isActivated: true,
         },
       ],
     };

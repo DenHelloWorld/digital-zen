@@ -15,7 +15,7 @@ export const WEBSITE_X: Readonly<IFocus.WebSite> = {
   imageUrl: FaviconHelper.getGoogleUrl('https://x.com'),
   iconUrl: ICONS.X,
   type: IFocus.EWebSiteType.SOCIAL_MEDIA,
-  isBlocked: true,
+  isActivated: true,
 };
 
 export const WEBSITE_INST: Readonly<IFocus.WebSite> = {
@@ -26,7 +26,7 @@ export const WEBSITE_INST: Readonly<IFocus.WebSite> = {
   imageUrl: FaviconHelper.getGoogleUrl('https://www.instagram.com'),
   iconUrl: ICONS.INSTAGRAM,
   type: IFocus.EWebSiteType.SOCIAL_MEDIA,
-  isBlocked: true,
+  isActivated: true,
 };
 
 export const WEBSITE_FACEBOOK: Readonly<IFocus.WebSite> = {
@@ -37,7 +37,7 @@ export const WEBSITE_FACEBOOK: Readonly<IFocus.WebSite> = {
   imageUrl: FaviconHelper.getGoogleUrl('https://www.facebook.com'),
   iconUrl: ICONS.FACEBOOK,
   type: IFocus.EWebSiteType.SOCIAL_MEDIA,
-  isBlocked: true,
+  isActivated: true,
 };
 
 export const WEBSITE_TIKTOK: Readonly<IFocus.WebSite> = {
@@ -48,7 +48,7 @@ export const WEBSITE_TIKTOK: Readonly<IFocus.WebSite> = {
   imageUrl: FaviconHelper.getGoogleUrl('https://www.tiktok.com'),
   iconUrl: ICONS.TIKTOK,
   type: IFocus.EWebSiteType.SOCIAL_MEDIA,
-  isBlocked: true,
+  isActivated: true,
 };
 
 export const WEBSITE_VK: Readonly<IFocus.WebSite> = {
@@ -59,7 +59,7 @@ export const WEBSITE_VK: Readonly<IFocus.WebSite> = {
   imageUrl: FaviconHelper.getGoogleUrl('https://vk.com'),
   iconUrl: ICONS.VK,
   type: IFocus.EWebSiteType.SOCIAL_MEDIA,
-  isBlocked: true,
+  isActivated: true,
 };
 
 export const WEBSITE_SNAPCHAT: Readonly<IFocus.WebSite> = {
@@ -70,7 +70,7 @@ export const WEBSITE_SNAPCHAT: Readonly<IFocus.WebSite> = {
   imageUrl: FaviconHelper.getGoogleUrl('https://snapchat.com'),
   iconUrl: ICONS.SNAPCHAT,
   type: IFocus.EWebSiteType.SOCIAL_MEDIA,
-  isBlocked: true,
+  isActivated: true,
 };
 
 export const WEBSITE_LINKEDIN: Readonly<IFocus.WebSite> = {
@@ -81,7 +81,7 @@ export const WEBSITE_LINKEDIN: Readonly<IFocus.WebSite> = {
   imageUrl: FaviconHelper.getGoogleUrl('https://www.linkedin.com'),
   iconUrl: ICONS.LINKEDIN,
   type: IFocus.EWebSiteType.SOCIAL_MEDIA,
-  isBlocked: true,
+  isActivated: true,
 };
 
 export const WEBSITE_PINTEREST: Readonly<IFocus.WebSite> = {
@@ -92,7 +92,7 @@ export const WEBSITE_PINTEREST: Readonly<IFocus.WebSite> = {
   imageUrl: FaviconHelper.getGoogleUrl('https://www.pinterest.com'),
   iconUrl: ICONS.PINTEREST,
   type: IFocus.EWebSiteType.SOCIAL_MEDIA,
-  isBlocked: true,
+  isActivated: true,
 };
 
 export const WEBSITE_YOUTUBE: Readonly<IFocus.WebSite> = {
@@ -103,7 +103,7 @@ export const WEBSITE_YOUTUBE: Readonly<IFocus.WebSite> = {
   imageUrl: FaviconHelper.getGoogleUrl('https://www.youtube.com'),
   iconUrl: ICONS.YOUTUBE,
   type: IFocus.EWebSiteType.SOCIAL_MEDIA,
-  isBlocked: true,
+  isActivated: true,
 };
 
 /**
@@ -133,13 +133,13 @@ export const WEBSITE_PRIVACY_POLICY: Readonly<IFocus.WebSite> = {
   imageUrl: '',
   iconUrl: ICONS.PRIVACY_TIP,
   type: IFocus.EWebSiteType.UNBLOCKABLE,
-  isBlocked: false,
+  isActivated: false,
 };
 
 /**
  * Array of all unblockable websites
  * These websites should never be blocked by the extension
  */
-export const WEBSITES_UNBLOCKABLE: Readonly<readonly IFocus.WebSite[]> = Object.freeze([
+export const WEBSITES_UNACTIVATABLE: Readonly<readonly IFocus.WebSite[]> = Object.freeze([
   WEBSITE_PRIVACY_POLICY,
 ]);

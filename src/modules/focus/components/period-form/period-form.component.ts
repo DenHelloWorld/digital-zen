@@ -41,12 +41,15 @@ import { WEBSITE_FACEBOOK, WEBSITE_TIKTOK } from '../../../common/constants/webs
 import { requiredTrimmedValidator } from '../../../common/validators/required-trimmed.validator';
 import { uniquePeriodNameValidator } from '../../../common/validators/unique-period-name.validator';
 import { arrayMinLengthValidator } from '../../../common/validators/array-min-length.validator';
-import { noUnblockableWebsitesValidator } from '../../../common/validators/no-unblockable-websites.validator';
+import { noUnactivatableWebsitesValidator } from '../../../common/validators/no-unactivatable-websites.validator';
 import { timeRangeValidator } from '../../../common/validators/time-range.validator';
 import { ALL_DAYS_OF_WEEK } from '../../../common/constants/days-of-week.const';
 import { FaviconHelper } from '../../../common/helpers/favicon.helper';
 import { WebsiteConnectivityProvider } from '../../../common/providers/website-connectivity.provider';
-import { SwitchComponent } from '../../../common/components/switch/switch.component';
+import {
+  IStepBarOption,
+  StepBarComponent,
+} from '../../../common/components/step-bar/step-bar.component';
 
 /**
  * Period form component for creating and editing focus periods
@@ -82,7 +85,7 @@ import { SwitchComponent } from '../../../common/components/switch/switch.compon
     WeekdaysSelectorComponent,
     DynamicInputComponent,
     MultiSelectorComponent,
-    SwitchComponent,
+    StepBarComponent,
   ],
 })
 export class PeriodFormComponent implements OnInit {
@@ -112,22 +115,38 @@ export class PeriodFormComponent implements OnInit {
   protected readonly validationErrorKeys = VALIDATION_ERROR_KEYS;
   protected readonly timeRanges = [...TIME_RANGES];
   protected readonly manualTimeRangeId = MANUAL_TIME_RANGE.id;
+  protected readonly blockBehaviours = BLOCK_BEHAVIOUR_ENUM;
 
   protected excludedSiteKeysArray: (keyof IFocus.WebSite)[] = [
     'imageUrl',
     'iconUrl',
-    'isBlocked',
+    'isActivated',
     'description',
     'type',
     'name',
   ];
 
-  protected blockOptions = [
-    { id: BLOCK_BEHAVIOUR_ENUM.WARN, value: true },
-    { id: BLOCK_BEHAVIOUR_ENUM.BLOCK, value: false },
+  protected blockBehaviourBarOptions: IStepBarOption[] = [
+    {
+      label: 'Focus',
+      value: BLOCK_BEHAVIOUR_ENUM.WHITELIST,
+      icon: ICONS.PERSON_ZEN,
+    },
+    {
+      label: 'Warning',
+      value: BLOCK_BEHAVIOUR_ENUM.WARN,
+      icon: ICONS.WARNING,
+    },
+    {
+      label: 'Block',
+      value: BLOCK_BEHAVIOUR_ENUM.BLOCK,
+      icon: ICONS.BLOCK,
+    },
   ];
 
-  protected selectedBlockBehaviour = signal<boolean>(this.blockOptions[0].value);
+  protected currentBlockBehaviourBarOption = signal<IStepBarOption>(
+    this.blockBehaviourBarOptions[0]
+  );
   protected selectedTimeRanges: WritableSignal<IFocus.TimeRange[]> = signal<IFocus.TimeRange[]>([]);
   protected selectedDays: WritableSignal<IFocus.DayOfWeek[]> = signal<IFocus.DayOfWeek[]>([]);
   protected selectedWebSites: WritableSignal<IFocus.WebSite[]> = signal<IFocus.WebSite[]>([
@@ -158,19 +177,27 @@ export class PeriodFormComponent implements OnInit {
         this.form.controls.daysOfWeek.setValue(value.map((value: IFocus.DayOfWeek) => value.day));
       });
 
-    toObservable(this.selectedWebSites, { injector: this.#injector })
-      .pipe(takeUntilDestroyed(this.#destroyRef))
-      .subscribe((value: IFocus.WebSite[]) => {
-        this.form.controls.webSites.setValue(value);
-      });
+    effect(
+      () => {
+        const sites = this.selectedWebSites();
+        const cleaned = this.#getUniqueCleanedSites(sites);
 
-    toObservable(this.selectedBlockBehaviour, { injector: this.#injector })
+        untracked(() => {
+          this.form.controls.webSites.setValue(cleaned);
+
+          if (JSON.stringify(sites) !== JSON.stringify(cleaned)) {
+            this.selectedWebSites.set(cleaned);
+          }
+        });
+      },
+      { injector: this.#injector }
+    );
+
+    toObservable(this.currentBlockBehaviourBarOption, { injector: this.#injector })
       .pipe(takeUntilDestroyed(this.#destroyRef))
-      .subscribe(value => {
-        const option = this.blockOptions.find(v => v.value === value);
-        if (option) {
-          this.form.controls.blockBehaviour.setValue(option.id);
-        }
+      .subscribe(option => {
+        const newValue = option.value as BlockBehaviourType;
+        this.form.controls.blockBehaviour.setValue(newValue);
       });
 
     effect(
@@ -206,7 +233,7 @@ export class PeriodFormComponent implements OnInit {
             const res = untracked(() =>
               resource({
                 loader: () => WebsiteConnectivityProvider.isAlive(site.url),
-                injector: this.#injector, // Передаем инжектор обязательно
+                injector: this.#injector,
               })
             );
             this.#siteStatusesCache.set(site.url, res);
@@ -349,7 +376,7 @@ export class PeriodFormComponent implements OnInit {
         endTo: this.#fb.control<string | null>(null),
         webSites: this.#fb.nonNullable.control(
           [],
-          [arrayMinLengthValidator(), noUnblockableWebsitesValidator]
+          [arrayMinLengthValidator(), noUnactivatableWebsitesValidator]
         ),
         daysOfWeek: this.#fb.nonNullable.control([], arrayMinLengthValidator()),
         focusedTimes: this.#fb.nonNullable.control([]),
@@ -367,7 +394,6 @@ export class PeriodFormComponent implements OnInit {
     const periodData = this.period();
 
     if (this.mode() === 'edit' && periodData) {
-      // Convert Date to time string for time inputs
       const startFromTime = periodData.startFrom
         ? this.#dateToTimeString(periodData.startFrom)
         : '';
@@ -385,17 +411,17 @@ export class PeriodFormComponent implements OnInit {
         blockBehaviour: periodData.blockBehaviour,
       });
 
-      // Set selected days
       const selectedDays = ALL_DAYS_OF_WEEK.filter(day => periodData.daysOfWeek.includes(day.day));
       this.selectedDays.set(selectedDays);
 
-      // Set selected websites
       this.selectedWebSites.set(periodData.webSites);
 
       if (periodData.blockBehaviour) {
-        const found = this.blockOptions.find(opt => opt.id === periodData.blockBehaviour);
+        const found = this.blockBehaviourBarOptions.find(
+          opt => opt.value === periodData.blockBehaviour
+        );
         if (found) {
-          this.selectedBlockBehaviour.set(found.value);
+          this.currentBlockBehaviourBarOption.set(found);
         }
       }
     }
@@ -407,5 +433,29 @@ export class PeriodFormComponent implements OnInit {
     return `${hours}:${minutes}`;
   }
 
-  protected readonly blockBehaviours = BLOCK_BEHAVIOUR_ENUM;
+  #getUniqueCleanedSites(sites: IFocus.WebSite[]): IFocus.WebSite[] {
+    const uniqueMap = new Map<string, IFocus.WebSite>();
+
+    sites.forEach(site => {
+      if (!site.url) return;
+
+      // Имитируем логику BlockerService для создания уникального ключа
+      const domainKey = site.url
+        .trim()
+        .replace(/^https?:\/\//, '') // Убираем протокол
+        .split('/')[0] // Отрезаем всё после первого слеша (пути)
+        .replace(/^www\./, '') // Убираем www
+        .toLowerCase(); // Приводим к нижнему регистру
+
+      if (domainKey && !uniqueMap.has(domainKey)) {
+        // Сохраняем с единообразным протоколом и без лишнего мусора
+        uniqueMap.set(domainKey, {
+          ...site,
+          url: `https://${domainKey}`,
+        });
+      }
+    });
+
+    return Array.from(uniqueMap.values());
+  }
 }

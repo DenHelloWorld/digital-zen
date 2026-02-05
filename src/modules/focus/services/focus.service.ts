@@ -13,7 +13,7 @@ import { logger } from '../../common/helpers/logger';
 import { DzToastService } from '../../common/components';
 import { ChromeStorageService } from '../../common/services/chrome-storage.service';
 import { QUICK_FOCUS_ID } from '../../common/constants/quick-focus-id.const';
-import { WEBSITES_UNBLOCKABLE } from '../../common/constants/websites.const';
+import { WEBSITES_UNACTIVATABLE } from '../../common/constants/websites.const';
 import { CHROME_COMMAND_ENUM } from '../../common/enums/chrome-command.enum';
 import { TOAST_TYPE_ENUM } from '../../common/enums/toast-type.enum';
 import { POSITIONS_ENUM } from '../../common/enums/positions.enum';
@@ -115,6 +115,18 @@ export class FocusService {
     return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
   });
 
+  public readonly isCurrentTabInCurrentPeriod: Signal<boolean> = computed(() => {
+    const tab = this.#activeTab();
+    const period = this.#currentPeriod();
+
+    if (!tab?.url || !period?.webSites) {
+      return false;
+    }
+
+    const cleanedUrl = cleanUrlHelper(tab.url);
+    return period.webSites.some(site => cleanUrlHelper(site.url) === cleanedUrl);
+  });
+
   constructor() {
     this.#syncInitialState();
     this.#listenToStorageChanges();
@@ -195,7 +207,7 @@ export class FocusService {
     }
   }
 
-  public addCurrentTabToPeriod(isBlocked = false): void {
+  public addCurrentTabToPeriod(isActivated = false): void {
     if (!this.#isChromeRuntime) {
       return;
     }
@@ -207,7 +219,7 @@ export class FocusService {
       const clearedUrl = cleanUrlHelper(tab.url);
 
       // Check if the URL matches any UNBLOCKABLE website
-      const isUnblockable = WEBSITES_UNBLOCKABLE.some(
+      const isUnblockable = WEBSITES_UNACTIVATABLE.some(
         site => cleanUrlHelper(site.url) === clearedUrl
       );
 
@@ -229,7 +241,7 @@ export class FocusService {
         description: tab.title || clearedUrl,
         imageUrl: isImageIcon(iconUrl) ? iconUrl : '',
         type: IFocus.EWebSiteType.DEFAULT,
-        isBlocked,
+        isActivated,
       };
 
       const siteExists = period.webSites.some(s => s.url === newSite.url);
@@ -246,11 +258,11 @@ export class FocusService {
           message: TOAST_MESSAGES_ENUM.ADDED,
           type: TOAST_TYPE_ENUM.ACCENT,
         });
-      } else if (isBlocked && !existingSite?.isBlocked) {
+      } else if (isActivated && !existingSite?.isActivated) {
         const updatedPeriod = {
           ...period,
           webSites: period.webSites.map(s =>
-            s.url === newSite.url ? { ...s, isBlocked: true } : s
+            s.url === newSite.url ? { ...s, isActivated: true } : s
           ),
         };
 
@@ -431,9 +443,9 @@ export class FocusService {
   }
 
   #notifyIfNoSitesBlocked(period: IFocus.Period | null): void {
-    const hasBlockedSites: boolean = period?.webSites.some(site => site.isBlocked) ?? false;
+    const hasActivatedSites = period?.webSites.some(site => site.isActivated) ?? false;
 
-    if (!period?.isFocused && !hasBlockedSites) {
+    if (!period?.isFocused && !hasActivatedSites) {
       this.#toastService.show({
         message: TOAST_MESSAGES_ENUM.NO_SITES_BLOCKED,
         type: TOAST_TYPE_ENUM.WARN,

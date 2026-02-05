@@ -50,7 +50,7 @@ export namespace IFocus {
     imageUrl: string;
     iconUrl: string;
     type: IWebSiteType;
-    isBlocked: boolean;
+    isActivated: boolean;
   }
 
   export enum EWebSiteType {
