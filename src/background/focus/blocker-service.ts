@@ -128,9 +128,28 @@ export class BlockerService {
 
   async #reloadNonWhitelistedTabs(whitelist: string[]): Promise<void> {
     const tabs = await chrome.tabs.query({});
+    //TODO: add helper for next process
+    const cleanWhitelist = whitelist.map(domain =>
+      domain
+        .toLowerCase()
+        .replace(/^https?:\/\//, '')
+        .replace(/^www\./, '')
+        .split('/')[0]
+        .trim()
+    );
+
     for (const tab of tabs) {
       if (tab.id && tab.url && isHttpUrl(tab.url)) {
-        const isAllowed = whitelist.some(domain => tab.url?.includes(domain));
+        const tabUrlClean = tab.url
+          .toLowerCase()
+          .replace(/^https?:\/\//, '')
+          .replace(/^www\./, '')
+          .split('/')[0];
+
+        const isAllowed = cleanWhitelist.some(
+          domain => tabUrlClean === domain || tabUrlClean.endsWith('.' + domain)
+        );
+
         if (!isAllowed) {
           chrome.tabs.reload(tab.id);
         }
