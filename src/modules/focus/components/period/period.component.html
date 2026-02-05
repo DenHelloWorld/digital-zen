@@ -19,11 +19,7 @@
     <dz-period-form mode="edit" [period]="p" (completed)="onFormCompleted()" />
   </div>
 } @else {
-  <details
-    open
-    class="dz-accordion dz-accordion--accent"
-    [class.dz-accordion--accent]="p.isFocused"
-  >
+  <details open class="dz-accordion" [class.dz-accordion--accent]="p.isFocused">
     <summary class="dz-accordion__header">
       <span>
         <h2 class="title">
@@ -51,15 +47,6 @@
           <dz-time-line [startFrom]="p.startFrom" [endTo]="p.endTo" />
         </div>
       }
-
-      <div class="dz-banner dz-banner--sm dz-banner--info">
-        <ng-container *ngTemplateOutlet="bannerIcon; context: { href: icons.INFO }"></ng-container>
-        <div class="dz-banner__content">
-          <div class="dz-banner__message">
-            {{ p.description }}
-          </div>
-        </div>
-      </div>
 
       <div class="weekdays" [class.shake]="isNotScheduledToday()">
         <dz-weekdays-selector [selectedDays]="selectedDays()" [isSelectable]="false" />
@@ -99,18 +86,16 @@
               [class.dz-button--error]="site.isBlocked"
               [class.shadow--activated]="site.isBlocked"
               [class.shake]="!site.isBlocked && isNoWebsitesError()"
-              [title]="site.name"
+              [title]="site.url | removeProtocol"
               [disabled]="!isCurrent()"
               (click)="onToggleBlockedWebsite(site)"
             >
-              @if (isHttpUrl(site.iconUrl)) {
-                <img class="dz-icon dz-icon--shadow" [src]="site.iconUrl" [alt]="site.name" />
+              @if (isHttpUrl(site.imageUrl)) {
+                <img class="dz-icon dz-icon--shadow" [src]="site.imageUrl" [alt]="site.name" />
               } @else if (site.iconUrl) {
                 <svg class="dz-icon dz-icon--shadow" aria-hidden="true" focusable="false">
                   <use [attr.href]="site.iconUrl"></use>
                 </svg>
-              } @else if (site.imageUrl) {
-                <img class="dz-icon dz-icon--shadow" [src]="site.imageUrl" [alt]="site.name" />
               } @else {
                 {{ site.name }}
               }

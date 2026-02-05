@@ -31,7 +31,7 @@ export namespace IFocus {
   export interface Period {
     id: string;
     name: string;
-    description: string;
+    description: string | null;
     startFrom: Date | null;
     endTo: Date | null;
     webSites: IFocus.WebSite[];

@@ -3,16 +3,10 @@
     margin-bottom: var(--list-gap);
 
     .item {
-      position: relative;
       width: 100%;
       display: flex;
       align-items: center;
       gap: var(--list-gap);
-
-      .delete {
-        position: absolute;
-        right: var(--list-gap);
-      }
     }
   }
 
@@ -29,5 +23,17 @@
     width: 100%;
     align-items: center;
     justify-content: center;
+  }
+
+  .dz-input {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    width: 100%;
+
+    &:focus {
+      text-overflow: clip;
+    }
   }
 }

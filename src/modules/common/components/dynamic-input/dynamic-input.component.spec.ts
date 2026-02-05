@@ -262,18 +262,18 @@ describe('DynamicInputComponent', () => {
       expect(entities?.[2].description).toBe('New Description');
     });
 
-    it('should generate unique id using Date.now()', () => {
+    it('should generate unique id using Date.now() with random salt', () => {
       const newEntity = { id: 0, name: 'New Entity', description: 'New Description' };
       component['newEntity'].set(newEntity);
 
       const beforeTime = Date.now();
       component['addEntity']();
-      const afterTime = Date.now();
+      const afterTimeWithSalt = Date.now() + 1000;
 
       const entities = component.entities();
       const addedEntity = entities?.[2];
       expect(addedEntity?.id).toBeGreaterThanOrEqual(beforeTime);
-      expect(addedEntity?.id).toBeLessThanOrEqual(afterTime);
+      expect(addedEntity?.id).toBeLessThanOrEqual(afterTimeWithSalt);
     });
 
     it('should toggle isAdding after adding', () => {
@@ -369,7 +369,7 @@ describe('DynamicInputComponent', () => {
 
     it('should render delete buttons for each entity', () => {
       const compiled = fixture.nativeElement as HTMLElement;
-      const deleteButtons = compiled.querySelectorAll('.item button.delete');
+      const deleteButtons = compiled.querySelectorAll('.item button.dz-button--error');
       expect(deleteButtons.length).toBe(mockEntities.length);
     });
   });

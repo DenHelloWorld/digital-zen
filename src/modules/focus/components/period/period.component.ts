@@ -25,6 +25,7 @@ import { ALL_DAYS_OF_WEEK } from '../../../common/constants/days-of-week.const';
 import { isHttpUrl } from '../../../common/helpers/is-http-url.helper';
 import { DzToastService } from '../../../common/components';
 import { TOAST_MESSAGES_ENUM } from '../../../common/enums/toast-messages.enum';
+import { RemoveProtocolPipe } from '../../../common/pipes/remove-protocol.pipe';
 
 /**
  * Period display and management component
@@ -53,6 +54,8 @@ import { TOAST_MESSAGES_ENUM } from '../../../common/enums/toast-messages.enum';
     TimeLineComponent,
     WeekdaysSelectorComponent,
     PeriodFormComponent,
+    // pipes
+    RemoveProtocolPipe,
   ],
 })
 export class PeriodComponent {

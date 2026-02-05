@@ -5,21 +5,42 @@
   </svg>
 </ng-template>
 
+<!-- Error banner template -->
+<ng-template #errorBanner let-message="message">
+  <div class="dz-form__error">
+    <div class="dz-banner dz-banner--error dz-banner--sm">
+      <div class="dz-banner__icon">
+        <ng-container *ngTemplateOutlet="icon; context: { href: icons.ERROR }"></ng-container>
+      </div>
+      <div class="dz-banner__content">
+        <div class="dz-banner__message">{{ message }}</div>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
 <ul class="dz-list dz-list--full">
   @for (entity of entities(); track entity[idKey()]) {
     <li class="item">
+      @if (iconTemplate()) {
+        <ng-container *ngTemplateOutlet="iconTemplate(); context: { $implicit: entity }">
+        </ng-container>
+      }
+
       <input
         disabled
+        [id]="entity[idKey()]"
         type="text"
         class="dz-input dz-input--borderless"
         [readonly]="isReadonly(entity)"
         [value]="getLabel(entity)"
+        [title]="getLabel(entity)"
       />
 
       <button
         [title]="uiText.DYNAMIC_INPUT.TITLES.REMOVE"
         type="button"
-        class="dz-button dz-button--xs dz-button--ghost dz-button--error delete"
+        class="dz-button dz-button--xs dz-button--ghost dz-button--error"
         (click)="removeEntity(entity)"
         [disabled]="isReadonly(entity)"
       >
@@ -37,6 +58,7 @@
           @if (key !== idKey()) {
             <li>
               <input
+                [class.dz-input--invalid]="key === labelKey() && duplicateValue()"
                 class="dz-input dz-input--borderless"
                 [placeholder]="key"
                 (input)="updateField(key, $any($event.target).value)"
@@ -45,12 +67,22 @@
           }
         }
 
+        @if (duplicateValue()) {
+          <ng-container
+            *ngTemplateOutlet="
+              errorBanner;
+              context: { message: uiText.DYNAMIC_INPUT.ERRORS.DUPLICATE_FIELD }
+            "
+          ></ng-container>
+        }
+
         <div class="actions">
           <button
             [disabled]="!isNewEntityValid()"
             type="button"
             [title]="uiText.DYNAMIC_INPUT.TITLES.SAVE"
             class="dz-button dz-button--xs dz-button--icon dz-button--activated dz-button--ghost shadow"
+            [class.dz-button--error]="!isNewEntityValid()"
             (click)="addEntity()"
           >
             <ng-container *ngTemplateOutlet="icon; context: { href: icons.SAVE }"></ng-container>

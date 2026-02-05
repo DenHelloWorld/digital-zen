@@ -8,7 +8,7 @@ export namespace IFocusForm {
   export interface UpsertPeriod {
     id: FormControl<string>;
     name: FormControl<string>;
-    description: FormControl<string>;
+    description: FormControl<string | null>;
     startFrom: FormControl<string | null>;
     endTo: FormControl<string | null>;
     webSites: FormControl<IFocus.WebSite[]>;
