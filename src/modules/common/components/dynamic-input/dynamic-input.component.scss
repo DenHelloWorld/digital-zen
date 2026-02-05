@@ -24,4 +24,16 @@
     align-items: center;
     justify-content: center;
   }
+
+  .dz-input {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    width: 100%;
+
+    &:focus {
+      text-overflow: clip;
+    }
+  }
 }

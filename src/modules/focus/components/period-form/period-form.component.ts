@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  computed,
   DestroyRef,
   effect,
   inject,
@@ -10,6 +11,8 @@ import {
   OnInit,
   output,
   OutputEmitterRef,
+  resource,
+  ResourceRef,
   signal,
   WritableSignal,
 } from '@angular/core';
@@ -41,6 +44,8 @@ import { arrayMinLengthValidator } from '../../../common/validators/array-min-le
 import { noUnblockableWebsitesValidator } from '../../../common/validators/no-unblockable-websites.validator';
 import { timeRangeValidator } from '../../../common/validators/time-range.validator';
 import { ALL_DAYS_OF_WEEK } from '../../../common/constants/days-of-week.const';
+import { FaviconHelper } from '../../../common/helpers/favicon.helper';
+import { WebsiteConnectivityProvider } from '../../../common/providers/website-connectivity.provider';
 
 /**
  * Period form component for creating and editing focus periods
@@ -80,14 +85,15 @@ import { ALL_DAYS_OF_WEEK } from '../../../common/constants/days-of-week.const';
 })
 export class PeriodFormComponent implements OnInit {
   /** @guideline DZ_02, DZ_08, DZ_09 - Dependency injection with inject(), private #, readonly */
-  readonly #fb: FormBuilder = inject(FormBuilder);
-  readonly #destroyRef: DestroyRef = inject(DestroyRef);
-  readonly #injector: Injector = inject(Injector);
-  readonly #focusService: FocusService = inject(FocusService);
+  readonly #fb = inject(FormBuilder);
+  readonly #destroyRef = inject(DestroyRef);
+  readonly #injector = inject(Injector);
+  readonly #focusService = inject(FocusService);
   /** @guideline DZ_11 - Universal Logger usage */
   readonly #logger = logger.createLogger('PeriodFormComponent');
 
   readonly #maxPeriodNameLength = 100;
+  readonly #siteStatusesCache = new Map<string, ResourceRef<boolean | undefined>>();
 
   /** @guideline DZ_04 - InputSignal for component inputs */
   public readonly mode: InputSignal<'create' | 'edit'> = input<'create' | 'edit'>('create');
@@ -129,6 +135,24 @@ export class PeriodFormComponent implements OnInit {
     WEBSITE_FACEBOOK,
   ]);
 
+  protected readonly siteStatuses = computed(() => {
+    const sites = this.selectedWebSites();
+    const map: Record<string, ResourceRef<boolean | undefined>> = {};
+
+    sites.forEach(site => {
+      if (!this.#siteStatusesCache.has(site.url)) {
+        const res = resource({
+          loader: () => WebsiteConnectivityProvider.isAlive(site.url),
+          injector: this.#injector,
+        });
+        this.#siteStatusesCache.set(site.url, res);
+      }
+      map[site.url] = this.#siteStatusesCache.get(site.url)!;
+    });
+
+    return map;
+  });
+
   public ngOnInit(): void {
     this.#initForm();
     this.#loadPeriodData();
@@ -160,7 +184,6 @@ export class PeriodFormComponent implements OnInit {
       .pipe(takeUntilDestroyed(this.#destroyRef))
       .subscribe(value => {
         this.form.controls.blockBehaviour.setValue(value[0].id);
-        console.log('Block behaviour set to:', value[0].id);
       });
 
     effect(
@@ -191,7 +214,7 @@ export class PeriodFormComponent implements OnInit {
       const rawValue = this.form.getRawValue();
 
       const webSitesWithFavicons: IFocus.WebSite[] = rawValue.webSites.map(site => {
-        const imageUrl = this.#focusService.getGoogleFaviconUrl(site.url);
+        const imageUrl = FaviconHelper.getGoogleUrl(site.url);
 
         return {
           ...site,
@@ -225,6 +248,10 @@ export class PeriodFormComponent implements OnInit {
 
   protected cancelForm(): void {
     this.completed.emit();
+  }
+
+  protected getFavicon(url: string): string {
+    return FaviconHelper.getGoogleUrl(url);
   }
 
   /**
@@ -303,7 +330,7 @@ export class PeriodFormComponent implements OnInit {
           uniquePeriodNameValidator(periods, currentPeriodId),
           Validators.maxLength(this.#maxPeriodNameLength),
         ]),
-        description: this.#fb.nonNullable.control('', requiredTrimmedValidator),
+        description: this.#fb.nonNullable.control<string | null>(null),
         startFrom: this.#fb.control<string | null>(null),
         endTo: this.#fb.control<string | null>(null),
         webSites: this.#fb.nonNullable.control(
@@ -335,7 +362,7 @@ export class PeriodFormComponent implements OnInit {
       this.form.patchValue({
         id: periodData.id,
         name: periodData.name,
-        description: periodData.description,
+        description: periodData.description ?? null,
         startFrom: startFromTime,
         endTo: endToTime,
         focusedTimes: periodData.focusedTimes,

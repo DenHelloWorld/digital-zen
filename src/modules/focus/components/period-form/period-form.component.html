@@ -46,20 +46,6 @@
   <div class="dz-form__field">
     <span class="dz-form__hint">
       <span class="dz-form__required">{{ uiText.COMMON.REQUIRED_MARKER }}</span>
-      {{ uiText.PERIOD_FORM.LABELS.DESCRIPTION }}
-    </span>
-
-    <textarea
-      class="dz-input dz-input--textarea"
-      [class.dz-input--invalid]="form.controls.description.invalid"
-      formControlName="description"
-      [placeholder]="uiText.PERIOD_FORM.PLACEHOLDERS.DESCRIPTION"
-    ></textarea>
-  </div>
-
-  <div class="dz-form__field">
-    <span class="dz-form__hint">
-      <span class="dz-form__required">{{ uiText.COMMON.REQUIRED_MARKER }}</span>
       Block Behavior
     </span>
 
@@ -152,12 +138,48 @@
       {{ uiText.PERIOD_FORM.LABELS.BLOCKED_URLS }}
     </span>
 
+    <ng-template #websiteIconTemplate let-site>
+      @let statusRes = siteStatuses()[site.url];
+      @let isOnline = statusRes?.value();
+
+      <button
+        [title]="isOnline ? 'Online' : 'Offline'"
+        class="dz-button dz-button--xs dz-button--activated dz-button--pointerless dz-button--square"
+        [class.dz-button--error]="!isOnline"
+      >
+        @if (isOnline === undefined) {
+          <ng-container *ngTemplateOutlet="icon; context: { href: icons.WIFI_FIND }"></ng-container>
+        } @else if (isOnline) {
+          <ng-container *ngTemplateOutlet="icon; context: { href: icons.WIFI }"></ng-container>
+        } @else {
+          <ng-container *ngTemplateOutlet="icon; context: { href: icons.WIFI_OFF }"></ng-container>
+        }
+      </button>
+
+      <button
+        [title]="site.url"
+        class="dz-button dz-button--sm dz-button--pointerless dz-button--square"
+      >
+        <img
+          #imgRef
+          class="dz-icon"
+          [class.hidden]="imgRef.hidden"
+          [src]="site.imageUrl || getFavicon(site.url)"
+          [alt]="site.url"
+          (error)="imgRef.hidden = true"
+        />
+        @if (imgRef.hidden) {
+          <ng-container *ngTemplateOutlet="icon; context: { href: icons.ERROR }"></ng-container>
+        }
+      </button>
+    </ng-template>
+
     <dz-dynamic-input
       [(entities)]="selectedWebSites"
       [excludeKeys]="excludedSiteKeysArray"
       idKey="id"
       labelKey="url"
-      iconKey="iconUrl"
+      [iconTemplate]="websiteIconTemplate"
     />
 
     @if (form.controls.webSites.hasError(validationErrorKeys.UNBLOCKABLE_NOT_ALLOWED)) {

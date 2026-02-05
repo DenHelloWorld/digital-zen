@@ -22,20 +22,19 @@
 <ul class="dz-list dz-list--full">
   @for (entity of entities(); track entity[idKey()]) {
     <li class="item">
-      @if (iconKey()) {
-        <button disabled class="dz-button dz-button--xs" type="button">
-          <ng-container
-            *ngTemplateOutlet="icon; context: { href: entity[iconKey()!] }"
-          ></ng-container>
-        </button>
+      @if (iconTemplate()) {
+        <ng-container *ngTemplateOutlet="iconTemplate(); context: { $implicit: entity }">
+        </ng-container>
       }
 
       <input
         disabled
+        [id]="entity[idKey()]"
         type="text"
         class="dz-input dz-input--borderless"
         [readonly]="isReadonly(entity)"
         [value]="getLabel(entity)"
+        [title]="getLabel(entity)"
       />
 
       <button

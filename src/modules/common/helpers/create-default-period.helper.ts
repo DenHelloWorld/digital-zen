@@ -8,7 +8,7 @@ export const createDefaultPeriodHelper = (): IFocus.Period => {
   return {
     id: DEFAULT_PERIOD_ID,
     name: 'Work Hours Social Media Block',
-    description: 'Disables access to social media during work hours',
+    description: null,
     startFrom: new Date(new Date().setHours(9, 0, 0, 0)),
     endTo: new Date(new Date().setHours(17, 0, 0, 0)),
     webSites: [...WEBSITES_SOCIAL_MEDIA],

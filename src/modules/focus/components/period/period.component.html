@@ -48,15 +48,6 @@
         </div>
       }
 
-      <div class="dz-banner dz-banner--sm dz-banner--info">
-        <ng-container *ngTemplateOutlet="bannerIcon; context: { href: icons.INFO }"></ng-container>
-        <div class="dz-banner__content">
-          <div class="dz-banner__message">
-            {{ p.description }}
-          </div>
-        </div>
-      </div>
-
       <div class="weekdays" [class.shake]="isNotScheduledToday()">
         <dz-weekdays-selector [selectedDays]="selectedDays()" [isSelectable]="false" />
       </div>
@@ -99,14 +90,12 @@
               [disabled]="!isCurrent()"
               (click)="onToggleBlockedWebsite(site)"
             >
-              @if (isHttpUrl(site.iconUrl)) {
-                <img class="dz-icon dz-icon--shadow" [src]="site.iconUrl" [alt]="site.name" />
+              @if (isHttpUrl(site.imageUrl)) {
+                <img class="dz-icon dz-icon--shadow" [src]="site.imageUrl" [alt]="site.name" />
               } @else if (site.iconUrl) {
                 <svg class="dz-icon dz-icon--shadow" aria-hidden="true" focusable="false">
                   <use [attr.href]="site.iconUrl"></use>
                 </svg>
-              } @else if (site.imageUrl) {
-                <img class="dz-icon dz-icon--shadow" [src]="site.imageUrl" [alt]="site.name" />
               } @else {
                 {{ site.name }}
               }

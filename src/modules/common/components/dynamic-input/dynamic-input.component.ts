@@ -9,6 +9,7 @@ import {
   ModelSignal,
   OnInit,
   signal,
+  TemplateRef,
   WritableSignal,
 } from '@angular/core';
 import { UI_TEXT } from '../../constants/ui-text.const';
@@ -85,7 +86,8 @@ export class DynamicInputComponent<T> implements OnInit {
   public readonly idKey: InputSignal<keyof T> = input.required<keyof T>();
   public readonly readonlyKeys: InputSignal<T[keyof T][]> = input<T[keyof T][]>([]);
   public readonly excludeKeys: InputSignal<(keyof T)[]> = input<(keyof T)[]>([]);
-  public readonly iconKey: InputSignal<keyof T | null> = input<keyof T | null>(null);
+  public readonly iconTemplate: InputSignal<TemplateRef<unknown> | null> =
+    input<TemplateRef<unknown> | null>(null);
 
   public readonly entities: ModelSignal<T[] | undefined> = model<T[]>();
 
@@ -109,10 +111,16 @@ export class DynamicInputComponent<T> implements OnInit {
       return;
     }
 
-    newEntity[this.idKey()] = Date.now() as NonNullable<T>[keyof T];
+    const newId = Date.now() + Math.floor(Math.random() * 1000);
+    const entityToAdd: T = {
+      ...newEntity,
+      [this.idKey()]: newId,
+    } as T;
 
-    this.entities.set([...(this.entities() ?? []), newEntity]);
-    this.toggleIsAdding();
+    this.entities.set([...(this.entities() ?? []), entityToAdd]);
+
+    this.newEntity.set(null);
+    this.isAdding.set(false);
   }
 
   protected updateField(key: string, value: T): void {
@@ -150,5 +158,6 @@ export class DynamicInputComponent<T> implements OnInit {
   protected cancelAdding(): void {
     this.newEntity.set(null);
     this.isAdding.set(false);
+    this.duplicateValue.set(null);
   }
 }

@@ -24,6 +24,7 @@ import { isSvgIcon } from '../../common/helpers/is-svg-icon.helper';
 import { isImageIcon } from '../../common/helpers/is-image-icon.helper';
 import { createDefaultPeriodHelper } from '../../common/helpers/create-default-period.helper';
 import { ICONS } from '../../common/constants/icons.const';
+import { FaviconHelper } from '../../common/helpers/favicon.helper';
 
 interface InitialStorageSchema {
   [CHROME_STORAGE_KEY_ENUM.CURRENT_PERIOD]: IFocus.Period;
@@ -218,7 +219,7 @@ export class FocusService {
         return;
       }
 
-      const iconUrl = tab.favIconUrl ?? this.getGoogleFaviconUrl(clearedUrl);
+      const iconUrl = tab.favIconUrl ?? FaviconHelper.getGoogleUrl(clearedUrl);
 
       const newSite: IFocus.WebSite = {
         id: clearedUrl,
@@ -270,23 +271,6 @@ export class FocusService {
   public toggleBlockedWebsite(site: IFocus.WebSite): void {
     if (this.#isChromeRuntime) {
       chrome.runtime.sendMessage({ command: CHROME_COMMAND_ENUM.TOGGLE_BLOCKED_WEBSITE, site });
-    }
-  }
-
-  public getGoogleFaviconUrl(siteUrl: string, size = 32): string {
-    let normalizedUrl = siteUrl.trim();
-    if (!normalizedUrl.startsWith('http://') && !normalizedUrl.startsWith('https://')) {
-      normalizedUrl = 'https://' + normalizedUrl;
-    }
-
-    try {
-      const url = new URL(normalizedUrl);
-      const domain = url.hostname;
-
-      return `https://s2.googleusercontent.com/s2/favicons?domain=${domain}&size=${size}`;
-    } catch (e) {
-      this.#logger.error('Invalid URL provided:', siteUrl, e);
-      return 'favicon.ico';
     }
   }
 
