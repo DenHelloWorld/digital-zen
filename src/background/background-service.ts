@@ -201,11 +201,7 @@ export class BackgroundService {
       switch (alarm.name) {
         case CHROME_ALARM_ENUM.CHECK_FOCUS_END: {
           const current = await StorageAdapter.getCurrentPeriod();
-          if (
-            current?.isFocused &&
-            current.endTo &&
-            isCurrentTimeAfter(new Date(), current.endTo)
-          ) {
+          if (current?.isActive && current.endTo && isCurrentTimeAfter(new Date(), current.endTo)) {
             await this.#focusService.stopFocus();
           }
           break;
@@ -233,9 +229,9 @@ export class BackgroundService {
       current = periods[0];
     }
 
-    this.updateExtensionIcon(!!current?.isFocused);
+    this.updateExtensionIcon(!!current?.isActive);
 
-    if (current?.isFocused) {
+    if (current?.isActive) {
       this.#focusService.updateBlockRulesForCurrentPeriod();
       this.scheduleAlarm();
     } else {
@@ -278,7 +274,7 @@ export class BackgroundService {
 
     if (current && current.id === period.id) {
       await StorageAdapter.saveCurrentPeriod(period);
-      if (period.isFocused) {
+      if (period.isActive) {
         this.#focusService.updateBlockRulesForCurrentPeriod();
         this.scheduleAlarm();
       }
@@ -300,7 +296,7 @@ export class BackgroundService {
     await StorageAdapter.savePeriod(updatedPeriod);
     await StorageAdapter.saveCurrentPeriod(updatedPeriod);
 
-    if (updatedPeriod.isFocused) {
+    if (updatedPeriod.isActive) {
       this.#focusService.updateBlockRulesForCurrentPeriod();
     }
     await UserDataSyncAdapter.syncPeriodsToBackend();
@@ -329,7 +325,7 @@ export class BackgroundService {
 
     const current = await StorageAdapter.getCurrentPeriod();
 
-    if (current?.isFocused) {
+    if (current?.isActive) {
       await this.#focusService.stopFocus();
       const updatedPeriods = await StorageAdapter.getPeriods();
       const freshPeriod = updatedPeriods.find(p => p.id === periodId);

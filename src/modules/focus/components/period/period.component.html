@@ -19,15 +19,16 @@
     <dz-period-form mode="edit" [period]="p" (completed)="onFormCompleted()" />
   </div>
 } @else {
-  <details open class="dz-accordion" [class.dz-accordion--accent]="p.isFocused">
-    <summary class="dz-accordion__header">
+  <details open class="dz-accordion" [class.dz-accordion--accent]="p.isActive">
+    <summary
+      class="dz-accordion__header dz-accordion__header--hoverless"
+      (click)="$event.preventDefault()"
+    >
       <span>
         <h2 class="title">
           {{ p.name }}
         </h2>
       </span>
-
-      <span class="dz-accordion__icon">⯆</span>
     </summary>
 
     <div class="dz-accordion__content">
@@ -94,13 +95,12 @@
             <button
               class="dz-button shadow shadow--hoverless dz-button--sm dz-button--square dz-button--pointerless"
               [title]="site.url | removeProtocol"
-              [disabled]="!isCurrent()"
             >
               @if (isHttpUrl(site.imageUrl)) {
                 <img class="dz-icon dz-icon--shadow" [src]="site.imageUrl" [alt]="site.name" />
               } @else if (site.iconUrl) {
                 <svg class="dz-icon dz-icon--shadow" aria-hidden="true" focusable="false">
-                  <use [attr.href]="site.iconUrl"></use>
+                  <use width="20" height="20" [attr.href]="site.iconUrl"></use>
                 </svg>
               } @else {
                 {{ site.name }}
@@ -137,7 +137,7 @@
               <ng-container *ngTemplateOutlet="icon; context: { href: icons.CLOSE }"></ng-container>
             </button>
           </div>
-        } @else if (!period().isFocused) {
+        } @else if (!period().isActive) {
           <button
             type="button"
             class="dz-button dz-button--sm shadow"
@@ -162,7 +162,7 @@
             </button>
           }
 
-          @if (!isCurrent() && !period().isFocused) {
+          @if (!isCurrent() && !period().isActive) {
             <button
               type="button"
               class="dz-button dz-button--sm dz-button--round dz-button--activated shadow"

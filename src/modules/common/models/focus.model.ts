@@ -21,7 +21,7 @@ export namespace IFocus {
         webSites: string[];
         daysOfWeek: DayOfWeekType[];
         focusedTimes: IFocus.Api.Upsert.FocusedTime[];
-        isFocused: boolean;
+        isActive: boolean;
         blockBehaviour: BlockBehaviourType;
         sessionStartTime: string | null;
       }
@@ -37,9 +37,10 @@ export namespace IFocus {
     webSites: IFocus.WebSite[];
     daysOfWeek: DayOfWeekType[];
     focusedTimes: IFocus.FocusedTime[];
-    isFocused: boolean;
+    isActive: boolean;
     blockBehaviour: BlockBehaviourType;
     sessionStartTime: Date | null;
+    timeLeftSec: number | null;
   }
 
   export interface WebSite {

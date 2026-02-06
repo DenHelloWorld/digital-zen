@@ -12,22 +12,8 @@ import { ICONS } from '../common/constants/icons.const';
 import { isImageIcon } from '../common/helpers/is-image-icon.helper';
 import { isHttpUrl } from '../common/helpers/is-http-url.helper';
 import { isSvgIcon } from '../common/helpers/is-svg-icon.helper';
+import { DEFAULT_FOCUS_TIMER_CONFIG } from '../common/constants/default-focus-timer-config.const';
 
-/**
- * Focus management component
- * Main component for managing focus sessions and periods
- *
- * @guidelines
- * - DZ_01: Standalone component with imports array
- * - DZ_02: Dependency injection using inject() function
- * - DZ_03: OnPush change detection strategy
- * - DZ_04: Angular Signals for reactive state (signal, computed)
- * - DZ_08: Private fields with # prefix
- * - DZ_09: Readonly for injected dependencies
- * - DZ_10: UI text constants usage
- *
- * @see /docs/coding-guidelines.md
- */
 @Component({
   selector: 'dz-focus',
   templateUrl: './focus.component.html',
@@ -39,6 +25,9 @@ import { isSvgIcon } from '../common/helpers/is-svg-icon.helper';
     PeriodComponent,
     LoaderComponent,
   ],
+  host: {
+    class: 'dz-focus',
+  },
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FocusComponent {
@@ -58,7 +47,7 @@ export class FocusComponent {
     this.#focusService.focusElapsedTimeFormatted;
   /** @guideline DZ_04 - Computed signal (derived state) */
   protected readonly isFocusActive: Signal<boolean> = computed(
-    () => this.currentPeriod()?.isFocused ?? false
+    () => this.currentPeriod()?.isActive ?? false
   );
   protected readonly isCurrentTabInCurrentPeriod = this.#focusService.isCurrentTabInCurrentPeriod;
   /** @guideline DZ_04 - Computed signal (derived state) */
@@ -71,7 +60,7 @@ export class FocusComponent {
     }
 
     // When focus is active, show only the current period
-    if (current?.isFocused) {
+    if (current?.isActive) {
       return [current];
     }
 
@@ -84,7 +73,6 @@ export class FocusComponent {
     return all;
   });
 
-  /** @guideline DZ_04 - Computed signal to check if current tab is unblockable */
   protected readonly isCurrentTabUnblockable: Signal<boolean> = computed(() => {
     const tab = this.activeTab();
     if (!tab?.url) {
@@ -95,20 +83,24 @@ export class FocusComponent {
     return WEBSITES_UNACTIVATABLE.some(site => cleanUrlHelper(site.url) === cleanedUrl);
   });
 
+  protected readonly isTabButtonDisabled = computed(() => {
+    return this.isCurrentTabUnblockable() || !isHttpUrl(this.activeTab()?.url);
+  });
+  protected timeLeftMin = computed(() => {
+    return (this.currentPeriod()?.timeLeftSec ?? 0) * 60;
+  });
+
   protected readonly isSvgIcon: (url: string | null | undefined) => boolean = isSvgIcon;
   protected readonly isImageIcon: (url: string | null | undefined) => boolean = isImageIcon;
   protected readonly isHttpUrl: (url: string | null | undefined) => boolean = isHttpUrl;
   /** @guideline DZ_10 - UI text constants */
   protected readonly uiText = UI_TEXT;
   protected readonly icons = ICONS;
+  protected readonly focusTimerConfig = DEFAULT_FOCUS_TIMER_CONFIG;
 
   protected toggleFocus(): void {
     this.#focusService.toggleFocus();
   }
-
-  // protected addCurrentTabToPeriod(): void {
-  //   this.#focusService.addCurrentTabToPeriod();
-  // }
 
   protected blockCurrentTab(): void {
     this.#focusService.addCurrentTabToPeriod(true);

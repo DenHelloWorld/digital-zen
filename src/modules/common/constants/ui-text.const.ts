@@ -117,6 +117,9 @@ export const UI_TEXT = Object.freeze({
     ADD_CURRENT_TAB_TITLE: 'Add current website to period',
     ADD_AND_BLOCK_CURRENT_TAB_TITLE: 'Add current website to period and block',
     TOGGLE_FOCUS_TITLE: 'Toggle focus session',
+    START: 'Start',
+    STOP: 'Stop',
+    CANNOT_ADD_CURRENT_TAB_TITLE: 'This website cannot be added',
   },
 
   // Theme Switcher Component

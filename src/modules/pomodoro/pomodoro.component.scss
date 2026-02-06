@@ -42,16 +42,5 @@
     align-items: center;
     justify-content: center;
     gap: var(--spacing);
-
-    .dz-button {
-      &--full {
-        width: 100%;
-      }
-
-      &--warn {
-        background-color: var(--color-zen-warn);
-        color: var(--color-on-warn);
-      }
-    }
   }
 }

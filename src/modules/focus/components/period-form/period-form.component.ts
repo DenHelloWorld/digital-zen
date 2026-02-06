@@ -50,6 +50,7 @@ import {
   IStepBarOption,
   StepBarComponent,
 } from '../../../common/components/step-bar/step-bar.component';
+import { cleanUrlHelper } from '../../../common/helpers/clean-url.helper';
 
 /**
  * Period form component for creating and editing focus periods
@@ -264,6 +265,8 @@ export class PeriodFormComponent implements OnInit {
       });
 
       const periodData: IFocus.Period = {
+        // TODO: process timeLeftSec
+        timeLeftSec: null,
         id: rawValue.id,
         name: rawValue.name,
         description: rawValue.description,
@@ -273,7 +276,7 @@ export class PeriodFormComponent implements OnInit {
         blockBehaviour: rawValue.blockBehaviour,
         daysOfWeek: rawValue.daysOfWeek,
         focusedTimes: rawValue.focusedTimes,
-        isFocused: rawValue.isFocused,
+        isActive: rawValue.isFocused,
         sessionStartTime: rawValue.sessionStartTime,
       };
 
@@ -406,7 +409,7 @@ export class PeriodFormComponent implements OnInit {
         startFrom: startFromTime,
         endTo: endToTime,
         focusedTimes: periodData.focusedTimes,
-        isFocused: periodData.isFocused,
+        isFocused: periodData.isActive,
         sessionStartTime: periodData.sessionStartTime,
         blockBehaviour: periodData.blockBehaviour,
       });
@@ -439,19 +442,12 @@ export class PeriodFormComponent implements OnInit {
     sites.forEach(site => {
       if (!site.url) return;
 
-      // Имитируем логику BlockerService для создания уникального ключа
-      const domainKey = site.url
-        .trim()
-        .replace(/^https?:\/\//, '') // Убираем протокол
-        .split('/')[0] // Отрезаем всё после первого слеша (пути)
-        .replace(/^www\./, '') // Убираем www
-        .toLowerCase(); // Приводим к нижнему регистру
+      const url = cleanUrlHelper(site.url);
 
-      if (domainKey && !uniqueMap.has(domainKey)) {
-        // Сохраняем с единообразным протоколом и без лишнего мусора
-        uniqueMap.set(domainKey, {
+      if (url && !uniqueMap.has(url)) {
+        uniqueMap.set(url, {
           ...site,
-          url: `https://${domainKey}`,
+          url,
         });
       }
     });

@@ -59,6 +59,7 @@ export const ICONS = Object.freeze({
   WIFI_FIND: '#icon-wifi-find',
   WIFI_OFF: '#icon-wifi-off',
   WIFI: '#icon-wifi',
+  STOP: '#icon-stop',
 } as const);
 
 /**

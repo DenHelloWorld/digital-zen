@@ -6,8 +6,9 @@ import { WEBSITES_SOCIAL_MEDIA } from '../constants/websites.const';
 
 export const createDefaultPeriodHelper = (): IFocus.Period => {
   return {
+    timeLeftSec: null,
     id: DEFAULT_PERIOD_ID,
-    name: 'Work Hours Social Media Block',
+    name: 'Social Media Block',
     description: null,
     startFrom: new Date(new Date().setHours(9, 0, 0, 0)),
     endTo: new Date(new Date().setHours(17, 0, 0, 0)),
@@ -15,7 +16,7 @@ export const createDefaultPeriodHelper = (): IFocus.Period => {
     daysOfWeek: [...ALL_DAYS_OF_WEEK_DAYS],
     focusedTimes: [],
     blockBehaviour: BLOCK_BEHAVIOUR_ENUM.WARN,
-    isFocused: false,
+    isActive: false,
     sessionStartTime: null,
   };
 };

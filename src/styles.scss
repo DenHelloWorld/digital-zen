@@ -115,4 +115,35 @@ a {
     cursor: auto;
     pointer-events: auto;
   }
+
+  &--full {
+    width: 100%;
+  }
+
+  &.dz-icon {
+    aspect-ratio: 1 / 1;
+  }
+}
+
+.dz-accordion {
+  &__header {
+    &--hoverless {
+      pointer-events: none;
+      cursor: default;
+    }
+  }
+
+  .title {
+    border: none;
+  }
+}
+
+img {
+  &.dz-icon {
+    object-fit: contain;
+  }
+}
+
+:root {
+  --color-component-bg-light: #ebf2ff;
 }

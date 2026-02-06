@@ -44,7 +44,7 @@ export class BackgroundFocusService {
       return { success: false, error: FOCUS_ERROR_ENUM.PERIOD_OUTSIDE_TIME_RANGE };
     }
 
-    period.isFocused = true;
+    period.isActive = true;
     period.sessionStartTime = now;
 
     await StorageAdapter.saveCurrentPeriod(period);
@@ -66,7 +66,7 @@ export class BackgroundFocusService {
   async stopFocus(): Promise<FocusOperationResult> {
     const current = await StorageAdapter.getCurrentPeriod();
 
-    if (!current || !current.isFocused) {
+    if (!current || !current.isActive) {
       return { success: true };
     }
 
@@ -82,7 +82,7 @@ export class BackgroundFocusService {
       current.focusedTimes = [...(current.focusedTimes || []), newFocusedTime];
     }
 
-    current.isFocused = false;
+    current.isActive = false;
     current.sessionStartTime = null;
     await StorageAdapter.savePeriod(current);
     await StorageAdapter.saveCurrentPeriod(current);
@@ -97,13 +97,13 @@ export class BackgroundFocusService {
   async toggleFocus(): Promise<FocusOperationResult> {
     const current = await StorageAdapter.getCurrentPeriod();
     if (!current) return { success: true };
-    if (current.isFocused) return this.stopFocus();
+    if (current.isActive) return this.stopFocus();
     return this.startFocus(current);
   }
 
   async toggleQuickFocus(url: string): Promise<FocusOperationResult> {
     const current = await StorageAdapter.getCurrentPeriod();
-    if (current && current.id === QUICK_FOCUS_ID && current.isFocused) {
+    if (current && current.id === QUICK_FOCUS_ID && current.isActive) {
       return this.stopFocus();
     }
     return this.startQuickFocus(url);
@@ -112,12 +112,14 @@ export class BackgroundFocusService {
   async startQuickFocus(url: string): Promise<FocusOperationResult> {
     const domain = url.replace(/^https?:\/\//, '').split('/')[0];
     const quickPeriod: IFocus.Period = {
+      // TODO: process timeLeftSec or delete
+      timeLeftSec: null,
       id: QUICK_FOCUS_ID,
       name: `Focus: ${domain}`,
       description: 'Quick focus session',
       startFrom: new Date(),
       endTo: null,
-      isFocused: true,
+      isActive: true,
       focusedTimes: [],
       blockBehaviour: BLOCK_BEHAVIOUR_ENUM.BLOCK,
       daysOfWeek: [0, 1, 2, 3, 4, 5, 6],

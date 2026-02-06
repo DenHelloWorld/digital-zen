@@ -77,15 +77,15 @@ export class FocusService {
     const period = this.#currentPeriod();
     const currentTime = this.#currentTime();
 
-    if (!period?.isFocused || !period?.sessionStartTime) {
+    if (!period?.isActive || !period?.sessionStartTime) {
       return 0;
     }
 
     return currentTime - period.sessionStartTime.getTime();
   });
 
-  public readonly currentPeriod: Signal<IFocus.Period | null> = this.#currentPeriod.asReadonly();
-  public readonly activeTab: Signal<chrome.tabs.Tab | undefined> = this.#activeTab.asReadonly();
+  public readonly currentPeriod = this.#currentPeriod.asReadonly();
+  public readonly activeTab = this.#activeTab.asReadonly();
 
   public readonly periods: Signal<IFocus.Period[] | null> = computed(
     () => this.#periods()?.filter(p => p.id !== QUICK_FOCUS_ID) ?? null
@@ -149,15 +149,6 @@ export class FocusService {
   public updatePeriod(period: IFocus.Period): void {
     if (this.#isChromeRuntime) {
       chrome.runtime.sendMessage({ command: CHROME_COMMAND_ENUM.UPDATE_PERIOD, period });
-    }
-  }
-
-  public toggleQuickFocus(): void {
-    if (this.#isChromeRuntime && this.activeTab()?.url) {
-      chrome.runtime.sendMessage({
-        command: CHROME_COMMAND_ENUM.TOGGLE_QUICK_FOCUS,
-        siteUrl: this.activeTab()?.url,
-      });
     }
   }
 
@@ -231,23 +222,21 @@ export class FocusService {
         return;
       }
 
-      const iconUrl = tab.favIconUrl ?? FaviconHelper.getGoogleUrl(clearedUrl);
+      const existingSite = period.webSites.find(s => cleanUrlHelper(s.url) === clearedUrl);
 
-      const newSite: IFocus.WebSite = {
-        id: clearedUrl,
-        url: clearedUrl,
-        name: clearedUrl,
-        iconUrl: isSvgIcon(iconUrl) ? iconUrl : ICONS.GLOBE,
-        description: tab.title || clearedUrl,
-        imageUrl: isImageIcon(iconUrl) ? iconUrl : '',
-        type: IFocus.EWebSiteType.DEFAULT,
-        isActivated,
-      };
+      if (!existingSite) {
+        const iconUrl = tab.favIconUrl ?? FaviconHelper.getGoogleUrl(clearedUrl);
+        const newSite: IFocus.WebSite = {
+          id: clearedUrl,
+          url: clearedUrl,
+          name: tab.title || clearedUrl,
+          iconUrl: isSvgIcon(iconUrl) ? iconUrl : ICONS.GLOBE,
+          description: tab.title || clearedUrl,
+          imageUrl: isImageIcon(iconUrl) ? iconUrl : '',
+          type: IFocus.EWebSiteType.DEFAULT,
+          isActivated,
+        };
 
-      const siteExists = period.webSites.some(s => s.url === newSite.url);
-      const existingSite = period.webSites.find(s => s.url === newSite.url);
-
-      if (!siteExists) {
         const updatedPeriod = {
           ...period,
           webSites: [...period.webSites, newSite],
@@ -258,11 +247,11 @@ export class FocusService {
           message: TOAST_MESSAGES_ENUM.ADDED,
           type: TOAST_TYPE_ENUM.ACCENT,
         });
-      } else if (isActivated && !existingSite?.isActivated) {
+      } else if (isActivated && !existingSite.isActivated) {
         const updatedPeriod = {
           ...period,
           webSites: period.webSites.map(s =>
-            s.url === newSite.url ? { ...s, isActivated: true } : s
+            cleanUrlHelper(s.url) === clearedUrl ? { ...s, isActivated: true } : s
           ),
         };
 
@@ -445,7 +434,7 @@ export class FocusService {
   #notifyIfNoSitesBlocked(period: IFocus.Period | null): void {
     const hasActivatedSites = period?.webSites.some(site => site.isActivated) ?? false;
 
-    if (!period?.isFocused && !hasActivatedSites) {
+    if (!period?.isActive && !hasActivatedSites) {
       this.#toastService.show({
         message: TOAST_MESSAGES_ENUM.NO_SITES_BLOCKED,
         type: TOAST_TYPE_ENUM.WARN,

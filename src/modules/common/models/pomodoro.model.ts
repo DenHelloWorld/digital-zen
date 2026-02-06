@@ -1,18 +1,7 @@
 import { FormControl } from '@angular/forms';
+import { IStepConfig } from './step-config.model';
 
 export namespace IPomodoro {
-  /** Configuration for value increments and bounds in steppers */
-  export interface StepConfig {
-    /** Standard increment value (e.g., via keyboard arrows) */
-    step: number;
-    /** Large increment value (e.g., via +/- 5 min buttons) */
-    quickStep: number;
-    /** Minimum allowed value */
-    min: number;
-    /** Maximum allowed value */
-    max: number;
-  }
-
   /** Global application settings managed by the user */
   export interface Settings {
     /** Current work session duration in minutes */
@@ -25,12 +14,12 @@ export namespace IPomodoro {
     cyclesBeforeLongBreak: 1 | 2 | 3 | 4 | 5;
 
     /** Stepper constraints for work session settings */
-    workStepConfig: StepConfig;
+    workStepConfig: IStepConfig;
     /** Stepper constraints for short break settings */
-    shortBreakStepConfig: StepConfig;
+    shortBreakStepConfig: IStepConfig;
     /** Stepper constraints for long break settings */
-    longBreakStepConfig: StepConfig;
-    cyclesBeforeLongBreakConfig: StepConfig;
+    longBreakStepConfig: IStepConfig;
+    cyclesBeforeLongBreakConfig: IStepConfig;
 
     /** Whether to automatically transition to the next phase */
     pauseAfterPhaseEnd: boolean;
@@ -41,10 +30,10 @@ export namespace IPomodoro {
     shortBreakMin: FormControl<number>;
     longBreakMin: FormControl<number>;
     cyclesBeforeLongBreak: FormControl<1 | 2 | 3 | 4 | 5>;
-    workStepConfig: FormControl<StepConfig>;
-    shortBreakStepConfig: FormControl<StepConfig>;
-    longBreakStepConfig: FormControl<StepConfig>;
-    cyclesBeforeLongBreakConfig: FormControl<StepConfig>;
+    workStepConfig: FormControl<IStepConfig>;
+    shortBreakStepConfig: FormControl<IStepConfig>;
+    longBreakStepConfig: FormControl<IStepConfig>;
+    cyclesBeforeLongBreakConfig: FormControl<IStepConfig>;
     pauseAfterPhaseEnd: FormControl<boolean>;
   }
 

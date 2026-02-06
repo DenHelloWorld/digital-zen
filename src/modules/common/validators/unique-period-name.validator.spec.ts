@@ -12,7 +12,7 @@ describe('uniquePeriodNameValidator', () => {
     blockBehaviour: BLOCK_BEHAVIOUR_ENUM.BLOCK,
     startFrom: new Date(),
     endTo: new Date(),
-    isFocused: false,
+    isActive: false,
     focusedTimes: [],
     daysOfWeek: [1],
     sessionStartTime: null,

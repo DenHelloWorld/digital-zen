@@ -33,6 +33,10 @@
       font-size: var(--font-size-xl);
     }
 
+    &__value-wrapper {
+      padding: 0 var(--spacing-xs);
+    }
+
     &__footer {
       .dz-button {
         flex: 1;
