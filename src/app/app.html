@@ -4,7 +4,7 @@
       [title]="uiText.HEADER.FOCUS_MENU_TITLE"
       (click)="setViewType(viewTypes.FOCUS)"
       class="dz-button dz-button--md"
-      [class.dz-button--activated]="currentViewType() === viewTypes.FOCUS"
+      [class.dz-button--activated]="currentRoute() === viewTypes.FOCUS"
     >
       <svg class="dz-icon" aria-hidden="true" focusable="false">
         <use [attr.href]="icons.PERSON_ZEN"></use>
@@ -12,13 +12,19 @@
     </button>
 
     <button
-      [title]="uiText.HEADER.ADD_NEW_PERIOD_TITLE"
+      [title]="
+        currentRoute() === viewTypes.EDIT_PERIOD
+          ? uiText.HEADER.EDIT_PERIOD_TITLE
+          : uiText.HEADER.ADD_NEW_PERIOD_TITLE
+      "
       (click)="setViewType(viewTypes.ADD_PERIOD)"
       class="dz-button dz-button--md"
-      [class.dz-button--activated]="currentViewType() === viewTypes.ADD_PERIOD"
+      [class.dz-button--activated]="
+        [viewTypes.ADD_PERIOD, viewTypes.EDIT_PERIOD].includes(currentRoute())
+      "
     >
       <svg class="dz-icon" aria-hidden="true" focusable="false">
-        <use [attr.href]="icons.PLUS"></use>
+        <use [attr.href]="icons.ASSIGMENT"></use>
       </svg>
     </button>
 
@@ -26,7 +32,7 @@
       [title]="uiText.HEADER.POMODORO_MENU_TITLE"
       (click)="setViewType(viewTypes.POMODORO)"
       class="dz-button dz-button--md"
-      [class.dz-button--activated]="currentViewType() === viewTypes.POMODORO"
+      [class.dz-button--activated]="currentRoute() === viewTypes.POMODORO"
     >
       <svg class="dz-icon" aria-hidden="true" focusable="false">
         <use [attr.href]="icons.TOMATO"></use>
@@ -66,19 +72,25 @@
 
 <main class="dz-main" [class.dark-theme]="theme() === colorSchemes.DARK">
   @defer {
-    @switch (currentViewType()) {
-      @case (viewTypes.FOCUS) {
-        <dz-focus />
-      }
-
+    @switch (currentRoute()) {
       @case (viewTypes.POMODORO) {
         <dz-pomodoro />
       }
 
+      @case (viewTypes.EDIT_PERIOD) {
+        <div class="dz-box">
+          <dz-period-form />
+        </div>
+      }
+
       @case (viewTypes.ADD_PERIOD) {
         <div class="dz-box">
-          <dz-period-form mode="create" (completed)="setViewType(viewTypes.FOCUS)" />
+          <dz-period-form />
         </div>
+      }
+
+      @default {
+        <dz-focus />
       }
     }
   }

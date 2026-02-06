@@ -1,11 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  inject,
-  signal,
-  Signal,
-  WritableSignal,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, Signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { FocusComponent } from '../modules/focus/focus.component';
@@ -23,6 +16,7 @@ import { VIEW_ENUM, ViewType } from '../modules/common/enums/view.enum';
 import { UI_TEXT } from '../modules/common/constants/ui-text.const';
 import { ICONS } from '../modules/common/constants/icons.const';
 import { WEBSITE_PRIVACY_POLICY } from '../modules/common/constants/websites.const';
+import { MiniRouterService } from '../modules/common/services/mini-router.service';
 
 /**
  * Root application component for Digital Zen Chrome Extension
@@ -57,14 +51,14 @@ import { WEBSITE_PRIVACY_POLICY } from '../modules/common/constants/websites.con
 })
 export class App {
   /** @guideline DZ_02, DZ_08, DZ_09 - Dependency injection with inject(), private #, readonly */
-  readonly #themeService: ThemeService = inject(ThemeService);
-  /** @guideline DZ_02, DZ_08, DZ_09 - Dependency injection with inject(), private #, readonly */
-  readonly #authService: AuthService = inject(AuthService);
+  readonly #themeService = inject(ThemeService);
+  readonly #authService = inject(AuthService);
+  readonly #router = inject(MiniRouterService);
 
   /** @guideline DZ_04 - Signal for reactive theme state */
   protected readonly theme: Signal<ColorSchemaType> = this.#themeService.theme;
   /** @guideline DZ_04 - Writable signal for view type state */
-  protected readonly currentViewType: WritableSignal<ViewType> = signal(VIEW_ENUM.FOCUS);
+  protected readonly currentRoute = this.#router.currentRoute;
   /** @guideline DZ_04 - Signal for reactive authentication state */
   protected readonly isGoogleAuthenticated: Signal<boolean> =
     this.#authService.isGoogleAuthenticated;
@@ -79,7 +73,7 @@ export class App {
   protected readonly websites = { PRIVACY_POLICY: WEBSITE_PRIVACY_POLICY } as const;
 
   protected setViewType(viewType: ViewType) {
-    this.currentViewType.set(viewType);
+    this.#router.navigate(viewType);
   }
 
   protected loginWithGoogle(): void {

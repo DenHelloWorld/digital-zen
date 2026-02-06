@@ -17,7 +17,6 @@ import { TimeLineComponent } from '../time-line/time-line.component';
 import { WeekdaysSelectorComponent } from '../../../common/components/weekdays-selector/weekdays-selector.component';
 import { FocusService } from '../../services/focus.service';
 import { BLOCK_BEHAVIOUR_ENUM } from '../../../common/enums/block-behaviour.enum';
-import { PeriodFormComponent } from '../period-form/period-form.component';
 import { IFocus } from '../../../common/models/focus.model';
 import { UI_TEXT } from '../../../common/constants/ui-text.const';
 import { ICONS } from '../../../common/constants/icons.const';
@@ -26,6 +25,8 @@ import { isHttpUrl } from '../../../common/helpers/is-http-url.helper';
 import { DzToastService } from '../../../common/components';
 import { TOAST_MESSAGES_ENUM } from '../../../common/enums/toast-messages.enum';
 import { RemoveProtocolPipe } from '../../../common/pipes/remove-protocol.pipe';
+import { MiniRouterService } from '../../../common/services/mini-router.service';
+import { VIEW_ENUM } from '../../../common/enums/view.enum';
 
 /**
  * Period display and management component
@@ -53,7 +54,6 @@ import { RemoveProtocolPipe } from '../../../common/pipes/remove-protocol.pipe';
     // components
     TimeLineComponent,
     WeekdaysSelectorComponent,
-    PeriodFormComponent,
     // pipes
     RemoveProtocolPipe,
   ],
@@ -62,6 +62,7 @@ export class PeriodComponent {
   /** @guideline DZ_02, DZ_08, DZ_09 - Dependency injection with inject(), private #, readonly */
   readonly #focusService: FocusService = inject(FocusService);
   readonly #toastService: DzToastService = inject(DzToastService);
+  readonly #router = inject(MiniRouterService);
 
   /** @guideline DZ_04 - Computed signal (derived state) */
   protected readonly selectedDays: Signal<IFocus.DayOfWeek[]> = computed(() => {
@@ -83,8 +84,6 @@ export class PeriodComponent {
   );
 
   /** @guideline DZ_04 - Writable signal for local state */
-  protected readonly isEditing: WritableSignal<boolean> = signal(false);
-  /** @guideline DZ_04 - Writable signal for local state */
   protected readonly isConfirmingDelete: WritableSignal<boolean> = signal(false);
   /** @guideline DZ_10 - UI text constants */
   protected readonly uiText = UI_TEXT;
@@ -102,11 +101,7 @@ export class PeriodComponent {
   public readonly toggleBlockedWebsite: OutputEmitterRef<IFocus.WebSite> = output<IFocus.WebSite>();
 
   protected onEdit(): void {
-    this.isEditing.set(true);
-  }
-
-  protected onFormCompleted(): void {
-    this.isEditing.set(false);
+    this.#router.navigate(VIEW_ENUM.EDIT_PERIOD, this.period());
   }
 
   protected onDelete(): void {

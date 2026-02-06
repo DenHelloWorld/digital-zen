@@ -5,13 +5,10 @@ import {
   effect,
   inject,
   Injector,
-  input,
-  InputSignal,
   OnInit,
-  output,
-  OutputEmitterRef,
   resource,
   ResourceRef,
+  Signal,
   signal,
   untracked,
   WritableSignal,
@@ -51,6 +48,8 @@ import {
   StepBarComponent,
 } from '../../../common/components/step-bar/step-bar.component';
 import { cleanUrlHelper } from '../../../common/helpers/clean-url.helper';
+import { MiniRouterService } from '../../../common/services/mini-router.service';
+import { VIEW_ENUM } from '../../../common/enums/view.enum';
 
 /**
  * Period form component for creating and editing focus periods
@@ -95,6 +94,7 @@ export class PeriodFormComponent implements OnInit {
   readonly #destroyRef = inject(DestroyRef);
   readonly #injector = inject(Injector);
   readonly #focusService = inject(FocusService);
+  readonly #router = inject(MiniRouterService);
   /** @guideline DZ_11 - Universal Logger usage */
   readonly #logger = logger.createLogger('PeriodFormComponent');
 
@@ -102,16 +102,16 @@ export class PeriodFormComponent implements OnInit {
   readonly #siteStatusesCache = new Map<string, ResourceRef<boolean | undefined>>();
 
   /** @guideline DZ_04 - InputSignal for component inputs */
-  public readonly mode: InputSignal<'create' | 'edit'> = input<'create' | 'edit'>('create');
-  public readonly period: InputSignal<IFocus.Period | null> = input<IFocus.Period | null>(null);
-  public readonly completed: OutputEmitterRef<void> = output<void>();
+  public readonly period = this.#router.payload as Signal<IFocus.Period | null>;
 
+  protected readonly currentRoute = this.#router.currentRoute;
   /** @guideline DZ_15 - Typed Reactive Form */
   protected form: FormGroup<IFocusForm.UpsertPeriod>;
   /** @guideline DZ_10 - UI text constants */
   protected readonly uiText = UI_TEXT;
   /** @guideline DZ_10.1 - Icon constants */
   protected readonly icons = ICONS;
+  protected readonly views = VIEW_ENUM;
   /** Validation error keys for template usage */
   protected readonly validationErrorKeys = VALIDATION_ERROR_KEYS;
   protected readonly timeRanges = [...TIME_RANGES];
@@ -280,18 +280,18 @@ export class PeriodFormComponent implements OnInit {
         sessionStartTime: rawValue.sessionStartTime,
       };
 
-      if (this.mode() === 'edit') {
+      if (this.currentRoute() === VIEW_ENUM.EDIT_PERIOD) {
         this.#focusService.updatePeriod(periodData);
-      } else {
+      } else if (this.currentRoute() === VIEW_ENUM.ADD_PERIOD) {
         this.#focusService.addPeriod(periodData);
       }
 
-      this.completed.emit();
+      this.#router.navigate(VIEW_ENUM.FOCUS);
     }
   }
 
   protected cancelForm(): void {
-    this.completed.emit();
+    this.#router.navigate(VIEW_ENUM.FOCUS);
   }
 
   protected getFavicon(url: string): string {
@@ -369,11 +369,14 @@ export class PeriodFormComponent implements OnInit {
         id: this.#fb.nonNullable.control<string>(
           `${Date.now()}-${Math.floor(Math.random() * 10000)}`
         ),
-        name: this.#fb.nonNullable.control('', [
-          requiredTrimmedValidator,
-          uniquePeriodNameValidator(periods, currentPeriodId),
-          Validators.maxLength(this.#maxPeriodNameLength),
-        ]),
+        name: this.#fb.nonNullable.control(
+          `New Period ${(this.#focusService.periods()?.length ?? 0) + 1}`,
+          [
+            requiredTrimmedValidator,
+            uniquePeriodNameValidator(periods, currentPeriodId),
+            Validators.maxLength(this.#maxPeriodNameLength),
+          ]
+        ),
         description: this.#fb.nonNullable.control<string | null>(null),
         startFrom: this.#fb.control<string | null>(null),
         endTo: this.#fb.control<string | null>(null),
@@ -396,7 +399,7 @@ export class PeriodFormComponent implements OnInit {
   #loadPeriodData(): void {
     const periodData = this.period();
 
-    if (this.mode() === 'edit' && periodData) {
+    if (this.currentRoute() === VIEW_ENUM.EDIT_PERIOD && periodData) {
       const startFromTime = periodData.startFrom
         ? this.#dateToTimeString(periodData.startFrom)
         : '';

@@ -235,7 +235,9 @@
       (click)="savePeriod()"
     >
       {{
-        mode() === 'edit' ? uiText.PERIOD_FORM.BUTTONS.UPDATE : uiText.PERIOD_FORM.BUTTONS.CREATE
+        currentRoute() === views.EDIT_PERIOD
+          ? uiText.PERIOD_FORM.BUTTONS.UPDATE
+          : uiText.PERIOD_FORM.BUTTONS.CREATE
       }}
     </button>
 

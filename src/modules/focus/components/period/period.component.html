@@ -14,174 +14,162 @@
 
 @let p = period();
 
-@if (isEditing()) {
-  <div class="dz-period-edit">
-    <dz-period-form mode="edit" [period]="p" (completed)="onFormCompleted()" />
-  </div>
-} @else {
-  <details open class="dz-accordion" [class.dz-accordion--accent]="p.isActive">
-    <summary
-      class="dz-accordion__header dz-accordion__header--hoverless"
-      (click)="$event.preventDefault()"
-    >
-      <span>
-        <h2 class="title">
-          {{ p.name }}
-        </h2>
-      </span>
-    </summary>
+<details open class="dz-accordion" [class.dz-accordion--accent]="p.isActive">
+  <summary
+    class="dz-accordion__header dz-accordion__header--hoverless"
+    (click)="$event.preventDefault()"
+  >
+    <span>
+      <h2 class="title">
+        {{ p.name }}
+      </h2>
+    </span>
+  </summary>
 
-    <div class="dz-accordion__content">
-      @if (p.startFrom && p.endTo) {
-        <div
-          [title]="'Period when focus is activatable'"
-          class="dz-box dz-box--line-container shadow shadow--hoverless"
-          [class.shake]="isOutsideTimeRangeError()"
-        >
-          <ng-container
-            *ngTemplateOutlet="
-              icon;
-              context: { href: icons.CHRONIC, class: 'dz-icon dz-icon--line-container' }
-            "
-          ></ng-container>
-
-          <dz-time-line [startFrom]="p.startFrom" [endTo]="p.endTo" />
-        </div>
-      }
-
-      <div class="weekdays" [class.shake]="isNotScheduledToday()">
-        <dz-weekdays-selector [selectedDays]="selectedDays()" [isSelectable]="false" />
-      </div>
-
+  <div class="dz-accordion__content">
+    @if (p.startFrom && p.endTo) {
       <div
-        class="dz-banner dz-banner--sm"
-        [class.dz-banner--error]="p.blockBehaviour === blockBehaviours.BLOCK"
-        [class.dz-banner--info]="p.blockBehaviour === blockBehaviours.WHITELIST"
-        [class.dz-banner--warn]="p.blockBehaviour === blockBehaviours.WARN"
+        [title]="'Period when focus is activatable'"
+        class="dz-box dz-box--line-container shadow shadow--hoverless"
+        [class.shake]="isOutsideTimeRangeError()"
       >
-        @switch (p.blockBehaviour) {
-          @case (blockBehaviours.BLOCK) {
-            <ng-container
-              *ngTemplateOutlet="bannerIcon; context: { href: icons.BLOCK }"
-            ></ng-container>
-            <div class="dz-banner__content">
-              <div class="dz-banner__message">{{ uiText.PERIOD.BLOCK_BEHAVIOUR.BANNER_BLOCK }}</div>
-            </div>
-          }
-          @case (blockBehaviours.WHITELIST) {
-            <ng-container
-              *ngTemplateOutlet="bannerIcon; context: { href: icons.PERSON_ZEN }"
-            ></ng-container>
-            <div class="dz-banner__content">
-              <div class="dz-banner__message">
-                {{ uiText.PERIOD.BLOCK_BEHAVIOUR.BANNER_WHITE_LIST }}
-              </div>
-            </div>
-          }
-          @default {
-            <ng-container
-              *ngTemplateOutlet="bannerIcon; context: { href: icons.WARNING }"
-            ></ng-container>
-            <div class="dz-banner__content">
-              <div class="dz-banner__message">{{ uiText.PERIOD.BLOCK_BEHAVIOUR.BANNER_WARN }}</div>
-            </div>
-          }
-        }
+        <ng-container
+          *ngTemplateOutlet="
+            icon;
+            context: { href: icons.CHRONIC, class: 'dz-icon dz-icon--line-container' }
+          "
+        ></ng-container>
+
+        <dz-time-line [startFrom]="p.startFrom" [endTo]="p.endTo" />
       </div>
+    }
 
-      <ul class="dz-list dz-list--horizontal dz-list--full" aria-labelledby="social-title">
-        @for (site of p.webSites; track site.id) {
-          <li>
-            <button
-              class="dz-button shadow shadow--hoverless dz-button--sm dz-button--square dz-button--pointerless"
-              [title]="site.url | removeProtocol"
-            >
-              @if (isHttpUrl(site.imageUrl)) {
-                <img class="dz-icon dz-icon--shadow" [src]="site.imageUrl" [alt]="site.name" />
-              } @else if (site.iconUrl) {
-                <svg class="dz-icon dz-icon--shadow" aria-hidden="true" focusable="false">
-                  <use width="20" height="20" [attr.href]="site.iconUrl"></use>
-                </svg>
-              } @else {
-                {{ site.name }}
-              }
-            </button>
-          </li>
-        }
-      </ul>
+    <div class="weekdays" [class.shake]="isNotScheduledToday()">
+      <dz-weekdays-selector [selectedDays]="selectedDays()" [isSelectable]="false" />
+    </div>
 
-      <div class="dz-period-actions">
-        @if (isConfirmingDelete()) {
-          <div class="dz-confirm-delete">
-            <span class="dz-confirm-message"
-              >{{ uiText.PERIOD.CONFIRM_DELETE }} "{{ p.name }}"?</span
-            >
-            <button
-              type="button"
-              class="dz-button dz-button--sm dz-button--error shadow"
-              [title]="uiText.PERIOD.ARIA_LABELS.CONFIRM_DELETE"
-              [attr.aria-label]="uiText.PERIOD.ARIA_LABELS.CONFIRM_DELETE"
-              (click)="onConfirmDelete()"
-            >
-              <ng-container
-                *ngTemplateOutlet="icon; context: { href: icons.DELETE }"
-              ></ng-container>
-            </button>
-            <button
-              type="button"
-              class="dz-button dz-button--sm shadow"
-              [title]="uiText.PERIOD.ARIA_LABELS.CANCEL_DELETE"
-              [attr.aria-label]="uiText.PERIOD.ARIA_LABELS.CANCEL_DELETE"
-              (click)="onCancelDelete()"
-            >
-              <ng-container *ngTemplateOutlet="icon; context: { href: icons.CLOSE }"></ng-container>
-            </button>
+    <div
+      class="dz-banner dz-banner--sm"
+      [class.dz-banner--error]="p.blockBehaviour === blockBehaviours.BLOCK"
+      [class.dz-banner--info]="p.blockBehaviour === blockBehaviours.WHITELIST"
+      [class.dz-banner--warn]="p.blockBehaviour === blockBehaviours.WARN"
+    >
+      @switch (p.blockBehaviour) {
+        @case (blockBehaviours.BLOCK) {
+          <ng-container
+            *ngTemplateOutlet="bannerIcon; context: { href: icons.BLOCK }"
+          ></ng-container>
+          <div class="dz-banner__content">
+            <div class="dz-banner__message">{{ uiText.PERIOD.BLOCK_BEHAVIOUR.BANNER_BLOCK }}</div>
           </div>
-        } @else if (!period().isActive) {
+        }
+        @case (blockBehaviours.WHITELIST) {
+          <ng-container
+            *ngTemplateOutlet="bannerIcon; context: { href: icons.PERSON_ZEN }"
+          ></ng-container>
+          <div class="dz-banner__content">
+            <div class="dz-banner__message">
+              {{ uiText.PERIOD.BLOCK_BEHAVIOUR.BANNER_WHITE_LIST }}
+            </div>
+          </div>
+        }
+        @default {
+          <ng-container
+            *ngTemplateOutlet="bannerIcon; context: { href: icons.WARNING }"
+          ></ng-container>
+          <div class="dz-banner__content">
+            <div class="dz-banner__message">{{ uiText.PERIOD.BLOCK_BEHAVIOUR.BANNER_WARN }}</div>
+          </div>
+        }
+      }
+    </div>
+
+    <ul class="dz-list dz-list--horizontal dz-list--full" aria-labelledby="social-title">
+      @for (site of p.webSites; track site.id) {
+        <li>
+          <button
+            class="dz-button shadow shadow--hoverless dz-button--sm dz-button--square dz-button--pointerless"
+            [title]="site.url | removeProtocol"
+          >
+            @if (isHttpUrl(site.imageUrl)) {
+              <img class="dz-icon dz-icon--shadow" [src]="site.imageUrl" [alt]="site.name" />
+            } @else if (site.iconUrl) {
+              <svg class="dz-icon dz-icon--shadow" aria-hidden="true" focusable="false">
+                <use width="20" height="20" [attr.href]="site.iconUrl"></use>
+              </svg>
+            } @else {
+              {{ site.name }}
+            }
+          </button>
+        </li>
+      }
+    </ul>
+
+    <div class="dz-period-actions">
+      @if (isConfirmingDelete()) {
+        <div class="dz-confirm-delete">
+          <span class="dz-confirm-message">{{ uiText.PERIOD.CONFIRM_DELETE }} "{{ p.name }}"?</span>
+          <button
+            type="button"
+            class="dz-button dz-button--sm dz-button--error shadow"
+            [title]="uiText.PERIOD.ARIA_LABELS.CONFIRM_DELETE"
+            [attr.aria-label]="uiText.PERIOD.ARIA_LABELS.CONFIRM_DELETE"
+            (click)="onConfirmDelete()"
+          >
+            <ng-container *ngTemplateOutlet="icon; context: { href: icons.DELETE }"></ng-container>
+          </button>
           <button
             type="button"
             class="dz-button dz-button--sm shadow"
-            [title]="uiText.PERIOD.ARIA_LABELS.EDIT_PERIOD"
-            [attr.aria-label]="uiText.PERIOD.ARIA_LABELS.EDIT_PERIOD"
-            (click)="onEdit()"
+            [title]="uiText.PERIOD.ARIA_LABELS.CANCEL_DELETE"
+            [attr.aria-label]="uiText.PERIOD.ARIA_LABELS.CANCEL_DELETE"
+            (click)="onCancelDelete()"
           >
-            <ng-container *ngTemplateOutlet="icon; context: { href: icons.EDIT }"></ng-container>
+            <ng-container *ngTemplateOutlet="icon; context: { href: icons.CLOSE }"></ng-container>
           </button>
+        </div>
+      } @else if (!period().isActive) {
+        <button
+          type="button"
+          class="dz-button dz-button--sm shadow"
+          [title]="uiText.PERIOD.ARIA_LABELS.EDIT_PERIOD"
+          [attr.aria-label]="uiText.PERIOD.ARIA_LABELS.EDIT_PERIOD"
+          (click)="onEdit()"
+        >
+          <ng-container *ngTemplateOutlet="icon; context: { href: icons.EDIT }"></ng-container>
+        </button>
 
-          @if (totalPeriodsCount() > 1 && !isCurrent()) {
-            <button
-              type="button"
-              class="dz-button dz-button--sm dz-button--error shadow"
-              [title]="uiText.PERIOD.ARIA_LABELS.DELETE_PERIOD"
-              [attr.aria-label]="uiText.PERIOD.ARIA_LABELS.DELETE_PERIOD"
-              (click)="onDelete()"
-            >
-              <ng-container
-                *ngTemplateOutlet="icon; context: { href: icons.DELETE }"
-              ></ng-container>
-            </button>
-          }
-
-          @if (!isCurrent() && !period().isActive) {
-            <button
-              type="button"
-              class="dz-button dz-button--sm dz-button--round dz-button--activated shadow"
-              [attr.aria-label]="uiText.PERIOD.ARIA_LABELS.ACTIVATE_PERIOD"
-              [attr.title]="
-                isFocusActive()
-                  ? uiText.PERIOD.ACTIVATE_DISABLED_TOOLTIP
-                  : uiText.PERIOD.ARIA_LABELS.ACTIVATE_PERIOD
-              "
-              [disabled]="isFocusActive()"
-              (click)="onActivate()"
-            >
-              <ng-container
-                *ngTemplateOutlet="icon; context: { href: icons.POWER_SWITCHER }"
-              ></ng-container>
-            </button>
-          }
+        @if (totalPeriodsCount() > 1 && !isCurrent()) {
+          <button
+            type="button"
+            class="dz-button dz-button--sm dz-button--error shadow"
+            [title]="uiText.PERIOD.ARIA_LABELS.DELETE_PERIOD"
+            [attr.aria-label]="uiText.PERIOD.ARIA_LABELS.DELETE_PERIOD"
+            (click)="onDelete()"
+          >
+            <ng-container *ngTemplateOutlet="icon; context: { href: icons.DELETE }"></ng-container>
+          </button>
         }
-      </div>
+
+        @if (!isCurrent() && !period().isActive) {
+          <button
+            type="button"
+            class="dz-button dz-button--sm dz-button--round dz-button--activated shadow"
+            [attr.aria-label]="uiText.PERIOD.ARIA_LABELS.ACTIVATE_PERIOD"
+            [attr.title]="
+              isFocusActive()
+                ? uiText.PERIOD.ACTIVATE_DISABLED_TOOLTIP
+                : uiText.PERIOD.ARIA_LABELS.ACTIVATE_PERIOD
+            "
+            [disabled]="isFocusActive()"
+            (click)="onActivate()"
+          >
+            <ng-container
+              *ngTemplateOutlet="icon; context: { href: icons.POWER_SWITCHER }"
+            ></ng-container>
+          </button>
+        }
+      }
     </div>
-  </details>
-}
+  </div>
+</details>

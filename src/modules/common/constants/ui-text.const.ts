@@ -17,6 +17,7 @@ export const UI_TEXT = Object.freeze({
   HEADER: {
     FOCUS_MENU_TITLE: 'Focus menu',
     ADD_NEW_PERIOD_TITLE: 'Add new period',
+    EDIT_PERIOD_TITLE: 'Edit period',
     LOGIN_GOOGLE_TITLE: 'Login with Google',
     LOGOUT_GOOGLE_TITLE: 'Logout from Google',
     POMODORO_MENU_TITLE: 'Pomodoro timer',
