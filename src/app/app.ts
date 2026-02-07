@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, Signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, HostBinding, inject, Signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { FocusComponent } from '../modules/focus/focus.component';
@@ -17,6 +17,7 @@ import { UI_TEXT } from '../modules/common/constants/ui-text.const';
 import { ICONS } from '../modules/common/constants/icons.const';
 import { WEBSITE_PRIVACY_POLICY } from '../modules/common/constants/websites.const';
 import { MiniRouterService } from '../modules/common/services/mini-router.service';
+import { CHROME_COMMAND_ENUM } from '../modules/common/enums/chrome-command.enum';
 
 /**
  * Root application component for Digital Zen Chrome Extension
@@ -48,8 +49,13 @@ import { MiniRouterService } from '../modules/common/services/mini-router.servic
     LoaderComponent,
     PeriodFormComponent,
   ],
+  host: {
+    class: 'dz-app',
+  },
 })
 export class App {
+  /** @guideline DZ_08 - Private readonly field for runtime check */
+  readonly #isChromeRuntime: boolean = !!chrome.runtime;
   /** @guideline DZ_02, DZ_08, DZ_09 - Dependency injection with inject(), private #, readonly */
   readonly #themeService = inject(ThemeService);
   readonly #authService = inject(AuthService);
@@ -64,6 +70,7 @@ export class App {
     this.#authService.isGoogleAuthenticated;
   /** @guideline DZ_04 - Signal for reactive auth pending state */
   protected readonly isGoogleAuthPending: Signal<boolean> = this.#authService.isGoogleAuthPending;
+  protected readonly isSidePanel = this.#router.isSidePanel;
 
   protected readonly colorSchemes: typeof COLOR_SCHEMA_ENUM = COLOR_SCHEMA_ENUM;
   protected readonly viewTypes: typeof VIEW_ENUM = VIEW_ENUM;
@@ -82,5 +89,23 @@ export class App {
 
   protected logoutFromGoogle(): void {
     this.#authService.logoutFromGoogle();
+  }
+
+  public openSidePanel(): void {
+    if (this.#isChromeRuntime) {
+      chrome.windows.getCurrent(win => {
+        chrome.runtime.sendMessage({
+          command: CHROME_COMMAND_ENUM.OPEN_SIDE_PANEL_APP,
+          windowId: win.id,
+        });
+
+        window.close();
+      });
+    }
+  }
+
+  @HostBinding('class.dz-app--side-panel')
+  get sidePanelClass() {
+    return this.#router.isSidePanel();
   }
 }

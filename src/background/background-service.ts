@@ -165,6 +165,23 @@ export class BackgroundService {
               sendResponse({ success: true });
               break;
             }
+            case CHROME_COMMAND_ENUM.OPEN_SIDE_PANEL_APP: {
+              const targetWindowId = message.windowId || sender.tab?.windowId;
+
+              if (targetWindowId) {
+                chrome.sidePanel
+                  .open({ windowId: targetWindowId })
+                  .then(() => sendResponse({ success: true }))
+                  .catch(err => {
+                    this.#logger.error('SidePanel gesture error:', err);
+                    sendResponse({ success: false });
+                  });
+              } else {
+                chrome.sidePanel.open({ windowId: chrome.windows.WINDOW_ID_CURRENT });
+                sendResponse({ success: true });
+              }
+              break;
+            }
             default:
               sendResponse({ success: false, error: FOCUS_ERROR_ENUM.UNKNOWN_COMMAND });
           }
@@ -181,7 +198,7 @@ export class BackgroundService {
       chrome.storage.local.set({ tab_id: activeInfo.tabId });
     });
 
-    chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+    chrome.tabs.onUpdated.addListener((_, changeInfo, tab) => {
       if (changeInfo.status === 'complete' && tab.active && tab.url) {
         chrome.storage.local.set({ tab_url: tab.url });
       }

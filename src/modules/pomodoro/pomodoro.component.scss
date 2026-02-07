@@ -1,7 +1,7 @@
 :host {
   display: grid;
-  width: 100%;
-  height: 100%;
+  max-width: var(--app-width);
+  max-height: var(--app-height);
   padding: var(--spacing);
   gap: var(--spacing);
   grid-template-columns: 40% 1fr;
@@ -9,6 +9,7 @@
   grid-template-areas:
     'settings timer'
     'actions actions';
+  margin: auto;
 
   .settings {
     grid-area: settings;

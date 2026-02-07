@@ -34,7 +34,6 @@ body {
   line-height: 1.5;
   -webkit-text-size-adjust: 100%;
   font-size: 16px;
-  background-color: var(--color-text);
 }
 
 /* Сброс стилей для списка */
@@ -146,4 +145,13 @@ img {
 
 :root {
   --color-component-bg-light: #ebf2ff;
+}
+
+.light {
+  &--accent {
+    box-shadow:
+      0 0 10px var(--color-zen-accent),
+      0 0 20px var(--color-zen-accent),
+      inset 0 0 10px var(--color-zen-accent);
+  }
 }

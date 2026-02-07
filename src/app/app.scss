@@ -7,6 +7,21 @@
   justify-content: center;
   position: relative;
 
+  &.dz-app {
+    &--side-panel {
+      width: 100%;
+      height: 100%;
+      max-width: var(--app-max-width);
+      margin: 0 0 0 auto;
+      border-radius: var(--radius);
+      overflow: hidden;
+
+      .dz-main {
+        height: calc(100vh - var(--header-height));
+      }
+    }
+  }
+
   transition:
     background-color 0.3s,
     color 0.3s;

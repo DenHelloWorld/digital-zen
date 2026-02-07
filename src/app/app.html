@@ -65,6 +65,14 @@
         </svg>
       </button>
     </a>
+
+    @if (!isSidePanel()) {
+      <button (click)="openSidePanel()" class="dz-button dz-button--xs" title="Open in side panel">
+        <svg class="dz-icon" aria-hidden="true" focusable="false">
+          <use [attr.href]="icons.VIEW_SIDEBAR"></use>
+        </svg>
+      </button>
+    }
   </nav>
 
   <dz-theme-switcher />

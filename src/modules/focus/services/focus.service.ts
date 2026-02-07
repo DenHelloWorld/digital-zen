@@ -131,6 +131,7 @@ export class FocusService {
     this.#syncInitialState();
     this.#listenToStorageChanges();
     this.#getActiveTab();
+    this.#listenToTabChanges();
     this.#startTimer();
   }
 
@@ -442,5 +443,29 @@ export class FocusService {
         target: `${TOAST_MESSAGES_ENUM.NO_SITES_BLOCKED}${period?.id}`,
       });
     }
+  }
+
+  /**
+   * Listen to Chrome tab changes (activation and URL updates)
+   * to keep #activeTab signal in sync.
+   */
+  #listenToTabChanges(): void {
+    if (!this.#isChromeRuntime) {
+      return;
+    }
+
+    chrome.tabs.onActivated.addListener(() => {
+      this.#getActiveTab();
+    });
+
+    chrome.tabs.onUpdated.addListener((_, changeInfo, tab) => {
+      if (tab.active && changeInfo.status === 'complete') {
+        this.#activeTab.set(tab);
+      }
+    });
+
+    this.#destroyRef.onDestroy(() => {
+      chrome.tabs.onActivated.removeListener(this.#getActiveTab);
+    });
   }
 }

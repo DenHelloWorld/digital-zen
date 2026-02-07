@@ -1,4 +1,9 @@
 :host {
+  .dz-accordion {
+    max-width: var(--app-width);
+    margin: 0 auto;
+  }
+
   .dz-accordion__content {
     display: flex;
     flex-direction: column;
@@ -22,8 +27,7 @@
     }
   }
 
-  .title,
-  .weekdays {
+  .title {
     width: 100%;
   }
 

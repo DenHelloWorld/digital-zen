@@ -4,6 +4,7 @@ export enum VIEW_ENUM {
   ADD_PERIOD = 2,
   POMODORO = 3,
   EDIT_PERIOD = 4,
+  SIDE_PANEL = 5,
 }
 
 export type ViewType =
@@ -11,4 +12,5 @@ export type ViewType =
   | VIEW_ENUM.MENU
   | VIEW_ENUM.ADD_PERIOD
   | VIEW_ENUM.POMODORO
-  | VIEW_ENUM.EDIT_PERIOD;
+  | VIEW_ENUM.EDIT_PERIOD
+  | VIEW_ENUM.SIDE_PANEL;

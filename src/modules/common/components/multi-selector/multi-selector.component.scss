@@ -6,8 +6,8 @@
 
     &__item {
       &--highlighted {
-        padding: var(--spacing-xs);
         border: 2px solid var(--color-zen-error);
+        border-radius: var(--radius);
       }
     }
   }
