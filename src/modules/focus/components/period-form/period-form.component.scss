@@ -1,18 +1,20 @@
-:host .dz-form {
-  &__block-behaviour {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing);
-    min-height: 4rem;
+:host {
+  .dz-form {
+    &__block-behaviour {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing);
+      min-height: 4rem;
 
-    dz-step-bar {
-      flex: 0 0 auto;
-      width: auto;
-    }
+      dz-step-bar {
+        flex: 0 0 auto;
+        width: auto;
+      }
 
-    .dz-banner {
-      flex: 1 1 0;
-      min-width: 0;
+      .dz-banner {
+        flex: 1 1 0;
+        min-width: 0;
+      }
     }
   }
 }

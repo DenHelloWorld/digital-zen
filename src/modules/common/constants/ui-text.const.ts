@@ -150,9 +150,9 @@ export const UI_TEXT = Object.freeze({
 
   POMODORO: {
     TITLES: {
-      SESSION_LENGTH: 'Session Length',
-      BREAK_LENGTH: 'Break Length',
-      LONG_BREAK_LENGTH: 'Long Break Length',
+      SESSION_LENGTH: 'Session',
+      BREAK_LENGTH: 'Break',
+      LONG_BREAK_LENGTH: 'Long Break',
       CYCLES_BEFORE_LONG_BREAK: 'Cycles',
     },
     BUTTONS: {

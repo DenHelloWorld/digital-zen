@@ -16,7 +16,6 @@ import { QUICK_FOCUS_ID } from '../../common/constants/quick-focus-id.const';
 import { WEBSITES_UNACTIVATABLE } from '../../common/constants/websites.const';
 import { CHROME_COMMAND_ENUM } from '../../common/enums/chrome-command.enum';
 import { TOAST_TYPE_ENUM } from '../../common/enums/toast-type.enum';
-import { POSITIONS_ENUM } from '../../common/enums/positions.enum';
 import { FOCUS_ERROR_ENUM } from '../../common/enums/focus-error.enum';
 import { TOAST_MESSAGES_ENUM } from '../../common/enums/toast-messages.enum';
 import { cleanUrlHelper } from '../../common/helpers/clean-url.helper';
@@ -163,7 +162,6 @@ export class FocusService {
           this.#toastService.show({
             message: 'Failed to communicate with background service.',
             type: TOAST_TYPE_ENUM.ERROR,
-            position: POSITIONS_ENUM.BOTTOM_RIGHT,
           });
           return;
         }
@@ -173,14 +171,12 @@ export class FocusService {
             this.#toastService.show({
               message: TOAST_MESSAGES_ENUM.PERIOD_NOT_SCHEDULED_TODAY,
               type: TOAST_TYPE_ENUM.WARN,
-              position: POSITIONS_ENUM.BOTTOM_RIGHT,
               target: `${TOAST_MESSAGES_ENUM.PERIOD_NOT_SCHEDULED_TODAY}${this.#currentPeriod()?.id}`,
             });
           } else if (response.error === FOCUS_ERROR_ENUM.PERIOD_OUTSIDE_TIME_RANGE) {
             this.#toastService.show({
               message: TOAST_MESSAGES_ENUM.PERIOD_OUTSIDE_TIME_RANGE,
               type: TOAST_TYPE_ENUM.WARN,
-              position: POSITIONS_ENUM.BOTTOM_RIGHT,
               target: `${TOAST_MESSAGES_ENUM.PERIOD_OUTSIDE_TIME_RANGE}${this.#currentPeriod()?.id}`,
             });
           }
@@ -286,7 +282,6 @@ export class FocusService {
             this.#toastService.show({
               message: TOAST_MESSAGES_ENUM.FAILED_TO_SWITCH_PERIOD,
               type: TOAST_TYPE_ENUM.ERROR,
-              position: POSITIONS_ENUM.BOTTOM_RIGHT,
             });
             return;
           }
@@ -300,7 +295,6 @@ export class FocusService {
             this.#toastService.show({
               message,
               type: TOAST_TYPE_ENUM.ERROR,
-              position: POSITIONS_ENUM.BOTTOM_RIGHT,
             });
           } else if (response && response.success) {
             this.#toastService.show({
@@ -439,7 +433,6 @@ export class FocusService {
       this.#toastService.show({
         message: TOAST_MESSAGES_ENUM.NO_SITES_BLOCKED,
         type: TOAST_TYPE_ENUM.WARN,
-        position: POSITIONS_ENUM.BOTTOM_RIGHT,
         target: `${TOAST_MESSAGES_ENUM.NO_SITES_BLOCKED}${period?.id}`,
       });
     }

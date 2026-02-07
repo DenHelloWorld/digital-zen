@@ -1,3 +1,5 @@
+@use 'sass:string';
+
 :host {
   width: var(--app-width);
   height: var(--app-height);
@@ -6,6 +8,29 @@
   align-items: center;
   justify-content: center;
   position: relative;
+
+  background: hsla(356, 68%, 91%, 1);
+  background: linear-gradient(
+    90deg,
+    hsla(356, 68%, 91%, 1) 0%,
+    hsla(275, 100%, 61%, 1) 49%,
+    hsla(316, 66%, 80%, 1) 100%
+  );
+  background: -moz-linear-gradient(
+    90deg,
+    hsla(356, 68%, 91%, 1) 0%,
+    hsla(275, 100%, 61%, 1) 49%,
+    hsla(316, 66%, 80%, 1) 100%
+  );
+  background: -webkit-linear-gradient(
+    90deg,
+    hsla(356, 68%, 91%, 1) 0%,
+    hsla(275, 100%, 61%, 1) 49%,
+    hsla(316, 66%, 80%, 1) 100%
+  );
+  filter: string.unquote(
+    'progid:DXImageTransform.Microsoft.gradient(startColorstr="#F8DADC", endColorstr="#AC37FF", GradientType=1)'
+  );
 
   &.dz-app {
     &--side-panel {
@@ -34,7 +59,8 @@
     justify-content: space-between;
     gap: 0.5rem;
     padding: 0 var(--spacing);
-    background-color: var(--color-background);
+    background: color-mix(in srgb, var(--color-background), transparent 21%);
+    backdrop-filter: blur(5px);
 
     transition:
       color 0.3s,
@@ -50,10 +76,11 @@
     width: 100%;
     height: calc(var(--app-height) - var(--header-height));
     overflow: auto;
-    background-color: var(--color-background);
     color: var(--color-text);
     display: flex;
     flex-direction: column;
+    background: color-mix(in srgb, var(--color-background), transparent 21%);
+    backdrop-filter: blur(5px);
 
     transition:
       color 0.3s,

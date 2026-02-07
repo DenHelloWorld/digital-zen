@@ -90,8 +90,7 @@ a {
 
 /* Стили скролл-бара */
 *::-webkit-scrollbar {
-  width: 6px;
-  background: transparent;
+  display: none;
 }
 
 *::-webkit-scrollbar-thumb {
@@ -124,6 +123,10 @@ a {
   }
 }
 
+.dz-button.dz-button--ghost.dz-button--activated {
+  color: var(--color-text);
+}
+
 .dz-accordion {
   &__header {
     &--hoverless {
@@ -154,4 +157,13 @@ img {
       0 0 20px var(--color-zen-accent),
       inset 0 0 10px var(--color-zen-accent);
   }
+}
+
+.dz-accordion {
+  background-color: transparent;
+  border: 1px solid color-mix(in srgb, var(--color-component-bg-light), white 20%);
+}
+
+.shadow {
+  border: 1px solid color-mix(in srgb, var(--color-component-bg-light), white 20%);
 }
