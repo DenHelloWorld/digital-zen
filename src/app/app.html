@@ -3,7 +3,7 @@
     <button
       [title]="uiText.HEADER.FOCUS_MENU_TITLE"
       (click)="setViewType(viewTypes.FOCUS)"
-      class="dz-button dz-button--md"
+      class="dz-button dz-button--nm"
       [class.dz-button--activated]="currentRoute() === viewTypes.FOCUS"
     >
       <svg class="dz-icon" aria-hidden="true" focusable="false">
@@ -18,7 +18,7 @@
           : uiText.HEADER.ADD_NEW_PERIOD_TITLE
       "
       (click)="setViewType(viewTypes.ADD_PERIOD)"
-      class="dz-button dz-button--md"
+      class="dz-button dz-button--nm"
       [class.dz-button--activated]="
         [viewTypes.ADD_PERIOD, viewTypes.EDIT_PERIOD].includes(currentRoute())
       "
@@ -31,7 +31,7 @@
     <button
       [title]="uiText.HEADER.POMODORO_MENU_TITLE"
       (click)="setViewType(viewTypes.POMODORO)"
-      class="dz-button dz-button--md"
+      class="dz-button dz-button--nm"
       [class.dz-button--activated]="currentRoute() === viewTypes.POMODORO"
     >
       <svg class="dz-icon" aria-hidden="true" focusable="false">
@@ -47,7 +47,7 @@
       "
       (click)="isGoogleAuthenticated() ? logoutFromGoogle() : loginWithGoogle()"
       [disabled]="isGoogleAuthPending()"
-      class="dz-button dz-button--md"
+      class="dz-button dz-button--nm"
     >
       @if (isGoogleAuthPending()) {
         <dz-loader />

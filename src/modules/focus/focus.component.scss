@@ -34,6 +34,7 @@
         position: relative;
         border-radius: var(--radius) var(--radius) 0 0;
         margin-bottom: -1px;
+        padding: var(--spacing-md);
 
         &:before,
         &:after {

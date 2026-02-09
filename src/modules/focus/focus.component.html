@@ -28,8 +28,6 @@
             context: {
               href: activeTab()?.favIconUrl ? activeTab()?.favIconUrl : icons.SAVE,
               class: 'dz-icon dz-icon--shadow',
-              width: 20,
-              height: 20,
             }
           "
         ></ng-container>
@@ -65,9 +63,7 @@
             ? icons.CHECK
             : icons.ADD_LINK
           : null;
-      <ng-container
-        *ngTemplateOutlet="icon; context: { href, class: 'dz-icon', width: 20, height: 20 }"
-      ></ng-container>
+      <ng-container *ngTemplateOutlet="icon; context: { href }"></ng-container>
     </button>
   </div>
 </div>

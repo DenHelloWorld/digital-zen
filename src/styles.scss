@@ -118,8 +118,13 @@ a {
     width: 100%;
   }
 
-  &.dz-icon {
-    aspect-ratio: 1 / 1;
+  &--nm {
+    height: var(--btn-size-nm);
+    padding: var(--spacing-sm);
+  }
+
+  &--md {
+    padding: var(--spacing-sm);
   }
 }
 
@@ -148,6 +153,7 @@ img {
 
 :root {
   --color-component-bg-light: #ebf2ff;
+  --btn-size-nm: 40px;
 }
 
 .light {
