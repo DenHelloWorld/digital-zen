@@ -126,6 +126,10 @@ a {
   &--md {
     padding: var(--spacing-sm);
   }
+
+  &:disabled {
+    filter: grayscale(80%);
+  }
 }
 
 .dz-button.dz-button--ghost.dz-button--activated {

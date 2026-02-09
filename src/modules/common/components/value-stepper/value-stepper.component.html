@@ -16,7 +16,6 @@
   <main class="dz-stepper__main">
     <button
       class="dz-button dz-button--xs dz-button--round dz-button--activated dz-button--left"
-      [class.dz-button--error]="isDecrementDisabled()"
       [disabled]="isDecrementDisabled()"
       (click)="decrement()"
     >
@@ -31,7 +30,6 @@
 
     <button
       class="dz-button dz-button--xs dz-button--round dz-button--activated dz-button--right"
-      [class.dz-button--error]="isIncrementDisabled()"
       [disabled]="isIncrementDisabled()"
       (click)="increment()"
     >
@@ -45,7 +43,6 @@
     @if (quickStep() > step()) {
       <button
         class="dz-button dz-button--xs dz-button--activated dz-button--round"
-        [class.dz-button--error]="isQuickDecrementDisabled()"
         [disabled]="isQuickDecrementDisabled()"
         (click)="adjust(-quickStep())"
       >
@@ -56,7 +53,6 @@
 
       <button
         class="dz-button dz-button--xs dz-button--activated dz-button--round"
-        [class.dz-button--error]="isQuickIncrementDisabled()"
         [disabled]="isQuickIncrementDisabled()"
         (click)="adjust(quickStep())"
       >
