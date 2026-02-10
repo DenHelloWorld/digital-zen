@@ -104,6 +104,11 @@ a {
 }
 
 .dz-button {
+  &--free {
+    padding: 0;
+    width: auto;
+    height: auto;
+  }
   &--warn {
     background-color: var(--color-zen-warn);
     color: var(--color-on-warn);
@@ -163,11 +168,19 @@ img {
 }
 
 .light {
-  &--accent {
-    box-shadow:
-      0 0 10px var(--color-zen-accent),
-      0 0 20px var(--color-zen-accent),
-      inset 0 0 10px var(--color-zen-accent);
+  @each $type in accent, warn, error, success {
+    &--#{$type} {
+      $neon:
+        0 0 10px var(--color-zen-#{$type}),
+        0 0 20px var(--color-zen-#{$type}),
+        inset 0 0 10px var(--color-zen-#{$type});
+
+      box-shadow: $neon;
+
+      &:hover {
+        box-shadow: $neon;
+      }
+    }
   }
 }
 

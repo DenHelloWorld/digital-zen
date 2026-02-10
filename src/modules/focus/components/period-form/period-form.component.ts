@@ -43,13 +43,10 @@ import { timeRangeValidator } from '../../../common/validators/time-range.valida
 import { ALL_DAYS_OF_WEEK } from '../../../common/constants/days-of-week.const';
 import { FaviconHelper } from '../../../common/helpers/favicon.helper';
 import { WebsiteConnectivityProvider } from '../../../common/providers/website-connectivity.provider';
-import {
-  IStepBarOption,
-  StepBarComponent,
-} from '../../../common/components/step-bar/step-bar.component';
 import { cleanUrlHelper } from '../../../common/helpers/clean-url.helper';
 import { MiniRouterService } from '../../../common/services/mini-router.service';
 import { VIEW_ENUM } from '../../../common/enums/view.enum';
+import { DZ_COLORS } from '../../../common/enums/colors.enum';
 
 /**
  * Period form component for creating and editing focus periods
@@ -85,7 +82,6 @@ import { VIEW_ENUM } from '../../../common/enums/view.enum';
     WeekdaysSelectorComponent,
     DynamicInputComponent,
     MultiSelectorComponent,
-    StepBarComponent,
   ],
 })
 export class PeriodFormComponent implements OnInit {
@@ -112,6 +108,7 @@ export class PeriodFormComponent implements OnInit {
   /** @guideline DZ_10.1 - Icon constants */
   protected readonly icons = ICONS;
   protected readonly views = VIEW_ENUM;
+  protected readonly colors = DZ_COLORS;
   /** Validation error keys for template usage */
   protected readonly validationErrorKeys = VALIDATION_ERROR_KEYS;
   protected readonly timeRanges = [...TIME_RANGES];
@@ -127,27 +124,6 @@ export class PeriodFormComponent implements OnInit {
     'name',
   ];
 
-  protected blockBehaviourBarOptions: IStepBarOption[] = [
-    {
-      label: 'Focus',
-      value: BLOCK_BEHAVIOUR_ENUM.WHITELIST,
-      icon: ICONS.PERSON_ZEN,
-    },
-    {
-      label: 'Warning',
-      value: BLOCK_BEHAVIOUR_ENUM.WARN,
-      icon: ICONS.WARNING,
-    },
-    {
-      label: 'Block',
-      value: BLOCK_BEHAVIOUR_ENUM.BLOCK,
-      icon: ICONS.BLOCK,
-    },
-  ];
-
-  protected currentBlockBehaviourBarOption = signal<IStepBarOption>(
-    this.blockBehaviourBarOptions[0]
-  );
   protected selectedTimeRanges: WritableSignal<IFocus.TimeRange[]> = signal<IFocus.TimeRange[]>([]);
   protected selectedDays: WritableSignal<IFocus.DayOfWeek[]> = signal<IFocus.DayOfWeek[]>([]);
   protected selectedWebSites: WritableSignal<IFocus.WebSite[]> = signal<IFocus.WebSite[]>([
@@ -193,13 +169,6 @@ export class PeriodFormComponent implements OnInit {
       },
       { injector: this.#injector }
     );
-
-    toObservable(this.currentBlockBehaviourBarOption, { injector: this.#injector })
-      .pipe(takeUntilDestroyed(this.#destroyRef))
-      .subscribe(option => {
-        const newValue = option.value as BlockBehaviourType;
-        this.form.controls.blockBehaviour.setValue(newValue);
-      });
 
     effect(
       () => {
@@ -296,6 +265,10 @@ export class PeriodFormComponent implements OnInit {
 
   protected getFavicon(url: string): string {
     return FaviconHelper.getGoogleUrl(url);
+  }
+
+  protected setBlockBehaviour(blockBehaviour: BlockBehaviourType): void {
+    this.form.patchValue({ blockBehaviour });
   }
 
   /**
@@ -421,15 +394,6 @@ export class PeriodFormComponent implements OnInit {
       this.selectedDays.set(selectedDays);
 
       this.selectedWebSites.set(periodData.webSites);
-
-      if (periodData.blockBehaviour) {
-        const found = this.blockBehaviourBarOptions.find(
-          opt => opt.value === periodData.blockBehaviour
-        );
-        if (found) {
-          this.currentBlockBehaviourBarOption.set(found);
-        }
-      }
     }
   }
 
