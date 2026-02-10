@@ -12,7 +12,6 @@ import { ICONS } from '../common/constants/icons.const';
 import { isImageIcon } from '../common/helpers/is-image-icon.helper';
 import { isHttpUrl } from '../common/helpers/is-http-url.helper';
 import { isSvgIcon } from '../common/helpers/is-svg-icon.helper';
-import { DEFAULT_FOCUS_TIMER_CONFIG } from '../common/constants/default-focus-timer-config.const';
 
 @Component({
   selector: 'dz-focus',
@@ -96,7 +95,6 @@ export class FocusComponent {
   /** @guideline DZ_10 - UI text constants */
   protected readonly uiText = UI_TEXT;
   protected readonly icons = ICONS;
-  protected readonly focusTimerConfig = DEFAULT_FOCUS_TIMER_CONFIG;
 
   protected toggleFocus(): void {
     this.#focusService.toggleFocus();

@@ -61,6 +61,8 @@ export class ProgressBorderDirective implements OnInit, OnDestroy {
       () => {
         this.progressConfig();
         this.#updateColors();
+        this.#updateProgress(this.progress() ?? 0);
+        this.#setupSvgStructure();
       },
       { injector: this.#injector }
     );

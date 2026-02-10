@@ -16,6 +16,14 @@
     grid-area: settings;
     display: flex;
     align-items: center;
+
+    &__group {
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing);
+      align-items: center;
+      justify-content: center;
+    }
   }
 
   .timer {

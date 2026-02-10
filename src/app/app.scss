@@ -1,5 +1,3 @@
-@use 'sass:string';
-
 :host {
   width: var(--app-width);
   height: var(--app-height);
@@ -8,29 +6,6 @@
   align-items: center;
   justify-content: center;
   position: relative;
-
-  background: hsla(356, 68%, 91%, 1);
-  background: linear-gradient(
-    90deg,
-    hsla(356, 68%, 91%, 1) 0%,
-    hsla(275, 100%, 61%, 1) 49%,
-    hsla(316, 66%, 80%, 1) 100%
-  );
-  background: -moz-linear-gradient(
-    90deg,
-    hsla(356, 68%, 91%, 1) 0%,
-    hsla(275, 100%, 61%, 1) 49%,
-    hsla(316, 66%, 80%, 1) 100%
-  );
-  background: -webkit-linear-gradient(
-    90deg,
-    hsla(356, 68%, 91%, 1) 0%,
-    hsla(275, 100%, 61%, 1) 49%,
-    hsla(316, 66%, 80%, 1) 100%
-  );
-  filter: string.unquote(
-    'progid:DXImageTransform.Microsoft.gradient(startColorstr="#F8DADC", endColorstr="#AC37FF", GradientType=1)'
-  );
 
   &.dz-app {
     &--side-panel {
@@ -85,5 +60,35 @@
     transition:
       color 0.3s,
       background-color 0.3s;
+  }
+
+  &:before {
+    content: '';
+
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: -1;
+    background: hsla(356, 68%, 91%, 1);
+    background: linear-gradient(
+      90deg,
+      hsla(356, 68%, 91%, 1) 0%,
+      hsla(275, 100%, 61%, 1) 49%,
+      hsla(316, 66%, 80%, 1) 100%
+    );
+    background: -moz-linear-gradient(
+      90deg,
+      hsla(356, 68%, 91%, 1) 0%,
+      hsla(275, 100%, 61%, 1) 49%,
+      hsla(316, 66%, 80%, 1) 100%
+    );
+    background: -webkit-linear-gradient(
+      90deg,
+      hsla(356, 68%, 91%, 1) 0%,
+      hsla(275, 100%, 61%, 1) 49%,
+      hsla(316, 66%, 80%, 1) 100%
+    );
   }
 }

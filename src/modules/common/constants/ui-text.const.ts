@@ -150,7 +150,7 @@ export const UI_TEXT = Object.freeze({
 
   POMODORO: {
     TITLES: {
-      SESSION_LENGTH: 'Session',
+      WORK_OR_STUDY: 'Work/Study',
       BREAK_LENGTH: 'Break',
       LONG_BREAK_LENGTH: 'Long Break',
       CYCLES_BEFORE_LONG_BREAK: 'Cycles',

@@ -11,7 +11,7 @@ export namespace IPomodoro {
     /** Current long break duration in minutes */
     longBreakMin: number;
     /** Number of work cycles required to trigger a long break */
-    cyclesBeforeLongBreak: 1 | 2 | 3 | 4 | 5;
+    cyclesBeforeLongBreak: 2 | 3 | 4 | 5;
 
     /** Stepper constraints for work session settings */
     workStepConfig: IStepConfig;
@@ -29,11 +29,7 @@ export namespace IPomodoro {
     workDurationMin: FormControl<number>;
     shortBreakMin: FormControl<number>;
     longBreakMin: FormControl<number>;
-    cyclesBeforeLongBreak: FormControl<1 | 2 | 3 | 4 | 5>;
-    workStepConfig: FormControl<IStepConfig>;
-    shortBreakStepConfig: FormControl<IStepConfig>;
-    longBreakStepConfig: FormControl<IStepConfig>;
-    cyclesBeforeLongBreakConfig: FormControl<IStepConfig>;
+    cyclesBeforeLongBreak: FormControl<2 | 3 | 4 | 5>;
     pauseAfterPhaseEnd: FormControl<boolean>;
   }
 

@@ -64,6 +64,8 @@ export const ICONS = Object.freeze({
   KEEP: '#icon-keep',
   KEEP_OFF: '#icon-keep-off',
   VIEW_SIDEBAR: '#icon-view-sidebar',
+  TROPHY: '#icon-trophy',
+  WORKSPACE_PREMIUM: '#icon-workspace-premium',
 } as const);
 
 /**
