@@ -9,8 +9,8 @@
     <li class="dz-list__item" [class.dz-list__item--highlighted]="isHighlighted(entity)">
       @if (isSelectable()) {
         <button
-          [disabled]="isReadonly(entity)"
           class="dz-button"
+          [disabled]="isReadonly(entity)"
           [class.dz-button--activated]="isSelected(entity)"
           [class]="'dz-button--' + size()"
           (click)="toggle(entity)"

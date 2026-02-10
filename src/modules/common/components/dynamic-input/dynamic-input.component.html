@@ -28,21 +28,21 @@
       }
 
       <input
-        disabled
-        [id]="entity[idKey()]"
-        type="text"
         class="dz-input dz-input--borderless"
+        [id]="entity[idKey()]"
         [readonly]="isReadonly(entity)"
         [value]="getLabel(entity)"
         [title]="getLabel(entity)"
+        disabled
+        type="text"
       />
 
       <button
-        [title]="uiText.DYNAMIC_INPUT.TITLES.REMOVE"
-        type="button"
         class="dz-button dz-button--xs dz-button--ghost dz-button--error"
-        (click)="removeEntity(entity)"
+        [title]="uiText.DYNAMIC_INPUT.TITLES.REMOVE"
         [disabled]="isReadonly(entity)"
+        (click)="removeEntity(entity)"
+        type="button"
       >
         <ng-container *ngTemplateOutlet="icon; context: { href: icons.DELETE }"></ng-container>
       </button>
@@ -58,8 +58,8 @@
           @if (key !== idKey()) {
             <li>
               <input
-                [class.dz-input--invalid]="key === labelKey() && duplicateValue()"
                 class="dz-input dz-input--borderless"
+                [class.dz-input--invalid]="key === labelKey() && duplicateValue()"
                 [placeholder]="key"
                 (input)="updateField(key, $any($event.target).value)"
               />
@@ -78,21 +78,21 @@
 
         <div class="actions">
           <button
-            [disabled]="!isNewEntityValid()"
-            type="button"
-            [title]="uiText.DYNAMIC_INPUT.TITLES.SAVE"
             class="dz-button dz-button--xs dz-button--icon dz-button--activated dz-button--ghost shadow"
+            [disabled]="!isNewEntityValid()"
+            [title]="uiText.DYNAMIC_INPUT.TITLES.SAVE"
             [class.dz-button--error]="!isNewEntityValid()"
             (click)="addEntity()"
+            type="button"
           >
             <ng-container *ngTemplateOutlet="icon; context: { href: icons.SAVE }"></ng-container>
           </button>
 
           <button
-            type="button"
-            [title]="uiText.DYNAMIC_INPUT.TITLES.CANCEL"
             class="dz-button dz-button--xs dz-button--icon dz-button--error dz-button--ghost shadow"
+            [title]="uiText.DYNAMIC_INPUT.TITLES.CANCEL"
             (click)="cancelAdding()"
+            type="button"
           >
             <ng-container *ngTemplateOutlet="icon; context: { href: icons.CLOSE }"></ng-container>
           </button>
@@ -110,10 +110,10 @@
       <div class="dz-placeholder__text">{{ uiText.DYNAMIC_INPUT.EMPTY_PLACEHOLDER }}</div>
 
       <button
-        type="button"
-        [title]="uiText.DYNAMIC_INPUT.TITLES.ADD"
         class="dz-button dz-button--md dz-button--icon dz-button--ghost shadow"
+        [title]="uiText.DYNAMIC_INPUT.TITLES.ADD"
         (click)="toggleIsAdding()"
+        type="button"
       >
         {{ uiText.DYNAMIC_INPUT.ADD_BUTTON }}
         <ng-container *ngTemplateOutlet="icon; context: { href: icons.PLUS }"></ng-container>
@@ -126,30 +126,30 @@
   <div class="actions">
     @if (entities()?.length) {
       <button
-        type="button"
-        [title]="uiText.DYNAMIC_INPUT.TITLES.ADD"
         class="dz-button dz-button--xs dz-button--icon dz-button--ghost shadow"
+        [title]="uiText.DYNAMIC_INPUT.TITLES.ADD"
         (click)="toggleIsAdding()"
+        type="button"
       >
         <ng-container *ngTemplateOutlet="icon; context: { href: icons.PLUS }"></ng-container>
       </button>
     }
 
     <button
-      type="button"
-      [title]="uiText.DYNAMIC_INPUT.TITLES.RESET"
       class="dz-button dz-button--xs dz-button--icon dz-button--ghost shadow"
+      [title]="uiText.DYNAMIC_INPUT.TITLES.RESET"
       (click)="resetEntities()"
+      type="button"
     >
       <ng-container *ngTemplateOutlet="icon; context: { href: icons.RESET }"></ng-container>
     </button>
 
     @if (entities()?.length) {
       <button
-        type="button"
-        [title]="uiText.DYNAMIC_INPUT.TITLES.DELETE_ALL"
         class="dz-button dz-button--xs dz-button--icon dz-button--ghost shadow"
+        [title]="uiText.DYNAMIC_INPUT.TITLES.DELETE_ALL"
         (click)="clearEntities()"
+        type="button"
       >
         <ng-container *ngTemplateOutlet="icon; context: { href: icons.DELETE }"></ng-container>
       </button>

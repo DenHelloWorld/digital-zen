@@ -26,11 +26,11 @@
           [title]="uiText.POMODORO.TITLES.WORK"
           [titleIcon]="icons.SCHOOL"
           [valueLabel]="uiText.POMODORO.UNITS.MINUTES"
-          formControlName="workDurationMin"
           [min]="workStepConfig.min"
           [max]="workStepConfig.max"
           [step]="workStepConfig.step"
           [quickStep]="workStepConfig.quickStep"
+          formControlName="workDurationMin"
         />
       </div>
 
@@ -39,11 +39,11 @@
           [title]="uiText.POMODORO.TITLES.SHORT_BREAK_LENGTH"
           [titleIcon]="icons.COFFEE"
           [valueLabel]="uiText.POMODORO.UNITS.MINUTES"
-          formControlName="shortBreakMin"
           [min]="shortBreakStepConfig.min"
           [max]="shortBreakStepConfig.max"
           [step]="shortBreakStepConfig.step"
           [quickStep]="shortBreakStepConfig.quickStep"
+          formControlName="shortBreakMin"
         />
       </div>
     </div>
@@ -53,11 +53,11 @@
         [title]="uiText.POMODORO.TITLES.POMODOROS_BEFORE_LONG_BREAK"
         [titleIcon]="icons.TOMATO"
         [valueLabel]="uiText.POMODORO.UNITS.POMO"
-        formControlName="cyclesBeforeLongBreak"
         [min]="cyclesBeforeLongBreakConfig.min"
         [max]="cyclesBeforeLongBreakConfig.max"
         [step]="cyclesBeforeLongBreakConfig.step"
         [quickStep]="cyclesBeforeLongBreakConfig.quickStep"
+        formControlName="cyclesBeforeLongBreak"
       />
     </div>
 
@@ -66,11 +66,11 @@
         [title]="uiText.POMODORO.TITLES.LONG_BREAK_LENGTH"
         [titleIcon]="icons.CHAIR"
         [valueLabel]="uiText.POMODORO.UNITS.MINUTES"
-        formControlName="longBreakMin"
         [min]="longBreakStepConfig.min"
         [max]="longBreakStepConfig.max"
         [step]="longBreakStepConfig.step"
         [quickStep]="longBreakStepConfig.quickStep"
+        formControlName="longBreakMin"
       />
     </div>
   </form>
@@ -81,10 +81,10 @@
 
   <div
     class="timer__progress round square"
-    dzProgressBorder
     [progress]="progress()"
     [progressConfig]="{ thickness: 10, color }"
     [class.light--accent]="isRunning() && !isPaused()"
+    dzProgressBorder
   >
     {{ timeLeftFormatted() }}
   </div>

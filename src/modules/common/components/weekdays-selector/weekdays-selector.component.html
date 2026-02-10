@@ -1,7 +1,7 @@
 <dz-multi-selector
+  [(selectedEntities)]="selectedDays"
   [isSelectable]="isSelectable()"
   [entities]="allDays"
-  [(selectedEntities)]="selectedDays"
   [labelKey]="labelKey"
   [idKey]="idKey"
   [highlightedId]="isTodayShow() ? todayDayId : null"

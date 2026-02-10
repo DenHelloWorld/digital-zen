@@ -1,10 +1,10 @@
 <header class="dz-header" [class.dark-theme]="theme() === colorSchemes.DARK">
   <nav class="dz-header__navigation">
     <button
-      [title]="uiText.HEADER.FOCUS_MENU_TITLE"
-      (click)="setViewType(viewTypes.FOCUS)"
       class="dz-button dz-button--nm"
+      [title]="uiText.HEADER.FOCUS_MENU_TITLE"
       [class.dz-button--activated]="currentRoute() === viewTypes.FOCUS"
+      (click)="setViewType(viewTypes.FOCUS)"
     >
       <svg class="dz-icon" aria-hidden="true" focusable="false">
         <use [attr.href]="icons.PERSON_ZEN"></use>
@@ -12,16 +12,16 @@
     </button>
 
     <button
+      class="dz-button dz-button--nm"
       [title]="
         currentRoute() === viewTypes.EDIT_PERIOD
           ? uiText.HEADER.EDIT_PERIOD_TITLE
           : uiText.HEADER.ADD_NEW_PERIOD_TITLE
       "
-      (click)="setViewType(viewTypes.ADD_PERIOD)"
-      class="dz-button dz-button--nm"
       [class.dz-button--activated]="
         [viewTypes.ADD_PERIOD, viewTypes.EDIT_PERIOD].includes(currentRoute())
       "
+      (click)="setViewType(viewTypes.ADD_PERIOD)"
     >
       <svg class="dz-icon" aria-hidden="true" focusable="false">
         <use [attr.href]="icons.ASSIGMENT"></use>
@@ -29,10 +29,10 @@
     </button>
 
     <button
-      [title]="uiText.HEADER.POMODORO_MENU_TITLE"
-      (click)="setViewType(viewTypes.POMODORO)"
       class="dz-button dz-button--nm"
+      [title]="uiText.HEADER.POMODORO_MENU_TITLE"
       [class.dz-button--activated]="currentRoute() === viewTypes.POMODORO"
+      (click)="setViewType(viewTypes.POMODORO)"
     >
       <svg class="dz-icon" aria-hidden="true" focusable="false">
         <use [attr.href]="icons.TOMATO"></use>
@@ -40,14 +40,14 @@
     </button>
 
     <button
+      class="dz-button dz-button--nm"
       [title]="
         isGoogleAuthenticated()
           ? uiText.HEADER.LOGOUT_GOOGLE_TITLE
           : uiText.HEADER.LOGIN_GOOGLE_TITLE
       "
-      (click)="isGoogleAuthenticated() ? logoutFromGoogle() : loginWithGoogle()"
       [disabled]="isGoogleAuthPending()"
-      class="dz-button dz-button--nm"
+      (click)="isGoogleAuthenticated() ? logoutFromGoogle() : loginWithGoogle()"
     >
       @if (isGoogleAuthPending()) {
         <dz-loader />
@@ -59,7 +59,7 @@
     </button>
 
     <a [href]="websites.PRIVACY_POLICY.url" target="_blank" rel="noopener noreferrer">
-      <button [title]="uiText.FOOTER.PRIVACY_POLICY_ARIA_LABEL" class="dz-button dz-button--xs">
+      <button class="dz-button dz-button--xs" [title]="uiText.FOOTER.PRIVACY_POLICY_ARIA_LABEL">
         <svg class="dz-icon" aria-hidden="true" focusable="false">
           <use [attr.href]="icons.PRIVACY_TIP"></use>
         </svg>
@@ -67,7 +67,7 @@
     </a>
 
     @if (!isSidePanel()) {
-      <button (click)="openSidePanel()" class="dz-button dz-button--xs" title="Open in side panel">
+      <button class="dz-button dz-button--xs" (click)="openSidePanel()" title="Open in side panel">
         <svg class="dz-icon" aria-hidden="true" focusable="false">
           <use [attr.href]="icons.VIEW_SIDEBAR"></use>
         </svg>

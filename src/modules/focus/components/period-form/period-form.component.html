@@ -48,7 +48,7 @@
   </div>
 </ng-template>
 
-<form [formGroup]="form" class="dz-form">
+<form class="dz-form" [formGroup]="form">
   <div class="dz-form__field dz-box shadow shadow--hoverless">
     <span class="dz-form__hint">
       <span class="dz-form__required">{{ uiText.COMMON.REQUIRED_MARKER }}</span>
@@ -58,8 +58,8 @@
     <input
       class="dz-input"
       [class.dz-input--invalid]="form.controls.name.invalid"
-      formControlName="name"
       [placeholder]="uiText.PERIOD_FORM.PLACEHOLDERS.NAME"
+      formControlName="name"
     />
 
     @if (form.controls.name.hasError('duplicatePeriodName') && form.controls.name.touched) {
@@ -171,8 +171,8 @@
       @let isOnline = statusRes?.value();
 
       <div
-        [title]="isOnline ? 'Online' : 'Offline'"
         class="dz-icon-box dz-icon-box--sm dz-icon-box--error"
+        [title]="isOnline ? 'Online' : 'Offline'"
         [class.dz-icon-box--success]="isOnline"
       >
         @if (isOnline === undefined) {
@@ -184,10 +184,10 @@
         }
       </div>
 
-      <div [title]="site.url" class="dz-icon-box dz-icon-box--sm">
+      <div class="dz-icon-box dz-icon-box--sm" [title]="site.url">
         <img
-          #imgRef
           class="dz-icon"
+          #imgRef
           [class.hidden]="imgRef.hidden"
           [src]="site.imageUrl || getFavicon(site.url)"
           [alt]="site.url"
@@ -202,9 +202,9 @@
     <dz-dynamic-input
       [(entities)]="selectedWebSites"
       [excludeKeys]="excludedSiteKeysArray"
+      [iconTemplate]="websiteIconTemplate"
       idKey="id"
       labelKey="url"
-      [iconTemplate]="websiteIconTemplate"
     />
 
     @if (form.controls.webSites.hasError(validationErrorKeys.UNACTIVATABLE_NOT_ALLOWED)) {
@@ -278,11 +278,11 @@
         </span>
 
         <input
-          type="time"
           class="dz-input dz-input--fit"
           [class.dz-input--invalid]="form.errors?.['invalidTimeRange']"
-          formControlName="startFrom"
           [placeholder]="uiText.PERIOD_FORM.PLACEHOLDERS.START_FROM"
+          type="time"
+          formControlName="startFrom"
         />
       </li>
 
@@ -293,11 +293,11 @@
         </span>
 
         <input
-          type="time"
           class="dz-input dz-input--fit"
           [class.dz-input--invalid]="form.errors?.['invalidTimeRange']"
-          formControlName="endTo"
           [placeholder]="uiText.PERIOD_FORM.PLACEHOLDERS.END_TO"
+          type="time"
+          formControlName="endTo"
         />
       </li>
     </ul>
@@ -316,8 +316,8 @@
 
   <div class="dz-form__actions">
     <button
-      [disabled]="form.invalid"
       class="dz-button dz-button--activated shadow"
+      [disabled]="form.invalid"
       [class.dz-button--error]="form.invalid"
       (click)="savePeriod()"
     >
@@ -328,7 +328,7 @@
       }}
     </button>
 
-    <button type="button" class="dz-button dz-button--md shadow" (click)="cancelForm()">
+    <button class="dz-button dz-button--md shadow" (click)="cancelForm()" type="button">
       {{ uiText.PERIOD_FORM.BUTTONS.CANCEL }}
     </button>
   </div>

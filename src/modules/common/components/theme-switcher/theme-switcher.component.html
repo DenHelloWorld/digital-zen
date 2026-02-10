@@ -1,7 +1,7 @@
 <button
+  class="dz-button dz-button--round dz-button--nm"
   [title]="uiText.THEME_SWITCHER.TOGGLE_THEME_TITLE"
   (click)="toggleTheme()"
-  class="dz-button dz-button--round dz-button--nm"
 >
   <svg class="dz-icon" aria-hidden="true" focusable="false">
     <use [attr.href]="theme() === colorSchemes.LIGHT ? icons.MOON : icons.SUN" />

@@ -2,10 +2,10 @@
 <ng-template #icon let-iconHref="href" let-iconClass="class" let-width="width" let-height="height">
   <svg
     [class]="iconClass || 'dz-icon'"
-    aria-hidden="true"
-    focusable="false"
     [attr.width]="width"
     [attr.height]="height"
+    aria-hidden="true"
+    focusable="false"
   >
     <use [attr.href]="iconHref" [attr.width]="width" [attr.height]="height" />
   </svg>
@@ -14,11 +14,11 @@
 <div class="dz-focus__header">
   <div class="dz-focus__tab">
     <button
+      class="dz-button dz-button--md dz-button--tab"
       [disabled]="isTabButtonDisabled()"
       [title]="
         activeTab() ? uiText.FOCUS.ADD_CURRENT_TAB_TITLE : uiText.FOCUS.CANNOT_ADD_CURRENT_TAB_TITLE
       "
-      class="dz-button dz-button--md dz-button--tab"
       (click)="blockCurrentTab()"
     >
       @if (isSvgIcon(activeTab()?.favIconUrl)) {
@@ -89,10 +89,10 @@
 
 <div class="dz-focus__footer dz-box shadow">
   <button
-    [title]="currentPeriod()?.isActive ? uiText.FOCUS.STOP : uiText.FOCUS.START"
-    (click)="toggleFocus()"
     class="dz-button dz-button--full dz-button--md shadow dz-button--activated"
+    [title]="currentPeriod()?.isActive ? uiText.FOCUS.STOP : uiText.FOCUS.START"
     [class.dz-button--ghost]="currentPeriod()?.isActive"
+    (click)="toggleFocus()"
   >
     @let text =
       (currentPeriod()?.isActive ? uiText.FOCUS.STOP : uiText.FOCUS.START) +
