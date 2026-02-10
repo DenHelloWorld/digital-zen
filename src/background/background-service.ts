@@ -1,24 +1,23 @@
 /// <reference types="chrome"/>
-import { StorageAdapter } from './common/storage-adapter';
-import { UserDataSyncAdapter } from './common/user-data-sync-adapter';
-import { GoogleAuthAdapter } from './common/google-auth-adapter';
-
-import { BackgroundFocusService } from './focus/background-focus-service';
-import { AlarmAdapter } from './common/alarm-adapter';
-import { ExtensionIconAdapter } from './common/extension-icon-adapter';
-import { BackgroundPomodoroService } from './pomodoro/background-pomodoro.service';
-import { FOCUS_ERROR_ENUM } from '../modules/common/enums/focus-error.enum';
-import { logger } from '../modules/common/helpers/logger';
+import { ALARM_PERIOD_IN_MINUTES } from '../modules/common/constants/alarm-period-in-minutes.const';
+import { DEFAULT_POMODORO_SETTINGS } from '../modules/common/constants/default-pomodoro-settings.const';
+import { CHROME_ALARM_ENUM } from '../modules/common/enums/chrome-alarm-name.enum';
 import {
   CHROME_COMMAND_ENUM,
   ChromeCommandType,
 } from '../modules/common/enums/chrome-command.enum';
-import { CHROME_ALARM_ENUM } from '../modules/common/enums/chrome-alarm-name.enum';
+import { FOCUS_ERROR_ENUM } from '../modules/common/enums/focus-error.enum';
+import { createDefaultPomodoroStateHelper } from '../modules/common/helpers/create-default-pomodoro-state.helper';
+import { logger } from '../modules/common/helpers/logger';
 import { isCurrentTimeAfter } from '../modules/common/helpers/time.helper';
 import { IFocus } from '../modules/common/models/focus.model';
-import { DEFAULT_POMODORO_SETTINGS } from '../modules/common/constants/default-pomodoro-settings.const';
-import { createDefaultPomodoroStateHelper } from '../modules/common/helpers/create-default-pomodoro-state.helper';
-import { ALARM_PERIOD_IN_MINUTES } from '../modules/common/constants/alarm-period-in-minutes.const';
+import { AlarmAdapter } from './common/alarm-adapter';
+import { ExtensionIconAdapter } from './common/extension-icon-adapter';
+import { GoogleAuthAdapter } from './common/google-auth-adapter';
+import { StorageAdapter } from './common/storage-adapter';
+import { UserDataSyncAdapter } from './common/user-data-sync-adapter';
+import { BackgroundFocusService } from './focus/background-focus-service';
+import { BackgroundPomodoroService } from './pomodoro/background-pomodoro.service';
 
 type FocusOperationResult = { success: true } | { success: false; error: FOCUS_ERROR_ENUM };
 

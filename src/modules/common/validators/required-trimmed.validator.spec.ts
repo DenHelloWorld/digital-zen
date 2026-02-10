@@ -1,5 +1,5 @@
-import { FormControl } from '@angular/forms';
 import { requiredTrimmedValidator } from './required-trimmed.validator';
+import { FormControl } from '@angular/forms';
 
 describe('requiredTrimmedValidator', () => {
   describe('Valid non-empty strings', () => {

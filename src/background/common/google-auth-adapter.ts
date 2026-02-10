@@ -1,8 +1,8 @@
 /// <reference types="chrome"/>
 import { EXTENSION_CONFIG } from '../../extension-config';
 import { CHROME_STORAGE_KEY_ENUM } from '../../modules/common/enums/chrome-storage-key.enum';
-import { IGoogleUserInfo } from '../../modules/common/models/google-user-info.model';
 import { logger } from '../../modules/common/helpers/logger';
+import { IGoogleUserInfo } from '../../modules/common/models/google-user-info.model';
 
 /**
  * OAuth adapter for background service worker

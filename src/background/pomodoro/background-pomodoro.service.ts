@@ -1,9 +1,9 @@
-import { IPomodoro } from '../../modules/common/models/pomodoro.model';
-import { StorageAdapter } from '../common/storage-adapter';
-import { AlarmAdapter } from '../common/alarm-adapter';
-import { logger } from '../../modules/common/helpers/logger';
-import { CHROME_ALARM_ENUM } from '../../modules/common/enums/chrome-alarm-name.enum';
 import { FINISHED_CYCLE } from '../../modules/common/constants/finished-cycle.const';
+import { CHROME_ALARM_ENUM } from '../../modules/common/enums/chrome-alarm-name.enum';
+import { logger } from '../../modules/common/helpers/logger';
+import { IPomodoro } from '../../modules/common/models/pomodoro.model';
+import { AlarmAdapter } from '../common/alarm-adapter';
+import { StorageAdapter } from '../common/storage-adapter';
 
 const SECONDS_IN_MINUTE = 60;
 

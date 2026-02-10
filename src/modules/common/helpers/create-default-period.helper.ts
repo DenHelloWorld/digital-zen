@@ -1,8 +1,8 @@
-import { IFocus } from '../models/focus.model';
-import { DEFAULT_PERIOD_ID } from '../constants/default-period-id.const';
 import { ALL_DAYS_OF_WEEK_DAYS } from '../constants/days-of-week.const';
-import { BLOCK_BEHAVIOUR_ENUM } from '../enums/block-behaviour.enum';
+import { DEFAULT_PERIOD_ID } from '../constants/default-period-id.const';
 import { WEBSITES_SOCIAL_MEDIA } from '../constants/websites.const';
+import { BLOCK_BEHAVIOUR_ENUM } from '../enums/block-behaviour.enum';
+import { IFocus } from '../models/focus.model';
 
 export const createDefaultPeriodHelper = (): IFocus.Period => {
   return {

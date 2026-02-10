@@ -1,6 +1,6 @@
+import { FaviconHelper } from '../helpers/favicon.helper';
 import { IFocus } from '../models/focus.model';
 import { ICONS } from './icons.const';
-import { FaviconHelper } from '../helpers/favicon.helper';
 
 /**
  * Website constants for Digital Zen Chrome Extension

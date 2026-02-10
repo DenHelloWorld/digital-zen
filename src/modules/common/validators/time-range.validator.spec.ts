@@ -1,5 +1,5 @@
-import { FormControl, FormGroup } from '@angular/forms';
 import { timeRangeValidator } from './time-range.validator';
+import { FormControl, FormGroup } from '@angular/forms';
 
 describe('timeRangeValidator', () => {
   describe('Valid time ranges', () => {

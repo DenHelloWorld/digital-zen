@@ -1,7 +1,7 @@
-import { StorageAdapter } from './storage-adapter';
-import { IFocus } from '../../modules/common/models/focus.model';
-import { CHROME_STORAGE_KEY_ENUM } from '../../modules/common/enums/chrome-storage-key.enum';
 import { BLOCK_BEHAVIOUR_ENUM } from '../../modules/common/enums/block-behaviour.enum';
+import { CHROME_STORAGE_KEY_ENUM } from '../../modules/common/enums/chrome-storage-key.enum';
+import { IFocus } from '../../modules/common/models/focus.model';
+import { StorageAdapter } from './storage-adapter';
 
 describe('StorageAdapter', () => {
   let mockChromeStorage: {

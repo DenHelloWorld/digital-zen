@@ -1,5 +1,5 @@
-import { FormControl } from '@angular/forms';
 import { IStepConfig } from './step-config.model';
+import { FormControl } from '@angular/forms';
 
 export namespace IPomodoro {
   /** Global application settings managed by the user */

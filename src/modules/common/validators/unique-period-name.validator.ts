@@ -1,5 +1,5 @@
-import { AbstractControl, ValidationErrors } from '@angular/forms';
 import { IFocus } from '../models/focus.model';
+import { AbstractControl, ValidationErrors } from '@angular/forms';
 
 /**
  * Factory function that creates a validator to check if a period name is unique.

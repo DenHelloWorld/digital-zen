@@ -1,5 +1,5 @@
-import { DAY_OF_WEEK_ENUM, DayOfWeekType } from '../enums/day-of-week.enum';
 import { DAY_OF_WEEK_SHORT_NAME_ENUM } from '../enums/day-of-week-short-name.enum';
+import { DAY_OF_WEEK_ENUM, DayOfWeekType } from '../enums/day-of-week.enum';
 import { IFocus } from '../models/focus.model';
 
 /**

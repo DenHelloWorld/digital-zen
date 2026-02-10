@@ -1,5 +1,5 @@
-import { FormControl } from '@angular/forms';
 import { arrayMinLengthValidator } from './array-min-length.validator';
+import { FormControl } from '@angular/forms';
 
 describe('arrayMinLengthValidator', () => {
   describe('Valid arrays', () => {

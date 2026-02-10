@@ -1,8 +1,8 @@
-import { AbstractControl, ValidationErrors } from '@angular/forms';
-import { WEBSITES_UNACTIVATABLE } from '../constants/websites.const';
 import { VALIDATION_ERROR_KEYS } from '../constants/validation-errors.const';
+import { WEBSITES_UNACTIVATABLE } from '../constants/websites.const';
 import { cleanUrlHelper } from '../helpers/clean-url.helper';
 import { IFocus } from '../models/focus.model';
+import { AbstractControl, ValidationErrors } from '@angular/forms';
 
 export function noUnactivatableWebsitesValidator(
   control: AbstractControl

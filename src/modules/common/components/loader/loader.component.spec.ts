@@ -1,6 +1,6 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { LoaderComponent } from './loader.component';
 import { ICONS } from '../../constants/icons.const';
+import { LoaderComponent } from './loader.component';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 /**
  * LoaderComponent Tests

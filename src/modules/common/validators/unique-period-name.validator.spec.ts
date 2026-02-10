@@ -1,7 +1,7 @@
-import { FormControl } from '@angular/forms';
-import { uniquePeriodNameValidator } from './unique-period-name.validator';
-import { IFocus } from '../models/focus.model';
 import { BLOCK_BEHAVIOUR_ENUM } from '../enums/block-behaviour.enum';
+import { IFocus } from '../models/focus.model';
+import { uniquePeriodNameValidator } from './unique-period-name.validator';
+import { FormControl } from '@angular/forms';
 
 describe('uniquePeriodNameValidator', () => {
   // Helper function to create mock periods

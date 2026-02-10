@@ -1,10 +1,10 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { DzToastContainerComponent } from './toast-container';
-import { DzToastService } from './toast.service';
-import { POSITIONS_ENUM } from '../../enums/positions.enum';
 import { UI_TEXT } from '../../constants/ui-text.const';
+import { POSITIONS_ENUM } from '../../enums/positions.enum';
 import { TOAST_TYPE_ENUM } from '../../enums/toast-type.enum';
 import { IToast } from '../../models/toast.model';
+import { DzToastContainerComponent } from './toast-container';
+import { DzToastService } from './toast.service';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 /**
  * DzToastContainerComponent Tests

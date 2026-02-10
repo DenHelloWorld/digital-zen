@@ -9,7 +9,7 @@
   "bracketSpacing": true,
   "arrowParens": "avoid",
   "endOfLine": "lf",
-  "plugins": ["prettier-plugin-organize-attributes"],
+  "plugins": ["prettier-plugin-organize-attributes", "@trivago/prettier-plugin-sort-imports"],
   "overrides": [
     {
       "files": "*.html",
