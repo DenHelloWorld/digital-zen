@@ -13,10 +13,17 @@
     @let cyclesBeforeLongBreakConfig = pomodoroSettings().cyclesBeforeLongBreakConfig;
 
     <div class="dz-box settings__group shadow shadow--hoverless">
-      <span class="dz-form__hint"> Cycle </span>
+      <span class="dz-form__hint">
+        <div class="dz-icon-box dz-icon-box--xs">
+          <ng-container *ngTemplateOutlet="icon; context: { href: icons.TOMATO }" />
+
+          {{ uiText.POMODORO.UNITS.POMODORO }}
+        </div>
+      </span>
+
       <div class="dz-form__field">
         <dz-value-stepper
-          [title]="uiText.POMODORO.TITLES.WORK_OR_STUDY"
+          [title]="uiText.POMODORO.TITLES.WORK"
           [titleIcon]="icons.SCHOOL"
           [valueLabel]="uiText.POMODORO.UNITS.MINUTES"
           formControlName="workDurationMin"
@@ -29,7 +36,7 @@
 
       <div class="dz-form__field">
         <dz-value-stepper
-          [title]="uiText.POMODORO.TITLES.BREAK_LENGTH"
+          [title]="uiText.POMODORO.TITLES.SHORT_BREAK_LENGTH"
           [titleIcon]="icons.COFFEE"
           [valueLabel]="uiText.POMODORO.UNITS.MINUTES"
           formControlName="shortBreakMin"
@@ -43,9 +50,9 @@
 
     <div class="dz-form__field">
       <dz-value-stepper
-        [title]="uiText.POMODORO.TITLES.CYCLES_BEFORE_LONG_BREAK"
-        [titleIcon]="icons.WORKSPACE_PREMIUM"
-        [valueLabel]="uiText.POMODORO.UNITS.CYCLES"
+        [title]="uiText.POMODORO.TITLES.POMODOROS_BEFORE_LONG_BREAK"
+        [titleIcon]="icons.TOMATO"
+        [valueLabel]="uiText.POMODORO.UNITS.POMO"
         formControlName="cyclesBeforeLongBreak"
         [min]="cyclesBeforeLongBreakConfig.min"
         [max]="cyclesBeforeLongBreakConfig.max"
@@ -71,6 +78,7 @@
 
 <main class="timer shadow shadow--hoverless dz-box unselectable">
   @let color = currentProgressColor();
+
   <div
     class="timer__progress round square"
     dzProgressBorder
@@ -81,24 +89,13 @@
     {{ timeLeftFormatted() }}
   </div>
 
-  <div class="timer__phase">
-    <ul class="dz-list dz-list--horizontal">
-      @for (phase of allPhases; track phase.phase) {
-        <li>
-          <button
-            dzProgressBorder
-            [progress]="progress()"
-            [progressConfig]="{
-              thickness: phase.phase === currentPhase() ? 3 : 0,
-              color,
-            }"
-            class="dz-button dz-button--md"
-          >
-            <ng-container *ngTemplateOutlet="icon; context: { href: phase.icon }" />
-          </button>
-        </li>
-      }
-    </ul>
+  <div class="timer__details">
+    <div class="dz-icon-box dz-icon-box--lg">
+      <ng-container *ngTemplateOutlet="icon; context: { href: currentPhaseIcon() }" />
+    </div>
+    <div class="timer__phase">
+      {{ currentPhase() | titlecase }}
+    </div>
   </div>
 </main>
 

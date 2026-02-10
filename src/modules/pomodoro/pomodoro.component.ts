@@ -18,7 +18,7 @@ import { debounceTime, distinctUntilChanged, filter } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ProgressBorderDirective } from '../common/directives/progress-border.directive';
 import { UI_TEXT } from '../common/constants/ui-text.const';
-import { ICONS, IconType } from '../common/constants/icons.const';
+import { ICONS } from '../common/constants/icons.const';
 import { FINISHED_CYCLE } from '../common/constants/finished-cycle.const';
 import { DZ_COLORS } from '../common/enums/colors.enum';
 
@@ -60,24 +60,29 @@ export class PomodoroComponent implements OnInit {
   protected readonly uiText = UI_TEXT;
   protected readonly icons = ICONS;
   protected readonly colors = DZ_COLORS;
-  protected readonly phase = IPomodoro.EPomodoroPhase;
-  protected readonly allPhases: {
-    phase: IPomodoro.IPomodoroPhase;
-    icon: string;
-  }[] = [
-    {
-      phase: IPomodoro.EPomodoroPhase.WORK,
+
+  protected readonly phaseMetadata: Record<
+    IPomodoro.EPomodoroPhase,
+    { icon: string; color: DZ_COLORS }
+  > = {
+    [IPomodoro.EPomodoroPhase.WORK]: {
       icon: this.icons.SCHOOL,
+      color: this.colors.ACCENT,
     },
-    {
-      phase: IPomodoro.EPomodoroPhase.SHORT_BREAK,
+    [IPomodoro.EPomodoroPhase.SHORT_BREAK]: {
       icon: this.icons.COFFEE,
+      color: this.colors.SUCCESS,
     },
-    {
-      phase: IPomodoro.EPomodoroPhase.LONG_BREAK,
+    [IPomodoro.EPomodoroPhase.LONG_BREAK]: {
       icon: this.icons.CHAIR,
+      color: this.colors.INFO,
     },
-  ];
+
+    [IPomodoro.EPomodoroPhase.IDLE]: {
+      icon: this.icons.MOON,
+      color: this.colors.ON_ACCENT,
+    },
+  };
 
   protected readonly pomodoroState = this.#pomodoroService.state;
   protected readonly pomodoroSettings = this.#pomodoroService.settings;
@@ -87,20 +92,15 @@ export class PomodoroComponent implements OnInit {
   protected readonly isPaused = computed(() => this.pomodoroState()?.isPaused);
   protected readonly currentPhase = computed(() => this.pomodoroState()?.phase);
 
+  protected readonly currentPhaseIcon = computed(() => {
+    const phase = this.currentPhase();
+
+    return phase ? this.phaseMetadata[phase]?.icon : this.icons.PAUSE;
+  });
   protected readonly currentProgressColor = computed(() => {
-    switch (this.currentPhase()) {
-      case IPomodoro.EPomodoroPhase.WORK: {
-        return this.colors.ACCENT;
-      }
-      case IPomodoro.EPomodoroPhase.SHORT_BREAK: {
-        return this.colors.SUCCESS;
-      }
-      case IPomodoro.EPomodoroPhase.LONG_BREAK: {
-        return this.colors.INFO;
-      }
-      default:
-        return this.colors.ON_ACCENT;
-    }
+    const phase = this.currentPhase();
+
+    return phase ? this.phaseMetadata[phase]?.color : this.colors.ON_ACCENT;
   });
 
   protected currentCycleBarOption = computed(() => {
@@ -129,17 +129,17 @@ export class PomodoroComponent implements OnInit {
         ? isBreak
           ? this.icons.COFFEE
           : this.icons.SCHOOL
-        : this.icons.WORKSPACE_PREMIUM;
+        : this.icons.TOMATO;
 
       return {
-        label: `Study ${num}`,
+        label: `${this.uiText.POMODORO.UNITS.POMODORO} ${num}`,
         value: num,
-        icon: icon as IconType,
+        icon: icon,
       };
     });
 
     steps.push({
-      label: 'Finish',
+      label: this.uiText.POMODORO.UNITS.FINISH,
       value: FINISHED_CYCLE,
       icon: isSessionEnds ? this.icons.TROPHY : this.icons.CHAIR,
     });

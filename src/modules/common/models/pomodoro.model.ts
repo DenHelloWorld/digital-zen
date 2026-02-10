@@ -76,8 +76,8 @@ export namespace IPomodoro {
   /** Available phases for the Pomodoro timer */
   export enum EPomodoroPhase {
     WORK = 'work',
-    SHORT_BREAK = 'short_break',
-    LONG_BREAK = 'long_break',
+    SHORT_BREAK = 'short break',
+    LONG_BREAK = 'long break',
     IDLE = 'idle',
   }
 

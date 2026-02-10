@@ -150,10 +150,10 @@ export const UI_TEXT = Object.freeze({
 
   POMODORO: {
     TITLES: {
-      WORK_OR_STUDY: 'Work/Study',
-      BREAK_LENGTH: 'Break',
+      WORK: 'Work',
+      SHORT_BREAK_LENGTH: 'Short Break',
       LONG_BREAK_LENGTH: 'Long Break',
-      CYCLES_BEFORE_LONG_BREAK: 'Cycles',
+      POMODOROS_BEFORE_LONG_BREAK: 'Pomodoros',
     },
     BUTTONS: {
       START: 'Start Studying',
@@ -163,7 +163,9 @@ export const UI_TEXT = Object.freeze({
     },
     UNITS: {
       MINUTES: 'min',
-      CYCLES: 'cyc',
+      POMO: 'pomo',
+      POMODORO: 'Pomodoro',
+      FINISH: 'Finish',
     },
   },
 });

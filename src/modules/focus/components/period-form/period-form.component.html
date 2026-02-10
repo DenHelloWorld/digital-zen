@@ -92,10 +92,10 @@
       @let statusRes = siteStatuses()[site.url];
       @let isOnline = statusRes?.value();
 
-      <button
+      <div
         [title]="isOnline ? 'Online' : 'Offline'"
-        class="dz-button dz-button--xs dz-button--activated dz-button--pointerless dz-button--square"
-        [class.dz-button--error]="!isOnline"
+        class="dz-icon-box dz-icon-box--sm dz-icon-box--error"
+        [class.dz-icon-box--success]="isOnline"
       >
         @if (isOnline === undefined) {
           <ng-container *ngTemplateOutlet="icon; context: { href: icons.WIFI_FIND }"></ng-container>
@@ -104,12 +104,9 @@
         } @else {
           <ng-container *ngTemplateOutlet="icon; context: { href: icons.WIFI_OFF }"></ng-container>
         }
-      </button>
+      </div>
 
-      <button
-        [title]="site.url"
-        class="dz-button dz-button--sm dz-button--pointerless dz-button--square"
-      >
+      <div [title]="site.url" class="dz-icon-box dz-icon-box--sm">
         <img
           #imgRef
           class="dz-icon"
@@ -121,7 +118,7 @@
         @if (imgRef.hidden) {
           <ng-container *ngTemplateOutlet="icon; context: { href: icons.ERROR }"></ng-container>
         }
-      </button>
+      </div>
     </ng-template>
 
     <dz-dynamic-input
