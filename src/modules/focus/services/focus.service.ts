@@ -13,6 +13,7 @@ import { FaviconHelper } from '../../common/helpers/favicon.helper';
 import { isImageIcon } from '../../common/helpers/is-image-icon.helper';
 import { isSvgIcon } from '../../common/helpers/is-svg-icon.helper';
 import { logger } from '../../common/helpers/logger';
+import { isCurrentTimeInRange } from '../../common/helpers/time.helper';
 import { IFocus } from '../../common/models/focus.model';
 import { ChromeStorageService } from '../../common/services/chrome-storage.service';
 import {
@@ -132,6 +133,21 @@ export class FocusService {
   public readonly quickPeriod: Signal<IFocus.Period[] | null> = computed(
     () => this.#periods()?.filter(p => p.id === QUICK_FOCUS_ID) ?? null
   );
+  /**
+   * Formatted focus time as a string (MM:SS or HH:MM:SS).
+   */
+  public readonly isPeriodCurrentlyApplicable: Signal<boolean> = computed(() => {
+    const period = this.#currentPeriod();
+    if (!period) return false;
+
+    const now = new Date();
+    const today = now.getDay();
+
+    if (period.daysOfWeek && !period.daysOfWeek.includes(today)) return false;
+
+    return isCurrentTimeInRange(now, period.startFrom, period.endTo);
+  });
+
   /**
    * Formatted focus time as a string (MM:SS or HH:MM:SS).
    */
