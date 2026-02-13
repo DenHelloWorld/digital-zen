@@ -86,6 +86,27 @@ export class FocusService {
   public readonly currentPeriod = this.#currentPeriod.asReadonly();
   public readonly activeTab = this.#activeTab.asReadonly();
 
+  /**
+   * Computed signal for progress bar value (0 to 1)
+   * Progress = (now - startsFrom) / (endsTo - startsFrom)
+   * Only shows progress when current time is within the scheduled range
+   */
+  public readonly progress = computed(() => {
+    const period = this.#currentPeriod();
+    const startsFrom = period?.startFrom?.getTime() ?? null;
+    const endsTo = period?.endTo?.getTime() ?? null;
+    const now = this.#currentTime();
+
+    if (!startsFrom || !endsTo || now < startsFrom || now > endsTo) {
+      return 0;
+    }
+
+    const elapsed = now - startsFrom;
+    const total = endsTo - startsFrom;
+
+    return elapsed / total;
+  });
+
   public readonly periods: Signal<IFocus.Period[] | null> = computed(
     () => this.#periods()?.filter(p => p.id !== QUICK_FOCUS_ID) ?? null
   );

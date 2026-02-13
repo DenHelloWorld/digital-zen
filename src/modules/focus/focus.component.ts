@@ -49,8 +49,8 @@ export class FocusComponent {
   /** @guideline DZ_04 - Signals for reactive state */
   protected readonly focusElapsedTimeFormatted: Signal<string> =
     this.#focusService.focusElapsedTimeFormatted;
-  /** @guideline DZ_04 - Computed signal (derived state) */
-  // TODO: add progress signal for dzProgressBorder ( 1 - endsTo, 0  - startsFrom, currentValue - now )
+  /** @guideline DZ_04 - Signals for reactive state */
+  protected readonly progress: Signal<number> = this.#focusService.progress;
   protected readonly isFocusActive: Signal<boolean> = computed(
     () => this.currentPeriod()?.isActive ?? false
   );

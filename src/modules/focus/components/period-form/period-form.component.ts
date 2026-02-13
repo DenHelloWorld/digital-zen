@@ -125,12 +125,8 @@ export class PeriodFormComponent implements OnInit {
     'name',
   ];
 
-  protected selectedTimeRanges: WritableSignal<IFocus.TimeRange[]> = signal<IFocus.TimeRange[]>([
-    ALL_DAY_TIME_RANGE,
-  ]);
-  protected selectedDays: WritableSignal<IFocus.DayOfWeek[]> = signal<IFocus.DayOfWeek[]>([
-    ...WORK_DAYS_OF_WEEKS,
-  ]);
+  protected selectedTimeRanges: WritableSignal<IFocus.TimeRange[]> = signal<IFocus.TimeRange[]>([]);
+  protected selectedDays: WritableSignal<IFocus.DayOfWeek[]> = signal<IFocus.DayOfWeek[]>([]);
   protected selectedWebSites: WritableSignal<IFocus.WebSite[]> = signal<IFocus.WebSite[]>([
     WEBSITE_TIKTOK,
     WEBSITE_FACEBOOK,
@@ -377,6 +373,12 @@ export class PeriodFormComponent implements OnInit {
   #loadPeriodData(): void {
     const periodData = this.period();
 
+    if (this.currentRoute() === VIEW_ENUM.ADD_PERIOD) {
+      this.selectedTimeRanges.set([ALL_DAY_TIME_RANGE]);
+      this.selectedDays.set([...WORK_DAYS_OF_WEEKS]);
+      return;
+    }
+
     if (this.currentRoute() === VIEW_ENUM.EDIT_PERIOD && periodData) {
       const startFromTime = periodData.startFrom
         ? this.#dateToTimeString(periodData.startFrom)
@@ -394,6 +396,11 @@ export class PeriodFormComponent implements OnInit {
         sessionStartTime: periodData.sessionStartTime,
         blockBehaviour: periodData.blockBehaviour,
       });
+
+      const matchingRange =
+        TIME_RANGES.find(r => r.startFrom === startFromTime && r.endTo === endToTime) ??
+        MANUAL_TIME_RANGE;
+      this.selectedTimeRanges.set([matchingRange]);
 
       const selectedDays = ALL_DAYS_OF_WEEK.filter(day => periodData.daysOfWeek.includes(day.day));
       this.selectedDays.set(selectedDays);

@@ -76,7 +76,7 @@
   <div
     class="dz-focus__widget dz-box round square"
     [class.light--accent]="isFocusActive()"
-    [progress]="0.7"
+    [progress]="progress()"
     [progressConfig]="{
       thickness: 10,
       color: currentPeriod()?.isActive ? colors.ACCENT : colors.DEFAULT,
