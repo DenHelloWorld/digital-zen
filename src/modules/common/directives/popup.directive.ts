@@ -12,7 +12,7 @@ import {
   OnInit,
 } from '@angular/core';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
-import { distinctUntilChanged, tap } from 'rxjs';
+import { distinctUntilChanged, filter, Subject, takeUntil } from 'rxjs';
 
 /**
  * Enumeration of possible reasons for closing the popup.
@@ -42,31 +42,12 @@ export interface PopupCloseEvent<T = unknown> {
 /**
  * Directive to manage a popup overlay for an `ng-template`.
  * Synchronizes visibility with the `openPayload` signal.
- *
- * @example
- * ```html
- * <ng-template [dzPopup]="selectedUser()" (closed)="onClose($event)" #popup="dzPopup">
- *   <div class="dz-popup-content shadow">
- *
- *     <h2 class="dz-form__field">Edit Profile</h2>
- *
- *     <div class="dz-list dz-list--full">
- *       <input class="dz-input" [value]="selectedUser()?.name" placeholder="Name">
- *       <p class="dz-form__hint">This is how others will see you.</p>
- *     </div>
- *
- *     <div class="dz-form__actions">
- *       <button class="dz-button dz-button--ghost" (click)="selectedUser.set(null)">
- *         Cancel
- *       </button>
- *       <button class="dz-button dz-button--activated" (click)="popup.close()">
- *         Save Changes
- *       </button>
- *     </div>
- *
- *   </div>
+ * * @example
+ * <ng-template [dzPopup]="data()" (closed)="data.set(null)" #popup="dzPopup">
+ * <div class="dz-popup-content shadow">
+ * <button (click)="popup.close()">Confirm</button>
+ * </div>
  * </ng-template>
- * ```
  */
 @Directive({
   selector: 'ng-template[dzPopup]',
@@ -79,44 +60,48 @@ export class PopupDirective<T = unknown> implements OnInit, OnDestroy {
   readonly #viewContainerRef = inject(ViewContainerRef);
   readonly #destroyRef = inject(DestroyRef);
 
-  /**
-   * Input signal that controls the popup state.
-   * If value is not null, the popup opens.
-   */
+  /** Trigger signal: opens when non-null, closes when null */
   readonly openPayload = input<T | null>(null, { alias: 'dzPopup' });
 
-  /**
-   * Event emitted when the popup is closed.
-   */
+  /** Emits when the popup is closed by any means */
   readonly closed = output<PopupCloseEvent<T>>();
 
-  /** Reference to the CDK Overlay */
+  /** The active CDK Overlay reference */
   #overlayRef: OverlayRef | null = null;
+
+  /** * Internal Subject to clean up subscriptions of the current active overlay.
+   * Emits whenever the popup is destroyed/closed.
+   */
+  readonly #detached$ = new Subject<void>();
 
   public ngOnInit(): void {
     toObservable(this.openPayload)
       .pipe(
         distinctUntilChanged((prev, curr) => JSON.stringify(prev) === JSON.stringify(curr)),
-
-        tap(payload => (payload !== null ? this.#show() : this.#destroy())),
-
         takeUntilDestroyed(this.#destroyRef)
       )
-      .subscribe();
+      .subscribe(payload => {
+        if (payload !== null) {
+          this.#show();
+        } else {
+          this.#destroy();
+        }
+      });
   }
 
   public ngOnDestroy(): void {
     this.#destroy();
+    this.#detached$.complete();
   }
 
   /**
-   * Creates and displays the overlay.
+   * Orchestrates the creation and attachment of the overlay.
    */
   #show(): void {
-    // Guard against multiple attachments
+    // Prevent double-opening
     if (this.#overlayRef?.hasAttached()) return;
 
-    // Create overlay with global centering and scroll blocking
+    // Build the overlay
     this.#overlayRef = this.#overlay.create({
       positionStrategy: this.#overlay.position().global().centerHorizontally().centerVertically(),
       scrollStrategy: this.#overlay.scrollStrategies.block(),
@@ -124,41 +109,49 @@ export class PopupDirective<T = unknown> implements OnInit, OnDestroy {
       backdropClass: ['dz-popup-overlay', 'dz-popup-fade-in'],
     });
 
-    // Attach the template to the overlay
+    // Attach the template portal
     const portal = new TemplatePortal(this.#templateRef, this.#viewContainerRef);
     this.#overlayRef.attach(portal);
 
-    // Handle backdrop clicks
+    // --- Managed Subscriptions using takeUntil ---
+
+    // 1. Backdrop Click
     this.#overlayRef
       .backdropClick()
-      .pipe(takeUntilDestroyed(this.#destroyRef))
+      .pipe(takeUntil(this.#detached$))
       .subscribe(() => this.close(POPUP_CLOSE_REASON_ENUM.BACKDROP));
 
-    // Handle keyboard events (Escape key)
+    // 2. Escape Key
     this.#overlayRef
       .keydownEvents()
-      .pipe(takeUntilDestroyed(this.#destroyRef))
-      .subscribe((event: KeyboardEvent) => {
-        if (event.key === 'Escape') {
-          this.close(POPUP_CLOSE_REASON_ENUM.ESCAPE);
-        }
-      });
+      .pipe(
+        filter(event => event.key === 'Escape'),
+        takeUntil(this.#detached$)
+      )
+      .subscribe(() => this.close(POPUP_CLOSE_REASON_ENUM.ESCAPE));
   }
 
   /**
-   * Public method to close the popup.
-   * @param reason - The reason for closure (defaults to CONFIRM).
+   * Closes the popup and emits the closure event.
+   * Can be called manually from the template.
    */
-  public close(reason: PopupCloseReasonType = POPUP_CLOSE_REASON_ENUM.CONFIRM): void {
-    const payload = this.openPayload();
+  public close(
+    reason: PopupCloseReasonType = POPUP_CLOSE_REASON_ENUM.CONFIRM,
+    newPayload?: T
+  ): void {
+    const payload = newPayload !== undefined ? newPayload : this.openPayload();
+
     this.#destroy();
     this.closed.emit({ reason, payload });
   }
 
   /**
-   * Internal method to dispose of the overlay and its resources.
+   * Internal cleanup: disposes the overlay and terminates active subscriptions.
    */
   #destroy(): void {
+    // Trigger termination for all overlay-specific pipe(takeUntil)
+    this.#detached$.next();
+
     if (this.#overlayRef) {
       this.#overlayRef.dispose();
       this.#overlayRef = null;
