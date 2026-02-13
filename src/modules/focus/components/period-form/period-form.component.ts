@@ -39,6 +39,9 @@ import {
   inject,
   Injector,
   OnInit,
+  AfterViewInit,
+  ElementRef,
+  viewChild,
   resource,
   ResourceRef,
   Signal,
@@ -86,7 +89,7 @@ import { distinctUntilChanged, map } from 'rxjs';
     MultiSelectorComponent,
   ],
 })
-export class PeriodFormComponent implements OnInit {
+export class PeriodFormComponent implements OnInit, AfterViewInit {
   /** @guideline DZ_02, DZ_08, DZ_09 - Dependency injection with inject(), private #, readonly */
   readonly #fb = inject(FormBuilder);
   readonly #destroyRef = inject(DestroyRef);
@@ -99,7 +102,10 @@ export class PeriodFormComponent implements OnInit {
   readonly #maxPeriodNameLength = 100;
   readonly #siteStatusesCache = new Map<string, ResourceRef<boolean | undefined>>();
 
-  public readonly period = this.#router.payload as Signal<IFocus.Period | null>;
+  protected readonly payload = this.#router.payload as Signal<{
+    period: IFocus.Period;
+    scrollToBehaviours: boolean;
+  } | null>;
 
   protected readonly currentRoute = this.#router.currentRoute;
   /** @guideline DZ_15 - Typed Reactive Form */
@@ -133,6 +139,10 @@ export class PeriodFormComponent implements OnInit {
   ]);
 
   protected readonly siteStatuses = signal<Record<string, ResourceRef<boolean | undefined>>>({});
+
+  protected shakeBehaviour = signal(false);
+
+  protected behaviourBlock = viewChild<ElementRef>('behaviourBlock');
 
   public ngOnInit(): void {
     this.#initForm();
@@ -219,6 +229,13 @@ export class PeriodFormComponent implements OnInit {
       },
       { injector: this.#injector }
     );
+  }
+
+  public ngAfterViewInit(): void {
+    if (this.payload()?.scrollToBehaviours) {
+      this.shakeBehaviour.set(true);
+      this.behaviourBlock()?.nativeElement.scrollIntoView({ behavior: 'smooth' });
+    }
   }
 
   protected savePeriod() {
@@ -326,7 +343,7 @@ export class PeriodFormComponent implements OnInit {
     effect(
       () => {
         const periods = this.#focusService.periods();
-        const currentPeriodId = this.period()?.id;
+        const currentPeriodId = this.payload()?.period?.id;
 
         this.#updateNameValidators(periods, currentPeriodId);
       },
@@ -336,7 +353,7 @@ export class PeriodFormComponent implements OnInit {
 
   #initForm(): void {
     const periods = this.#focusService.periods();
-    const currentPeriodId = this.period()?.id;
+    const currentPeriodId = this.payload()?.period?.id;
 
     this.form = this.#fb.group<IFocusForm.UpsertPeriod>(
       {
@@ -371,7 +388,7 @@ export class PeriodFormComponent implements OnInit {
   }
 
   #loadPeriodData(): void {
-    const periodData = this.period();
+    const periodData = this.payload()?.period;
 
     if (this.currentRoute() === VIEW_ENUM.ADD_PERIOD) {
       this.selectedTimeRanges.set([ALL_DAY_TIME_RANGE]);

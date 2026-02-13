@@ -7,7 +7,7 @@ import { WEBSITES_UNACTIVATABLE } from '../common/constants/websites.const';
 import { ProgressBorderDirective } from '../common/directives/progress-border.directive';
 import { BLOCK_BEHAVIOUR_ENUM } from '../common/enums/block-behaviour.enum';
 import { COLORS_ENUM } from '../common/enums/colors.enum';
-import { VIEW_ENUM } from '../common/enums/view.enum';
+import { VIEW_ENUM, ViewType } from '../common/enums/view.enum';
 import { cleanUrlHelper } from '../common/helpers/clean-url.helper';
 import { isHttpUrl } from '../common/helpers/is-http-url.helper';
 import { isImageIcon } from '../common/helpers/is-image-icon.helper';
@@ -142,12 +142,13 @@ export class FocusComponent {
   protected readonly icons = ICONS;
   protected readonly colors = COLORS_ENUM;
   protected readonly blockBehaviours = BLOCK_BEHAVIOUR_ENUM;
+  protected readonly viewTypes = VIEW_ENUM;
 
-  protected toggleFocus(): void {
+  protected onToggleFocus(): void {
     this.#focusService.toggleFocus();
   }
 
-  protected blockCurrentTab(): void {
+  protected onBlockCurrentTab(): void {
     this.#focusService.addCurrentTabToPeriod(true);
   }
 
@@ -156,14 +157,18 @@ export class FocusComponent {
   }
 
   protected onEditCurrentPeriod(): void {
-    this.#router.navigate(VIEW_ENUM.EDIT_PERIOD, this.currentPeriod());
+    this.onNavigation(VIEW_ENUM.EDIT_PERIOD, { period: this.currentPeriod() });
   }
 
   protected onAddPeriod(): void {
-    this.#router.navigate(VIEW_ENUM.ADD_PERIOD);
+    this.onNavigation(VIEW_ENUM.ADD_PERIOD);
   }
 
   protected onOpenWebsitesList(): void {
     console.debug('onOpenWebsitesList');
+  }
+
+  protected onNavigation(route: ViewType, payload: object | null = null): void {
+    this.#router.navigate(route, payload);
   }
 }

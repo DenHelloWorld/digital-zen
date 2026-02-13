@@ -1,5 +1,6 @@
 @use 'digital-zen-pack/style.css';
 @use 'styles/variables';
+@use 'styles/badge';
 
 /* Box sizing */
 *,
@@ -86,6 +87,7 @@ h6 {
 a {
   text-decoration: none;
   color: inherit;
+  cursor: pointer;
 }
 
 /* Стили скролл-бара */

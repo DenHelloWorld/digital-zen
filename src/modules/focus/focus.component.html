@@ -19,7 +19,7 @@
       [title]="
         activeTab() ? uiText.FOCUS.ADD_CURRENT_TAB_TITLE : uiText.FOCUS.CANNOT_ADD_CURRENT_TAB_TITLE
       "
-      (click)="blockCurrentTab()"
+      (click)="onBlockCurrentTab()"
     >
       @if (isSvgIcon(activeTab()?.favIconUrl)) {
         <ng-container
@@ -85,6 +85,19 @@
   >
     <div class="dz-focus__timer dz-focus__timer--focus">
       <div class="dz-icon-box dz-icon-box--md">
+        <div class="dz-badge" [title]="'More details'">
+          <button
+            class="dz-button dz-button--ghost dz-button--sm shadow"
+            (click)="
+              onNavigation(viewTypes.EDIT_PERIOD, {
+                period: currentPeriod(),
+                scrollToBehaviours: true,
+              })
+            "
+          >
+            <ng-container *ngTemplateOutlet="icon; context: { href: icons.INFO }"></ng-container>
+          </button>
+        </div>
         <ng-container *ngTemplateOutlet="icon; context: { href: statusIcon() }"></ng-container>
       </div>
 
@@ -128,7 +141,7 @@
       activated: icons.STOP,
       unActivated: icons.PLAY_ARROW,
     }"
-    (checkedChange)="toggleFocus()"
+    (checkedChange)="onToggleFocus()"
     size="xxl"
   />
   @let hintText = currentPeriod()?.name || '';
