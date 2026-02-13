@@ -14,6 +14,7 @@ import { MiniRouterService } from '../modules/common/services/mini-router.servic
 import { ThemeService } from '../modules/common/services/theme.service';
 import { PeriodFormComponent } from '../modules/focus/components/period-form/period-form.component';
 import { FocusComponent } from '../modules/focus/focus.component';
+import { MenuComponent } from '../modules/menu/menu.component';
 import { PomodoroComponent } from '../modules/pomodoro/pomodoro.component';
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, HostBinding, inject, Signal } from '@angular/core';
@@ -47,6 +48,7 @@ import { ChangeDetectionStrategy, Component, HostBinding, inject, Signal } from 
     DzToastContainerComponent,
     LoaderComponent,
     PeriodFormComponent,
+    MenuComponent,
   ],
   host: {
     class: 'dz-app',

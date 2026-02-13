@@ -1,7 +1,9 @@
 import { ICONS } from '../common/constants/icons.const';
 import { UI_TEXT } from '../common/constants/ui-text.const';
+import { PeriodComponent } from '../focus/components/period/period.component';
+import { FocusService } from '../focus/services/focus.service';
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 
 /**
  * Menu component for adding new focus periods
@@ -21,10 +23,14 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
   imports: [
     // angular modules
     CommonModule,
+    PeriodComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MenuComponent {
+  readonly #focusService = inject(FocusService);
   protected readonly uiText = UI_TEXT;
   protected readonly icons = ICONS;
+
+  protected readonly periods = this.#focusService.periods;
 }

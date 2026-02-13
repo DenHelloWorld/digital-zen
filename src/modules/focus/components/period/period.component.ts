@@ -81,6 +81,11 @@ export class PeriodComponent {
         t => t.target === `${TOAST_MESSAGES_ENUM.PERIOD_NOT_SCHEDULED_TODAY}${this.period().id}`
       )
   );
+  protected readonly totalPeriodsCount = computed(() => this.#focusService.periods()?.length || 0);
+  protected readonly isCurrent = computed(
+    () => this.#focusService.currentPeriod()?.id === this.period().id
+  );
+  protected readonly isFocusActive = computed(() => this.period().isActive);
 
   /** @guideline DZ_04 - Writable signal for local state */
   protected readonly isConfirmingDelete: WritableSignal<boolean> = signal(false);
@@ -93,9 +98,6 @@ export class PeriodComponent {
 
   /** @guideline DZ_04 - InputSignal for component inputs */
   public readonly period: InputSignal<IFocus.Period> = input.required<IFocus.Period>();
-  public readonly totalPeriodsCount: InputSignal<number> = input.required<number>();
-  public readonly isCurrent: InputSignal<boolean> = input.required<boolean>();
-  public readonly isFocusActive: InputSignal<boolean> = input.required<boolean>();
 
   public readonly toggleBlockedWebsite: OutputEmitterRef<IFocus.WebSite> = output<IFocus.WebSite>();
 

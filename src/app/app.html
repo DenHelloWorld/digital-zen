@@ -3,9 +3,7 @@
     <button
       class="dz-button dz-button--nm"
       [title]="uiText.HEADER.FOCUS_TITLE"
-      [class.dz-button--activated]="
-        [viewTypes.ADD_PERIOD, viewTypes.EDIT_PERIOD, viewTypes.FOCUS].includes(currentRoute())
-      "
+      [class.dz-button--activated]="currentRoute() === viewTypes.FOCUS"
       (click)="setViewType(viewTypes.FOCUS)"
     >
       <svg class="dz-icon" aria-hidden="true" focusable="false">
@@ -90,6 +88,12 @@
       @case (viewTypes.ADD_PERIOD) {
         <div class="dz-box">
           <dz-period-form />
+        </div>
+      }
+
+      @case (viewTypes.MENU) {
+        <div class="dz-box">
+          <dz-menu />
         </div>
       }
 

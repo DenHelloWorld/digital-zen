@@ -256,12 +256,12 @@ export class PeriodFormComponent implements OnInit {
         this.#focusService.addPeriod(periodData);
       }
 
-      this.#router.navigate(VIEW_ENUM.FOCUS);
+      this.#router.navigate(this.#router.previousRoute() || VIEW_ENUM.FOCUS);
     }
   }
 
   protected cancelForm(): void {
-    this.#router.navigate(VIEW_ENUM.FOCUS);
+    this.#router.navigate(this.#router.previousRoute() || VIEW_ENUM.FOCUS);
   }
 
   protected getFavicon(url: string): string {
