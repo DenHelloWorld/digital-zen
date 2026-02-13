@@ -450,4 +450,6 @@ export class PeriodFormComponent implements OnInit, AfterViewInit {
 
     return Array.from(uniqueMap.values());
   }
+
+  protected readonly viewTypes = VIEW_ENUM;
 }

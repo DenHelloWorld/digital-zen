@@ -104,6 +104,16 @@
           [class.light--error]="form.controls.blockBehaviour.value === blockBehaviours.BLOCK"
           (click)="setBlockBehaviour(blockBehaviours.BLOCK)"
         >
+          @if (form.controls.blockBehaviour.value === blockBehaviours.BLOCK) {
+            <div class="dz-badge" [title]="'More details'">
+              <div class="dz-icon-box dz-icon-box--xs blurred s">
+                <ng-container
+                  *ngTemplateOutlet="icon; context: { href: icons.CHECK }"
+                ></ng-container>
+              </div>
+            </div>
+          }
+
           <ng-container
             *ngTemplateOutlet="
               errorBanner;
@@ -119,6 +129,16 @@
           [class.light--warn]="form.controls.blockBehaviour.value === blockBehaviours.WARN"
           (click)="setBlockBehaviour(blockBehaviours.WARN)"
         >
+          @if (form.controls.blockBehaviour.value === blockBehaviours.WARN) {
+            <div class="dz-badge" [title]="'More details'">
+              <div class="dz-icon-box dz-icon-box--xs blurred">
+                <ng-container
+                  *ngTemplateOutlet="icon; context: { href: icons.CHECK }"
+                ></ng-container>
+              </div>
+            </div>
+          }
+
           <ng-container
             *ngTemplateOutlet="
               warnBanner;
@@ -151,6 +171,16 @@
           [class.light--accent]="form.controls.blockBehaviour.value === blockBehaviours.WHITELIST"
           (click)="setBlockBehaviour(blockBehaviours.WHITELIST)"
         >
+          @if (form.controls.blockBehaviour.value === blockBehaviours.WHITELIST) {
+            <div class="dz-badge" [title]="'More details'">
+              <div class="dz-icon-box dz-icon-box--xs blurred">
+                <ng-container
+                  *ngTemplateOutlet="icon; context: { href: icons.CHECK }"
+                ></ng-container>
+              </div>
+            </div>
+          }
+
           <ng-container
             *ngTemplateOutlet="
               infoBanner;

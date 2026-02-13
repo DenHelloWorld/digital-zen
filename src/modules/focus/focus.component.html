@@ -73,8 +73,10 @@
 </div>
 
 <div class="dz-focus__main">
+  @let bgByStatus = './bg/' + status() + '.png';
   <div
     class="dz-focus__widget dz-box round square"
+    [style.--bg-url]="'url(' + bgByStatus + ')'"
     [class.light--accent]="isFocusActive()"
     [progress]="progress()"
     [progressConfig]="{
@@ -83,11 +85,13 @@
     }"
     dzProgressBorder
   >
+    <div class="dz-box__bg dz-box__bg--transparrent breathe"></div>
+
     <div class="dz-focus__timer dz-focus__timer--focus">
       <div class="dz-icon-box dz-icon-box--md">
         <div class="dz-badge" [title]="'More details'">
           <button
-            class="dz-button dz-button--ghost dz-button--sm shadow"
+            class="dz-button dz-button--ghost dz-button--xs shadow"
             (click)="
               onNavigation(viewTypes.EDIT_PERIOD, {
                 period: currentPeriod(),
@@ -101,11 +105,9 @@
         <ng-container *ngTemplateOutlet="icon; context: { href: statusIcon() }"></ng-container>
       </div>
 
-      <div class="hint">
+      <div class="hint hint--xl">
         {{ status() }}
       </div>
-
-      <div class="dz-focus__time">{{ focusElapsedTimeFormatted() }}</div>
     </div>
 
     <div class="dz-focus__weekdays">
@@ -129,6 +131,12 @@
         <span class="hint">End</span>
 
         <div class="dz-focus__time">{{ (currentPeriod()?.endTo | date: 'HH:mm') || '00:00' }}</div>
+      </div>
+
+      <div class="dz-box">
+        <span class="hint">Remaining</span>
+
+        <div class="dz-focus__time">{{ focusElapsedTimeFormatted() }}</div>
       </div>
     </div>
   </div>

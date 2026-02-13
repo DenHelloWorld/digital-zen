@@ -102,7 +102,7 @@ export class PeriodComponent {
   public readonly toggleBlockedWebsite: OutputEmitterRef<IFocus.WebSite> = output<IFocus.WebSite>();
 
   protected onEdit(): void {
-    this.#router.navigate(VIEW_ENUM.EDIT_PERIOD, this.period());
+    this.#router.navigate(VIEW_ENUM.EDIT_PERIOD, { period: this.period() });
   }
 
   protected onDelete(): void {
