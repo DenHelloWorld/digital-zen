@@ -1,0 +1,47 @@
+.dz-popup-overlay {
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(2px);
+}
+
+.dz-popup-content {
+  background-color: var(--color-background);
+  color: var(--color-text);
+  padding: var(--spacing-xl);
+  border-radius: var(--radius);
+  box-shadow: 0 10px var(--shadow-blur) var(--shadow-color);
+
+  max-width: 90vw;
+  max-height: 90vh;
+  overflow-y: auto;
+
+  animation: dz-popup-in 0.3s ease-out forwards;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* 3. Анимации */
+.dz-popup-fade-in {
+  animation: dz-fade-in 0.2s ease-out forwards;
+}
+
+@keyframes dz-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes dz-popup-in {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
