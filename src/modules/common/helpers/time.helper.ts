@@ -56,55 +56,51 @@ export const isCurrentTimeAfter = (currentDate: Date, targetDate: Date): boolean
 };
 
 /**
- * Checks if the current time falls within a specified time range.
- * Compares only the time portion of the dates, ignoring the date part.
+ * Проверяет, попадает ли текущее время в указанный диапазон.
+ * Сравнивает только временную часть дат, игнорируя календарную дату.
+ * * Теперь поддерживает диапазоны, пересекающие полночь (например, с 22:00 до 02:00).
  *
- * Note: This function does not handle time ranges that span midnight
- * (e.g., 22:00 to 02:00). It assumes the time range is within a single day.
- *
- * @param currentDate - The current date/time to check
- * @param startDate - The start of the time range (null means no lower bound)
- * @param endDate - The end of the time range (null means no upper bound)
- * @returns True if current time is within the range [start, end), false otherwise
- *
- * @example
- * ```typescript
- * const now = new Date('2024-01-15T14:30:00');
- * const start = new Date('2024-01-01T09:00:00');
- * const end = new Date('2024-01-01T17:00:00');
- * isCurrentTimeInRange(now, start, end); // true (14:30 is between 09:00 and 17:00)
- * ```
+ * @param currentDate - Текущая дата/время для проверки
+ * @param startDate - Начало диапазона (null означает отсутствие нижней границы)
+ * @param endDate - Конец диапазона (null означает отсутствие верхней границы)
+ * @returns True, если текущее время находится в диапазоне [start, end), иначе false
  */
 export const isCurrentTimeInRange = (
   currentDate: Date,
   startDate: Date | null,
   endDate: Date | null
 ): boolean => {
-  // If both start and end are null, the time range is always valid
+  // Если обе границы не заданы, диапазон всегда валиден
   if (startDate === null && endDate === null) {
     return true;
   }
 
   const currentTimeMs = getTimeInMilliseconds(currentDate);
 
-  // If only start is specified, check if current time is after or equal to start
+  // Если задано только начало: время должно быть позже или равно start
   if (startDate !== null && endDate === null) {
     const startTimeMs = getTimeInMilliseconds(startDate);
     return currentTimeMs >= startTimeMs;
   }
 
-  // If only end is specified, check if current time is before end
+  // Если задан только конец: время должно быть строго до end
   if (startDate === null && endDate !== null) {
     const endTimeMs = getTimeInMilliseconds(endDate);
     return currentTimeMs < endTimeMs;
   }
 
-  // Both start and end are specified
+  // Обе границы заданы
   const startTimeMs = getTimeInMilliseconds(startDate!);
   const endTimeMs = getTimeInMilliseconds(endDate!);
 
-  // Check if current time is within the range [start, end)
-  return currentTimeMs >= startTimeMs && currentTimeMs < endTimeMs;
+  if (startTimeMs <= endTimeMs) {
+    // Стандартный диапазон внутри одного дня (например, 09:00 - 17:00)
+    return currentTimeMs >= startTimeMs && currentTimeMs < endTimeMs;
+  } else {
+    // Диапазон, пересекающий полночь (например, 22:00 - 04:00)
+    // Время должно быть ИЛИ после начала (вечер), ИЛИ до конца (утро)
+    return currentTimeMs >= startTimeMs || currentTimeMs < endTimeMs;
+  }
 };
 
 /**

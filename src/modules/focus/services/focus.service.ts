@@ -13,7 +13,7 @@ import { FaviconHelper } from '../../common/helpers/favicon.helper';
 import { isImageIcon } from '../../common/helpers/is-image-icon.helper';
 import { isSvgIcon } from '../../common/helpers/is-svg-icon.helper';
 import { logger } from '../../common/helpers/logger';
-import { isCurrentTimeInRange } from '../../common/helpers/time.helper';
+import { getTimeInMilliseconds, isCurrentTimeInRange } from '../../common/helpers/time.helper';
 import { IFocus } from '../../common/models/focus.model';
 import { ChromeStorageService } from '../../common/services/chrome-storage.service';
 import {
@@ -96,35 +96,25 @@ export class FocusService {
   public readonly currentPeriod = this.#currentPeriod.asReadonly();
   public readonly activeTab = this.#activeTab.asReadonly();
 
-  /**
-   * Computed signal for progress bar value (0 to 1)
-   * Progress = (now - startsFrom) / (endsTo - startsFrom)
-   * Only shows progress when current time is within the scheduled range
-   */
   public readonly progress = computed(() => {
-    const period = this.#currentPeriod();
-    if (!period?.startFrom || !period?.endTo) return 0;
-
-    const now = this.#currentTime();
-
-    const todayStart = new Date(now);
-    todayStart.setHours(period.startFrom.getHours(), period.startFrom.getMinutes(), 0, 0);
-
-    const todayEnd = new Date(now);
-    todayEnd.setHours(period.endTo.getHours(), period.endTo.getMinutes(), 0, 0);
-
-    if (todayEnd <= todayStart) {
-      todayEnd.setDate(todayEnd.getDate() + 1);
-    }
-
-    if (now < todayStart.getTime() || now > todayEnd.getTime()) {
+    if (!this.isPeriodCurrentlyApplicable()) {
       return 0;
     }
 
-    const elapsed = now - todayStart.getTime();
-    const total = todayEnd.getTime() - todayStart.getTime();
+    const period = this.#currentPeriod();
+    if (!period?.startFrom || !period?.endTo) return 0;
 
-    return 1 - elapsed / total;
+    const now = getTimeInMilliseconds(new Date(this.#currentTime()));
+    const start = getTimeInMilliseconds(period.startFrom);
+    const end = getTimeInMilliseconds(period.endTo);
+
+    const total = start <= end ? end - start : 24 * 60 * 60 * 1000 - start + end;
+
+    if (total === 0) return 0;
+    const elapsed = now >= start ? now - start : 24 * 60 * 60 * 1000 - start + now;
+    const result = 1 - elapsed / total;
+
+    return Math.min(Math.max(result, 0), 1);
   });
 
   public readonly periods: Signal<IFocus.Period[] | null> = computed(
@@ -133,19 +123,37 @@ export class FocusService {
   public readonly quickPeriod: Signal<IFocus.Period[] | null> = computed(
     () => this.#periods()?.filter(p => p.id === QUICK_FOCUS_ID) ?? null
   );
-  /**
-   * Formatted focus time as a string (MM:SS or HH:MM:SS).
-   */
+
   public readonly isPeriodCurrentlyApplicable: Signal<boolean> = computed(() => {
     const period = this.#currentPeriod();
-    if (!period) return false;
+    if (!period || !period.startFrom || !period.endTo) return false;
 
     const now = new Date(this.#currentTime());
     const today = now.getDay();
 
-    if (period.daysOfWeek && !period.daysOfWeek.includes(today)) return false;
+    const startMs = getTimeInMilliseconds(period.startFrom);
+    const endMs = getTimeInMilliseconds(period.endTo);
+    const currentMs = getTimeInMilliseconds(now);
 
-    return isCurrentTimeInRange(now, period.startFrom, period.endTo);
+    // 1. Проверяем, попадаем ли мы в диапазон времени (с учетом полночи)
+    if (!isCurrentTimeInRange(now, period.startFrom, period.endTo)) {
+      return false;
+    }
+
+    // 2. Проверка дня недели
+    if (period.daysOfWeek) {
+      const spansMidnight = startMs > endMs;
+
+      // Если сейчас "утро" (до конца периода) и интервал ночной — проверяем ВЧЕРАШНИЙ день
+      const isMorningOfNextDay = spansMidnight && currentMs < endMs;
+      const dayToCheck = isMorningOfNextDay ? (today + 6) % 7 : today;
+
+      if (!period.daysOfWeek.includes(dayToCheck)) {
+        return false;
+      }
+    }
+
+    return true;
   });
 
   /**
