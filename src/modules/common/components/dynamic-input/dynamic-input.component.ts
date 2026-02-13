@@ -1,3 +1,5 @@
+import { ICONS } from '../../constants/icons.const';
+import { UI_TEXT } from '../../constants/ui-text.const';
 import { CommonModule } from '@angular/common';
 import {
   ChangeDetectionStrategy,
@@ -12,8 +14,6 @@ import {
   TemplateRef,
   WritableSignal,
 } from '@angular/core';
-import { UI_TEXT } from '../../constants/ui-text.const';
-import { ICONS } from '../../constants/icons.const';
 
 /**
  * Dynamic input component for managing a list of entities with add/remove/edit capabilities

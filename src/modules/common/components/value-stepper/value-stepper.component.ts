@@ -1,3 +1,7 @@
+import { ICONS } from '../../constants/icons.const';
+import { UI_TEXT } from '../../constants/ui-text.const';
+import { KEY_EVENTS_ENUM } from '../../enums/key-events.enum';
+import { NgTemplateOutlet } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -5,13 +9,10 @@ import {
   signal,
   HostListener,
   computed,
+  model,
 } from '@angular/core';
-import { NG_VALUE_ACCESSOR, ControlValueAccessor } from '@angular/forms';
 import { forwardRef } from '@angular/core';
-import { KEY_EVENTS_ENUM } from '../../enums/key-events.enum';
-import { NgTemplateOutlet } from '@angular/common';
-import { UI_TEXT } from '../../constants/ui-text.const';
-import { ICONS } from '../../constants/icons.const';
+import { NG_VALUE_ACCESSOR, ControlValueAccessor } from '@angular/forms';
 
 @Component({
   selector: 'dz-value-stepper',
@@ -32,8 +33,6 @@ export class ValueStepperComponent implements ControlValueAccessor {
 
   protected readonly uiText = UI_TEXT;
   protected readonly icons = ICONS;
-
-  protected readonly value = signal<number | null>(null);
 
   protected readonly isDecrementDisabled = computed(() => {
     const current = this.value() ?? this.min();
@@ -59,6 +58,8 @@ export class ValueStepperComponent implements ControlValueAccessor {
   public readonly max = input<number>(Infinity);
   public readonly step = input<number>(1);
   public readonly quickStep = input<number>(5);
+
+  public readonly value = model<number | null>(null);
 
   #onChange: (value: number | null) => void = () => {
     /*empty*/

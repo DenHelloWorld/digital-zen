@@ -1,6 +1,6 @@
-import { filterBlockableWebsites } from './filter-blockable-websites.helper';
 import { ICONS } from '../constants/icons.const';
 import { IFocus } from '../models/focus.model';
+import { filterBlockableWebsites } from './filter-blockable-websites.helper';
 
 describe('filterBlockableWebsites', () => {
   describe('Valid inputs', () => {

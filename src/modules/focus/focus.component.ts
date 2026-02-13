@@ -1,33 +1,23 @@
+import { SwitchComponent } from '../common/components/switch/switch.component';
+import { WeekdaysSelectorComponent } from '../common/components/weekdays-selector/weekdays-selector.component';
+import { ALL_DAYS_OF_WEEK } from '../common/constants/days-of-week.const';
+import { ICONS } from '../common/constants/icons.const';
+import { UI_TEXT } from '../common/constants/ui-text.const';
+import { WEBSITES_UNACTIVATABLE } from '../common/constants/websites.const';
+import { ProgressBorderDirective } from '../common/directives/progress-border.directive';
+import { BLOCK_BEHAVIOUR_ENUM } from '../common/enums/block-behaviour.enum';
+import { COLORS_ENUM } from '../common/enums/colors.enum';
+import { VIEW_ENUM, ViewType } from '../common/enums/view.enum';
+import { cleanUrlHelper } from '../common/helpers/clean-url.helper';
+import { isHttpUrl } from '../common/helpers/is-http-url.helper';
+import { isImageIcon } from '../common/helpers/is-image-icon.helper';
+import { isSvgIcon } from '../common/helpers/is-svg-icon.helper';
+import { IFocus } from '../common/models/focus.model';
+import { MiniRouterService } from '../common/services/mini-router.service';
+import { FocusService } from './services/focus.service';
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, Signal } from '@angular/core';
-import { FocusService } from './services/focus.service';
 
-import { PeriodComponent } from './components/period/period.component';
-import { LoaderComponent } from '../common/components';
-import { IFocus } from '../common/models/focus.model';
-import { cleanUrlHelper } from '../common/helpers/clean-url.helper';
-import { WEBSITES_UNACTIVATABLE } from '../common/constants/websites.const';
-import { UI_TEXT } from '../common/constants/ui-text.const';
-import { ICONS } from '../common/constants/icons.const';
-import { isImageIcon } from '../common/helpers/is-image-icon.helper';
-import { isHttpUrl } from '../common/helpers/is-http-url.helper';
-import { isSvgIcon } from '../common/helpers/is-svg-icon.helper';
-
-/**
- * Focus management component
- * Main component for managing focus sessions and periods
- *
- * @guidelines
- * - DZ_01: Standalone component with imports array
- * - DZ_02: Dependency injection using inject() function
- * - DZ_03: OnPush change detection strategy
- * - DZ_04: Angular Signals for reactive state (signal, computed)
- * - DZ_08: Private fields with # prefix
- * - DZ_09: Readonly for injected dependencies
- * - DZ_10: UI text constants usage
- *
- * @see /docs/coding-guidelines.md
- */
 @Component({
   selector: 'dz-focus',
   templateUrl: './focus.component.html',
@@ -36,14 +26,19 @@ import { isSvgIcon } from '../common/helpers/is-svg-icon.helper';
     // angular modules
     CommonModule,
     // components
-    PeriodComponent,
-    LoaderComponent,
+    ProgressBorderDirective,
+    WeekdaysSelectorComponent,
+    SwitchComponent,
   ],
+  host: {
+    class: 'dz-focus',
+  },
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FocusComponent {
   /** @guideline DZ_02, DZ_08, DZ_09 - Dependency injection with inject(), private #, readonly */
   readonly #focusService: FocusService = inject(FocusService);
+  readonly #router = inject(MiniRouterService);
 
   /** @guideline DZ_04 - Signals for reactive state */
   protected readonly activeTab: Signal<chrome.tabs.Tab | undefined> = this.#focusService.activeTab;
@@ -51,17 +46,21 @@ export class FocusComponent {
   protected readonly currentPeriod: Signal<IFocus.Period | null> = this.#focusService.currentPeriod;
   /** @guideline DZ_04 - Signals for reactive state */
   protected readonly periods: Signal<IFocus.Period[] | null> = this.#focusService.periods;
-  /** @guideline DZ_04 - Computed signal (derived state) */
-  protected readonly periodsCount: Signal<number> = computed(() => this.periods()?.length ?? 0);
   /** @guideline DZ_04 - Signals for reactive state */
   protected readonly focusElapsedTimeFormatted: Signal<string> =
     this.#focusService.focusElapsedTimeFormatted;
-  /** @guideline DZ_04 - Computed signal (derived state) */
+  /** @guideline DZ_04 - Signals for reactive state */
+  protected readonly progress: Signal<number> = this.#focusService.progress;
   protected readonly isFocusActive: Signal<boolean> = computed(
-    () => this.currentPeriod()?.isFocused ?? false
+    () => this.currentPeriod()?.isActive ?? false
   );
+  protected readonly selectedDays: Signal<IFocus.DayOfWeek[]> = computed(() => {
+    const selected = this.currentPeriod()?.daysOfWeek;
+    return [...ALL_DAYS_OF_WEEK].filter(day => selected?.includes(day.day));
+  });
   protected readonly isCurrentTabInCurrentPeriod = this.#focusService.isCurrentTabInCurrentPeriod;
   /** @guideline DZ_04 - Computed signal (derived state) */
+  // TODO: remove
   protected readonly displayedPeriods: Signal<IFocus.Period[]> = computed(() => {
     const current = this.currentPeriod();
     const all = this.periods();
@@ -71,7 +70,7 @@ export class FocusComponent {
     }
 
     // When focus is active, show only the current period
-    if (current?.isFocused) {
+    if (current?.isActive) {
       return [current];
     }
 
@@ -84,7 +83,6 @@ export class FocusComponent {
     return all;
   });
 
-  /** @guideline DZ_04 - Computed signal to check if current tab is unblockable */
   protected readonly isCurrentTabUnblockable: Signal<boolean> = computed(() => {
     const tab = this.activeTab();
     if (!tab?.url) {
@@ -95,22 +93,62 @@ export class FocusComponent {
     return WEBSITES_UNACTIVATABLE.some(site => cleanUrlHelper(site.url) === cleanedUrl);
   });
 
+  protected readonly isTabButtonDisabled = computed(() => {
+    return this.isCurrentTabUnblockable() || !isHttpUrl(this.activeTab()?.url);
+  });
+
+  protected readonly statusIcon = computed(() => {
+    const period = this.currentPeriod();
+
+    if (!period?.isActive) {
+      return this.icons.MOON;
+    }
+
+    switch (period.blockBehaviour) {
+      case BLOCK_BEHAVIOUR_ENUM.WHITELIST:
+        return this.icons.PERSON_ZEN;
+      case BLOCK_BEHAVIOUR_ENUM.BLOCK:
+        return this.icons.BLOCK;
+      case BLOCK_BEHAVIOUR_ENUM.WARN:
+        return this.icons.WARNING;
+      default:
+        return this.icons.MOON;
+    }
+  });
+
+  protected readonly status = computed(() => {
+    const period = this.currentPeriod();
+
+    if (!period?.isActive) {
+      return 'Idle';
+    }
+
+    switch (period.blockBehaviour) {
+      case BLOCK_BEHAVIOUR_ENUM.WHITELIST:
+        return 'Focus';
+      case BLOCK_BEHAVIOUR_ENUM.BLOCK:
+        return 'Block';
+      case BLOCK_BEHAVIOUR_ENUM.WARN:
+        return 'Warn';
+      default:
+        return 'Idle';
+    }
+  });
+
   protected readonly isSvgIcon: (url: string | null | undefined) => boolean = isSvgIcon;
   protected readonly isImageIcon: (url: string | null | undefined) => boolean = isImageIcon;
-  protected readonly isHttpUrl: (url: string | null | undefined) => boolean = isHttpUrl;
   /** @guideline DZ_10 - UI text constants */
   protected readonly uiText = UI_TEXT;
   protected readonly icons = ICONS;
+  protected readonly colors = COLORS_ENUM;
+  protected readonly blockBehaviours = BLOCK_BEHAVIOUR_ENUM;
+  protected readonly viewTypes = VIEW_ENUM;
 
-  protected toggleFocus(): void {
+  protected onToggleFocus(): void {
     this.#focusService.toggleFocus();
   }
 
-  // protected addCurrentTabToPeriod(): void {
-  //   this.#focusService.addCurrentTabToPeriod();
-  // }
-
-  protected blockCurrentTab(): void {
+  protected onBlockCurrentTab(): void {
     this.#focusService.addCurrentTabToPeriod(true);
   }
 
@@ -118,7 +156,19 @@ export class FocusComponent {
     this.#focusService.toggleBlockedWebsite(site);
   }
 
-  protected isPeriodCurrent(period: IFocus.Period): boolean {
-    return this.currentPeriod()?.id === period.id;
+  protected onEditCurrentPeriod(): void {
+    this.onNavigation(VIEW_ENUM.EDIT_PERIOD, { period: this.currentPeriod() });
+  }
+
+  protected onAddPeriod(): void {
+    this.onNavigation(VIEW_ENUM.ADD_PERIOD);
+  }
+
+  protected onOpenWebsitesList(): void {
+    console.debug('onOpenWebsitesList');
+  }
+
+  protected onNavigation(route: ViewType, payload: object | null = null): void {
+    this.#router.navigate(route, payload);
   }
 }

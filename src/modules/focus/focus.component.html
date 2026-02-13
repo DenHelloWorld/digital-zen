@@ -2,103 +2,173 @@
 <ng-template #icon let-iconHref="href" let-iconClass="class" let-width="width" let-height="height">
   <svg
     [class]="iconClass || 'dz-icon'"
-    aria-hidden="true"
-    focusable="false"
     [attr.width]="width"
     [attr.height]="height"
+    aria-hidden="true"
+    focusable="false"
   >
     <use [attr.href]="iconHref" [attr.width]="width" [attr.height]="height" />
   </svg>
 </ng-template>
 
-<div class="dz-actions">
-  <button
-    disabled
-    class="dz-button dz-button--sm"
-    [class.hidden]="!isHttpUrl(activeTab()?.url) || isCurrentTabUnblockable()"
-  >
-    @if (isSvgIcon(activeTab()?.favIconUrl)) {
-      <ng-container
-        *ngTemplateOutlet="
-          icon;
-          context: {
-            href: activeTab()?.favIconUrl ? activeTab()?.favIconUrl : icons.SAVE,
-            class: 'dz-icon dz-icon--shadow',
-            width: 20,
-            height: 20,
-          }
-        "
-      ></ng-container>
-    } @else if (isImageIcon(activeTab()?.favIconUrl)) {
-      <img
-        class="dz-icon dz-icon--shadow"
-        [src]="activeTab()?.favIconUrl"
-        width="20"
-        height="20"
-        alt="Favicon"
-      />
-    } @else {
-      <ng-container
-        *ngTemplateOutlet="
-          icon;
-          context: { href: icons.GLOBE, class: 'dz-icon dz-icon--shadow', width: 20, height: 20 }
-        "
-      ></ng-container>
-    }
-  </button>
+<div class="dz-focus__header">
+  <div class="dz-focus__tab">
+    <button
+      class="dz-button dz-button--nm dz-button--tab"
+      [disabled]="isTabButtonDisabled()"
+      [title]="
+        activeTab() ? uiText.FOCUS.ADD_CURRENT_TAB_TITLE : uiText.FOCUS.CANNOT_ADD_CURRENT_TAB_TITLE
+      "
+      (click)="onBlockCurrentTab()"
+    >
+      @if (isSvgIcon(activeTab()?.favIconUrl)) {
+        <ng-container
+          *ngTemplateOutlet="
+            icon;
+            context: {
+              href: activeTab()?.favIconUrl ? activeTab()?.favIconUrl : icons.SAVE,
+              class: 'dz-icon dz-icon--shadow',
+            }
+          "
+        ></ng-container>
+      } @else if (isImageIcon(activeTab()?.favIconUrl)) {
+        <img
+          class="dz-icon dz-icon--shadow"
+          [src]="activeTab()?.favIconUrl"
+          width="20"
+          height="20"
+          alt="Favicon"
+        />
+      } @else {
+        <ng-container
+          *ngTemplateOutlet="
+            icon;
+            context: {
+              href: icons.GLOBE,
+              class: 'dz-icon dz-icon--shadow',
+              width: 20,
+              height: 20,
+            }
+          "
+        ></ng-container>
+      }
 
-  <!--  <button-->
-  <!--    class="dz-button dz-button&#45;&#45;sm shadow"-->
-  <!--    [class.hidden]="!isHttpUrl(activeTab()?.url) || isCurrentTabUnblockable()"-->
-  <!--    [title]="uiText.FOCUS.ADD_CURRENT_TAB_TITLE"-->
-  <!--    (click)="addCurrentTabToPeriod()"-->
-  <!--  >-->
-  <!--    <ng-container-->
-  <!--      *ngTemplateOutlet="-->
-  <!--        icon;-->
-  <!--        context: { href: icons.ADD_LINK, class: 'dz-icon', width: 20, height: 20 }-->
-  <!--      "-->
-  <!--    ></ng-container>-->
-  <!--  </button>-->
+      <span class="dz-focus__tab-title">
+        {{ activeTab()?.title ?? uiText.FOCUS.CANNOT_ADD_CURRENT_TAB_TITLE }}</span
+      >
 
-  <button
-    [class.hidden]="!isHttpUrl(activeTab()?.url) || isCurrentTabUnblockable()"
-    [class.dz-button--activated]="isCurrentTabInCurrentPeriod()"
-    [title]="uiText.FOCUS.ADD_CURRENT_TAB_TITLE"
-    class="dz-button dz-button--sm shadow"
-    (click)="blockCurrentTab()"
-  >
-    @let href = isCurrentTabInCurrentPeriod() ? icons.CHECK : icons.ADD_LINK;
-    <ng-container
-      *ngTemplateOutlet="icon; context: { href, class: 'dz-icon', width: 20, height: 20 }"
-    ></ng-container>
-  </button>
+      @let tabIcon =
+        !isTabButtonDisabled()
+          ? isCurrentTabInCurrentPeriod()
+            ? icons.CHECK
+            : icons.ADD_LINK
+          : null;
+      <ng-container *ngTemplateOutlet="icon; context: { href: tabIcon }"></ng-container>
+    </button>
+  </div>
 
-  <button
-    [title]="uiText.FOCUS.TOGGLE_FOCUS_TITLE"
-    (click)="toggleFocus()"
-    class="dz-button dz-button--xl dz-button--round shadow"
-    [class.dz-button--activated]="currentPeriod()?.isFocused"
-  >
-    <span class="focus-timer">🚀 {{ focusElapsedTimeFormatted() }}</span>
+  <button class="dz-button dz-button--xs" (click)="onOpenWebsitesList()">
+    <ng-container *ngTemplateOutlet="icon; context: { href: icons.FOLDER }"></ng-container>
   </button>
 </div>
 
-<div class="dz-group">
-  @if (displayedPeriods().length) {
-    <ul class="dz-list">
-      @for (period of displayedPeriods(); track period.id) {
-        <li>
-          <dz-period
-            [period]="period"
-            [totalPeriodsCount]="periodsCount()"
-            [isCurrent]="isPeriodCurrent(period)"
-            [isFocusActive]="isFocusActive()"
-          />
-        </li>
-      }
-    </ul>
-  } @else {
-    <dz-loader />
-  }
+<div class="dz-focus__main">
+  @let bgByStatus = './bg/' + status() + '.png';
+  <div
+    class="dz-focus__widget dz-box round square"
+    [style.--bg-url]="'url(' + bgByStatus + ')'"
+    [class.light--accent]="isFocusActive()"
+    [progress]="progress()"
+    [progressConfig]="{
+      thickness: 10,
+      color: currentPeriod()?.isActive ? colors.ACCENT : colors.DEFAULT,
+    }"
+    dzProgressBorder
+  >
+    <div class="dz-box__bg dz-box__bg--transparrent breathe"></div>
+
+    <div class="dz-focus__timer dz-focus__timer--focus">
+      <div class="dz-icon-box dz-icon-box--md">
+        <div class="dz-badge" [title]="'More details'">
+          <button
+            class="dz-button dz-button--ghost dz-button--xs shadow"
+            (click)="
+              onNavigation(viewTypes.EDIT_PERIOD, {
+                period: currentPeriod(),
+                scrollToBehaviours: true,
+              })
+            "
+          >
+            <ng-container *ngTemplateOutlet="icon; context: { href: icons.INFO }"></ng-container>
+          </button>
+        </div>
+        <ng-container *ngTemplateOutlet="icon; context: { href: statusIcon() }"></ng-container>
+      </div>
+
+      <div class="hint hint--xl">
+        {{ status() }}
+      </div>
+    </div>
+
+    <div class="dz-focus__weekdays">
+      <dz-weekdays-selector [selectedDays]="selectedDays()" [isSelectable]="false" />
+    </div>
+
+    <div class="dz-focus__time-group">
+      <div class="dz-box">
+        <span class="hint">Start</span>
+
+        <div class="dz-focus__time">
+          {{ (currentPeriod()?.startFrom | date: 'HH:mm') || '00:00' }}
+        </div>
+      </div>
+
+      <div class="dz-icon-box dz-icon-box--sm">
+        <ng-container *ngTemplateOutlet="icon; context: { href: icons.LINE_END }"></ng-container>
+      </div>
+
+      <div class="dz-box">
+        <span class="hint">End</span>
+
+        <div class="dz-focus__time">{{ (currentPeriod()?.endTo | date: 'HH:mm') || '00:00' }}</div>
+      </div>
+
+      <div class="dz-box">
+        <span class="hint">Remaining</span>
+
+        <div class="dz-focus__time">{{ focusElapsedTimeFormatted() }}</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="dz-focus__footer dz-box shadow">
+  <dz-switch
+    [checked]="isFocusActive()"
+    [statusIcons]="{
+      activated: icons.STOP,
+      unActivated: icons.PLAY_ARROW,
+    }"
+    (checkedChange)="onToggleFocus()"
+    size="xxl"
+  />
+  @let hintText = currentPeriod()?.name || '';
+
+  <div class="hint full ellipsis" [title]="hintText">{{ hintText }}</div>
+
+  <button
+    class="dz-button dz-button--md dz-button--ghost shadow"
+    [title]="uiText.PERIOD.ARIA_LABELS.EDIT_PERIOD"
+    (click)="onEditCurrentPeriod()"
+  >
+    <ng-container *ngTemplateOutlet="icon; context: { href: icons.EDIT }"></ng-container>
+  </button>
+
+  <button
+    class="dz-button dz-button--md dz-button--ghost shadow"
+    [title]="uiText.HEADER.ADD_NEW_PERIOD_TITLE"
+    (click)="onAddPeriod()"
+  >
+    <ng-container *ngTemplateOutlet="icon; context: { href: icons.PLUS }"></ng-container>
+  </button>
 </div>

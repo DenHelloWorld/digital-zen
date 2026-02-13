@@ -1,11 +1,11 @@
-import { UserDataSyncAdapter } from './user-data-sync-adapter';
-import { StorageAdapter } from './storage-adapter';
 import { API_CONFIG } from '../../modules/common/constants/api-config.const';
 import { API_URLS } from '../../modules/common/constants/api-urls.const';
 import { DEFAULT_PERIOD_ID } from '../../modules/common/constants/default-period-id.const';
-import { IUserDataSync } from '../../modules/common/models/user-data-sync.model';
-import { IFocus } from '../../modules/common/models/focus.model';
 import { BLOCK_BEHAVIOUR_ENUM } from '../../modules/common/enums/block-behaviour.enum';
+import { IFocus } from '../../modules/common/models/focus.model';
+import { IUserDataSync } from '../../modules/common/models/user-data-sync.model';
+import { StorageAdapter } from './storage-adapter';
+import { UserDataSyncAdapter } from './user-data-sync-adapter';
 
 describe('UserDataSyncAdapter', () => {
   let originalFetch: typeof globalThis.fetch;
@@ -150,7 +150,7 @@ describe('UserDataSyncAdapter', () => {
             blockBehaviour: BLOCK_BEHAVIOUR_ENUM.BLOCK,
             startFrom: new Date('2024-01-01T09:00:00.000Z'),
             endTo: new Date('2024-01-01T17:00:00.000Z'),
-            isFocused: false,
+            isActive: false,
             focusedTimes: [],
             daysOfWeek: [1, 2, 3, 4, 5],
             sessionStartTime: null,
@@ -162,7 +162,7 @@ describe('UserDataSyncAdapter', () => {
             description: 'Evening hours',
             startFrom: new Date('2024-01-01T18:00:00.000Z'),
             endTo: new Date('2024-01-01T21:00:00.000Z'),
-            isFocused: false,
+            isActive: false,
             focusedTimes: [],
             daysOfWeek: [1, 2, 3, 4, 5, 6, 0],
             sessionStartTime: null,
@@ -203,7 +203,7 @@ describe('UserDataSyncAdapter', () => {
           description: 'Default period',
           startFrom: new Date('2024-01-01T09:00:00.000Z'),
           endTo: new Date('2024-01-01T17:00:00.000Z'),
-          isFocused: false,
+          isActive: false,
           focusedTimes: [],
           daysOfWeek: [1, 2, 3, 4, 5],
           blockBehaviour: BLOCK_BEHAVIOUR_ENUM.BLOCK,
@@ -218,7 +218,7 @@ describe('UserDataSyncAdapter', () => {
             description: 'Work hours',
             startFrom: new Date('2024-01-01T09:00:00.000Z'),
             endTo: new Date('2024-01-01T17:00:00.000Z'),
-            isFocused: false,
+            isActive: false,
             blockBehaviour: BLOCK_BEHAVIOUR_ENUM.BLOCK,
             focusedTimes: [],
             daysOfWeek: [1, 2, 3, 4, 5],
@@ -514,7 +514,7 @@ describe('UserDataSyncAdapter', () => {
             blockBehaviour: BLOCK_BEHAVIOUR_ENUM.BLOCK,
             startFrom: new Date('2024-01-01T09:00:00.000Z'),
             endTo: new Date('2024-01-01T17:00:00.000Z'),
-            isFocused: false,
+            isActive: false,
             focusedTimes: [],
             daysOfWeek: [1, 2, 3, 4, 5],
             sessionStartTime: null,
@@ -620,7 +620,7 @@ describe('UserDataSyncAdapter', () => {
             blockBehaviour: BLOCK_BEHAVIOUR_ENUM.BLOCK,
             startFrom: new Date('2024-01-01T06:00:00.000Z'),
             endTo: new Date('2024-01-01T09:00:00.000Z'),
-            isFocused: false,
+            isActive: false,
             focusedTimes: [],
             daysOfWeek: [1, 2, 3, 4, 5],
             sessionStartTime: null,
@@ -633,7 +633,7 @@ describe('UserDataSyncAdapter', () => {
             blockBehaviour: BLOCK_BEHAVIOUR_ENUM.BLOCK,
             startFrom: new Date('2024-01-01T09:00:00.000Z'),
             endTo: new Date('2024-01-01T17:00:00.000Z'),
-            isFocused: false,
+            isActive: false,
             focusedTimes: [],
             daysOfWeek: [1, 2, 3, 4, 5],
             sessionStartTime: null,
@@ -646,7 +646,7 @@ describe('UserDataSyncAdapter', () => {
             blockBehaviour: BLOCK_BEHAVIOUR_ENUM.BLOCK,
             startFrom: new Date('2024-01-01T18:00:00.000Z'),
             endTo: new Date('2024-01-01T21:00:00.000Z'),
-            isFocused: false,
+            isActive: false,
             focusedTimes: [],
             daysOfWeek: [1, 2, 3, 4, 5, 6, 0],
             sessionStartTime: null,
@@ -680,7 +680,7 @@ describe('UserDataSyncAdapter', () => {
             blockBehaviour: BLOCK_BEHAVIOUR_ENUM.BLOCK,
             startFrom: new Date('2024-01-01T09:00:00.000Z'),
             endTo: new Date('2024-01-01T17:00:00.000Z'),
-            isFocused: false,
+            isActive: false,
             focusedTimes: [],
             daysOfWeek: [1, 2, 3, 4, 5],
             sessionStartTime: null,
@@ -693,7 +693,7 @@ describe('UserDataSyncAdapter', () => {
             blockBehaviour: BLOCK_BEHAVIOUR_ENUM.BLOCK,
             startFrom: new Date('2024-01-01T09:00:00.000Z'),
             endTo: new Date('2024-01-01T17:00:00.000Z'),
-            isFocused: false,
+            isActive: false,
             focusedTimes: [],
             daysOfWeek: [1, 2, 3, 4, 5],
             sessionStartTime: null,
@@ -733,7 +733,7 @@ describe('UserDataSyncAdapter', () => {
             blockBehaviour: BLOCK_BEHAVIOUR_ENUM.BLOCK,
             startFrom: new Date('2024-01-01T09:00:00.000Z'),
             endTo: new Date('2024-01-01T17:00:00.000Z'),
-            isFocused: false,
+            isActive: false,
             focusedTimes: [],
             daysOfWeek: [1, 2, 3, 4, 5],
             sessionStartTime: null,
@@ -811,7 +811,7 @@ describe('UserDataSyncAdapter', () => {
           blockBehaviour: BLOCK_BEHAVIOUR_ENUM.BLOCK,
           startFrom: new Date('2024-01-01T09:00:00.000Z'),
           endTo: new Date('2024-01-01T17:00:00.000Z'),
-          isFocused: false,
+          isActive: false,
           focusedTimes: [],
           daysOfWeek: [1, 2, 3, 4, 5],
           sessionStartTime: null,
@@ -824,7 +824,7 @@ describe('UserDataSyncAdapter', () => {
           blockBehaviour: BLOCK_BEHAVIOUR_ENUM.BLOCK,
           startFrom: new Date('2024-01-01T09:00:00.000Z'),
           endTo: new Date('2024-01-01T17:00:00.000Z'),
-          isFocused: false,
+          isActive: false,
           focusedTimes: [],
           daysOfWeek: [1, 2, 3, 4, 5],
           sessionStartTime: null,

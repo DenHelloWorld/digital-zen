@@ -1,4 +1,8 @@
 :host {
+  .dz-accordion {
+    margin: 0 auto;
+  }
+
   .dz-accordion__content {
     display: flex;
     flex-direction: column;
@@ -22,8 +26,7 @@
     }
   }
 
-  .title,
-  .weekdays {
+  .title {
     width: 100%;
   }
 
@@ -37,7 +40,7 @@
 
   .dz-period-edit {
     width: 100%;
-    margin: 0 0 var(--spacing) 0;
+    padding: var(--spacing);
   }
 
   .dz-confirm-delete {

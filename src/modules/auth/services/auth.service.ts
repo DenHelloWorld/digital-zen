@@ -1,7 +1,7 @@
-import { effect, inject, Injectable, Signal } from '@angular/core';
-import { GoogleAuthService } from './google-auth.service';
-import { logger } from '../../common/helpers/logger';
 import { CHROME_COMMAND_ENUM } from '../../common/enums/chrome-command.enum';
+import { logger } from '../../common/helpers/logger';
+import { GoogleAuthService } from './google-auth.service';
+import { effect, inject, Injectable, Signal } from '@angular/core';
 
 /**
  * Main authentication service

@@ -4,3 +4,11 @@
     <use [attr.href]="iconHref"></use>
   </svg>
 </ng-template>
+
+<ul class="dz-list">
+  @for (period of periods(); track period.id) {
+    <li>
+      <dz-period [period]="period" />
+    </li>
+  }
+</ul>

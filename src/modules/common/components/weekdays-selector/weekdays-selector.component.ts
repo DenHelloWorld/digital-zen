@@ -1,3 +1,6 @@
+import { ALL_DAYS_OF_WEEK } from '../../constants/days-of-week.const';
+import { IFocus } from '../../models/focus.model';
+import { MultiSelectorComponent } from '../multi-selector/multi-selector.component';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -6,10 +9,6 @@ import {
   model,
   ModelSignal,
 } from '@angular/core';
-
-import { MultiSelectorComponent } from '../multi-selector/multi-selector.component';
-import { IFocus } from '../../models/focus.model';
-import { ALL_DAYS_OF_WEEK } from '../../constants/days-of-week.const';
 
 /**
  * Weekdays selector component for choosing days of the week

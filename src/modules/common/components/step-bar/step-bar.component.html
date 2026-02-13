@@ -11,15 +11,22 @@
       [class]="'dz-step-bar__container--' + orientation()"
       [title]="option.label"
     >
-      <button
-        class="dz-button dz-button--sm"
-        [disabled]="isDisabled()"
-        [class.dz-button--activated]="currentOption()?.value === option.value"
-        (click)="setCurrentOption(option)"
-      >
-        <ng-container *ngTemplateOutlet="icon; context: { href: option.icon }" />
-      </button>
-
+      @if (isDisabled()) {
+        <div
+          class="dz-icon-box dz-icon-box--sm"
+          [class.dz-icon-box--activated]="currentOption()?.value === option.value"
+        >
+          <ng-container *ngTemplateOutlet="icon; context: { href: option.icon }" />
+        </div>
+      } @else {
+        <button
+          class="dz-button dz-button--sm"
+          [class.dz-button--activated]="currentOption()?.value === option.value"
+          (click)="setCurrentOption(option)"
+        >
+          <ng-container *ngTemplateOutlet="icon; context: { href: option.icon }" />
+        </button>
+      }
       @if (!last && isShowSeparators()) {
         <span class="dz-step-bar__separator"></span>
       }

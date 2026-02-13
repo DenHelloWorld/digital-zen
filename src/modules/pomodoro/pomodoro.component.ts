@@ -1,3 +1,13 @@
+import { IStepBarOption, StepBarComponent } from '../common/components/step-bar/step-bar.component';
+import { ValueStepperComponent } from '../common/components/value-stepper/value-stepper.component';
+import { FINISHED_CYCLE } from '../common/constants/finished-cycle.const';
+import { ICONS } from '../common/constants/icons.const';
+import { UI_TEXT } from '../common/constants/ui-text.const';
+import { ProgressBorderDirective } from '../common/directives/progress-border.directive';
+import { COLORS_ENUM } from '../common/enums/colors.enum';
+import { IPomodoro } from '../common/models/pomodoro.model';
+import { PomodoroService } from './services/pomodoro.service';
+import { CommonModule } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -8,19 +18,9 @@ import {
   Injector,
   OnInit,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { ValueStepperComponent } from '../common/components/value-stepper/value-stepper.component';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { IPomodoro } from '../common/models/pomodoro.model';
-import { PomodoroService } from './services/pomodoro.service';
-import { MultiSelectorComponent } from '../common/components/multi-selector/multi-selector.component';
-import { IStepBarOption, StepBarComponent } from '../common/components/step-bar/step-bar.component';
-import { debounceTime, distinctUntilChanged } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { ProgressBorderDirective } from '../common/directives/progress-border.directive';
-import { UI_TEXT } from '../common/constants/ui-text.const';
-import { ICONS } from '../common/constants/icons.const';
-import { FINISHED_CYCLE } from '../common/constants/finished-cycle.const';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { debounceTime, distinctUntilChanged, filter } from 'rxjs';
 
 /**
  * Pomodoro timer component
@@ -45,7 +45,6 @@ import { FINISHED_CYCLE } from '../common/constants/finished-cycle.const';
 
     // components
     ValueStepperComponent,
-    MultiSelectorComponent,
     StepBarComponent,
 
     // directives
@@ -60,24 +59,30 @@ export class PomodoroComponent implements OnInit {
 
   protected readonly uiText = UI_TEXT;
   protected readonly icons = ICONS;
-  protected readonly phase = IPomodoro.EPomodoroPhase;
-  protected readonly allPhases: {
-    phase: IPomodoro.IPomodoroPhase;
-    icon: string;
-  }[] = [
-    {
-      phase: IPomodoro.EPomodoroPhase.WORK,
-      icon: this.icons.NETWORK_INTELLIGENCE,
+  protected readonly colors = COLORS_ENUM;
+
+  protected readonly phaseMetadata: Record<
+    IPomodoro.EPomodoroPhase,
+    { icon: string; color: COLORS_ENUM }
+  > = {
+    [IPomodoro.EPomodoroPhase.WORK]: {
+      icon: this.icons.SCHOOL,
+      color: this.colors.ACCENT,
     },
-    {
-      phase: IPomodoro.EPomodoroPhase.SHORT_BREAK,
+    [IPomodoro.EPomodoroPhase.SHORT_BREAK]: {
       icon: this.icons.COFFEE,
+      color: this.colors.SUCCESS,
     },
-    {
-      phase: IPomodoro.EPomodoroPhase.LONG_BREAK,
+    [IPomodoro.EPomodoroPhase.LONG_BREAK]: {
       icon: this.icons.CHAIR,
+      color: this.colors.INFO,
     },
-  ];
+
+    [IPomodoro.EPomodoroPhase.IDLE]: {
+      icon: this.icons.MOON,
+      color: this.colors.ON_ACCENT,
+    },
+  };
 
   protected readonly pomodoroState = this.#pomodoroService.state;
   protected readonly pomodoroSettings = this.#pomodoroService.settings;
@@ -85,14 +90,19 @@ export class PomodoroComponent implements OnInit {
   protected readonly timeLeftFormatted = this.#pomodoroService.timeLeftFormatted;
   protected readonly isRunning = computed(() => this.pomodoroState()?.isRunning);
   protected readonly isPaused = computed(() => this.pomodoroState()?.isPaused);
+  protected readonly currentPhase = computed(() => this.pomodoroState()?.phase);
 
-  protected readonly currentPhase = computed(() => {
-    return [
-      {
-        phase: this.pomodoroState()?.phase ?? IPomodoro.EPomodoroPhase.IDLE,
-      },
-    ];
+  protected readonly currentPhaseIcon = computed(() => {
+    const phase = this.currentPhase();
+
+    return phase ? this.phaseMetadata[phase]?.icon : this.icons.PAUSE;
   });
+  protected readonly currentProgressColor = computed(() => {
+    const phase = this.currentPhase();
+
+    return phase ? this.phaseMetadata[phase]?.color : this.colors.ON_ACCENT;
+  });
+
   protected currentCycleBarOption = computed(() => {
     const state = this.pomodoroState();
     const options = this.cyclesBarOptions();
@@ -105,25 +115,33 @@ export class PomodoroComponent implements OnInit {
   });
   protected readonly cyclesBarOptions = computed<IStepBarOption[]>(() => {
     const state = this.pomodoroState();
-    const isSessionEnds = state?.currentCycle === FINISHED_CYCLE && !state?.isRunning;
+    if (!state) return [];
 
-    const steps: IStepBarOption[] = Array.from({ length: state?.totalCycles }, (_, i) => {
-      const cycleNumber = i + 1;
-      const isCurrentShortBreak =
-        state?.currentCycle === cycleNumber &&
-        state?.phase === IPomodoro.EPomodoroPhase.SHORT_BREAK;
+    const { currentCycle, phase, totalCycles, isRunning } = state;
+    const isSessionEnds = currentCycle === FINISHED_CYCLE && !isRunning;
+
+    const steps: IStepBarOption[] = Array.from({ length: totalCycles }, (_, i) => {
+      const num = i + 1;
+      const isCurrent = currentCycle === num;
+      const isBreak = phase === IPomodoro.EPomodoroPhase.SHORT_BREAK;
+
+      const icon = isCurrent
+        ? isBreak
+          ? this.icons.COFFEE
+          : this.icons.SCHOOL
+        : this.icons.TOMATO;
 
       return {
-        label: `Study ${cycleNumber}`,
-        value: cycleNumber,
-        icon: isCurrentShortBreak ? this.icons.COFFEE : this.icons.SCHOOL,
+        label: `${this.uiText.POMODORO.UNITS.POMODORO} ${num}`,
+        value: num,
+        icon: icon,
       };
     });
 
     steps.push({
-      label: 'Finish',
+      label: this.uiText.POMODORO.UNITS.FINISH,
       value: FINISHED_CYCLE,
-      icon: isSessionEnds ? this.icons.CHECK : this.icons.CHAIR,
+      icon: isSessionEnds ? this.icons.TROPHY : this.icons.CHAIR,
     });
 
     return steps;
@@ -166,6 +184,7 @@ export class PomodoroComponent implements OnInit {
     this.form.valueChanges
       .pipe(
         debounceTime(400),
+        filter(() => this.form.valid),
         distinctUntilChanged((prev, curr) => JSON.stringify(prev) === JSON.stringify(curr)),
         takeUntilDestroyed(this.#destroyRef)
       )
@@ -215,17 +234,10 @@ export class PomodoroComponent implements OnInit {
 
       cyclesBeforeLongBreak: this.#fb.nonNullable.control(initSettings.cyclesBeforeLongBreak, [
         Validators.required,
-        Validators.min(1),
+        Validators.min(2),
         Validators.max(5),
       ]),
       pauseAfterPhaseEnd: this.#fb.nonNullable.control(initSettings.pauseAfterPhaseEnd),
-
-      workStepConfig: this.#fb.nonNullable.control(initSettings.workStepConfig),
-      shortBreakStepConfig: this.#fb.nonNullable.control(initSettings.shortBreakStepConfig),
-      longBreakStepConfig: this.#fb.nonNullable.control(initSettings.longBreakStepConfig),
-      cyclesBeforeLongBreakConfig: this.#fb.nonNullable.control(
-        initSettings.cyclesBeforeLongBreakConfig
-      ),
     });
   }
 }

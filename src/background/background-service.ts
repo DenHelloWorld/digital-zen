@@ -1,24 +1,23 @@
 /// <reference types="chrome"/>
-import { StorageAdapter } from './common/storage-adapter';
-import { UserDataSyncAdapter } from './common/user-data-sync-adapter';
-import { GoogleAuthAdapter } from './common/google-auth-adapter';
-
-import { BackgroundFocusService } from './focus/background-focus-service';
-import { AlarmAdapter } from './common/alarm-adapter';
-import { ExtensionIconAdapter } from './common/extension-icon-adapter';
-import { BackgroundPomodoroService } from './pomodoro/background-pomodoro.service';
-import { FOCUS_ERROR_ENUM } from '../modules/common/enums/focus-error.enum';
-import { logger } from '../modules/common/helpers/logger';
+import { ALARM_PERIOD_IN_MINUTES } from '../modules/common/constants/alarm-period-in-minutes.const';
+import { DEFAULT_POMODORO_SETTINGS } from '../modules/common/constants/default-pomodoro-settings.const';
+import { CHROME_ALARM_ENUM } from '../modules/common/enums/chrome-alarm-name.enum';
 import {
   CHROME_COMMAND_ENUM,
   ChromeCommandType,
 } from '../modules/common/enums/chrome-command.enum';
-import { CHROME_ALARM_ENUM } from '../modules/common/enums/chrome-alarm-name.enum';
+import { FOCUS_ERROR_ENUM } from '../modules/common/enums/focus-error.enum';
+import { createDefaultPomodoroStateHelper } from '../modules/common/helpers/create-default-pomodoro-state.helper';
+import { logger } from '../modules/common/helpers/logger';
 import { isCurrentTimeAfter } from '../modules/common/helpers/time.helper';
 import { IFocus } from '../modules/common/models/focus.model';
-import { DEFAULT_POMODORO_SETTINGS } from '../modules/common/constants/default-pomodoro-settings.const';
-import { createDefaultPomodoroStateHelper } from '../modules/common/helpers/create-default-pomodoro-state.helper';
-import { ALARM_PERIOD_IN_MINUTES } from '../modules/common/constants/alarm-period-in-minutes.const';
+import { AlarmAdapter } from './common/alarm-adapter';
+import { ExtensionIconAdapter } from './common/extension-icon-adapter';
+import { GoogleAuthAdapter } from './common/google-auth-adapter';
+import { StorageAdapter } from './common/storage-adapter';
+import { UserDataSyncAdapter } from './common/user-data-sync-adapter';
+import { BackgroundFocusService } from './focus/background-focus-service';
+import { BackgroundPomodoroService } from './pomodoro/background-pomodoro.service';
 
 type FocusOperationResult = { success: true } | { success: false; error: FOCUS_ERROR_ENUM };
 
@@ -165,6 +164,23 @@ export class BackgroundService {
               sendResponse({ success: true });
               break;
             }
+            case CHROME_COMMAND_ENUM.OPEN_SIDE_PANEL_APP: {
+              const targetWindowId = message.windowId || sender.tab?.windowId;
+
+              if (targetWindowId) {
+                chrome.sidePanel
+                  .open({ windowId: targetWindowId })
+                  .then(() => sendResponse({ success: true }))
+                  .catch(err => {
+                    this.#logger.error('SidePanel gesture error:', err);
+                    sendResponse({ success: false });
+                  });
+              } else {
+                chrome.sidePanel.open({ windowId: chrome.windows.WINDOW_ID_CURRENT });
+                sendResponse({ success: true });
+              }
+              break;
+            }
             default:
               sendResponse({ success: false, error: FOCUS_ERROR_ENUM.UNKNOWN_COMMAND });
           }
@@ -181,7 +197,7 @@ export class BackgroundService {
       chrome.storage.local.set({ tab_id: activeInfo.tabId });
     });
 
-    chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+    chrome.tabs.onUpdated.addListener((_, changeInfo, tab) => {
       if (changeInfo.status === 'complete' && tab.active && tab.url) {
         chrome.storage.local.set({ tab_url: tab.url });
       }
@@ -201,11 +217,7 @@ export class BackgroundService {
       switch (alarm.name) {
         case CHROME_ALARM_ENUM.CHECK_FOCUS_END: {
           const current = await StorageAdapter.getCurrentPeriod();
-          if (
-            current?.isFocused &&
-            current.endTo &&
-            isCurrentTimeAfter(new Date(), current.endTo)
-          ) {
+          if (current?.isActive && current.endTo && isCurrentTimeAfter(new Date(), current.endTo)) {
             await this.#focusService.stopFocus();
           }
           break;
@@ -233,9 +245,9 @@ export class BackgroundService {
       current = periods[0];
     }
 
-    this.updateExtensionIcon(!!current?.isFocused);
+    this.updateExtensionIcon(!!current?.isActive);
 
-    if (current?.isFocused) {
+    if (current?.isActive) {
       this.#focusService.updateBlockRulesForCurrentPeriod();
       this.scheduleAlarm();
     } else {
@@ -278,7 +290,7 @@ export class BackgroundService {
 
     if (current && current.id === period.id) {
       await StorageAdapter.saveCurrentPeriod(period);
-      if (period.isFocused) {
+      if (period.isActive) {
         this.#focusService.updateBlockRulesForCurrentPeriod();
         this.scheduleAlarm();
       }
@@ -300,7 +312,7 @@ export class BackgroundService {
     await StorageAdapter.savePeriod(updatedPeriod);
     await StorageAdapter.saveCurrentPeriod(updatedPeriod);
 
-    if (updatedPeriod.isFocused) {
+    if (updatedPeriod.isActive) {
       this.#focusService.updateBlockRulesForCurrentPeriod();
     }
     await UserDataSyncAdapter.syncPeriodsToBackend();
@@ -329,7 +341,7 @@ export class BackgroundService {
 
     const current = await StorageAdapter.getCurrentPeriod();
 
-    if (current?.isFocused) {
+    if (current?.isActive) {
       await this.#focusService.stopFocus();
       const updatedPeriods = await StorageAdapter.getPeriods();
       const freshPeriod = updatedPeriods.find(p => p.id === periodId);

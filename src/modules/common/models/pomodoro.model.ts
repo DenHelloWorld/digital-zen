@@ -1,18 +1,7 @@
+import { IStepConfig } from './step-config.model';
 import { FormControl } from '@angular/forms';
 
 export namespace IPomodoro {
-  /** Configuration for value increments and bounds in steppers */
-  export interface StepConfig {
-    /** Standard increment value (e.g., via keyboard arrows) */
-    step: number;
-    /** Large increment value (e.g., via +/- 5 min buttons) */
-    quickStep: number;
-    /** Minimum allowed value */
-    min: number;
-    /** Maximum allowed value */
-    max: number;
-  }
-
   /** Global application settings managed by the user */
   export interface Settings {
     /** Current work session duration in minutes */
@@ -22,15 +11,15 @@ export namespace IPomodoro {
     /** Current long break duration in minutes */
     longBreakMin: number;
     /** Number of work cycles required to trigger a long break */
-    cyclesBeforeLongBreak: 1 | 2 | 3 | 4 | 5;
+    cyclesBeforeLongBreak: 2 | 3 | 4 | 5;
 
     /** Stepper constraints for work session settings */
-    workStepConfig: StepConfig;
+    workStepConfig: IStepConfig;
     /** Stepper constraints for short break settings */
-    shortBreakStepConfig: StepConfig;
+    shortBreakStepConfig: IStepConfig;
     /** Stepper constraints for long break settings */
-    longBreakStepConfig: StepConfig;
-    cyclesBeforeLongBreakConfig: StepConfig;
+    longBreakStepConfig: IStepConfig;
+    cyclesBeforeLongBreakConfig: IStepConfig;
 
     /** Whether to automatically transition to the next phase */
     pauseAfterPhaseEnd: boolean;
@@ -40,11 +29,7 @@ export namespace IPomodoro {
     workDurationMin: FormControl<number>;
     shortBreakMin: FormControl<number>;
     longBreakMin: FormControl<number>;
-    cyclesBeforeLongBreak: FormControl<1 | 2 | 3 | 4 | 5>;
-    workStepConfig: FormControl<StepConfig>;
-    shortBreakStepConfig: FormControl<StepConfig>;
-    longBreakStepConfig: FormControl<StepConfig>;
-    cyclesBeforeLongBreakConfig: FormControl<StepConfig>;
+    cyclesBeforeLongBreak: FormControl<2 | 3 | 4 | 5>;
     pauseAfterPhaseEnd: FormControl<boolean>;
   }
 
@@ -91,8 +76,8 @@ export namespace IPomodoro {
   /** Available phases for the Pomodoro timer */
   export enum EPomodoroPhase {
     WORK = 'work',
-    SHORT_BREAK = 'short_break',
-    LONG_BREAK = 'long_break',
+    SHORT_BREAK = 'short break',
+    LONG_BREAK = 'long break',
     IDLE = 'idle',
   }
 

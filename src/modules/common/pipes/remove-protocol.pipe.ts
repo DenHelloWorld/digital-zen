@@ -1,5 +1,5 @@
-import { Pipe, PipeTransform } from '@angular/core';
 import { cleanProtocolHelper } from '../helpers/clean-protocol.helper';
+import { Pipe, PipeTransform } from '@angular/core';
 
 /**
  * Pipe that uses cleanProtocolHelper to remove http:// or https://

@@ -1,3 +1,20 @@
+import { DzToastService } from '../../common/components';
+import { ICONS } from '../../common/constants/icons.const';
+import { QUICK_FOCUS_ID } from '../../common/constants/quick-focus-id.const';
+import { WEBSITES_UNACTIVATABLE } from '../../common/constants/websites.const';
+import { CHROME_COMMAND_ENUM } from '../../common/enums/chrome-command.enum';
+import { CHROME_STORAGE_KEY_ENUM } from '../../common/enums/chrome-storage-key.enum';
+import { FOCUS_ERROR_ENUM } from '../../common/enums/focus-error.enum';
+import { TOAST_MESSAGES_ENUM } from '../../common/enums/toast-messages.enum';
+import { TOAST_TYPE_ENUM } from '../../common/enums/toast-type.enum';
+import { cleanUrlHelper } from '../../common/helpers/clean-url.helper';
+import { createDefaultPeriodHelper } from '../../common/helpers/create-default-period.helper';
+import { FaviconHelper } from '../../common/helpers/favicon.helper';
+import { isImageIcon } from '../../common/helpers/is-image-icon.helper';
+import { isSvgIcon } from '../../common/helpers/is-svg-icon.helper';
+import { logger } from '../../common/helpers/logger';
+import { IFocus } from '../../common/models/focus.model';
+import { ChromeStorageService } from '../../common/services/chrome-storage.service';
 import {
   computed,
   DestroyRef,
@@ -7,24 +24,6 @@ import {
   signal,
   WritableSignal,
 } from '@angular/core';
-import { CHROME_STORAGE_KEY_ENUM } from '../../common/enums/chrome-storage-key.enum';
-import { IFocus } from '../../common/models/focus.model';
-import { logger } from '../../common/helpers/logger';
-import { DzToastService } from '../../common/components';
-import { ChromeStorageService } from '../../common/services/chrome-storage.service';
-import { QUICK_FOCUS_ID } from '../../common/constants/quick-focus-id.const';
-import { WEBSITES_UNACTIVATABLE } from '../../common/constants/websites.const';
-import { CHROME_COMMAND_ENUM } from '../../common/enums/chrome-command.enum';
-import { TOAST_TYPE_ENUM } from '../../common/enums/toast-type.enum';
-import { POSITIONS_ENUM } from '../../common/enums/positions.enum';
-import { FOCUS_ERROR_ENUM } from '../../common/enums/focus-error.enum';
-import { TOAST_MESSAGES_ENUM } from '../../common/enums/toast-messages.enum';
-import { cleanUrlHelper } from '../../common/helpers/clean-url.helper';
-import { isSvgIcon } from '../../common/helpers/is-svg-icon.helper';
-import { isImageIcon } from '../../common/helpers/is-image-icon.helper';
-import { createDefaultPeriodHelper } from '../../common/helpers/create-default-period.helper';
-import { ICONS } from '../../common/constants/icons.const';
-import { FaviconHelper } from '../../common/helpers/favicon.helper';
 
 interface InitialStorageSchema {
   [CHROME_STORAGE_KEY_ENUM.CURRENT_PERIOD]: IFocus.Period;
@@ -69,23 +68,63 @@ export class FocusService {
   /** @guideline DZ_08 - Private field */
   #timerIntervalId: ReturnType<typeof setInterval> | null = null;
 
-  /**
-   * Computed signal that returns the elapsed focus time in milliseconds.
-   * Returns 0 if focus is not active or sessionStartTime is not set.
-   */
-  readonly #focusElapsedTime: Signal<number> = computed(() => {
+  readonly #focusRemainingTime: Signal<number> = computed(() => {
     const period = this.#currentPeriod();
-    const currentTime = this.#currentTime();
+    const nowTimestamp = this.#currentTime();
+    const now = new Date(nowTimestamp);
 
-    if (!period?.isFocused || !period?.sessionStartTime) {
+    if (!period?.endTo) {
       return 0;
     }
 
-    return currentTime - period.sessionStartTime.getTime();
+    const deadline = new Date(now);
+    deadline.setHours(period.endTo.getHours(), period.endTo.getMinutes(), 0, 0);
+
+    if (
+      deadline.getTime() <= now.getTime() &&
+      period.startFrom &&
+      period.endTo.getHours() < period.startFrom.getHours()
+    ) {
+      deadline.setDate(deadline.getDate() + 1);
+    }
+
+    const remaining = deadline.getTime() - now.getTime();
+    return remaining > 0 ? remaining : 0;
   });
 
-  public readonly currentPeriod: Signal<IFocus.Period | null> = this.#currentPeriod.asReadonly();
-  public readonly activeTab: Signal<chrome.tabs.Tab | undefined> = this.#activeTab.asReadonly();
+  public readonly currentPeriod = this.#currentPeriod.asReadonly();
+  public readonly activeTab = this.#activeTab.asReadonly();
+
+  /**
+   * Computed signal for progress bar value (0 to 1)
+   * Progress = (now - startsFrom) / (endsTo - startsFrom)
+   * Only shows progress when current time is within the scheduled range
+   */
+  public readonly progress = computed(() => {
+    const period = this.#currentPeriod();
+    if (!period?.startFrom || !period?.endTo) return 0;
+
+    const now = this.#currentTime();
+
+    const todayStart = new Date(now);
+    todayStart.setHours(period.startFrom.getHours(), period.startFrom.getMinutes(), 0, 0);
+
+    const todayEnd = new Date(now);
+    todayEnd.setHours(period.endTo.getHours(), period.endTo.getMinutes(), 0, 0);
+
+    if (todayEnd <= todayStart) {
+      todayEnd.setDate(todayEnd.getDate() + 1);
+    }
+
+    if (now < todayStart.getTime() || now > todayEnd.getTime()) {
+      return 0;
+    }
+
+    const elapsed = now - todayStart.getTime();
+    const total = todayEnd.getTime() - todayStart.getTime();
+
+    return 1 - elapsed / total;
+  });
 
   public readonly periods: Signal<IFocus.Period[] | null> = computed(
     () => this.#periods()?.filter(p => p.id !== QUICK_FOCUS_ID) ?? null
@@ -97,13 +136,13 @@ export class FocusService {
    * Formatted focus time as a string (MM:SS or HH:MM:SS).
    */
   public readonly focusElapsedTimeFormatted: Signal<string> = computed(() => {
-    const elapsed = this.#focusElapsedTime();
+    const remaining = this.#focusRemainingTime();
 
-    if (elapsed <= 0) {
+    if (remaining <= 0) {
       return '00:00';
     }
 
-    const totalSeconds = Math.floor(elapsed / 1000);
+    const totalSeconds = Math.floor(remaining / 1000);
     const hours = Math.floor(totalSeconds / 3600);
     const minutes = Math.floor((totalSeconds % 3600) / 60);
     const seconds = totalSeconds % 60;
@@ -131,6 +170,7 @@ export class FocusService {
     this.#syncInitialState();
     this.#listenToStorageChanges();
     this.#getActiveTab();
+    this.#listenToTabChanges();
     this.#startTimer();
   }
 
@@ -152,15 +192,6 @@ export class FocusService {
     }
   }
 
-  public toggleQuickFocus(): void {
-    if (this.#isChromeRuntime && this.activeTab()?.url) {
-      chrome.runtime.sendMessage({
-        command: CHROME_COMMAND_ENUM.TOGGLE_QUICK_FOCUS,
-        siteUrl: this.activeTab()?.url,
-      });
-    }
-  }
-
   public toggleFocus(): void {
     if (this.#isChromeRuntime) {
       this.#notifyIfNoSitesBlocked(this.#currentPeriod());
@@ -171,7 +202,6 @@ export class FocusService {
           this.#toastService.show({
             message: 'Failed to communicate with background service.',
             type: TOAST_TYPE_ENUM.ERROR,
-            position: POSITIONS_ENUM.BOTTOM_RIGHT,
           });
           return;
         }
@@ -181,14 +211,12 @@ export class FocusService {
             this.#toastService.show({
               message: TOAST_MESSAGES_ENUM.PERIOD_NOT_SCHEDULED_TODAY,
               type: TOAST_TYPE_ENUM.WARN,
-              position: POSITIONS_ENUM.BOTTOM_RIGHT,
               target: `${TOAST_MESSAGES_ENUM.PERIOD_NOT_SCHEDULED_TODAY}${this.#currentPeriod()?.id}`,
             });
           } else if (response.error === FOCUS_ERROR_ENUM.PERIOD_OUTSIDE_TIME_RANGE) {
             this.#toastService.show({
               message: TOAST_MESSAGES_ENUM.PERIOD_OUTSIDE_TIME_RANGE,
               type: TOAST_TYPE_ENUM.WARN,
-              position: POSITIONS_ENUM.BOTTOM_RIGHT,
               target: `${TOAST_MESSAGES_ENUM.PERIOD_OUTSIDE_TIME_RANGE}${this.#currentPeriod()?.id}`,
             });
           }
@@ -231,23 +259,21 @@ export class FocusService {
         return;
       }
 
-      const iconUrl = tab.favIconUrl ?? FaviconHelper.getGoogleUrl(clearedUrl);
+      const existingSite = period.webSites.find(s => cleanUrlHelper(s.url) === clearedUrl);
 
-      const newSite: IFocus.WebSite = {
-        id: clearedUrl,
-        url: clearedUrl,
-        name: clearedUrl,
-        iconUrl: isSvgIcon(iconUrl) ? iconUrl : ICONS.GLOBE,
-        description: tab.title || clearedUrl,
-        imageUrl: isImageIcon(iconUrl) ? iconUrl : '',
-        type: IFocus.EWebSiteType.DEFAULT,
-        isActivated,
-      };
+      if (!existingSite) {
+        const iconUrl = tab.favIconUrl ?? FaviconHelper.getGoogleUrl(clearedUrl);
+        const newSite: IFocus.WebSite = {
+          id: clearedUrl,
+          url: clearedUrl,
+          name: tab.title || clearedUrl,
+          iconUrl: isSvgIcon(iconUrl) ? iconUrl : ICONS.GLOBE,
+          description: tab.title || clearedUrl,
+          imageUrl: isImageIcon(iconUrl) ? iconUrl : '',
+          type: IFocus.EWebSiteType.DEFAULT,
+          isActivated,
+        };
 
-      const siteExists = period.webSites.some(s => s.url === newSite.url);
-      const existingSite = period.webSites.find(s => s.url === newSite.url);
-
-      if (!siteExists) {
         const updatedPeriod = {
           ...period,
           webSites: [...period.webSites, newSite],
@@ -258,11 +284,11 @@ export class FocusService {
           message: TOAST_MESSAGES_ENUM.ADDED,
           type: TOAST_TYPE_ENUM.ACCENT,
         });
-      } else if (isActivated && !existingSite?.isActivated) {
+      } else if (isActivated && !existingSite.isActivated) {
         const updatedPeriod = {
           ...period,
           webSites: period.webSites.map(s =>
-            s.url === newSite.url ? { ...s, isActivated: true } : s
+            cleanUrlHelper(s.url) === clearedUrl ? { ...s, isActivated: true } : s
           ),
         };
 
@@ -296,7 +322,6 @@ export class FocusService {
             this.#toastService.show({
               message: TOAST_MESSAGES_ENUM.FAILED_TO_SWITCH_PERIOD,
               type: TOAST_TYPE_ENUM.ERROR,
-              position: POSITIONS_ENUM.BOTTOM_RIGHT,
             });
             return;
           }
@@ -310,7 +335,6 @@ export class FocusService {
             this.#toastService.show({
               message,
               type: TOAST_TYPE_ENUM.ERROR,
-              position: POSITIONS_ENUM.BOTTOM_RIGHT,
             });
           } else if (response && response.success) {
             this.#toastService.show({
@@ -445,13 +469,36 @@ export class FocusService {
   #notifyIfNoSitesBlocked(period: IFocus.Period | null): void {
     const hasActivatedSites = period?.webSites.some(site => site.isActivated) ?? false;
 
-    if (!period?.isFocused && !hasActivatedSites) {
+    if (!period?.isActive && !hasActivatedSites) {
       this.#toastService.show({
         message: TOAST_MESSAGES_ENUM.NO_SITES_BLOCKED,
         type: TOAST_TYPE_ENUM.WARN,
-        position: POSITIONS_ENUM.BOTTOM_RIGHT,
         target: `${TOAST_MESSAGES_ENUM.NO_SITES_BLOCKED}${period?.id}`,
       });
     }
+  }
+
+  /**
+   * Listen to Chrome tab changes (activation and URL updates)
+   * to keep #activeTab signal in sync.
+   */
+  #listenToTabChanges(): void {
+    if (!this.#isChromeRuntime) {
+      return;
+    }
+
+    chrome.tabs.onActivated.addListener(() => {
+      this.#getActiveTab();
+    });
+
+    chrome.tabs.onUpdated.addListener((_, changeInfo, tab) => {
+      if (tab.active && changeInfo.status === 'complete') {
+        this.#activeTab.set(tab);
+      }
+    });
+
+    this.#destroyRef.onDestroy(() => {
+      chrome.tabs.onActivated.removeListener(this.#getActiveTab);
+    });
   }
 }

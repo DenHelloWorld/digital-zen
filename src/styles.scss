@@ -1,5 +1,6 @@
 @use 'digital-zen-pack/style.css';
 @use 'styles/variables';
+@use 'styles/badge';
 
 /* Box sizing */
 *,
@@ -34,7 +35,6 @@ body {
   line-height: 1.5;
   -webkit-text-size-adjust: 100%;
   font-size: 16px;
-  background-color: var(--color-text);
 }
 
 /* Сброс стилей для списка */
@@ -87,12 +87,12 @@ h6 {
 a {
   text-decoration: none;
   color: inherit;
+  cursor: pointer;
 }
 
 /* Стили скролл-бара */
 *::-webkit-scrollbar {
-  width: 6px;
-  background: transparent;
+  display: none;
 }
 
 *::-webkit-scrollbar-thumb {
@@ -106,13 +106,270 @@ a {
 }
 
 .dz-button {
+  &--free {
+    padding: 0;
+    width: auto;
+    height: auto;
+  }
   &--warn {
     background-color: var(--color-zen-warn);
     color: var(--color-on-warn);
   }
 
-  &--pointerless {
-    cursor: auto;
-    pointer-events: auto;
+  &--full {
+    width: 100%;
   }
+
+  &--nm {
+    height: var(--btn-size-nm);
+    padding: var(--spacing-sm);
+  }
+
+  &--md {
+    padding: var(--spacing-sm);
+  }
+
+  &:disabled {
+    filter: grayscale(80%);
+  }
+}
+
+.dz-button.dz-button--ghost.dz-button--activated {
+  color: var(--color-text);
+}
+
+.dz-accordion {
+  &__header {
+    &--hoverless {
+      pointer-events: none;
+      cursor: default;
+    }
+  }
+
+  .title {
+    border: none;
+  }
+}
+
+img {
+  &.dz-icon {
+    object-fit: contain;
+  }
+}
+
+:root {
+  --color-zen-info: #3b82f6;
+  --color-on-info: #f1f5f9;
+  --color-component-bg-light: #ebf2ff;
+  --btn-size-nm: 38px;
+  --color-glass-text: rgba(71, 85, 105, 0.7);
+}
+
+.light {
+  @each $type in accent, warn, error, success {
+    &--#{$type} {
+      $neon:
+        0 0 10px var(--color-zen-#{$type}),
+        0 0 20px var(--color-zen-#{$type}),
+        inset 0 0 10px var(--color-zen-#{$type});
+
+      box-shadow: $neon;
+      animation: breathe 8s ease-in-out infinite;
+      &:hover {
+        box-shadow: $neon;
+      }
+    }
+  }
+}
+
+.dz-accordion {
+  background-color: transparent;
+  border: 1px solid color-mix(in srgb, var(--color-component-bg-light), white 20%);
+}
+
+.shadow {
+  border: 1px solid color-mix(in srgb, var(--color-component-bg-light), white 20%);
+}
+
+.dz-icon-box {
+  display: flex;
+  align-items: center;
+  border-radius: var(--radius);
+  padding: var(--spacing-xs);
+  background-color: transparent;
+  justify-content: center;
+  aspect-ratio: 1/1;
+  gap: var(--spacing-xs);
+
+  &--xs {
+    height: var(--btn-size-xs);
+    border-radius: var(--radius-xs);
+  }
+
+  &--sm {
+    height: var(--btn-size-sm);
+  }
+
+  &--md {
+    height: var(--btn-size-md);
+  }
+
+  &--lg {
+    height: var(--btn-size-lg);
+  }
+
+  &--xl {
+    height: var(--btn-size-xl);
+  }
+
+  &--xxl {
+    height: var(--btn-size-xxl);
+  }
+
+  &--error {
+    color: var(--color-zen-error);
+  }
+
+  &--activated {
+    color: var(--color-zen-accent);
+  }
+
+  &--warn {
+    color: var(--color-zen-warn);
+  }
+
+  &--success {
+    color: var(--color-zen-success);
+  }
+}
+
+.strikethrough {
+  position: relative;
+  display: inline-block;
+}
+
+.strikethrough::after {
+  content: '';
+  position: absolute;
+  left: -2px;
+  right: -2px;
+  top: 50%;
+  height: 12px;
+
+  background-color: currentColor;
+
+  transform: translateY(-50%) rotate(var(--rotation, -1deg)) scaleX(var(--scale, 1)) rotate(-20deg);
+
+  mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 20" preserveAspectRatio="none"><path d="M0,10 Q25,var(--seed, 5) 50,10 T100,10" stroke="black" stroke-width="3" fill="none" stroke-linecap="round"/></svg>');
+  mask-size: 100% 100%;
+
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 20' preserveAspectRatio='none'%3E%3Cpath d='M0,10 Q25,5 50,10 T100,10' stroke='black' stroke-width='4' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  -webkit-mask-size: 100% 100%;
+
+  pointer-events: none;
+  opacity: 0.8;
+}
+
+details {
+  interpolate-size: allow-keywords;
+
+  &::details-content {
+    transition:
+      block-size 0.4s,
+      content-visibility 0.4s allow-discrete;
+    overflow: hidden;
+    block-size: 0;
+  }
+
+  &[open]::details-content {
+    block-size: auto;
+  }
+}
+summary::marker {
+  color: var(--color-zen-accent);
+  font-size: 1.2em;
+}
+
+.hint {
+  font-size: var(--font-size-xs);
+  color: var(--color-glass-text);
+  font-weight: 400;
+
+  &--xs {
+    font-size: var(--font-size-xs);
+  }
+
+  &--sm {
+    font-size: var(--font-size-sm);
+  }
+
+  &--md {
+    font-size: var(--font-size-md);
+  }
+
+  &--lg {
+    font-size: var(--font-size-lg);
+  }
+
+  &--xl {
+    font-size: var(--font-size-xl);
+  }
+
+  &--xxl {
+    font-size: var(--font-size-xxl);
+  }
+}
+
+.square {
+  aspect-ratio: 1/1;
+}
+
+.blurred {
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+}
+
+.ellipsis {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.full {
+  width: 100%;
+}
+
+@keyframes breathe {
+  0%,
+  100% {
+    filter: brightness(1);
+  }
+  50% {
+    filter: brightness(1.2);
+  }
+}
+
+.dz-box {
+  position: relative;
+
+  &__bg {
+    position: absolute;
+    inset: 0;
+    object-fit: contain;
+    z-index: -1;
+    transition: background-image 0.5s ease-in-out;
+    background-image: var(--bg-url);
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    border-radius: inherit;
+
+    &--transparrent {
+      opacity: 0.2;
+    }
+  }
+}
+
+.breathe {
+  animation: breathe 8s ease-in-out infinite;
 }

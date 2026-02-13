@@ -1,10 +1,10 @@
 <header class="dz-header" [class.dark-theme]="theme() === colorSchemes.DARK">
   <nav class="dz-header__navigation">
     <button
-      [title]="uiText.HEADER.FOCUS_MENU_TITLE"
+      class="dz-button dz-button--nm"
+      [title]="uiText.HEADER.FOCUS_TITLE"
+      [class.dz-button--activated]="currentRoute() === viewTypes.FOCUS"
       (click)="setViewType(viewTypes.FOCUS)"
-      class="dz-button dz-button--md"
-      [class.dz-button--activated]="currentViewType() === viewTypes.FOCUS"
     >
       <svg class="dz-icon" aria-hidden="true" focusable="false">
         <use [attr.href]="icons.PERSON_ZEN"></use>
@@ -12,21 +12,21 @@
     </button>
 
     <button
-      [title]="uiText.HEADER.ADD_NEW_PERIOD_TITLE"
-      (click)="setViewType(viewTypes.ADD_PERIOD)"
-      class="dz-button dz-button--md"
-      [class.dz-button--activated]="currentViewType() === viewTypes.ADD_PERIOD"
+      class="dz-button dz-button--nm"
+      [title]="uiText.HEADER.PERIODS_LIST_TITLE"
+      [class.dz-button--activated]="currentRoute() === viewTypes.MENU"
+      (click)="setViewType(viewTypes.MENU)"
     >
       <svg class="dz-icon" aria-hidden="true" focusable="false">
-        <use [attr.href]="icons.PLUS"></use>
+        <use [attr.href]="icons.ASSIGMENT"></use>
       </svg>
     </button>
 
     <button
+      class="dz-button dz-button--nm"
       [title]="uiText.HEADER.POMODORO_MENU_TITLE"
+      [class.dz-button--activated]="currentRoute() === viewTypes.POMODORO"
       (click)="setViewType(viewTypes.POMODORO)"
-      class="dz-button dz-button--md"
-      [class.dz-button--activated]="currentViewType() === viewTypes.POMODORO"
     >
       <svg class="dz-icon" aria-hidden="true" focusable="false">
         <use [attr.href]="icons.TOMATO"></use>
@@ -34,14 +34,14 @@
     </button>
 
     <button
+      class="dz-button dz-button--nm"
       [title]="
         isGoogleAuthenticated()
           ? uiText.HEADER.LOGOUT_GOOGLE_TITLE
           : uiText.HEADER.LOGIN_GOOGLE_TITLE
       "
-      (click)="isGoogleAuthenticated() ? logoutFromGoogle() : loginWithGoogle()"
       [disabled]="isGoogleAuthPending()"
-      class="dz-button dz-button--md"
+      (click)="isGoogleAuthenticated() ? logoutFromGoogle() : loginWithGoogle()"
     >
       @if (isGoogleAuthPending()) {
         <dz-loader />
@@ -53,12 +53,20 @@
     </button>
 
     <a [href]="websites.PRIVACY_POLICY.url" target="_blank" rel="noopener noreferrer">
-      <button [title]="uiText.FOOTER.PRIVACY_POLICY_ARIA_LABEL" class="dz-button dz-button--xs">
+      <button class="dz-button dz-button--xs" [title]="uiText.FOOTER.PRIVACY_POLICY_ARIA_LABEL">
         <svg class="dz-icon" aria-hidden="true" focusable="false">
           <use [attr.href]="icons.PRIVACY_TIP"></use>
         </svg>
       </button>
     </a>
+
+    @if (!isSidePanel()) {
+      <button class="dz-button dz-button--xs" (click)="openSidePanel()" title="Open in side panel">
+        <svg class="dz-icon" aria-hidden="true" focusable="false">
+          <use [attr.href]="icons.VIEW_SIDEBAR"></use>
+        </svg>
+      </button>
+    }
   </nav>
 
   <dz-theme-switcher />
@@ -66,19 +74,31 @@
 
 <main class="dz-main" [class.dark-theme]="theme() === colorSchemes.DARK">
   @defer {
-    @switch (currentViewType()) {
-      @case (viewTypes.FOCUS) {
-        <dz-focus />
-      }
-
+    @switch (currentRoute()) {
       @case (viewTypes.POMODORO) {
         <dz-pomodoro />
       }
 
+      @case (viewTypes.EDIT_PERIOD) {
+        <div class="dz-box">
+          <dz-period-form />
+        </div>
+      }
+
       @case (viewTypes.ADD_PERIOD) {
         <div class="dz-box">
-          <dz-period-form mode="create" (completed)="setViewType(viewTypes.FOCUS)" />
+          <dz-period-form />
         </div>
+      }
+
+      @case (viewTypes.MENU) {
+        <div class="dz-box">
+          <dz-menu />
+        </div>
+      }
+
+      @default {
+        <dz-focus />
       }
     }
   }

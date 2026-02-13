@@ -1,8 +1,7 @@
-import { ChangeDetectionStrategy, Component, input, model } from '@angular/core';
-
-import { NgTemplateOutlet } from '@angular/common';
-import { UI_TEXT } from '../../constants/ui-text.const';
 import { ICONS } from '../../constants/icons.const';
+import { UI_TEXT } from '../../constants/ui-text.const';
+import { NgTemplateOutlet } from '@angular/common';
+import { ChangeDetectionStrategy, Component, input, model } from '@angular/core';
 
 export interface IStepBarOption {
   label: string;

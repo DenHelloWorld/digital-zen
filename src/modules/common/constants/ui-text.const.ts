@@ -15,11 +15,13 @@ export const UI_TEXT = Object.freeze({
 
   // App Header
   HEADER: {
-    FOCUS_MENU_TITLE: 'Focus menu',
+    FOCUS_TITLE: 'Focus',
     ADD_NEW_PERIOD_TITLE: 'Add new period',
+    EDIT_PERIOD_TITLE: 'Edit period',
     LOGIN_GOOGLE_TITLE: 'Login with Google',
     LOGOUT_GOOGLE_TITLE: 'Logout from Google',
     POMODORO_MENU_TITLE: 'Pomodoro timer',
+    PERIODS_LIST_TITLE: 'List of al periods',
   },
 
   // Menu Component
@@ -117,6 +119,11 @@ export const UI_TEXT = Object.freeze({
     ADD_CURRENT_TAB_TITLE: 'Add current website to period',
     ADD_AND_BLOCK_CURRENT_TAB_TITLE: 'Add current website to period and block',
     TOGGLE_FOCUS_TITLE: 'Toggle focus session',
+    START: 'Start',
+    STOP: 'Stop',
+    ENABLED: 'Enabled',
+    DISABLED: 'Disabled',
+    CANNOT_ADD_CURRENT_TAB_TITLE: 'This website cannot be added',
   },
 
   // Theme Switcher Component
@@ -146,10 +153,10 @@ export const UI_TEXT = Object.freeze({
 
   POMODORO: {
     TITLES: {
-      SESSION_LENGTH: 'Session Length',
-      BREAK_LENGTH: 'Break Length',
-      LONG_BREAK_LENGTH: 'Long Break Length',
-      CYCLES_BEFORE_LONG_BREAK: 'Cycles',
+      WORK: 'Work',
+      SHORT_BREAK_LENGTH: 'Short Break',
+      LONG_BREAK_LENGTH: 'Long Break',
+      POMODOROS_BEFORE_LONG_BREAK: 'Pomodoros',
     },
     BUTTONS: {
       START: 'Start Studying',
@@ -159,7 +166,9 @@ export const UI_TEXT = Object.freeze({
     },
     UNITS: {
       MINUTES: 'min',
-      CYCLES: 'cyc',
+      POMO: 'pomo',
+      POMODORO: 'Pomodoro',
+      FINISH: 'Finish',
     },
   },
 });

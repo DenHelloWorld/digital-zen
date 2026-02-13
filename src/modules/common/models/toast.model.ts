@@ -1,5 +1,5 @@
-import { TOAST_TYPE_ENUM } from '../enums/toast-type.enum';
 import { POSITIONS_ENUM } from '../enums/positions.enum';
+import { TOAST_TYPE_ENUM } from '../enums/toast-type.enum';
 
 export interface IToast {
   id: number;

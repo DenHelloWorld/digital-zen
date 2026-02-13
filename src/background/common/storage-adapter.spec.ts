@@ -1,7 +1,7 @@
-import { StorageAdapter } from './storage-adapter';
-import { IFocus } from '../../modules/common/models/focus.model';
-import { CHROME_STORAGE_KEY_ENUM } from '../../modules/common/enums/chrome-storage-key.enum';
 import { BLOCK_BEHAVIOUR_ENUM } from '../../modules/common/enums/block-behaviour.enum';
+import { CHROME_STORAGE_KEY_ENUM } from '../../modules/common/enums/chrome-storage-key.enum';
+import { IFocus } from '../../modules/common/models/focus.model';
+import { StorageAdapter } from './storage-adapter';
 
 describe('StorageAdapter', () => {
   let mockChromeStorage: {
@@ -48,13 +48,14 @@ describe('StorageAdapter', () => {
         };
 
         const newPeriod: IFocus.Period = {
+          timeLeftSec: null,
           id: 'new-period',
           name: 'New Period',
           blockBehaviour: BLOCK_BEHAVIOUR_ENUM.BLOCK,
           description: 'New description',
           startFrom: new Date('2024-01-02T09:00:00.000Z'),
           endTo: new Date('2024-01-02T17:00:00.000Z'),
-          isFocused: false,
+          isActive: false,
           focusedTimes: [],
           daysOfWeek: [1, 2, 3, 4, 5],
           sessionStartTime: null,
@@ -77,13 +78,14 @@ describe('StorageAdapter', () => {
     describe('Edge cases', () => {
       it('should handle null dates', async () => {
         const period: IFocus.Period = {
+          timeLeftSec: null,
           id: 'test-period',
           name: 'Test Period',
           description: 'Test description',
           blockBehaviour: BLOCK_BEHAVIOUR_ENUM.BLOCK,
           startFrom: null,
           endTo: null,
-          isFocused: false,
+          isActive: false,
           focusedTimes: [],
           daysOfWeek: [1, 2, 3, 4, 5],
           sessionStartTime: null,
@@ -104,12 +106,13 @@ describe('StorageAdapter', () => {
 
       it('should handle empty focusedTimes array', async () => {
         const period: IFocus.Period = {
+          timeLeftSec: null,
           id: 'test-period',
           name: 'Test Period',
           description: 'Test description',
           startFrom: new Date('2024-01-01T09:00:00.000Z'),
           endTo: new Date('2024-01-01T17:00:00.000Z'),
-          isFocused: false,
+          isActive: false,
           focusedTimes: [],
           blockBehaviour: BLOCK_BEHAVIOUR_ENUM.BLOCK,
           daysOfWeek: [1, 2, 3, 4, 5],
@@ -129,13 +132,14 @@ describe('StorageAdapter', () => {
 
       it('should handle when periods key does not exist in storage', async () => {
         const period: IFocus.Period = {
+          timeLeftSec: null,
           id: 'test-period',
           name: 'Test Period',
           blockBehaviour: BLOCK_BEHAVIOUR_ENUM.BLOCK,
           description: 'Test description',
           startFrom: new Date('2024-01-01T09:00:00.000Z'),
           endTo: new Date('2024-01-01T17:00:00.000Z'),
-          isFocused: false,
+          isActive: false,
           focusedTimes: [],
           daysOfWeek: [1, 2, 3, 4, 5],
           sessionStartTime: null,
@@ -153,13 +157,14 @@ describe('StorageAdapter', () => {
 
       it('should handle invalid Date objects', async () => {
         const period: IFocus.Period = {
+          timeLeftSec: null,
           id: 'test-period',
           name: 'Test Period',
           blockBehaviour: BLOCK_BEHAVIOUR_ENUM.BLOCK,
           description: 'Test description',
           startFrom: new Date('invalid'),
           endTo: new Date('invalid'),
-          isFocused: false,
+          isActive: false,
           focusedTimes: [],
           daysOfWeek: [1, 2, 3, 4, 5],
           sessionStartTime: null,
@@ -182,12 +187,13 @@ describe('StorageAdapter', () => {
     describe('Queue management', () => {
       it('should handle multiple sequential saves', async () => {
         const period1: IFocus.Period = {
+          timeLeftSec: null,
           id: 'period-1',
           name: 'Period 1',
           description: 'Description 1',
           startFrom: new Date('2024-01-01T09:00:00.000Z'),
           endTo: new Date('2024-01-01T17:00:00.000Z'),
-          isFocused: false,
+          isActive: false,
           focusedTimes: [],
           daysOfWeek: [1, 2, 3, 4, 5],
           blockBehaviour: BLOCK_BEHAVIOUR_ENUM.BLOCK,
@@ -196,12 +202,13 @@ describe('StorageAdapter', () => {
         };
 
         const period2: IFocus.Period = {
+          timeLeftSec: null,
           id: 'period-2',
           name: 'Period 2',
           description: 'Description 2',
           startFrom: new Date('2024-01-02T09:00:00.000Z'),
           endTo: new Date('2024-01-02T17:00:00.000Z'),
-          isFocused: false,
+          isActive: false,
           blockBehaviour: BLOCK_BEHAVIOUR_ENUM.BLOCK,
           focusedTimes: [],
           daysOfWeek: [1, 2, 3, 4, 5],
@@ -238,13 +245,14 @@ describe('StorageAdapter', () => {
     describe('Valid inputs', () => {
       it('should handle null sessionStartTime', async () => {
         const period: IFocus.Period = {
+          timeLeftSec: null,
           id: 'current-period',
           name: 'Current Period',
           blockBehaviour: BLOCK_BEHAVIOUR_ENUM.BLOCK,
           description: 'Current description',
           startFrom: new Date('2024-01-01T09:00:00.000Z'),
           endTo: new Date('2024-01-01T17:00:00.000Z'),
-          isFocused: false,
+          isActive: false,
           focusedTimes: [],
           daysOfWeek: [1, 2, 3, 4, 5],
           sessionStartTime: null,

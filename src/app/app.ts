@@ -1,28 +1,23 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  inject,
-  signal,
-  Signal,
-  WritableSignal,
-} from '@angular/core';
-import { CommonModule } from '@angular/common';
-
-import { FocusComponent } from '../modules/focus/focus.component';
 import { AuthService } from '../modules/auth';
-import { PomodoroComponent } from '../modules/pomodoro/pomodoro.component';
-import { PeriodFormComponent } from '../modules/focus/components/period-form/period-form.component';
 import {
   DzToastContainerComponent,
   LoaderComponent,
   ThemeSwitcherComponent,
 } from '../modules/common/components';
-import { ThemeService } from '../modules/common/services/theme.service';
+import { ICONS } from '../modules/common/constants/icons.const';
+import { UI_TEXT } from '../modules/common/constants/ui-text.const';
+import { WEBSITE_PRIVACY_POLICY } from '../modules/common/constants/websites.const';
+import { CHROME_COMMAND_ENUM } from '../modules/common/enums/chrome-command.enum';
 import { COLOR_SCHEMA_ENUM, ColorSchemaType } from '../modules/common/enums/color-schema.enum';
 import { VIEW_ENUM, ViewType } from '../modules/common/enums/view.enum';
-import { UI_TEXT } from '../modules/common/constants/ui-text.const';
-import { ICONS } from '../modules/common/constants/icons.const';
-import { WEBSITE_PRIVACY_POLICY } from '../modules/common/constants/websites.const';
+import { MiniRouterService } from '../modules/common/services/mini-router.service';
+import { ThemeService } from '../modules/common/services/theme.service';
+import { PeriodFormComponent } from '../modules/focus/components/period-form/period-form.component';
+import { FocusComponent } from '../modules/focus/focus.component';
+import { MenuComponent } from '../modules/menu/menu.component';
+import { PomodoroComponent } from '../modules/pomodoro/pomodoro.component';
+import { CommonModule } from '@angular/common';
+import { ChangeDetectionStrategy, Component, HostBinding, inject, Signal } from '@angular/core';
 
 /**
  * Root application component for Digital Zen Chrome Extension
@@ -53,23 +48,30 @@ import { WEBSITE_PRIVACY_POLICY } from '../modules/common/constants/websites.con
     DzToastContainerComponent,
     LoaderComponent,
     PeriodFormComponent,
+    MenuComponent,
   ],
+  host: {
+    class: 'dz-app',
+  },
 })
 export class App {
+  /** @guideline DZ_08 - Private readonly field for runtime check */
+  readonly #isChromeRuntime: boolean = !!chrome.runtime;
   /** @guideline DZ_02, DZ_08, DZ_09 - Dependency injection with inject(), private #, readonly */
-  readonly #themeService: ThemeService = inject(ThemeService);
-  /** @guideline DZ_02, DZ_08, DZ_09 - Dependency injection with inject(), private #, readonly */
-  readonly #authService: AuthService = inject(AuthService);
+  readonly #themeService = inject(ThemeService);
+  readonly #authService = inject(AuthService);
+  readonly #router = inject(MiniRouterService);
 
   /** @guideline DZ_04 - Signal for reactive theme state */
   protected readonly theme: Signal<ColorSchemaType> = this.#themeService.theme;
   /** @guideline DZ_04 - Writable signal for view type state */
-  protected readonly currentViewType: WritableSignal<ViewType> = signal(VIEW_ENUM.FOCUS);
+  protected readonly currentRoute = this.#router.currentRoute;
   /** @guideline DZ_04 - Signal for reactive authentication state */
   protected readonly isGoogleAuthenticated: Signal<boolean> =
     this.#authService.isGoogleAuthenticated;
   /** @guideline DZ_04 - Signal for reactive auth pending state */
   protected readonly isGoogleAuthPending: Signal<boolean> = this.#authService.isGoogleAuthPending;
+  protected readonly isSidePanel = this.#router.isSidePanel;
 
   protected readonly colorSchemes: typeof COLOR_SCHEMA_ENUM = COLOR_SCHEMA_ENUM;
   protected readonly viewTypes: typeof VIEW_ENUM = VIEW_ENUM;
@@ -79,7 +81,7 @@ export class App {
   protected readonly websites = { PRIVACY_POLICY: WEBSITE_PRIVACY_POLICY } as const;
 
   protected setViewType(viewType: ViewType) {
-    this.currentViewType.set(viewType);
+    this.#router.navigate(viewType);
   }
 
   protected loginWithGoogle(): void {
@@ -88,5 +90,23 @@ export class App {
 
   protected logoutFromGoogle(): void {
     this.#authService.logoutFromGoogle();
+  }
+
+  public openSidePanel(): void {
+    if (this.#isChromeRuntime) {
+      chrome.windows.getCurrent(win => {
+        chrome.runtime.sendMessage({
+          command: CHROME_COMMAND_ENUM.OPEN_SIDE_PANEL_APP,
+          windowId: win.id,
+        });
+
+        window.close();
+      });
+    }
+  }
+
+  @HostBinding('class.dz-app--side-panel')
+  get sidePanelClass() {
+    return this.#router.isSidePanel();
   }
 }

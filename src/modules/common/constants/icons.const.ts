@@ -59,6 +59,17 @@ export const ICONS = Object.freeze({
   WIFI_FIND: '#icon-wifi-find',
   WIFI_OFF: '#icon-wifi-off',
   WIFI: '#icon-wifi',
+  STOP: '#icon-stop',
+  ASSIGMENT: '#icon-assigment',
+  KEEP: '#icon-keep',
+  KEEP_OFF: '#icon-keep-off',
+  VIEW_SIDEBAR: '#icon-view-sidebar',
+  TROPHY: '#icon-trophy',
+  LINE_END: '#icon-line-end',
+  WORKSPACE_PREMIUM: '#icon-workspace-premium',
+  FOLDER: '#icon-folder',
+  SETTINGS: '#icon-settings',
+  CANCEL: '#icon-cancel',
 } as const);
 
 /**

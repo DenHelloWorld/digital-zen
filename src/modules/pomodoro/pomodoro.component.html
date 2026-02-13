@@ -7,34 +7,57 @@
 
 <aside class="settings unselectable">
   <form class="dz-form" [formGroup]="form">
-    @let workStepConfig = form.controls.workStepConfig.value;
-    @let shortBreakStepConfig = form.controls.shortBreakStepConfig.value;
-    @let longBreakStepConfig = form.controls.longBreakStepConfig.value;
-    @let cyclesBeforeLongBreakConfig = form.controls.cyclesBeforeLongBreakConfig.value;
+    @let workStepConfig = pomodoroSettings().workStepConfig;
+    @let shortBreakStepConfig = pomodoroSettings().shortBreakStepConfig;
+    @let longBreakStepConfig = pomodoroSettings().longBreakStepConfig;
+    @let cyclesBeforeLongBreakConfig = pomodoroSettings().cyclesBeforeLongBreakConfig;
 
-    <div class="dz-form__field">
-      <dz-value-stepper
-        [title]="uiText.POMODORO.TITLES.SESSION_LENGTH"
-        [titleIcon]="icons.NETWORK_INTELLIGENCE"
-        [valueLabel]="uiText.POMODORO.UNITS.MINUTES"
-        formControlName="workDurationMin"
-        [min]="workStepConfig.min"
-        [max]="workStepConfig.max"
-        [step]="workStepConfig.step"
-        [quickStep]="workStepConfig.quickStep"
-      />
+    <div class="dz-box settings__group shadow shadow--hoverless">
+      <span class="dz-form__hint">
+        <div class="dz-icon-box dz-icon-box--xs">
+          <ng-container *ngTemplateOutlet="icon; context: { href: icons.TOMATO }" />
+
+          {{ uiText.POMODORO.UNITS.POMODORO }}
+        </div>
+      </span>
+
+      <div class="dz-form__field">
+        <dz-value-stepper
+          [title]="uiText.POMODORO.TITLES.WORK"
+          [titleIcon]="icons.SCHOOL"
+          [valueLabel]="uiText.POMODORO.UNITS.MINUTES"
+          [min]="workStepConfig.min"
+          [max]="workStepConfig.max"
+          [step]="workStepConfig.step"
+          [quickStep]="workStepConfig.quickStep"
+          formControlName="workDurationMin"
+        />
+      </div>
+
+      <div class="dz-form__field">
+        <dz-value-stepper
+          [title]="uiText.POMODORO.TITLES.SHORT_BREAK_LENGTH"
+          [titleIcon]="icons.COFFEE"
+          [valueLabel]="uiText.POMODORO.UNITS.MINUTES"
+          [min]="shortBreakStepConfig.min"
+          [max]="shortBreakStepConfig.max"
+          [step]="shortBreakStepConfig.step"
+          [quickStep]="shortBreakStepConfig.quickStep"
+          formControlName="shortBreakMin"
+        />
+      </div>
     </div>
 
     <div class="dz-form__field">
       <dz-value-stepper
-        [title]="uiText.POMODORO.TITLES.BREAK_LENGTH"
-        [titleIcon]="icons.COFFEE"
-        [valueLabel]="uiText.POMODORO.UNITS.MINUTES"
-        formControlName="shortBreakMin"
-        [min]="shortBreakStepConfig.min"
-        [max]="shortBreakStepConfig.max"
-        [step]="shortBreakStepConfig.step"
-        [quickStep]="shortBreakStepConfig.quickStep"
+        [title]="uiText.POMODORO.TITLES.POMODOROS_BEFORE_LONG_BREAK"
+        [titleIcon]="icons.TOMATO"
+        [valueLabel]="uiText.POMODORO.UNITS.POMO"
+        [min]="cyclesBeforeLongBreakConfig.min"
+        [max]="cyclesBeforeLongBreakConfig.max"
+        [step]="cyclesBeforeLongBreakConfig.step"
+        [quickStep]="cyclesBeforeLongBreakConfig.quickStep"
+        formControlName="cyclesBeforeLongBreak"
       />
     </div>
 
@@ -43,53 +66,36 @@
         [title]="uiText.POMODORO.TITLES.LONG_BREAK_LENGTH"
         [titleIcon]="icons.CHAIR"
         [valueLabel]="uiText.POMODORO.UNITS.MINUTES"
-        formControlName="longBreakMin"
         [min]="longBreakStepConfig.min"
         [max]="longBreakStepConfig.max"
         [step]="longBreakStepConfig.step"
         [quickStep]="longBreakStepConfig.quickStep"
-      />
-    </div>
-
-    <div class="dz-form__field">
-      <dz-value-stepper
-        [title]="uiText.POMODORO.TITLES.CYCLES_BEFORE_LONG_BREAK"
-        [titleIcon]="icons.SCHOOL"
-        [valueLabel]="uiText.POMODORO.UNITS.CYCLES"
-        formControlName="cyclesBeforeLongBreak"
-        [min]="cyclesBeforeLongBreakConfig.min"
-        [max]="cyclesBeforeLongBreakConfig.max"
-        [step]="cyclesBeforeLongBreakConfig.step"
-        [quickStep]="cyclesBeforeLongBreakConfig.quickStep"
+        formControlName="longBreakMin"
       />
     </div>
   </form>
 </aside>
 
 <main class="timer shadow shadow--hoverless dz-box unselectable">
+  @let color = currentProgressColor();
+
   <div
-    class="timer__progress shadow round square"
-    dzProgressBorder
+    class="timer__progress round"
     [progress]="progress()"
-    [progressConfig]="{ thickness: 10 }"
+    [progressConfig]="{ thickness: 10, color }"
+    [class.light--accent]="isRunning() && !isPaused()"
+    dzProgressBorder
   >
     {{ timeLeftFormatted() }}
   </div>
 
-  <div class="timer__phase">
-    <dz-multi-selector
-      [isSelectable]="false"
-      [entities]="allPhases"
-      [selectedEntities]="currentPhase()"
-      [labelKey]="'phase'"
-      [idKey]="'phase'"
-      size="lg"
-      orientation="horizontal"
-    >
-      <ng-template #itemTemplate let-item>
-        <ng-container *ngTemplateOutlet="icon; context: { href: item.icon }" />
-      </ng-template>
-    </dz-multi-selector>
+  <div class="timer__details">
+    <div class="dz-icon-box dz-icon-box--lg">
+      <ng-container *ngTemplateOutlet="icon; context: { href: currentPhaseIcon() }" />
+    </div>
+    <div class="timer__phase">
+      {{ currentPhase() | titlecase }}
+    </div>
   </div>
 </main>
 

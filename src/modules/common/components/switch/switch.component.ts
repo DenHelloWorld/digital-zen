@@ -1,6 +1,6 @@
-import { ChangeDetectionStrategy, Component, computed, input, model } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { ICONS, IconType } from '../../constants/icons.const';
+import { CommonModule } from '@angular/common';
+import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
 
 export type SizeType = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxl';
 
@@ -14,7 +14,7 @@ export type SizeType = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxl';
   styleUrls: ['./switch.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
-    '(keydown.enter)': 'onToggle()',
+    '(keydown.enter)': 'onChange()',
   },
 })
 export class SwitchComponent {
@@ -24,7 +24,8 @@ export class SwitchComponent {
     activated: ICONS.CHECK,
     unActivated: ICONS.CLOSE,
   });
-  public readonly checked = model<boolean>(false);
+  public readonly checked = input<boolean>(false);
+  public readonly checkedChange = output<boolean>();
 
   protected readonly switchHeight = computed(() => {
     const heightMap: Record<SizeType, string> = {
@@ -33,14 +34,14 @@ export class SwitchComponent {
       md: 'var(--sw-size-md)',
       lg: 'var(--sw-size-lg)',
       xl: 'var(--sw-size-xl)',
-      xxl: 'var(--sw-size-xl)',
+      xxl: 'var(--sw-size-xxl)',
     };
     return heightMap[this.size()];
   });
 
-  protected onToggle(): void {
+  protected onChange(): void {
     if (!this.disabled()) {
-      this.checked.update(v => !v);
+      this.checkedChange.emit(!this.checked());
     }
   }
 }

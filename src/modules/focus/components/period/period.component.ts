@@ -1,3 +1,17 @@
+import { DzToastService } from '../../../common/components';
+import { WeekdaysSelectorComponent } from '../../../common/components/weekdays-selector/weekdays-selector.component';
+import { ALL_DAYS_OF_WEEK } from '../../../common/constants/days-of-week.const';
+import { ICONS } from '../../../common/constants/icons.const';
+import { UI_TEXT } from '../../../common/constants/ui-text.const';
+import { BLOCK_BEHAVIOUR_ENUM } from '../../../common/enums/block-behaviour.enum';
+import { TOAST_MESSAGES_ENUM } from '../../../common/enums/toast-messages.enum';
+import { VIEW_ENUM } from '../../../common/enums/view.enum';
+import { isHttpUrl } from '../../../common/helpers/is-http-url.helper';
+import { IFocus } from '../../../common/models/focus.model';
+import { RemoveProtocolPipe } from '../../../common/pipes/remove-protocol.pipe';
+import { MiniRouterService } from '../../../common/services/mini-router.service';
+import { FocusService } from '../../services/focus.service';
+import { TimeLineComponent } from '../time-line/time-line.component';
 import { CommonModule } from '@angular/common';
 import {
   ChangeDetectionStrategy,
@@ -12,20 +26,6 @@ import {
   signal,
   WritableSignal,
 } from '@angular/core';
-
-import { TimeLineComponent } from '../time-line/time-line.component';
-import { WeekdaysSelectorComponent } from '../../../common/components/weekdays-selector/weekdays-selector.component';
-import { FocusService } from '../../services/focus.service';
-import { BLOCK_BEHAVIOUR_ENUM } from '../../../common/enums/block-behaviour.enum';
-import { PeriodFormComponent } from '../period-form/period-form.component';
-import { IFocus } from '../../../common/models/focus.model';
-import { UI_TEXT } from '../../../common/constants/ui-text.const';
-import { ICONS } from '../../../common/constants/icons.const';
-import { ALL_DAYS_OF_WEEK } from '../../../common/constants/days-of-week.const';
-import { isHttpUrl } from '../../../common/helpers/is-http-url.helper';
-import { DzToastService } from '../../../common/components';
-import { TOAST_MESSAGES_ENUM } from '../../../common/enums/toast-messages.enum';
-import { RemoveProtocolPipe } from '../../../common/pipes/remove-protocol.pipe';
 
 /**
  * Period display and management component
@@ -53,7 +53,6 @@ import { RemoveProtocolPipe } from '../../../common/pipes/remove-protocol.pipe';
     // components
     TimeLineComponent,
     WeekdaysSelectorComponent,
-    PeriodFormComponent,
     // pipes
     RemoveProtocolPipe,
   ],
@@ -62,6 +61,7 @@ export class PeriodComponent {
   /** @guideline DZ_02, DZ_08, DZ_09 - Dependency injection with inject(), private #, readonly */
   readonly #focusService: FocusService = inject(FocusService);
   readonly #toastService: DzToastService = inject(DzToastService);
+  readonly #router = inject(MiniRouterService);
 
   /** @guideline DZ_04 - Computed signal (derived state) */
   protected readonly selectedDays: Signal<IFocus.DayOfWeek[]> = computed(() => {
@@ -81,9 +81,12 @@ export class PeriodComponent {
         t => t.target === `${TOAST_MESSAGES_ENUM.PERIOD_NOT_SCHEDULED_TODAY}${this.period().id}`
       )
   );
+  protected readonly totalPeriodsCount = computed(() => this.#focusService.periods()?.length || 0);
+  protected readonly isCurrent = computed(
+    () => this.#focusService.currentPeriod()?.id === this.period().id
+  );
+  protected readonly isFocusActive = computed(() => this.period().isActive);
 
-  /** @guideline DZ_04 - Writable signal for local state */
-  protected readonly isEditing: WritableSignal<boolean> = signal(false);
   /** @guideline DZ_04 - Writable signal for local state */
   protected readonly isConfirmingDelete: WritableSignal<boolean> = signal(false);
   /** @guideline DZ_10 - UI text constants */
@@ -95,18 +98,11 @@ export class PeriodComponent {
 
   /** @guideline DZ_04 - InputSignal for component inputs */
   public readonly period: InputSignal<IFocus.Period> = input.required<IFocus.Period>();
-  public readonly totalPeriodsCount: InputSignal<number> = input.required<number>();
-  public readonly isCurrent: InputSignal<boolean> = input.required<boolean>();
-  public readonly isFocusActive: InputSignal<boolean> = input.required<boolean>();
 
   public readonly toggleBlockedWebsite: OutputEmitterRef<IFocus.WebSite> = output<IFocus.WebSite>();
 
   protected onEdit(): void {
-    this.isEditing.set(true);
-  }
-
-  protected onFormCompleted(): void {
-    this.isEditing.set(false);
+    this.#router.navigate(VIEW_ENUM.EDIT_PERIOD, { period: this.period() });
   }
 
   protected onDelete(): void {

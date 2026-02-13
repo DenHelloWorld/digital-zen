@@ -1,7 +1,7 @@
-import { IFocus } from '../../modules/common/models/focus.model';
 import { CHROME_STORAGE_KEY_ENUM } from '../../modules/common/enums/chrome-storage-key.enum';
 import { logger } from '../../modules/common/helpers/logger';
 import { toWallTimeISO, fromWallTimeISO } from '../../modules/common/helpers/time.helper';
+import { IFocus } from '../../modules/common/models/focus.model';
 import { IPomodoro } from '../../modules/common/models/pomodoro.model';
 
 /**

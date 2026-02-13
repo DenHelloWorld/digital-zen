@@ -1,7 +1,6 @@
-import { HttpInterceptorFn } from '@angular/common/http';
-
-import { logger } from '../helpers/logger';
 import { API_CONFIG } from '../constants/api-config.const';
+import { logger } from '../helpers/logger';
+import { HttpInterceptorFn } from '@angular/common/http';
 
 const interceptorLogger = logger.createLogger('ApiKeyInterceptor');
 

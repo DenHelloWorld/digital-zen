@@ -1,3 +1,36 @@
+import { DynamicInputComponent } from '../../../common/components/dynamic-input/dynamic-input.component';
+import { MultiSelectorComponent } from '../../../common/components/multi-selector/multi-selector.component';
+import { WeekdaysSelectorComponent } from '../../../common/components/weekdays-selector/weekdays-selector.component';
+import { ALL_DAYS_OF_WEEK, WORK_DAYS_OF_WEEKS } from '../../../common/constants/days-of-week.const';
+import { ICONS } from '../../../common/constants/icons.const';
+import {
+  ALL_DAY_TIME_RANGE,
+  MANUAL_TIME_RANGE,
+  TIME_RANGES,
+} from '../../../common/constants/time-ranges.const';
+import { UI_TEXT } from '../../../common/constants/ui-text.const';
+import { VALIDATION_ERROR_KEYS } from '../../../common/constants/validation-errors.const';
+import { WEBSITE_FACEBOOK, WEBSITE_TIKTOK } from '../../../common/constants/websites.const';
+import {
+  BLOCK_BEHAVIOUR_ENUM,
+  BlockBehaviourType,
+} from '../../../common/enums/block-behaviour.enum';
+import { COLORS_ENUM } from '../../../common/enums/colors.enum';
+import { VIEW_ENUM } from '../../../common/enums/view.enum';
+import { cleanUrlHelper } from '../../../common/helpers/clean-url.helper';
+import { FaviconHelper } from '../../../common/helpers/favicon.helper';
+import { logger } from '../../../common/helpers/logger';
+import { IFocusForm } from '../../../common/models/focus-form.model';
+import { IFocus } from '../../../common/models/focus.model';
+import { WebsiteConnectivityProvider } from '../../../common/providers/website-connectivity.provider';
+import { MiniRouterService } from '../../../common/services/mini-router.service';
+import { arrayMinLengthValidator } from '../../../common/validators/array-min-length.validator';
+import { noUnactivatableWebsitesValidator } from '../../../common/validators/no-unactivatable-websites.validator';
+import { requiredTrimmedValidator } from '../../../common/validators/required-trimmed.validator';
+import { timeRangeValidator } from '../../../common/validators/time-range.validator';
+import { uniquePeriodNameValidator } from '../../../common/validators/unique-period-name.validator';
+import { FocusService } from '../../services/focus.service';
+import { CommonModule } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -5,51 +38,20 @@ import {
   effect,
   inject,
   Injector,
-  input,
-  InputSignal,
   OnInit,
-  output,
-  OutputEmitterRef,
+  AfterViewInit,
+  ElementRef,
+  viewChild,
   resource,
   ResourceRef,
+  Signal,
   signal,
   untracked,
   WritableSignal,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-
-import { distinctUntilChanged, map } from 'rxjs';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
-
-import { WeekdaysSelectorComponent } from '../../../common/components/weekdays-selector/weekdays-selector.component';
-import { FocusService } from '../../services/focus.service';
-import { DynamicInputComponent } from '../../../common/components/dynamic-input/dynamic-input.component';
-import { MultiSelectorComponent } from '../../../common/components/multi-selector/multi-selector.component';
-import {
-  BLOCK_BEHAVIOUR_ENUM,
-  BlockBehaviourType,
-} from '../../../common/enums/block-behaviour.enum';
-import { logger } from '../../../common/helpers/logger';
-import { IFocus } from '../../../common/models/focus.model';
-import { UI_TEXT } from '../../../common/constants/ui-text.const';
-import { IFocusForm } from '../../../common/models/focus-form.model';
-import { ICONS } from '../../../common/constants/icons.const';
-import { VALIDATION_ERROR_KEYS } from '../../../common/constants/validation-errors.const';
-import { MANUAL_TIME_RANGE, TIME_RANGES } from '../../../common/constants/time-ranges.const';
-import { WEBSITE_FACEBOOK, WEBSITE_TIKTOK } from '../../../common/constants/websites.const';
-import { requiredTrimmedValidator } from '../../../common/validators/required-trimmed.validator';
-import { uniquePeriodNameValidator } from '../../../common/validators/unique-period-name.validator';
-import { arrayMinLengthValidator } from '../../../common/validators/array-min-length.validator';
-import { noUnactivatableWebsitesValidator } from '../../../common/validators/no-unactivatable-websites.validator';
-import { timeRangeValidator } from '../../../common/validators/time-range.validator';
-import { ALL_DAYS_OF_WEEK } from '../../../common/constants/days-of-week.const';
-import { FaviconHelper } from '../../../common/helpers/favicon.helper';
-import { WebsiteConnectivityProvider } from '../../../common/providers/website-connectivity.provider';
-import {
-  IStepBarOption,
-  StepBarComponent,
-} from '../../../common/components/step-bar/step-bar.component';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { distinctUntilChanged, map } from 'rxjs';
 
 /**
  * Period form component for creating and editing focus periods
@@ -85,32 +87,35 @@ import {
     WeekdaysSelectorComponent,
     DynamicInputComponent,
     MultiSelectorComponent,
-    StepBarComponent,
   ],
 })
-export class PeriodFormComponent implements OnInit {
+export class PeriodFormComponent implements OnInit, AfterViewInit {
   /** @guideline DZ_02, DZ_08, DZ_09 - Dependency injection with inject(), private #, readonly */
   readonly #fb = inject(FormBuilder);
   readonly #destroyRef = inject(DestroyRef);
   readonly #injector = inject(Injector);
   readonly #focusService = inject(FocusService);
+  readonly #router = inject(MiniRouterService);
   /** @guideline DZ_11 - Universal Logger usage */
   readonly #logger = logger.createLogger('PeriodFormComponent');
 
   readonly #maxPeriodNameLength = 100;
   readonly #siteStatusesCache = new Map<string, ResourceRef<boolean | undefined>>();
 
-  /** @guideline DZ_04 - InputSignal for component inputs */
-  public readonly mode: InputSignal<'create' | 'edit'> = input<'create' | 'edit'>('create');
-  public readonly period: InputSignal<IFocus.Period | null> = input<IFocus.Period | null>(null);
-  public readonly completed: OutputEmitterRef<void> = output<void>();
+  protected readonly payload = this.#router.payload as Signal<{
+    period: IFocus.Period;
+    scrollToBehaviours: boolean;
+  } | null>;
 
+  protected readonly currentRoute = this.#router.currentRoute;
   /** @guideline DZ_15 - Typed Reactive Form */
   protected form: FormGroup<IFocusForm.UpsertPeriod>;
   /** @guideline DZ_10 - UI text constants */
   protected readonly uiText = UI_TEXT;
   /** @guideline DZ_10.1 - Icon constants */
   protected readonly icons = ICONS;
+  protected readonly views = VIEW_ENUM;
+  protected readonly colors = COLORS_ENUM;
   /** Validation error keys for template usage */
   protected readonly validationErrorKeys = VALIDATION_ERROR_KEYS;
   protected readonly timeRanges = [...TIME_RANGES];
@@ -126,27 +131,6 @@ export class PeriodFormComponent implements OnInit {
     'name',
   ];
 
-  protected blockBehaviourBarOptions: IStepBarOption[] = [
-    {
-      label: 'Focus',
-      value: BLOCK_BEHAVIOUR_ENUM.WHITELIST,
-      icon: ICONS.PERSON_ZEN,
-    },
-    {
-      label: 'Warning',
-      value: BLOCK_BEHAVIOUR_ENUM.WARN,
-      icon: ICONS.WARNING,
-    },
-    {
-      label: 'Block',
-      value: BLOCK_BEHAVIOUR_ENUM.BLOCK,
-      icon: ICONS.BLOCK,
-    },
-  ];
-
-  protected currentBlockBehaviourBarOption = signal<IStepBarOption>(
-    this.blockBehaviourBarOptions[0]
-  );
   protected selectedTimeRanges: WritableSignal<IFocus.TimeRange[]> = signal<IFocus.TimeRange[]>([]);
   protected selectedDays: WritableSignal<IFocus.DayOfWeek[]> = signal<IFocus.DayOfWeek[]>([]);
   protected selectedWebSites: WritableSignal<IFocus.WebSite[]> = signal<IFocus.WebSite[]>([
@@ -155,6 +139,10 @@ export class PeriodFormComponent implements OnInit {
   ]);
 
   protected readonly siteStatuses = signal<Record<string, ResourceRef<boolean | undefined>>>({});
+
+  protected shakeBehaviour = signal(false);
+
+  protected behaviourBlock = viewChild<ElementRef>('behaviourBlock');
 
   public ngOnInit(): void {
     this.#initForm();
@@ -192,13 +180,6 @@ export class PeriodFormComponent implements OnInit {
       },
       { injector: this.#injector }
     );
-
-    toObservable(this.currentBlockBehaviourBarOption, { injector: this.#injector })
-      .pipe(takeUntilDestroyed(this.#destroyRef))
-      .subscribe(option => {
-        const newValue = option.value as BlockBehaviourType;
-        this.form.controls.blockBehaviour.setValue(newValue);
-      });
 
     effect(
       () => {
@@ -250,6 +231,13 @@ export class PeriodFormComponent implements OnInit {
     );
   }
 
+  public ngAfterViewInit(): void {
+    if (this.payload()?.scrollToBehaviours) {
+      this.shakeBehaviour.set(true);
+      this.behaviourBlock()?.nativeElement.scrollIntoView({ behavior: 'smooth' });
+    }
+  }
+
   protected savePeriod() {
     if (this.form.valid) {
       const rawValue = this.form.getRawValue();
@@ -264,6 +252,8 @@ export class PeriodFormComponent implements OnInit {
       });
 
       const periodData: IFocus.Period = {
+        // TODO: process timeLeftSec
+        timeLeftSec: null,
         id: rawValue.id,
         name: rawValue.name,
         description: rawValue.description,
@@ -273,26 +263,30 @@ export class PeriodFormComponent implements OnInit {
         blockBehaviour: rawValue.blockBehaviour,
         daysOfWeek: rawValue.daysOfWeek,
         focusedTimes: rawValue.focusedTimes,
-        isFocused: rawValue.isFocused,
+        isActive: rawValue.isFocused,
         sessionStartTime: rawValue.sessionStartTime,
       };
 
-      if (this.mode() === 'edit') {
+      if (this.currentRoute() === VIEW_ENUM.EDIT_PERIOD) {
         this.#focusService.updatePeriod(periodData);
-      } else {
+      } else if (this.currentRoute() === VIEW_ENUM.ADD_PERIOD) {
         this.#focusService.addPeriod(periodData);
       }
 
-      this.completed.emit();
+      this.#router.navigate(this.#router.previousRoute() || VIEW_ENUM.FOCUS);
     }
   }
 
   protected cancelForm(): void {
-    this.completed.emit();
+    this.#router.navigate(this.#router.previousRoute() || VIEW_ENUM.FOCUS);
   }
 
   protected getFavicon(url: string): string {
     return FaviconHelper.getGoogleUrl(url);
+  }
+
+  protected setBlockBehaviour(blockBehaviour: BlockBehaviourType): void {
+    this.form.patchValue({ blockBehaviour });
   }
 
   /**
@@ -349,7 +343,7 @@ export class PeriodFormComponent implements OnInit {
     effect(
       () => {
         const periods = this.#focusService.periods();
-        const currentPeriodId = this.period()?.id;
+        const currentPeriodId = this.payload()?.period?.id;
 
         this.#updateNameValidators(periods, currentPeriodId);
       },
@@ -359,18 +353,21 @@ export class PeriodFormComponent implements OnInit {
 
   #initForm(): void {
     const periods = this.#focusService.periods();
-    const currentPeriodId = this.period()?.id;
+    const currentPeriodId = this.payload()?.period?.id;
 
     this.form = this.#fb.group<IFocusForm.UpsertPeriod>(
       {
         id: this.#fb.nonNullable.control<string>(
           `${Date.now()}-${Math.floor(Math.random() * 10000)}`
         ),
-        name: this.#fb.nonNullable.control('', [
-          requiredTrimmedValidator,
-          uniquePeriodNameValidator(periods, currentPeriodId),
-          Validators.maxLength(this.#maxPeriodNameLength),
-        ]),
+        name: this.#fb.nonNullable.control(
+          `New Period ${(this.#focusService.periods()?.length ?? 0) + 1}`,
+          [
+            requiredTrimmedValidator,
+            uniquePeriodNameValidator(periods, currentPeriodId),
+            Validators.maxLength(this.#maxPeriodNameLength),
+          ]
+        ),
         description: this.#fb.nonNullable.control<string | null>(null),
         startFrom: this.#fb.control<string | null>(null),
         endTo: this.#fb.control<string | null>(null),
@@ -391,9 +388,15 @@ export class PeriodFormComponent implements OnInit {
   }
 
   #loadPeriodData(): void {
-    const periodData = this.period();
+    const periodData = this.payload()?.period;
 
-    if (this.mode() === 'edit' && periodData) {
+    if (this.currentRoute() === VIEW_ENUM.ADD_PERIOD) {
+      this.selectedTimeRanges.set([ALL_DAY_TIME_RANGE]);
+      this.selectedDays.set([...WORK_DAYS_OF_WEEKS]);
+      return;
+    }
+
+    if (this.currentRoute() === VIEW_ENUM.EDIT_PERIOD && periodData) {
       const startFromTime = periodData.startFrom
         ? this.#dateToTimeString(periodData.startFrom)
         : '';
@@ -406,24 +409,20 @@ export class PeriodFormComponent implements OnInit {
         startFrom: startFromTime,
         endTo: endToTime,
         focusedTimes: periodData.focusedTimes,
-        isFocused: periodData.isFocused,
+        isFocused: periodData.isActive,
         sessionStartTime: periodData.sessionStartTime,
         blockBehaviour: periodData.blockBehaviour,
       });
+
+      const matchingRange =
+        TIME_RANGES.find(r => r.startFrom === startFromTime && r.endTo === endToTime) ??
+        MANUAL_TIME_RANGE;
+      this.selectedTimeRanges.set([matchingRange]);
 
       const selectedDays = ALL_DAYS_OF_WEEK.filter(day => periodData.daysOfWeek.includes(day.day));
       this.selectedDays.set(selectedDays);
 
       this.selectedWebSites.set(periodData.webSites);
-
-      if (periodData.blockBehaviour) {
-        const found = this.blockBehaviourBarOptions.find(
-          opt => opt.value === periodData.blockBehaviour
-        );
-        if (found) {
-          this.currentBlockBehaviourBarOption.set(found);
-        }
-      }
     }
   }
 
@@ -439,23 +438,18 @@ export class PeriodFormComponent implements OnInit {
     sites.forEach(site => {
       if (!site.url) return;
 
-      // Имитируем логику BlockerService для создания уникального ключа
-      const domainKey = site.url
-        .trim()
-        .replace(/^https?:\/\//, '') // Убираем протокол
-        .split('/')[0] // Отрезаем всё после первого слеша (пути)
-        .replace(/^www\./, '') // Убираем www
-        .toLowerCase(); // Приводим к нижнему регистру
+      const url = cleanUrlHelper(site.url);
 
-      if (domainKey && !uniqueMap.has(domainKey)) {
-        // Сохраняем с единообразным протоколом и без лишнего мусора
-        uniqueMap.set(domainKey, {
+      if (url && !uniqueMap.has(url)) {
+        uniqueMap.set(url, {
           ...site,
-          url: `https://${domainKey}`,
+          url,
         });
       }
     });
 
     return Array.from(uniqueMap.values());
   }
+
+  protected readonly viewTypes = VIEW_ENUM;
 }

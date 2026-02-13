@@ -31,12 +31,12 @@
             </div>
           </div>
 
-          <button
-            class="dz-button dz-button--xs dz-button--round dz-button--ghost"
-            (click)="toastService.hide(toast.id)"
-          >
-            {{ uiText.TOAST.CLOSE_ICON }}
-          </button>
+          <!--          <button-->
+          <!--            class="dz-button dz-button&#45;&#45;xs dz-button&#45;&#45;round dz-button&#45;&#45;ghost"-->
+          <!--            (click)="toastService.hide(toast.id)"-->
+          <!--          >-->
+          <!--            {{ uiText.TOAST.CLOSE_ICON }}-->
+          <!--          </button>-->
 
           @if (toast.durationInMs && !toast.leaving) {
             <div

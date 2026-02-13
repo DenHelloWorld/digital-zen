@@ -1,10 +1,10 @@
+import { apiKeyInterceptor } from '../modules/common/interceptors/api-key.interceptor';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import {
   ApplicationConfig,
   provideBrowserGlobalErrorListeners,
   provideZonelessChangeDetection,
 } from '@angular/core';
-import { provideHttpClient, withInterceptors } from '@angular/common/http';
-import { apiKeyInterceptor } from '../modules/common/interceptors/api-key.interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [

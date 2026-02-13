@@ -1,8 +1,8 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { WeekdaysSelectorComponent } from './weekdays-selector.component';
-import { MultiSelectorComponent } from '../multi-selector/multi-selector.component';
 import { ALL_DAYS_OF_WEEK } from '../../constants/days-of-week.const';
 import { IFocus } from '../../models/focus.model';
+import { MultiSelectorComponent } from '../multi-selector/multi-selector.component';
+import { WeekdaysSelectorComponent } from './weekdays-selector.component';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 /**
  * WeekdaysSelectorComponent Tests

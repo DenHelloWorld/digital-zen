@@ -1,8 +1,8 @@
-import { ChangeDetectionStrategy, Component, inject, Signal } from '@angular/core';
-import { ThemeService } from '../../services/theme.service';
-import { COLOR_SCHEMA_ENUM, ColorSchemaType } from '../../enums/color-schema.enum';
-import { UI_TEXT } from '../../constants/ui-text.const';
 import { ICONS } from '../../constants/icons.const';
+import { UI_TEXT } from '../../constants/ui-text.const';
+import { COLOR_SCHEMA_ENUM, ColorSchemaType } from '../../enums/color-schema.enum';
+import { ThemeService } from '../../services/theme.service';
+import { ChangeDetectionStrategy, Component, inject, Signal } from '@angular/core';
 
 /**
  * Theme switcher component for toggling between light and dark themes

@@ -1,11 +1,11 @@
-import { computed, inject, Injectable, Signal, signal, WritableSignal } from '@angular/core';
-import { ApiService } from '../../common/services/api.service';
-import { ChromeStorageService } from '../../common/services/chrome-storage.service';
-import { logger } from '../../common/helpers/logger';
-import { IGoogleUserInfo } from '../../common/models/google-user-info.model';
+import { API_URLS } from '../../common/constants/api-urls.const';
 import { CHROME_COMMAND_ENUM } from '../../common/enums/chrome-command.enum';
 import { CHROME_STORAGE_KEY_ENUM } from '../../common/enums/chrome-storage-key.enum';
-import { API_URLS } from '../../common/constants/api-urls.const';
+import { logger } from '../../common/helpers/logger';
+import { IGoogleUserInfo } from '../../common/models/google-user-info.model';
+import { ApiService } from '../../common/services/api.service';
+import { ChromeStorageService } from '../../common/services/chrome-storage.service';
+import { computed, inject, Injectable, Signal, signal, WritableSignal } from '@angular/core';
 
 /**
  * Google authentication service for Chrome Extension
