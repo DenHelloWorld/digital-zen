@@ -68,19 +68,28 @@ export class FocusService {
   /** @guideline DZ_08 - Private field */
   #timerIntervalId: ReturnType<typeof setInterval> | null = null;
 
-  /**
-   * Computed signal that returns the elapsed focus time in milliseconds.
-   * Returns 0 if focus is not active or sessionStartTime is not set.
-   */
-  readonly #focusElapsedTime: Signal<number> = computed(() => {
+  readonly #focusRemainingTime: Signal<number> = computed(() => {
     const period = this.#currentPeriod();
-    const currentTime = this.#currentTime();
+    const nowTimestamp = this.#currentTime();
+    const now = new Date(nowTimestamp);
 
-    if (!period?.isActive || !period?.sessionStartTime) {
+    if (!period?.endTo) {
       return 0;
     }
 
-    return currentTime - period.sessionStartTime.getTime();
+    const deadline = new Date(now);
+    deadline.setHours(period.endTo.getHours(), period.endTo.getMinutes(), 0, 0);
+
+    if (
+      deadline.getTime() <= now.getTime() &&
+      period.startFrom &&
+      period.endTo.getHours() < period.startFrom.getHours()
+    ) {
+      deadline.setDate(deadline.getDate() + 1);
+    }
+
+    const remaining = deadline.getTime() - now.getTime();
+    return remaining > 0 ? remaining : 0;
   });
 
   public readonly currentPeriod = this.#currentPeriod.asReadonly();
@@ -93,18 +102,28 @@ export class FocusService {
    */
   public readonly progress = computed(() => {
     const period = this.#currentPeriod();
-    const startsFrom = period?.startFrom?.getTime() ?? null;
-    const endsTo = period?.endTo?.getTime() ?? null;
+    if (!period?.startFrom || !period?.endTo) return 0;
+
     const now = this.#currentTime();
 
-    if (!startsFrom || !endsTo || now < startsFrom || now > endsTo) {
+    const todayStart = new Date(now);
+    todayStart.setHours(period.startFrom.getHours(), period.startFrom.getMinutes(), 0, 0);
+
+    const todayEnd = new Date(now);
+    todayEnd.setHours(period.endTo.getHours(), period.endTo.getMinutes(), 0, 0);
+
+    if (todayEnd <= todayStart) {
+      todayEnd.setDate(todayEnd.getDate() + 1);
+    }
+
+    if (now < todayStart.getTime() || now > todayEnd.getTime()) {
       return 0;
     }
 
-    const elapsed = now - startsFrom;
-    const total = endsTo - startsFrom;
+    const elapsed = now - todayStart.getTime();
+    const total = todayEnd.getTime() - todayStart.getTime();
 
-    return elapsed / total;
+    return 1 - elapsed / total;
   });
 
   public readonly periods: Signal<IFocus.Period[] | null> = computed(
@@ -117,13 +136,13 @@ export class FocusService {
    * Formatted focus time as a string (MM:SS or HH:MM:SS).
    */
   public readonly focusElapsedTimeFormatted: Signal<string> = computed(() => {
-    const elapsed = this.#focusElapsedTime();
+    const remaining = this.#focusRemainingTime();
 
-    if (elapsed <= 0) {
+    if (remaining <= 0) {
       return '00:00';
     }
 
-    const totalSeconds = Math.floor(elapsed / 1000);
+    const totalSeconds = Math.floor(remaining / 1000);
     const hours = Math.floor(totalSeconds / 3600);
     const minutes = Math.floor((totalSeconds % 3600) / 60);
     const seconds = totalSeconds % 60;

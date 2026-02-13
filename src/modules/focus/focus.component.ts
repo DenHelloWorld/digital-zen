@@ -116,6 +116,25 @@ export class FocusComponent {
     }
   });
 
+  protected readonly status = computed(() => {
+    const period = this.currentPeriod();
+
+    if (!period?.isActive) {
+      return 'Idle';
+    }
+
+    switch (period.blockBehaviour) {
+      case BLOCK_BEHAVIOUR_ENUM.WHITELIST:
+        return 'Focus';
+      case BLOCK_BEHAVIOUR_ENUM.BLOCK:
+        return 'Block';
+      case BLOCK_BEHAVIOUR_ENUM.WARN:
+        return 'Warn';
+      default:
+        return 'Idle';
+    }
+  });
+
   protected readonly isSvgIcon: (url: string | null | undefined) => boolean = isSvgIcon;
   protected readonly isImageIcon: (url: string | null | undefined) => boolean = isImageIcon;
   /** @guideline DZ_10 - UI text constants */

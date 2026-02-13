@@ -95,10 +95,6 @@
       gap: var(--spacing-xs);
       justify-content: center;
       flex-direction: column;
-
-      .hint {
-        font-size: var(--font-size-xl);
-      }
     }
 
     &__time-group {
@@ -126,12 +122,5 @@
       gap: var(--spacing);
       align-items: center;
     }
-
-    //&__activation {
-    //  max-width: 27ch;
-    //  white-space: nowrap;
-    //  overflow: hidden;
-    //  text-overflow: ellipsis;
-    //}
   }
 }

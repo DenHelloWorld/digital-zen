@@ -88,6 +88,10 @@
         <ng-container *ngTemplateOutlet="icon; context: { href: statusIcon() }"></ng-container>
       </div>
 
+      <div class="hint">
+        {{ status() }}
+      </div>
+
       <div class="dz-focus__time">{{ focusElapsedTimeFormatted() }}</div>
     </div>
 
