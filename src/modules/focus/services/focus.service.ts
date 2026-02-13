@@ -140,7 +140,7 @@ export class FocusService {
     const period = this.#currentPeriod();
     if (!period) return false;
 
-    const now = new Date();
+    const now = new Date(this.#currentTime());
     const today = now.getDay();
 
     if (period.daysOfWeek && !period.daysOfWeek.includes(today)) return false;
