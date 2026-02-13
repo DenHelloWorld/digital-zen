@@ -1,3 +1,4 @@
+import { NgTemplateOutlet, TitleCasePipe } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -8,7 +9,6 @@ import {
   ModelSignal,
   TemplateRef,
 } from '@angular/core';
-import { NgTemplateOutlet, TitleCasePipe } from '@angular/common';
 
 /**
  * Generic multi-selector component for selecting multiple items from a list

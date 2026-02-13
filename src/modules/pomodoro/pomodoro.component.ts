@@ -1,3 +1,13 @@
+import { IStepBarOption, StepBarComponent } from '../common/components/step-bar/step-bar.component';
+import { ValueStepperComponent } from '../common/components/value-stepper/value-stepper.component';
+import { FINISHED_CYCLE } from '../common/constants/finished-cycle.const';
+import { ICONS } from '../common/constants/icons.const';
+import { UI_TEXT } from '../common/constants/ui-text.const';
+import { ProgressBorderDirective } from '../common/directives/progress-border.directive';
+import { COLORS_ENUM } from '../common/enums/colors.enum';
+import { IPomodoro } from '../common/models/pomodoro.model';
+import { PomodoroService } from './services/pomodoro.service';
+import { CommonModule } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -8,19 +18,9 @@ import {
   Injector,
   OnInit,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { ValueStepperComponent } from '../common/components/value-stepper/value-stepper.component';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { IPomodoro } from '../common/models/pomodoro.model';
-import { PomodoroService } from './services/pomodoro.service';
-import { IStepBarOption, StepBarComponent } from '../common/components/step-bar/step-bar.component';
-import { debounceTime, distinctUntilChanged, filter } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { ProgressBorderDirective } from '../common/directives/progress-border.directive';
-import { UI_TEXT } from '../common/constants/ui-text.const';
-import { ICONS } from '../common/constants/icons.const';
-import { FINISHED_CYCLE } from '../common/constants/finished-cycle.const';
-import { DZ_COLORS } from '../common/enums/colors.enum';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { debounceTime, distinctUntilChanged, filter } from 'rxjs';
 
 /**
  * Pomodoro timer component
@@ -59,11 +59,11 @@ export class PomodoroComponent implements OnInit {
 
   protected readonly uiText = UI_TEXT;
   protected readonly icons = ICONS;
-  protected readonly colors = DZ_COLORS;
+  protected readonly colors = COLORS_ENUM;
 
   protected readonly phaseMetadata: Record<
     IPomodoro.EPomodoroPhase,
-    { icon: string; color: DZ_COLORS }
+    { icon: string; color: COLORS_ENUM }
   > = {
     [IPomodoro.EPomodoroPhase.WORK]: {
       icon: this.icons.SCHOOL,

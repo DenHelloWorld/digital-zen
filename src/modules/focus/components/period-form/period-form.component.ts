@@ -1,3 +1,36 @@
+import { DynamicInputComponent } from '../../../common/components/dynamic-input/dynamic-input.component';
+import { MultiSelectorComponent } from '../../../common/components/multi-selector/multi-selector.component';
+import { WeekdaysSelectorComponent } from '../../../common/components/weekdays-selector/weekdays-selector.component';
+import { ALL_DAYS_OF_WEEK, WORK_DAYS_OF_WEEKS } from '../../../common/constants/days-of-week.const';
+import { ICONS } from '../../../common/constants/icons.const';
+import {
+  ALL_DAY_TIME_RANGE,
+  MANUAL_TIME_RANGE,
+  TIME_RANGES,
+} from '../../../common/constants/time-ranges.const';
+import { UI_TEXT } from '../../../common/constants/ui-text.const';
+import { VALIDATION_ERROR_KEYS } from '../../../common/constants/validation-errors.const';
+import { WEBSITE_FACEBOOK, WEBSITE_TIKTOK } from '../../../common/constants/websites.const';
+import {
+  BLOCK_BEHAVIOUR_ENUM,
+  BlockBehaviourType,
+} from '../../../common/enums/block-behaviour.enum';
+import { COLORS_ENUM } from '../../../common/enums/colors.enum';
+import { VIEW_ENUM } from '../../../common/enums/view.enum';
+import { cleanUrlHelper } from '../../../common/helpers/clean-url.helper';
+import { FaviconHelper } from '../../../common/helpers/favicon.helper';
+import { logger } from '../../../common/helpers/logger';
+import { IFocusForm } from '../../../common/models/focus-form.model';
+import { IFocus } from '../../../common/models/focus.model';
+import { WebsiteConnectivityProvider } from '../../../common/providers/website-connectivity.provider';
+import { MiniRouterService } from '../../../common/services/mini-router.service';
+import { arrayMinLengthValidator } from '../../../common/validators/array-min-length.validator';
+import { noUnactivatableWebsitesValidator } from '../../../common/validators/no-unactivatable-websites.validator';
+import { requiredTrimmedValidator } from '../../../common/validators/required-trimmed.validator';
+import { timeRangeValidator } from '../../../common/validators/time-range.validator';
+import { uniquePeriodNameValidator } from '../../../common/validators/unique-period-name.validator';
+import { FocusService } from '../../services/focus.service';
+import { CommonModule } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -13,40 +46,9 @@ import {
   untracked,
   WritableSignal,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-
-import { distinctUntilChanged, map } from 'rxjs';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
-
-import { WeekdaysSelectorComponent } from '../../../common/components/weekdays-selector/weekdays-selector.component';
-import { FocusService } from '../../services/focus.service';
-import { DynamicInputComponent } from '../../../common/components/dynamic-input/dynamic-input.component';
-import { MultiSelectorComponent } from '../../../common/components/multi-selector/multi-selector.component';
-import {
-  BLOCK_BEHAVIOUR_ENUM,
-  BlockBehaviourType,
-} from '../../../common/enums/block-behaviour.enum';
-import { logger } from '../../../common/helpers/logger';
-import { IFocus } from '../../../common/models/focus.model';
-import { UI_TEXT } from '../../../common/constants/ui-text.const';
-import { IFocusForm } from '../../../common/models/focus-form.model';
-import { ICONS } from '../../../common/constants/icons.const';
-import { VALIDATION_ERROR_KEYS } from '../../../common/constants/validation-errors.const';
-import { MANUAL_TIME_RANGE, TIME_RANGES } from '../../../common/constants/time-ranges.const';
-import { WEBSITE_FACEBOOK, WEBSITE_TIKTOK } from '../../../common/constants/websites.const';
-import { requiredTrimmedValidator } from '../../../common/validators/required-trimmed.validator';
-import { uniquePeriodNameValidator } from '../../../common/validators/unique-period-name.validator';
-import { arrayMinLengthValidator } from '../../../common/validators/array-min-length.validator';
-import { noUnactivatableWebsitesValidator } from '../../../common/validators/no-unactivatable-websites.validator';
-import { timeRangeValidator } from '../../../common/validators/time-range.validator';
-import { ALL_DAYS_OF_WEEK } from '../../../common/constants/days-of-week.const';
-import { FaviconHelper } from '../../../common/helpers/favicon.helper';
-import { WebsiteConnectivityProvider } from '../../../common/providers/website-connectivity.provider';
-import { cleanUrlHelper } from '../../../common/helpers/clean-url.helper';
-import { MiniRouterService } from '../../../common/services/mini-router.service';
-import { VIEW_ENUM } from '../../../common/enums/view.enum';
-import { DZ_COLORS } from '../../../common/enums/colors.enum';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { distinctUntilChanged, map } from 'rxjs';
 
 /**
  * Period form component for creating and editing focus periods
@@ -97,7 +99,6 @@ export class PeriodFormComponent implements OnInit {
   readonly #maxPeriodNameLength = 100;
   readonly #siteStatusesCache = new Map<string, ResourceRef<boolean | undefined>>();
 
-  /** @guideline DZ_04 - InputSignal for component inputs */
   public readonly period = this.#router.payload as Signal<IFocus.Period | null>;
 
   protected readonly currentRoute = this.#router.currentRoute;
@@ -108,7 +109,7 @@ export class PeriodFormComponent implements OnInit {
   /** @guideline DZ_10.1 - Icon constants */
   protected readonly icons = ICONS;
   protected readonly views = VIEW_ENUM;
-  protected readonly colors = DZ_COLORS;
+  protected readonly colors = COLORS_ENUM;
   /** Validation error keys for template usage */
   protected readonly validationErrorKeys = VALIDATION_ERROR_KEYS;
   protected readonly timeRanges = [...TIME_RANGES];
@@ -124,8 +125,12 @@ export class PeriodFormComponent implements OnInit {
     'name',
   ];
 
-  protected selectedTimeRanges: WritableSignal<IFocus.TimeRange[]> = signal<IFocus.TimeRange[]>([]);
-  protected selectedDays: WritableSignal<IFocus.DayOfWeek[]> = signal<IFocus.DayOfWeek[]>([]);
+  protected selectedTimeRanges: WritableSignal<IFocus.TimeRange[]> = signal<IFocus.TimeRange[]>([
+    ALL_DAY_TIME_RANGE,
+  ]);
+  protected selectedDays: WritableSignal<IFocus.DayOfWeek[]> = signal<IFocus.DayOfWeek[]>([
+    ...WORK_DAYS_OF_WEEKS,
+  ]);
   protected selectedWebSites: WritableSignal<IFocus.WebSite[]> = signal<IFocus.WebSite[]>([
     WEBSITE_TIKTOK,
     WEBSITE_FACEBOOK,

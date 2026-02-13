@@ -2,8 +2,10 @@
   <nav class="dz-header__navigation">
     <button
       class="dz-button dz-button--nm"
-      [title]="uiText.HEADER.FOCUS_MENU_TITLE"
-      [class.dz-button--activated]="currentRoute() === viewTypes.FOCUS"
+      [title]="uiText.HEADER.FOCUS_TITLE"
+      [class.dz-button--activated]="
+        [viewTypes.ADD_PERIOD, viewTypes.EDIT_PERIOD, viewTypes.FOCUS].includes(currentRoute())
+      "
       (click)="setViewType(viewTypes.FOCUS)"
     >
       <svg class="dz-icon" aria-hidden="true" focusable="false">
@@ -13,15 +15,9 @@
 
     <button
       class="dz-button dz-button--nm"
-      [title]="
-        currentRoute() === viewTypes.EDIT_PERIOD
-          ? uiText.HEADER.EDIT_PERIOD_TITLE
-          : uiText.HEADER.ADD_NEW_PERIOD_TITLE
-      "
-      [class.dz-button--activated]="
-        [viewTypes.ADD_PERIOD, viewTypes.EDIT_PERIOD].includes(currentRoute())
-      "
-      (click)="setViewType(viewTypes.ADD_PERIOD)"
+      [title]="uiText.HEADER.PERIODS_LIST_TITLE"
+      [class.dz-button--activated]="currentRoute() === viewTypes.MENU"
+      (click)="setViewType(viewTypes.MENU)"
     >
       <svg class="dz-icon" aria-hidden="true" focusable="false">
         <use [attr.href]="icons.ASSIGMENT"></use>

@@ -11,4 +11,15 @@
       gap: var(--spacing);
     }
   }
+
+  .dz-form {
+    &__actions {
+      position: sticky;
+      bottom: var(--spacing);
+      margin-left: auto;
+      width: fit-content;
+      z-index: 1;
+      background-color: var(--color-bg);
+    }
+  }
 }

@@ -1,3 +1,7 @@
+import { ICONS } from '../../constants/icons.const';
+import { UI_TEXT } from '../../constants/ui-text.const';
+import { KEY_EVENTS_ENUM } from '../../enums/key-events.enum';
+import { NgTemplateOutlet } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -7,12 +11,8 @@ import {
   computed,
   model,
 } from '@angular/core';
-import { NG_VALUE_ACCESSOR, ControlValueAccessor } from '@angular/forms';
 import { forwardRef } from '@angular/core';
-import { KEY_EVENTS_ENUM } from '../../enums/key-events.enum';
-import { NgTemplateOutlet } from '@angular/common';
-import { UI_TEXT } from '../../constants/ui-text.const';
-import { ICONS } from '../../constants/icons.const';
+import { NG_VALUE_ACCESSOR, ControlValueAccessor } from '@angular/forms';
 
 @Component({
   selector: 'dz-value-stepper',

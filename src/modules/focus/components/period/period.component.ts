@@ -1,3 +1,17 @@
+import { DzToastService } from '../../../common/components';
+import { WeekdaysSelectorComponent } from '../../../common/components/weekdays-selector/weekdays-selector.component';
+import { ALL_DAYS_OF_WEEK } from '../../../common/constants/days-of-week.const';
+import { ICONS } from '../../../common/constants/icons.const';
+import { UI_TEXT } from '../../../common/constants/ui-text.const';
+import { BLOCK_BEHAVIOUR_ENUM } from '../../../common/enums/block-behaviour.enum';
+import { TOAST_MESSAGES_ENUM } from '../../../common/enums/toast-messages.enum';
+import { VIEW_ENUM } from '../../../common/enums/view.enum';
+import { isHttpUrl } from '../../../common/helpers/is-http-url.helper';
+import { IFocus } from '../../../common/models/focus.model';
+import { RemoveProtocolPipe } from '../../../common/pipes/remove-protocol.pipe';
+import { MiniRouterService } from '../../../common/services/mini-router.service';
+import { FocusService } from '../../services/focus.service';
+import { TimeLineComponent } from '../time-line/time-line.component';
 import { CommonModule } from '@angular/common';
 import {
   ChangeDetectionStrategy,
@@ -12,21 +26,6 @@ import {
   signal,
   WritableSignal,
 } from '@angular/core';
-
-import { TimeLineComponent } from '../time-line/time-line.component';
-import { WeekdaysSelectorComponent } from '../../../common/components/weekdays-selector/weekdays-selector.component';
-import { FocusService } from '../../services/focus.service';
-import { BLOCK_BEHAVIOUR_ENUM } from '../../../common/enums/block-behaviour.enum';
-import { IFocus } from '../../../common/models/focus.model';
-import { UI_TEXT } from '../../../common/constants/ui-text.const';
-import { ICONS } from '../../../common/constants/icons.const';
-import { ALL_DAYS_OF_WEEK } from '../../../common/constants/days-of-week.const';
-import { isHttpUrl } from '../../../common/helpers/is-http-url.helper';
-import { DzToastService } from '../../../common/components';
-import { TOAST_MESSAGES_ENUM } from '../../../common/enums/toast-messages.enum';
-import { RemoveProtocolPipe } from '../../../common/pipes/remove-protocol.pipe';
-import { MiniRouterService } from '../../../common/services/mini-router.service';
-import { VIEW_ENUM } from '../../../common/enums/view.enum';
 
 /**
  * Period display and management component

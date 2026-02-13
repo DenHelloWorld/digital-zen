@@ -1,3 +1,4 @@
+import { TabComponent } from './tab/tab.component';
 import {
   AfterContentInit,
   ChangeDetectionStrategy,
@@ -5,7 +6,6 @@ import {
   ContentChildren,
   QueryList,
 } from '@angular/core';
-import { TabComponent } from './tab/tab.component';
 
 @Component({
   selector: 'dz-tabs',

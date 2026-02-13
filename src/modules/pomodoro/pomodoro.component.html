@@ -80,7 +80,7 @@
   @let color = currentProgressColor();
 
   <div
-    class="timer__progress round square"
+    class="timer__progress round"
     [progress]="progress()"
     [progressConfig]="{ thickness: 10, color }"
     [class.light--accent]="isRunning() && !isPaused()"

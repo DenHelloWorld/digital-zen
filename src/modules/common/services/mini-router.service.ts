@@ -1,5 +1,5 @@
-import { Injectable, signal } from '@angular/core';
 import { VIEW_ENUM, ViewType } from '../enums/view.enum';
+import { Injectable, signal } from '@angular/core';
 
 @Injectable({ providedIn: 'root' })
 export class MiniRouterService {

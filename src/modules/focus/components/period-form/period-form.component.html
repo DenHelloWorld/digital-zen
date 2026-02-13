@@ -314,22 +314,27 @@
     }
   </div>
 
-  <div class="dz-form__actions">
+  <div class="dz-form__actions dz-box dz-box--fit shadow blurred shadow--hoverless">
     <button
-      class="dz-button dz-button--activated shadow"
-      [disabled]="form.invalid"
-      [class.dz-button--error]="form.invalid"
-      (click)="savePeriod()"
-    >
-      {{
+      class="dz-button dz-button--md dz-button--activated shadow"
+      [title]="
         currentRoute() === views.EDIT_PERIOD
           ? uiText.PERIOD_FORM.BUTTONS.UPDATE
           : uiText.PERIOD_FORM.BUTTONS.CREATE
-      }}
+      "
+      [disabled]="form.invalid"
+      (click)="savePeriod()"
+    >
+      <ng-container *ngTemplateOutlet="icon; context: { href: icons.SAVE }"></ng-container>
     </button>
 
-    <button class="dz-button dz-button--md shadow" (click)="cancelForm()" type="button">
-      {{ uiText.PERIOD_FORM.BUTTONS.CANCEL }}
+    <button
+      class="dz-button dz-button--md dz-button--error shadow"
+      [title]="uiText.PERIOD_FORM.BUTTONS.CANCEL"
+      (click)="cancelForm()"
+      type="button"
+    >
+      <ng-container *ngTemplateOutlet="icon; context: { href: icons.CANCEL }"></ng-container>
     </button>
   </div>
 </form>

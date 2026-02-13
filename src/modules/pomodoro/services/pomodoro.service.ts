@@ -1,12 +1,11 @@
-import { computed, DestroyRef, inject, Injectable, signal } from '@angular/core';
-
-import { IPomodoro } from '../../common/models/pomodoro.model';
-import { CHROME_STORAGE_KEY_ENUM } from '../../common/enums/chrome-storage-key.enum';
-import { ChromeStorageService } from '../../common/services/chrome-storage.service';
-import { logger } from '../../common/helpers/logger';
-import { CHROME_COMMAND_ENUM, ChromeCommandType } from '../../common/enums/chrome-command.enum';
 import { DEFAULT_POMODORO_SETTINGS } from '../../common/constants/default-pomodoro-settings.const';
+import { CHROME_COMMAND_ENUM, ChromeCommandType } from '../../common/enums/chrome-command.enum';
+import { CHROME_STORAGE_KEY_ENUM } from '../../common/enums/chrome-storage-key.enum';
 import { createDefaultPomodoroStateHelper } from '../../common/helpers/create-default-pomodoro-state.helper';
+import { logger } from '../../common/helpers/logger';
+import { IPomodoro } from '../../common/models/pomodoro.model';
+import { ChromeStorageService } from '../../common/services/chrome-storage.service';
+import { computed, DestroyRef, inject, Injectable, signal } from '@angular/core';
 
 interface InitialStorageSchema {
   [CHROME_STORAGE_KEY_ENUM.POMODORO_STATE]: IPomodoro.State;

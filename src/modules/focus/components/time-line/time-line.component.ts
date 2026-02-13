@@ -1,3 +1,6 @@
+import { UI_TEXT } from '../../../common/constants/ui-text.const';
+import { getTimeInMilliseconds } from '../../../common/helpers/time.helper';
+import { DatePipe } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -10,9 +13,6 @@ import {
   Signal,
   WritableSignal,
 } from '@angular/core';
-import { DatePipe } from '@angular/common';
-import { getTimeInMilliseconds } from '../../../common/helpers/time.helper';
-import { UI_TEXT } from '../../../common/constants/ui-text.const';
 
 @Component({
   selector: 'dz-time-line',

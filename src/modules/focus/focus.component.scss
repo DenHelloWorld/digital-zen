@@ -16,6 +16,7 @@
       justify-content: center;
       gap: var(--spacing);
       flex-shrink: 0;
+      border-bottom: 5px solid var(--color-component-bg-light);
     }
 
     &__tab,
@@ -28,13 +29,12 @@
 
     &__tab {
       width: 100%;
-      border-bottom: 5px solid var(--color-component-bg-light);
+      //border-bottom: 5px solid var(--color-component-bg-light);
 
       .dz-button--tab {
         position: relative;
         border-radius: var(--radius) var(--radius) 0 0;
         margin-bottom: -1px;
-        padding: var(--spacing-md);
 
         &:before,
         &:after {
@@ -73,24 +73,65 @@
     }
 
     &__main {
-      width: 100%;
+      width: 98%;
       max-width: var(--app-width);
       margin: 0 auto;
-      flex: 1;
-      overflow-y: auto;
+    }
+
+    &__widget {
+      margin: 0 auto var(--spacing);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: var(--spacing);
+    }
+
+    &__timer {
+      font-size: calc(var(--font-size-md) * 2);
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-xs);
+      justify-content: center;
+      flex-direction: column;
+
+      .hint {
+        font-size: var(--font-size-xl);
+      }
+    }
+
+    &__time-group {
+      display: flex;
+      gap: var(--spacing);
+      align-items: center;
+      justify-content: center;
+
+      .dz-box {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+    }
+
+    &__periods-list {
+      margin: 0 0 var(--spacing) 0;
     }
 
     &__footer {
       width: 100%;
       max-width: var(--app-width);
       margin: 0 auto;
+      display: flex;
+      gap: var(--spacing);
+      align-items: center;
     }
 
-    &__activation {
-      max-width: 27ch;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
+    //&__activation {
+    //  max-width: 27ch;
+    //  white-space: nowrap;
+    //  overflow: hidden;
+    //  text-overflow: ellipsis;
+    //}
   }
 }

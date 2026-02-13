@@ -45,14 +45,14 @@ export const DAY_SATURDAY: Readonly<IFocus.DayOfWeek> = {
 /**
  * Array of work days (Monday to Friday)
  */
-export const WORK_DAYS_OF_WEEK_DAYS: Readonly<readonly DayOfWeekType[]> = Object.freeze([
-  // DAY_SUNDAY.day,
-  DAY_MONDAY.day,
-  DAY_TUESDAY.day,
-  DAY_WEDNESDAY.day,
-  DAY_THURSDAY.day,
-  DAY_FRIDAY.day,
-  // DAY_SATURDAY.day
+export const WORK_DAYS_OF_WEEKS = Object.freeze([
+  // DAY_SUNDAY,
+  DAY_MONDAY,
+  DAY_TUESDAY,
+  DAY_WEDNESDAY,
+  DAY_THURSDAY,
+  DAY_FRIDAY,
+  // DAY_SATURDAY
 ]);
 
 /**

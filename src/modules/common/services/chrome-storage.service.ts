@@ -1,6 +1,6 @@
-import { Injectable } from '@angular/core';
 import { ChromeStorageKeyType } from '../enums/chrome-storage-key.enum';
 import { logger } from '../helpers/logger';
+import { Injectable } from '@angular/core';
 
 /**
  * Chrome Storage service for interacting with chrome.storage.local API

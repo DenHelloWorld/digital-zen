@@ -1,23 +1,22 @@
-import { ChangeDetectionStrategy, Component, HostBinding, inject, Signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
-
-import { FocusComponent } from '../modules/focus/focus.component';
 import { AuthService } from '../modules/auth';
-import { PomodoroComponent } from '../modules/pomodoro/pomodoro.component';
-import { PeriodFormComponent } from '../modules/focus/components/period-form/period-form.component';
 import {
   DzToastContainerComponent,
   LoaderComponent,
   ThemeSwitcherComponent,
 } from '../modules/common/components';
-import { ThemeService } from '../modules/common/services/theme.service';
+import { ICONS } from '../modules/common/constants/icons.const';
+import { UI_TEXT } from '../modules/common/constants/ui-text.const';
+import { WEBSITE_PRIVACY_POLICY } from '../modules/common/constants/websites.const';
+import { CHROME_COMMAND_ENUM } from '../modules/common/enums/chrome-command.enum';
 import { COLOR_SCHEMA_ENUM, ColorSchemaType } from '../modules/common/enums/color-schema.enum';
 import { VIEW_ENUM, ViewType } from '../modules/common/enums/view.enum';
-import { UI_TEXT } from '../modules/common/constants/ui-text.const';
-import { ICONS } from '../modules/common/constants/icons.const';
-import { WEBSITE_PRIVACY_POLICY } from '../modules/common/constants/websites.const';
 import { MiniRouterService } from '../modules/common/services/mini-router.service';
-import { CHROME_COMMAND_ENUM } from '../modules/common/enums/chrome-command.enum';
+import { ThemeService } from '../modules/common/services/theme.service';
+import { PeriodFormComponent } from '../modules/focus/components/period-form/period-form.component';
+import { FocusComponent } from '../modules/focus/focus.component';
+import { PomodoroComponent } from '../modules/pomodoro/pomodoro.component';
+import { CommonModule } from '@angular/common';
+import { ChangeDetectionStrategy, Component, HostBinding, inject, Signal } from '@angular/core';
 
 /**
  * Root application component for Digital Zen Chrome Extension

@@ -1,3 +1,20 @@
+import { DzToastService } from '../../common/components';
+import { ICONS } from '../../common/constants/icons.const';
+import { QUICK_FOCUS_ID } from '../../common/constants/quick-focus-id.const';
+import { WEBSITES_UNACTIVATABLE } from '../../common/constants/websites.const';
+import { CHROME_COMMAND_ENUM } from '../../common/enums/chrome-command.enum';
+import { CHROME_STORAGE_KEY_ENUM } from '../../common/enums/chrome-storage-key.enum';
+import { FOCUS_ERROR_ENUM } from '../../common/enums/focus-error.enum';
+import { TOAST_MESSAGES_ENUM } from '../../common/enums/toast-messages.enum';
+import { TOAST_TYPE_ENUM } from '../../common/enums/toast-type.enum';
+import { cleanUrlHelper } from '../../common/helpers/clean-url.helper';
+import { createDefaultPeriodHelper } from '../../common/helpers/create-default-period.helper';
+import { FaviconHelper } from '../../common/helpers/favicon.helper';
+import { isImageIcon } from '../../common/helpers/is-image-icon.helper';
+import { isSvgIcon } from '../../common/helpers/is-svg-icon.helper';
+import { logger } from '../../common/helpers/logger';
+import { IFocus } from '../../common/models/focus.model';
+import { ChromeStorageService } from '../../common/services/chrome-storage.service';
 import {
   computed,
   DestroyRef,
@@ -7,23 +24,6 @@ import {
   signal,
   WritableSignal,
 } from '@angular/core';
-import { CHROME_STORAGE_KEY_ENUM } from '../../common/enums/chrome-storage-key.enum';
-import { IFocus } from '../../common/models/focus.model';
-import { logger } from '../../common/helpers/logger';
-import { DzToastService } from '../../common/components';
-import { ChromeStorageService } from '../../common/services/chrome-storage.service';
-import { QUICK_FOCUS_ID } from '../../common/constants/quick-focus-id.const';
-import { WEBSITES_UNACTIVATABLE } from '../../common/constants/websites.const';
-import { CHROME_COMMAND_ENUM } from '../../common/enums/chrome-command.enum';
-import { TOAST_TYPE_ENUM } from '../../common/enums/toast-type.enum';
-import { FOCUS_ERROR_ENUM } from '../../common/enums/focus-error.enum';
-import { TOAST_MESSAGES_ENUM } from '../../common/enums/toast-messages.enum';
-import { cleanUrlHelper } from '../../common/helpers/clean-url.helper';
-import { isSvgIcon } from '../../common/helpers/is-svg-icon.helper';
-import { isImageIcon } from '../../common/helpers/is-image-icon.helper';
-import { createDefaultPeriodHelper } from '../../common/helpers/create-default-period.helper';
-import { ICONS } from '../../common/constants/icons.const';
-import { FaviconHelper } from '../../common/helpers/favicon.helper';
 
 interface InitialStorageSchema {
   [CHROME_STORAGE_KEY_ENUM.CURRENT_PERIOD]: IFocus.Period;

@@ -15,12 +15,13 @@ export const UI_TEXT = Object.freeze({
 
   // App Header
   HEADER: {
-    FOCUS_MENU_TITLE: 'Focus menu',
+    FOCUS_TITLE: 'Focus',
     ADD_NEW_PERIOD_TITLE: 'Add new period',
     EDIT_PERIOD_TITLE: 'Edit period',
     LOGIN_GOOGLE_TITLE: 'Login with Google',
     LOGOUT_GOOGLE_TITLE: 'Logout from Google',
     POMODORO_MENU_TITLE: 'Pomodoro timer',
+    PERIODS_LIST_TITLE: 'List of al periods',
   },
 
   // Menu Component
@@ -120,6 +121,8 @@ export const UI_TEXT = Object.freeze({
     TOGGLE_FOCUS_TITLE: 'Toggle focus session',
     START: 'Start',
     STOP: 'Stop',
+    ENABLED: 'Enabled',
+    DISABLED: 'Disabled',
     CANNOT_ADD_CURRENT_TAB_TITLE: 'This website cannot be added',
   },
 

@@ -14,7 +14,7 @@
 <div class="dz-focus__header">
   <div class="dz-focus__tab">
     <button
-      class="dz-button dz-button--md dz-button--tab"
+      class="dz-button dz-button--nm dz-button--tab"
       [disabled]="isTabButtonDisabled()"
       [title]="
         activeTab() ? uiText.FOCUS.ADD_CURRENT_TAB_TITLE : uiText.FOCUS.CANNOT_ADD_CURRENT_TAB_TITLE
@@ -57,53 +57,93 @@
         {{ activeTab()?.title ?? uiText.FOCUS.CANNOT_ADD_CURRENT_TAB_TITLE }}</span
       >
 
-      @let href =
+      @let tabIcon =
         !isTabButtonDisabled()
           ? isCurrentTabInCurrentPeriod()
             ? icons.CHECK
             : icons.ADD_LINK
           : null;
-      <ng-container *ngTemplateOutlet="icon; context: { href }"></ng-container>
+      <ng-container *ngTemplateOutlet="icon; context: { href: tabIcon }"></ng-container>
     </button>
   </div>
+
+  <button class="dz-button dz-button--xs" (click)="onOpenWebsitesList()">
+    <ng-container *ngTemplateOutlet="icon; context: { href: icons.FOLDER }"></ng-container>
+  </button>
 </div>
 
 <div class="dz-focus__main">
-  @if (displayedPeriods().length) {
-    <ul class="dz-list">
-      @for (period of displayedPeriods(); track period.id) {
-        <li>
-          <dz-period
-            [period]="period"
-            [totalPeriodsCount]="periodsCount()"
-            [isCurrent]="isPeriodCurrent(period)"
-            [isFocusActive]="isFocusActive()"
-          />
-        </li>
-      }
-    </ul>
-  } @else {
-    <dz-loader />
-  }
+  <div
+    class="dz-focus__widget dz-box round square"
+    [class.light--accent]="isFocusActive()"
+    [progress]="0.7"
+    [progressConfig]="{
+      thickness: 10,
+      color: currentPeriod()?.isActive ? colors.ACCENT : colors.DEFAULT,
+    }"
+    dzProgressBorder
+  >
+    <div class="dz-focus__timer dz-focus__timer--focus">
+      <div class="dz-icon-box dz-icon-box--md">
+        <ng-container *ngTemplateOutlet="icon; context: { href: statusIcon() }"></ng-container>
+      </div>
+
+      <div class="dz-focus__time">{{ focusElapsedTimeFormatted() }}</div>
+    </div>
+
+    <div class="dz-focus__weekdays">
+      <dz-weekdays-selector [selectedDays]="selectedDays()" [isSelectable]="false" />
+    </div>
+
+    <div class="dz-focus__time-group">
+      <div class="dz-box">
+        <span class="hint">Start</span>
+
+        <div class="dz-focus__time">
+          {{ (currentPeriod()?.startFrom | date: 'HH:mm') || '00:00' }}
+        </div>
+      </div>
+
+      <div class="dz-icon-box dz-icon-box--sm">
+        <ng-container *ngTemplateOutlet="icon; context: { href: icons.LINE_END }"></ng-container>
+      </div>
+
+      <div class="dz-box">
+        <span class="hint">End</span>
+
+        <div class="dz-focus__time">{{ (currentPeriod()?.endTo | date: 'HH:mm') || '00:00' }}</div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <div class="dz-focus__footer dz-box shadow">
+  <dz-switch
+    [checked]="isFocusActive()"
+    [statusIcons]="{
+      activated: icons.STOP,
+      unActivated: icons.PLAY_ARROW,
+    }"
+    (checkedChange)="toggleFocus()"
+    size="xxl"
+  />
+  @let hintText = currentPeriod()?.name || '';
+
+  <div class="hint full ellipsis" [title]="hintText">{{ hintText }}</div>
+
   <button
-    class="dz-button dz-button--full dz-button--md shadow dz-button--activated"
-    [title]="currentPeriod()?.isActive ? uiText.FOCUS.STOP : uiText.FOCUS.START"
-    [class.dz-button--ghost]="currentPeriod()?.isActive"
-    (click)="toggleFocus()"
+    class="dz-button dz-button--md dz-button--ghost shadow"
+    [title]="uiText.PERIOD.ARIA_LABELS.EDIT_PERIOD"
+    (click)="onEditCurrentPeriod()"
   >
-    @let text =
-      (currentPeriod()?.isActive ? uiText.FOCUS.STOP : uiText.FOCUS.START) +
-      ' ' +
-      currentPeriod()?.name;
-    @let iconHref = currentPeriod()?.isActive ? icons.STOP : icons.PLAY_ARROW;
+    <ng-container *ngTemplateOutlet="icon; context: { href: icons.EDIT }"></ng-container>
+  </button>
 
-    <ng-container *ngTemplateOutlet="icon; context: { href: iconHref }"></ng-container>
-
-    <span class="dz-focus__activation">
-      {{ text }}
-    </span>
+  <button
+    class="dz-button dz-button--md dz-button--ghost shadow"
+    [title]="uiText.HEADER.ADD_NEW_PERIOD_TITLE"
+    (click)="onAddPeriod()"
+  >
+    <ng-container *ngTemplateOutlet="icon; context: { href: icons.PLUS }"></ng-container>
   </button>
 </div>
