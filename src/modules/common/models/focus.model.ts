@@ -57,11 +57,23 @@ export namespace IFocus {
   export enum EWebSiteType {
     DEFAULT = 'Default',
     SOCIAL_MEDIA = 'Social Media',
+    AI = 'AI',
+    ENTERTAINMENT = 'Entertainment',
+    SHOPPING = 'Shopping',
+    NEWS = 'News',
+    EDUCATION = 'Education',
+    WORK_DEVELOPMENT = 'Work Development',
     UNBLOCKABLE = 'Unblockable',
   }
 
   export type IWebSiteType =
     | IFocus.EWebSiteType.SOCIAL_MEDIA
+    | IFocus.EWebSiteType.AI
+    | IFocus.EWebSiteType.ENTERTAINMENT
+    | IFocus.EWebSiteType.SHOPPING
+    | IFocus.EWebSiteType.NEWS
+    | IFocus.EWebSiteType.EDUCATION
+    | IFocus.EWebSiteType.WORK_DEVELOPMENT
     | IFocus.EWebSiteType.DEFAULT
     | IFocus.EWebSiteType.UNBLOCKABLE;
 
