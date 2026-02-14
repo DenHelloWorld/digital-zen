@@ -155,6 +155,7 @@ describe('UserDataSyncAdapter', () => {
             daysOfWeek: [1, 2, 3, 4, 5],
             sessionStartTime: null,
             webSites: [],
+            timeLeftSec: null,
           },
           {
             id: 'period-2',
@@ -168,6 +169,7 @@ describe('UserDataSyncAdapter', () => {
             sessionStartTime: null,
             blockBehaviour: BLOCK_BEHAVIOUR_ENUM.BLOCK,
             webSites: [],
+            timeLeftSec: null,
           },
         ];
 
@@ -209,6 +211,7 @@ describe('UserDataSyncAdapter', () => {
           blockBehaviour: BLOCK_BEHAVIOUR_ENUM.BLOCK,
           sessionStartTime: null,
           webSites: [],
+          timeLeftSec: null,
         };
 
         const backendPeriods: IFocus.Period[] = [
@@ -224,6 +227,7 @@ describe('UserDataSyncAdapter', () => {
             daysOfWeek: [1, 2, 3, 4, 5],
             sessionStartTime: null,
             webSites: [],
+            timeLeftSec: null,
           },
         ];
 
@@ -519,6 +523,7 @@ describe('UserDataSyncAdapter', () => {
             daysOfWeek: [1, 2, 3, 4, 5],
             sessionStartTime: null,
             webSites: [],
+            timeLeftSec: null,
           },
         ];
 
@@ -625,6 +630,7 @@ describe('UserDataSyncAdapter', () => {
             daysOfWeek: [1, 2, 3, 4, 5],
             sessionStartTime: null,
             webSites: [],
+            timeLeftSec: null,
           },
           {
             id: 'period-2',
@@ -638,6 +644,7 @@ describe('UserDataSyncAdapter', () => {
             daysOfWeek: [1, 2, 3, 4, 5],
             sessionStartTime: null,
             webSites: [],
+            timeLeftSec: null,
           },
           {
             id: 'period-3',
@@ -651,6 +658,7 @@ describe('UserDataSyncAdapter', () => {
             daysOfWeek: [1, 2, 3, 4, 5, 6, 0],
             sessionStartTime: null,
             webSites: [],
+            timeLeftSec: null,
           },
         ];
 
@@ -685,6 +693,7 @@ describe('UserDataSyncAdapter', () => {
             daysOfWeek: [1, 2, 3, 4, 5],
             sessionStartTime: null,
             webSites: [],
+            timeLeftSec: null,
           },
           {
             id: 'period-1',
@@ -698,6 +707,7 @@ describe('UserDataSyncAdapter', () => {
             daysOfWeek: [1, 2, 3, 4, 5],
             sessionStartTime: null,
             webSites: [],
+            timeLeftSec: null,
           },
         ];
 
@@ -738,6 +748,7 @@ describe('UserDataSyncAdapter', () => {
             daysOfWeek: [1, 2, 3, 4, 5],
             sessionStartTime: null,
             webSites: [],
+            timeLeftSec: null,
           },
         ];
 
@@ -816,6 +827,7 @@ describe('UserDataSyncAdapter', () => {
           daysOfWeek: [1, 2, 3, 4, 5],
           sessionStartTime: null,
           webSites: [],
+          timeLeftSec: null,
         },
         {
           id: 'period-1',
@@ -829,6 +841,7 @@ describe('UserDataSyncAdapter', () => {
           daysOfWeek: [1, 2, 3, 4, 5],
           sessionStartTime: null,
           webSites: [],
+          timeLeftSec: null,
         },
       ];
 

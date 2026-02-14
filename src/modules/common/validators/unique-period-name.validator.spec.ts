@@ -17,6 +17,7 @@ describe('uniquePeriodNameValidator', () => {
     daysOfWeek: [1],
     sessionStartTime: null,
     webSites: [],
+    timeLeftSec: null,
   });
 
   describe('Unique names (valid)', () => {
