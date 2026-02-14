@@ -133,11 +133,13 @@
         <div class="dz-focus__time">{{ (currentPeriod()?.endTo | date: 'HH:mm') || '00:00' }}</div>
       </div>
 
-      <div class="dz-box">
-        <span class="hint">Remaining</span>
+      @if (isPeriodCurrentlyApplicable()) {
+        <div class="dz-box">
+          <span class="hint">Remaining</span>
 
-        <div class="dz-focus__time">{{ focusElapsedTimeFormatted() }}</div>
-      </div>
+          <div class="dz-focus__time">{{ focusElapsedTimeFormatted() }}</div>
+        </div>
+      }
     </div>
   </div>
 </div>

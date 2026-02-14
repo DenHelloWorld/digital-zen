@@ -58,7 +58,10 @@ export class FocusComponent {
     const selected = this.currentPeriod()?.daysOfWeek;
     return [...ALL_DAYS_OF_WEEK].filter(day => selected?.includes(day.day));
   });
-  protected readonly isCurrentTabInCurrentPeriod = this.#focusService.isCurrentTabInCurrentPeriod;
+  protected readonly isCurrentTabInCurrentPeriod: Signal<boolean> =
+    this.#focusService.isCurrentTabInCurrentPeriod;
+  protected readonly isPeriodCurrentlyApplicable: Signal<boolean> =
+    this.#focusService.isPeriodCurrentlyApplicable;
   /** @guideline DZ_04 - Computed signal (derived state) */
   // TODO: remove
   protected readonly displayedPeriods: Signal<IFocus.Period[]> = computed(() => {
