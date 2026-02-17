@@ -26,7 +26,6 @@ import {
   inject,
   signal,
   Signal,
-  WritableSignal,
 } from '@angular/core';
 
 @Component({
@@ -65,10 +64,14 @@ export class FocusComponent {
   /** @guideline DZ_04 - Signals for reactive state */
   protected readonly progress: Signal<number> = this.#focusService.progress;
 
-  protected readonly websitesPopupData: WritableSignal<Record<
-    IFocus.IWebSiteType,
-    readonly IFocus.WebSite[]
-  > | null> = signal(null);
+  protected readonly websitesPopupData = computed(() => {
+    const currentWebsites = this.currentPeriodWebSites();
+
+    return {
+      ...this.#getActivatedPresets(currentWebsites),
+      [IFocus.EWebSiteType.FROM_CURRENT_PERIOD]: currentWebsites,
+    };
+  });
   protected readonly openedFolders = signal<Set<IFocus.IWebSiteType>>(
     new Set(Object.values(IFocus.EWebSiteType))
   );
@@ -76,10 +79,15 @@ export class FocusComponent {
   protected readonly isFocusActive: Signal<boolean> = computed(
     () => this.currentPeriod()?.isActive ?? false
   );
+  protected readonly currentPeriodWebSites: Signal<IFocus.WebSite[]> = computed(
+    () => this.currentPeriod()?.webSites ?? []
+  );
   protected readonly selectedDays: Signal<IFocus.DayOfWeek[]> = computed(() => {
     const selected = this.currentPeriod()?.daysOfWeek;
     return [...ALL_DAYS_OF_WEEK].filter(day => selected?.includes(day.day));
   });
+
+  protected readonly isWebsitesPopupShown = signal<boolean>(false);
   protected readonly isCurrentTabInCurrentPeriod: Signal<boolean> =
     this.#focusService.isCurrentTabInCurrentPeriod;
   protected readonly isPeriodCurrentlyApplicable: Signal<boolean> =
@@ -157,7 +165,6 @@ export class FocusComponent {
   }
 
   protected onToggleBlockedWebsite(site: IFocus.WebSite): void {
-    // TODO: update websitesPopupData on success
     this.#focusService.toggleBlockedWebsite(site);
   }
 
@@ -170,12 +177,10 @@ export class FocusComponent {
   }
 
   protected onOpenWebsitesList(): void {
-    const currentPeriodWebsites = this.currentPeriod()?.webSites ?? [];
-
-    this.websitesPopupData.set({
-      ...this.#getActivatedPresets(currentPeriodWebsites),
-      [IFocus.EWebSiteType.FROM_CURRENT_PERIOD]: currentPeriodWebsites,
-    });
+    this.isWebsitesPopupShown.set(true);
+  }
+  protected onCloseWebsitesList(): void {
+    this.isWebsitesPopupShown.set(false);
   }
 
   protected onNavigation(route: ViewType, payload: object | null = null): void {
@@ -205,7 +210,7 @@ export class FocusComponent {
   #getActivatedPresets(
     activeWebsites: IFocus.WebSite[]
   ): Record<IFocus.IWebSiteType, IFocus.WebSite[]> {
-    const activeUrls = new Set(activeWebsites.map(ws => ws.url));
+    const activeUrls = new Set(activeWebsites.filter(ws => ws.isActivated).map(ws => ws.url));
 
     return Object.entries(ALL_PRESET_WEBSITES).reduce(
       (acc, [type, websites]) => {

@@ -75,19 +75,14 @@
     <ng-container *ngTemplateOutlet="icon; context: { href: icons.FOLDER }"></ng-container>
   </button>
 
-  <ng-template
-    #popup="dzPopup"
-    [dzPopup]="websitesPopupData()"
-    (closed)="websitesPopupData.set(null)"
-    let-popupData
-  >
+  <ng-template [dzPopup]="isWebsitesPopupShown()" (closed)="onCloseWebsitesList()">
     <div
       class="dz-box shadow shadow--hoverless dz-popup-content dz-popup-content--full-h dz-popup-websites"
     >
       <header class="dz-popup-content__header">
         <h1 class="hint hint--xl">Websites</h1>
 
-        <button class="dz-button round dz-button--sm" (click)="popup.close()">
+        <button class="dz-button round dz-button--sm" (click)="onCloseWebsitesList()">
           <ng-container *ngTemplateOutlet="icon; context: { href: icons.CLOSE }"></ng-container>
         </button>
       </header>
@@ -95,7 +90,8 @@
       <main class="dz-popup-content__main">
         <ul class="dz-tree dz-tree--root dz-list">
           @for (type of websiteTypes; track type) {
-            @if (popupData[type].length > 0) {
+            @let sites = websitesPopupData()?.[type] || [];
+            @if (sites.length > 0) {
               <li>
                 <button
                   class="dz-button dz-button--ghost dz-button--md"
@@ -109,12 +105,12 @@
                     ></ng-container>
                   </span>
                   <span>{{ type }}</span>
-                  <small class="hint hint--xs">({{ popupData[type].length }})</small>
+                  <small class="hint hint--xs">({{ sites.length }})</small>
                 </button>
 
                 @if (isFolderOpen(type)) {
                   <ul class="dz-tree" [class.dz-tree--open]="isFolderOpen(type)">
-                    @for (site of popupData[type]; track site.id) {
+                    @for (site of sites; track site.url) {
                       <li class="dz-tree__item">
                         <input
                           class="dz-input dz-input--checkbox"
