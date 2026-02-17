@@ -86,7 +86,7 @@ export class PopupDirective<T = unknown> implements OnInit, OnDestroy {
         takeUntilDestroyed(this.#destroyRef)
       )
       .subscribe(payload => {
-        if (payload !== null) {
+        if (payload) {
           this.#show();
         } else {
           this.#destroy();

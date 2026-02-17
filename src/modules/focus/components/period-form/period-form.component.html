@@ -219,6 +219,15 @@
       </div>
 
       <div class="dz-icon-box dz-icon-box--sm" [title]="site.url">
+        <input
+          class="dz-input dz-input--checkbox"
+          [checked]="site.isActivated"
+          (change)="onToggleBlockedWebsite(site)"
+          type="checkbox"
+        />
+      </div>
+
+      <div class="dz-icon-box dz-icon-box--sm" [title]="site.url">
         <img
           class="dz-icon"
           #imgRef

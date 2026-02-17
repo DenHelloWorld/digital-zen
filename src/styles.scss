@@ -458,11 +458,6 @@ summary::marker {
     cursor: pointer;
     width: var(--btn-size-xs);
     height: var(--btn-size-xs);
-  }
-
-  &:active {
-    &:not(disabled) {
-      transform: scale(0.98) translateY(1px);
-    }
+    box-shadow: none;
   }
 }

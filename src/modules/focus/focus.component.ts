@@ -68,7 +68,7 @@ export class FocusComponent {
     const currentWebsites = this.currentPeriodWebSites();
 
     return {
-      ...this.#getActivatedPresets(currentWebsites),
+      ...this.#mapWebsitesToCategories(currentWebsites),
       [IFocus.EWebSiteType.FROM_CURRENT_PERIOD]: currentWebsites,
     };
   });
@@ -207,20 +207,22 @@ export class FocusComponent {
     return this.openedFolders().has(type);
   }
 
-  #getActivatedPresets(
+  #mapWebsitesToCategories(
     activeWebsites: IFocus.WebSite[]
   ): Record<IFocus.IWebSiteType, IFocus.WebSite[]> {
-    const activeUrls = new Set(activeWebsites.filter(ws => ws.isActivated).map(ws => ws.url));
+    const activeUrls = new Set(activeWebsites.filter(s => s.isActivated).map(s => s.url));
 
-    return Object.entries(ALL_PRESET_WEBSITES).reduce(
-      (acc, [type, websites]) => {
-        acc[type as IFocus.IWebSiteType] = websites.map(website => ({
-          ...website,
-          isActivated: activeUrls.has(website.url),
-        }));
-        return acc;
-      },
-      {} as Record<IFocus.IWebSiteType, IFocus.WebSite[]>
-    );
+    const result = {} as Record<IFocus.IWebSiteType, IFocus.WebSite[]>;
+
+    for (const key in ALL_PRESET_WEBSITES) {
+      const category = key as IFocus.IWebSiteType;
+
+      result[category] = ALL_PRESET_WEBSITES[category].map(site => ({
+        ...site,
+        isActivated: activeUrls.has(site.url),
+      }));
+    }
+
+    return result;
   }
 }

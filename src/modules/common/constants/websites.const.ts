@@ -183,23 +183,12 @@ export const WEBSITE_TUMBLR: Readonly<IFocus.WebSite> = {
   isActivated: true,
 };
 
-export const WEBSITE_WHATSAPP_WEB: Readonly<IFocus.WebSite> = {
-  id: 'whatsapp-web',
-  name: 'WhatsApp Web',
-  description: 'WhatsApp Web',
-  url: 'https://web.whatsapp.com',
-  imageUrl: FaviconHelper.getGoogleUrl('https://whatsapp.com'),
-  iconUrl: ICONS.GLOBE,
-  type: IFocus.EWebSiteType.SOCIAL_MEDIA,
-  isActivated: true,
-};
-
 export const WEBSITE_CHATGPT: Readonly<IFocus.WebSite> = {
   id: 'chatgpt',
   name: 'ChatGPT',
   description: 'ChatGPT',
-  url: 'https://chat.openai.com',
-  imageUrl: FaviconHelper.getGoogleUrl('https://openai.com'),
+  url: 'https://chatgpt.com',
+  imageUrl: FaviconHelper.getGoogleUrl('https://chatgpt.com'),
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.AI,
   isActivated: true,
@@ -576,7 +565,6 @@ export const WEBSITES_SOCIAL_MEDIA: Readonly<readonly IFocus.WebSite[]> = Object
   WEBSITE_BLUESKY,
   WEBSITE_MASTODON,
   WEBSITE_TUMBLR,
-  WEBSITE_WHATSAPP_WEB,
 ]);
 
 export const WEBSITES_AI: Readonly<readonly IFocus.WebSite[]> = Object.freeze([
