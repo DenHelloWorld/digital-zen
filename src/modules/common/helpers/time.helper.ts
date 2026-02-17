@@ -163,3 +163,16 @@ export const fromWallTimeISO = (dateStr: string | Date | null): Date | null => {
 
   return date;
 };
+
+/**
+ * Sets hours and minutes from a "HH:mm" format string into a Date object.
+ *  @param date - The source date object
+ * @param timeStr - Time string in "HH:mm" format (e.g., "09:00" or "23:59")
+ * @returns A new Date object with updated time
+ */
+export const setTimeFromStr = (date: Date, timeStr: string): Date => {
+  const [hours, minutes] = timeStr.split(':').map(Number);
+  const newDate = new Date(date);
+  newDate.setHours(hours, minutes, 0, 0);
+  return newDate;
+};
