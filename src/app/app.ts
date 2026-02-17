@@ -51,7 +51,7 @@ import { ChangeDetectionStrategy, Component, HostBinding, inject, Signal } from 
     MenuComponent,
   ],
   host: {
-    class: 'dz-app',
+    class: 'dz-app gradient-overlay',
   },
 })
 export class App {
