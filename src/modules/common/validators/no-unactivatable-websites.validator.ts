@@ -1,5 +1,5 @@
 import { VALIDATION_ERROR_KEYS } from '../constants/validation-errors.const';
-import { WEBSITES_UNACTIVATABLE } from '../constants/websites.const';
+import { WEBSITES_UNBLOCKABLE } from '../constants/websites.const';
 import { cleanUrlHelper } from '../helpers/clean-url.helper';
 import { IFocus } from '../models/focus.model';
 import { AbstractControl, ValidationErrors } from '@angular/forms';
@@ -14,7 +14,7 @@ export function noUnactivatableWebsitesValidator(
   }
 
   // Get cleaned URLs of all UNBLOCKABLE websites for comparison
-  const unblockableUrls = WEBSITES_UNACTIVATABLE.map(site => cleanUrlHelper(site.url));
+  const unblockableUrls = WEBSITES_UNBLOCKABLE.map(site => cleanUrlHelper(site.url));
 
   // Find all websites that match UNBLOCKABLE websites and collect their URLs
   const invalidWebsites = (value as IFocus.WebSite[])

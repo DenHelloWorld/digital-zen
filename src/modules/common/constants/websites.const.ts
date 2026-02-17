@@ -221,7 +221,7 @@ export const WEBSITE_GEMINI: Readonly<IFocus.WebSite> = {
   name: 'Gemini',
   description: 'Gemini AI',
   url: 'https://gemini.google.com',
-  imageUrl: FaviconHelper.getGoogleUrl('https://google.com'),
+  imageUrl: FaviconHelper.getGoogleUrl('https://gemini.google.com'),
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.AI,
   isActivated: true,
@@ -242,7 +242,7 @@ export const WEBSITE_GROK: Readonly<IFocus.WebSite> = {
   id: 'grok',
   name: 'Grok',
   description: 'Grok AI',
-  url: 'https://grok.x.ai',
+  url: 'https://x.ai',
   imageUrl: FaviconHelper.getGoogleUrl('https://x.ai'),
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.AI,
@@ -649,16 +649,20 @@ export const WEBSITE_PRIVACY_POLICY: Readonly<IFocus.WebSite> = {
  * Array of all unblockable websites
  * These websites should never be blocked by the extension
  */
-export const WEBSITES_UNACTIVATABLE: Readonly<readonly IFocus.WebSite[]> = Object.freeze([
+export const WEBSITES_UNBLOCKABLE: Readonly<readonly IFocus.WebSite[]> = Object.freeze([
   WEBSITE_PRIVACY_POLICY,
 ]);
 
-export const ALL_PRESET_WEBSITES: readonly IFocus.WebSite[] = Object.freeze([
-  ...WEBSITES_SOCIAL_MEDIA,
-  ...WEBSITES_AI,
-  ...WEBSITES_ENTERTAINMENT,
-  ...WEBSITES_SHOPPING,
-  ...WEBSITES_NEWS,
-  ...WEBSITES_EDUCATION,
-  ...WEBSITES_WORK_DEVELOPMENT,
-]);
+export const ALL_PRESET_WEBSITES: Record<IFocus.IWebSiteType, readonly IFocus.WebSite[]> =
+  Object.freeze({
+    [IFocus.EWebSiteType.FROM_CURRENT_PERIOD]: [],
+    [IFocus.EWebSiteType.AI]: WEBSITES_AI,
+    [IFocus.EWebSiteType.EDUCATION]: WEBSITES_EDUCATION,
+    [IFocus.EWebSiteType.SOCIAL_MEDIA]: WEBSITES_SOCIAL_MEDIA,
+    [IFocus.EWebSiteType.ENTERTAINMENT]: WEBSITES_ENTERTAINMENT,
+    [IFocus.EWebSiteType.SHOPPING]: WEBSITES_SHOPPING,
+    [IFocus.EWebSiteType.NEWS]: WEBSITES_NEWS,
+    [IFocus.EWebSiteType.WORK_DEVELOPMENT]: WEBSITES_WORK_DEVELOPMENT,
+    [IFocus.EWebSiteType.DEFAULT]: [],
+    [IFocus.EWebSiteType.UNBLOCKABLE]: WEBSITES_UNBLOCKABLE,
+  });

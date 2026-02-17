@@ -1,7 +1,7 @@
 import { DzToastService } from '../../common/components';
 import { ICONS } from '../../common/constants/icons.const';
 import { QUICK_FOCUS_ID } from '../../common/constants/quick-focus-id.const';
-import { WEBSITES_UNACTIVATABLE } from '../../common/constants/websites.const';
+import { WEBSITES_UNBLOCKABLE } from '../../common/constants/websites.const';
 import { CHROME_COMMAND_ENUM } from '../../common/enums/chrome-command.enum';
 import { CHROME_STORAGE_KEY_ENUM } from '../../common/enums/chrome-storage-key.enum';
 import { FOCUS_ERROR_ENUM } from '../../common/enums/focus-error.enum';
@@ -271,7 +271,7 @@ export class FocusService {
       const clearedUrl = cleanUrlHelper(tab.url);
 
       // Check if the URL matches any UNBLOCKABLE website
-      const isUnblockable = WEBSITES_UNACTIVATABLE.some(
+      const isUnblockable = WEBSITES_UNBLOCKABLE.some(
         site => cleanUrlHelper(site.url) === clearedUrl
       );
 
