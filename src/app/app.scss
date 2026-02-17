@@ -61,34 +61,4 @@
       color 0.3s,
       background-color 0.3s;
   }
-
-  &:before {
-    content: '';
-
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    z-index: -1;
-    background: hsla(356, 68%, 91%, 1);
-    background: linear-gradient(
-      90deg,
-      hsla(356, 68%, 91%, 1) 0%,
-      hsla(275, 100%, 61%, 1) 49%,
-      hsla(316, 66%, 80%, 1) 100%
-    );
-    background: -moz-linear-gradient(
-      90deg,
-      hsla(356, 68%, 91%, 1) 0%,
-      hsla(275, 100%, 61%, 1) 49%,
-      hsla(316, 66%, 80%, 1) 100%
-    );
-    background: -webkit-linear-gradient(
-      90deg,
-      hsla(356, 68%, 91%, 1) 0%,
-      hsla(275, 100%, 61%, 1) 49%,
-      hsla(316, 66%, 80%, 1) 100%
-    );
-  }
 }

@@ -1,27 +1,47 @@
-.dz-popup-overlay {
-  background-color: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(2px);
-}
-
 .dz-popup-content {
-  background-color: var(--color-background);
-  color: var(--color-text);
-  padding: var(--spacing-xl);
-  border-radius: var(--radius);
-  box-shadow: 0 10px var(--shadow-blur) var(--shadow-color);
+  background: color-mix(in srgb, var(--color-background), transparent 21%);
+  backdrop-filter: blur(5px);
+  color: var(--color-component-text-light);
+  position: relative;
 
-  max-width: 90vw;
-  max-height: 90vh;
-  overflow-y: auto;
+  max-width: calc(100vw - (var(--spacing) * 2));
+  max-height: calc(100vh - (var(--spacing) * 2));
+  height: 100%;
+
+  display: flex;
+  flex-direction: column;
+  padding: 0;
 
   animation: dz-popup-in 0.3s ease-out forwards;
+
+  &--full-h {
+    //width: calc(100vw - (var(--spacing) * 2));
+    height: calc(100vh - (var(--spacing) * 2));
+  }
 
   &::-webkit-scrollbar {
     display: none;
   }
+
+  &__header {
+    flex: 0 0 var(--header-height);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    padding: 0 var(--spacing);
+  }
+
+  &__main {
+    padding: 0 var(--spacing) var(--spacing) var(--spacing);
+    flex: 1;
+    overflow-y: auto;
+  }
+
+  &__actions {
+  }
 }
 
-/* 3. Анимации */
 .dz-popup-fade-in {
   animation: dz-fade-in 0.2s ease-out forwards;
 }
