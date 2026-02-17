@@ -20,6 +20,7 @@ import { VIEW_ENUM } from '../../../common/enums/view.enum';
 import { cleanUrlHelper } from '../../../common/helpers/clean-url.helper';
 import { FaviconHelper } from '../../../common/helpers/favicon.helper';
 import { logger } from '../../../common/helpers/logger';
+import { setTimeFromStr } from '../../../common/helpers/time.helper';
 import { IFocusForm } from '../../../common/models/focus-form.model';
 import { IFocus } from '../../../common/models/focus.model';
 import { WebsiteConnectivityProvider } from '../../../common/providers/website-connectivity.provider';
@@ -251,14 +252,16 @@ export class PeriodFormComponent implements OnInit, AfterViewInit {
         };
       });
 
+      const now = new Date();
+
       const periodData: IFocus.Period = {
         // TODO: process timeLeftSec
         timeLeftSec: null,
         id: rawValue.id,
         name: rawValue.name,
         description: rawValue.description,
-        startFrom: this.#timeStringToDate(rawValue.startFrom),
-        endTo: this.#timeStringToDate(rawValue.endTo),
+        startFrom: setTimeFromStr(now, rawValue.startFrom ?? ALL_DAY_TIME_RANGE.startFrom),
+        endTo: setTimeFromStr(now, rawValue.endTo ?? ALL_DAY_TIME_RANGE.endTo),
         webSites: webSitesWithFavicons,
         blockBehaviour: rawValue.blockBehaviour,
         daysOfWeek: rawValue.daysOfWeek,
@@ -289,36 +292,12 @@ export class PeriodFormComponent implements OnInit, AfterViewInit {
     this.form.patchValue({ blockBehaviour });
   }
 
-  /**
-   * Converts a time string "HH:mm" to a Date object.
-   * @param timeString The time string from the input (e.g., "14:30").
-   * @returns A Date object set to the specified time, or null if invalid.
-   */
-  #timeStringToDate(timeString: string | null): Date | null {
-    if (timeString == null || !timeString.includes(':')) {
-      this.#logger.warn('Invalid time string provided to timeStringToDate:', timeString);
-      return null;
-    }
-
-    const [hoursStr, minutesStr] = timeString.split(':');
-    const hours = Number(hoursStr);
-    const minutes = Number(minutesStr);
-
-    if (isNaN(hours) || isNaN(minutes)) {
-      this.#logger.warn('Invalid hours/minutes in time string:', timeString);
-      return null;
-    }
-
-    const date = new Date();
-    date.setHours(hours, minutes, 0, 0);
-
-    // Verify the date is valid after setting
-    if (isNaN(date.getTime())) {
-      this.#logger.warn('Created invalid date from time string:', timeString);
-      return null;
-    }
-
-    return date;
+  protected onToggleBlockedWebsite(toggledSite: IFocus.WebSite): void {
+    this.selectedWebSites.update(sites =>
+      sites.map(site =>
+        site.url === toggledSite.url ? { ...site, isActivated: !site.isActivated } : site
+      )
+    );
   }
 
   /**

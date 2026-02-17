@@ -1,3 +1,5 @@
+import { COLOR_SCHEMA_ENUM } from '../enums/color-schema.enum';
+import { ThemeService } from '../services/theme.service';
 import { Overlay, OverlayRef } from '@angular/cdk/overlay';
 import { TemplatePortal } from '@angular/cdk/portal';
 import {
@@ -10,6 +12,7 @@ import {
   ViewContainerRef,
   DestroyRef,
   OnInit,
+  Injector,
 } from '@angular/core';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { distinctUntilChanged, filter, Subject, takeUntil } from 'rxjs';
@@ -59,12 +62,14 @@ export class PopupDirective<T = unknown> implements OnInit, OnDestroy {
   readonly #templateRef = inject(TemplateRef);
   readonly #viewContainerRef = inject(ViewContainerRef);
   readonly #destroyRef = inject(DestroyRef);
+  readonly #injector = inject(Injector);
+  readonly #themeService = inject(ThemeService);
 
   /** Trigger signal: opens when non-null, closes when null */
-  readonly openPayload = input<T | null>(null, { alias: 'dzPopup' });
+  public readonly openPayload = input<T | null>(null, { alias: 'dzPopup' });
 
   /** Emits when the popup is closed by any means */
-  readonly closed = output<PopupCloseEvent<T>>();
+  public readonly closed = output<PopupCloseEvent<T>>();
 
   /** The active CDK Overlay reference */
   #overlayRef: OverlayRef | null = null;
@@ -75,13 +80,13 @@ export class PopupDirective<T = unknown> implements OnInit, OnDestroy {
   readonly #detached$ = new Subject<void>();
 
   public ngOnInit(): void {
-    toObservable(this.openPayload)
+    toObservable(this.openPayload, { injector: this.#injector })
       .pipe(
         distinctUntilChanged((prev, curr) => JSON.stringify(prev) === JSON.stringify(curr)),
         takeUntilDestroyed(this.#destroyRef)
       )
       .subscribe(payload => {
-        if (payload !== null) {
+        if (payload) {
           this.#show();
         } else {
           this.#destroy();
@@ -106,22 +111,21 @@ export class PopupDirective<T = unknown> implements OnInit, OnDestroy {
       positionStrategy: this.#overlay.position().global().centerHorizontally().centerVertically(),
       scrollStrategy: this.#overlay.scrollStrategies.block(),
       hasBackdrop: true,
-      backdropClass: ['dz-popup-overlay', 'dz-popup-fade-in'],
+      backdropClass: ['gradient-overlay', 'dz-popup-fade-in'],
+      panelClass: this.#themeService.theme() === COLOR_SCHEMA_ENUM.DARK ? ['dark-theme'] : [],
     });
 
     // Attach the template portal
-    const portal = new TemplatePortal(this.#templateRef, this.#viewContainerRef);
+    const portal = new TemplatePortal(this.#templateRef, this.#viewContainerRef, {
+      $implicit: this.openPayload(),
+    });
     this.#overlayRef.attach(portal);
 
-    // --- Managed Subscriptions using takeUntil ---
-
-    // 1. Backdrop Click
     this.#overlayRef
       .backdropClick()
       .pipe(takeUntil(this.#detached$))
       .subscribe(() => this.close(POPUP_CLOSE_REASON_ENUM.BACKDROP));
 
-    // 2. Escape Key
     this.#overlayRef
       .keydownEvents()
       .pipe(
@@ -149,7 +153,6 @@ export class PopupDirective<T = unknown> implements OnInit, OnDestroy {
    * Internal cleanup: disposes the overlay and terminates active subscriptions.
    */
   #destroy(): void {
-    // Trigger termination for all overlay-specific pipe(takeUntil)
     this.#detached$.next();
 
     if (this.#overlayRef) {

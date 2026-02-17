@@ -3,12 +3,15 @@ import { WeekdaysSelectorComponent } from '../common/components/weekdays-selecto
 import { ALL_DAYS_OF_WEEK } from '../common/constants/days-of-week.const';
 import { ICONS } from '../common/constants/icons.const';
 import { UI_TEXT } from '../common/constants/ui-text.const';
-import { WEBSITES_UNACTIVATABLE } from '../common/constants/websites.const';
+import { ALL_PRESET_WEBSITES, WEBSITES_UNBLOCKABLE } from '../common/constants/websites.const';
+import { PopupDirective } from '../common/directives/popup.directive';
 import { ProgressBorderDirective } from '../common/directives/progress-border.directive';
 import { BLOCK_BEHAVIOUR_ENUM } from '../common/enums/block-behaviour.enum';
 import { COLORS_ENUM } from '../common/enums/colors.enum';
 import { VIEW_ENUM, ViewType } from '../common/enums/view.enum';
+import { cleanProtocolHelper } from '../common/helpers/clean-protocol.helper';
 import { cleanUrlHelper } from '../common/helpers/clean-url.helper';
+import { FaviconHelper } from '../common/helpers/favicon.helper';
 import { isHttpUrl } from '../common/helpers/is-http-url.helper';
 import { isImageIcon } from '../common/helpers/is-image-icon.helper';
 import { isSvgIcon } from '../common/helpers/is-svg-icon.helper';
@@ -16,7 +19,14 @@ import { IFocus } from '../common/models/focus.model';
 import { MiniRouterService } from '../common/services/mini-router.service';
 import { FocusService } from './services/focus.service';
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, inject, Signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+  signal,
+  Signal,
+} from '@angular/core';
 
 @Component({
   selector: 'dz-focus',
@@ -26,9 +36,11 @@ import { ChangeDetectionStrategy, Component, computed, inject, Signal } from '@a
     // angular modules
     CommonModule,
     // components
-    ProgressBorderDirective,
     WeekdaysSelectorComponent,
     SwitchComponent,
+    // directives
+    ProgressBorderDirective,
+    PopupDirective,
   ],
   host: {
     class: 'dz-focus',
@@ -51,41 +63,35 @@ export class FocusComponent {
     this.#focusService.focusElapsedTimeFormatted;
   /** @guideline DZ_04 - Signals for reactive state */
   protected readonly progress: Signal<number> = this.#focusService.progress;
+
+  protected readonly websitesPopupData = computed(() => {
+    const currentWebsites = this.currentPeriodWebSites();
+
+    return {
+      ...this.#mapWebsitesToCategories(currentWebsites),
+      [IFocus.EWebSiteType.FROM_CURRENT_PERIOD]: currentWebsites,
+    };
+  });
+  protected readonly openedFolders = signal<Set<IFocus.IWebSiteType>>(
+    new Set(Object.values(IFocus.EWebSiteType))
+  );
+
   protected readonly isFocusActive: Signal<boolean> = computed(
     () => this.currentPeriod()?.isActive ?? false
+  );
+  protected readonly currentPeriodWebSites: Signal<IFocus.WebSite[]> = computed(
+    () => this.currentPeriod()?.webSites ?? []
   );
   protected readonly selectedDays: Signal<IFocus.DayOfWeek[]> = computed(() => {
     const selected = this.currentPeriod()?.daysOfWeek;
     return [...ALL_DAYS_OF_WEEK].filter(day => selected?.includes(day.day));
   });
+
+  protected readonly isWebsitesPopupShown = signal<boolean>(false);
   protected readonly isCurrentTabInCurrentPeriod: Signal<boolean> =
     this.#focusService.isCurrentTabInCurrentPeriod;
   protected readonly isPeriodCurrentlyApplicable: Signal<boolean> =
     this.#focusService.isPeriodCurrentlyApplicable;
-  /** @guideline DZ_04 - Computed signal (derived state) */
-  // TODO: remove
-  protected readonly displayedPeriods: Signal<IFocus.Period[]> = computed(() => {
-    const current = this.currentPeriod();
-    const all = this.periods();
-
-    if (!all || all.length === 0) {
-      return [];
-    }
-
-    // When focus is active, show only the current period
-    if (current?.isActive) {
-      return [current];
-    }
-
-    // When focus is inactive, show current period first, then others
-    if (current) {
-      const others = all.filter(p => p.id !== current.id);
-      return [current, ...others];
-    }
-
-    return all;
-  });
-
   protected readonly isCurrentTabUnblockable: Signal<boolean> = computed(() => {
     const tab = this.activeTab();
     if (!tab?.url) {
@@ -93,7 +99,7 @@ export class FocusComponent {
     }
 
     const cleanedUrl = cleanUrlHelper(tab.url);
-    return WEBSITES_UNACTIVATABLE.some(site => cleanUrlHelper(site.url) === cleanedUrl);
+    return WEBSITES_UNBLOCKABLE.some(site => cleanUrlHelper(site.url) === cleanedUrl);
   });
 
   protected readonly isTabButtonDisabled = computed(() => {
@@ -138,14 +144,17 @@ export class FocusComponent {
     }
   });
 
+  protected readonly cleanProtocolHelper = cleanProtocolHelper;
   protected readonly isSvgIcon: (url: string | null | undefined) => boolean = isSvgIcon;
   protected readonly isImageIcon: (url: string | null | undefined) => boolean = isImageIcon;
   /** @guideline DZ_10 - UI text constants */
   protected readonly uiText = UI_TEXT;
   protected readonly icons = ICONS;
   protected readonly colors = COLORS_ENUM;
-  protected readonly blockBehaviours = BLOCK_BEHAVIOUR_ENUM;
   protected readonly viewTypes = VIEW_ENUM;
+  protected readonly websiteTypes = Object.values(IFocus.EWebSiteType).filter(
+    type => type !== IFocus.EWebSiteType.DEFAULT && type !== IFocus.EWebSiteType.UNBLOCKABLE
+  );
 
   protected onToggleFocus(): void {
     this.#focusService.toggleFocus();
@@ -168,10 +177,52 @@ export class FocusComponent {
   }
 
   protected onOpenWebsitesList(): void {
-    console.debug('onOpenWebsitesList');
+    this.isWebsitesPopupShown.set(true);
+  }
+  protected onCloseWebsitesList(): void {
+    this.isWebsitesPopupShown.set(false);
   }
 
   protected onNavigation(route: ViewType, payload: object | null = null): void {
     this.#router.navigate(route, payload);
+  }
+
+  protected getFavicon(url: string): string {
+    return FaviconHelper.getGoogleUrl(url);
+  }
+
+  protected toggleFolder(type: IFocus.IWebSiteType): void {
+    this.openedFolders.update(prevSet => {
+      const newSet = new Set(prevSet);
+      if (newSet.has(type)) {
+        newSet.delete(type);
+      } else {
+        newSet.add(type);
+      }
+      return newSet;
+    });
+  }
+
+  protected isFolderOpen(type: IFocus.IWebSiteType): boolean {
+    return this.openedFolders().has(type);
+  }
+
+  #mapWebsitesToCategories(
+    activeWebsites: IFocus.WebSite[]
+  ): Record<IFocus.IWebSiteType, IFocus.WebSite[]> {
+    const activeUrls = new Set(activeWebsites.filter(s => s.isActivated).map(s => s.url));
+
+    const result = {} as Record<IFocus.IWebSiteType, IFocus.WebSite[]>;
+
+    for (const key in ALL_PRESET_WEBSITES) {
+      const category = key as IFocus.IWebSiteType;
+
+      result[category] = ALL_PRESET_WEBSITES[category].map(site => ({
+        ...site,
+        isActivated: activeUrls.has(site.url),
+      }));
+    }
+
+    return result;
   }
 }

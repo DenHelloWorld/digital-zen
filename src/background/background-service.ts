@@ -299,16 +299,20 @@ export class BackgroundService {
   }
 
   private async toggleWebSiteBlocking(toggledSite: IFocus.WebSite): Promise<void> {
-    const current = await StorageAdapter.getCurrentPeriod();
-    if (!current) {
+    const currentPeriod = await StorageAdapter.getCurrentPeriod();
+    if (!currentPeriod) {
       return;
     }
 
-    const updatedWebSites = current.webSites.map(site =>
-      site.id === toggledSite.id ? { ...site, isActivated: !site.isActivated } : site
-    );
+    const isNewSite = !currentPeriod.webSites.some(s => s.url === toggledSite.url);
 
-    const updatedPeriod = { ...current, webSites: updatedWebSites };
+    const updatedWebSites = isNewSite
+      ? [...currentPeriod.webSites, { ...toggledSite, isActivated: true }]
+      : currentPeriod.webSites.map(s =>
+          s.url === toggledSite.url ? { ...s, isActivated: !s.isActivated } : s
+        );
+
+    const updatedPeriod = { ...currentPeriod, webSites: updatedWebSites };
     await StorageAdapter.savePeriod(updatedPeriod);
     await StorageAdapter.saveCurrentPeriod(updatedPeriod);
 

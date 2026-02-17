@@ -1,6 +1,7 @@
 @use 'digital-zen-pack/style.css';
 @use 'styles/variables';
 @use 'styles/badge';
+@use 'styles/popup';
 
 /* Box sizing */
 *,
@@ -372,4 +373,91 @@ summary::marker {
 
 .breathe {
   animation: breathe 8s ease-in-out infinite;
+}
+
+.gradient-overlay {
+  &:before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: -1;
+    background: hsla(356, 68%, 91%, 1);
+    background: linear-gradient(
+      90deg,
+      hsla(356, 68%, 91%, 1) 0%,
+      hsla(275, 100%, 61%, 1) 49%,
+      hsla(316, 66%, 80%, 1) 100%
+    );
+    background: -moz-linear-gradient(
+      90deg,
+      hsla(356, 68%, 91%, 1) 0%,
+      hsla(275, 100%, 61%, 1) 49%,
+      hsla(316, 66%, 80%, 1) 100%
+    );
+    background: -webkit-linear-gradient(
+      90deg,
+      hsla(356, 68%, 91%, 1) 0%,
+      hsla(275, 100%, 61%, 1) 49%,
+      hsla(316, 66%, 80%, 1) 100%
+    );
+  }
+}
+
+.dz-tree {
+  list-style: none;
+  padding-left: 1rem;
+
+  &--root {
+    padding-left: 0;
+  }
+}
+
+.dz-tree__item {
+  position: relative;
+  padding: 4px 0 4px 20px;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing);
+  //cursor: pointer;
+  border-radius: var(--radius-xs);
+  transition: background 0.2s;
+}
+
+/* Вертикальная линия ветки */
+.dz-tree__item::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: -10px;
+  bottom: 50%;
+  width: 1px;
+  border-left: 1px solid var(--color-glass-text);
+}
+
+/* Горизонтальная линия к иконке */
+.dz-tree__item::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 1rem;
+  height: 1px;
+  border-top: 1px solid var(--color-glass-text);
+}
+
+/* Убираем лишнюю линию у первого элемента */
+.dz-tree__item:first-child::before {
+  top: 50%;
+}
+
+.dz-input {
+  &--checkbox {
+    cursor: pointer;
+    width: var(--btn-size-xs);
+    height: var(--btn-size-xs);
+    box-shadow: none;
+  }
 }

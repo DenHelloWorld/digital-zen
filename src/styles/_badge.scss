@@ -6,7 +6,8 @@
 // Usage: <span class="dz-badge dz-badge--primary dz-badge--md">Badge Text</span>
 
 .dz-badge {
-  display: inline-block;
+  display: inline-flex;
+  gap: var(--spacing-xs);
   font-weight: 500;
   line-height: 1;
   text-align: center;
