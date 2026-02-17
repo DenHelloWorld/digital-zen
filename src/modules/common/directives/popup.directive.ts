@@ -153,22 +153,11 @@ export class PopupDirective<T = unknown> implements OnInit, OnDestroy {
    * Internal cleanup: disposes the overlay and terminates active subscriptions.
    */
   #destroy(): void {
-    // Trigger termination for all overlay-specific pipe(takeUntil)
     this.#detached$.next();
 
     if (this.#overlayRef) {
-      const pane = this.#overlayRef.overlayElement.querySelector('.cdk-overlay-pane');
-      if (pane) {
-        pane.classList.add('dz-popup-out');
-        const overlayRef = this.#overlayRef;
-        setTimeout(() => {
-          overlayRef.dispose();
-          this.#overlayRef = null;
-        }, 300);
-      } else {
-        this.#overlayRef.dispose();
-        this.#overlayRef = null;
-      }
+      this.#overlayRef.dispose();
+      this.#overlayRef = null;
     }
   }
 }

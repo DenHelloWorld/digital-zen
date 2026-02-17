@@ -90,7 +90,7 @@
       <main class="dz-popup-content__main">
         <ul class="dz-tree dz-tree--root dz-list">
           @for (type of websiteTypes; track type) {
-            @let sites = websitesPopupData()?.[type] || [];
+            @let sites = websitesPopupData()[type] || [];
             @if (sites.length > 0) {
               <li>
                 <button
