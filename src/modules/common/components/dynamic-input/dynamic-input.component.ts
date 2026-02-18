@@ -81,6 +81,14 @@ export class DynamicInputComponent<T> implements OnInit {
   protected isPlaceholderShown = computed(() => {
     return !this.entities()?.length && !this.isAdding();
   });
+  protected readonly previewText = computed(() => {
+    const previewFn = this.newEntityPreview();
+    if (!previewFn) {
+      return null;
+    }
+
+    return previewFn(this.newEntity());
+  });
 
   public readonly labelKey: InputSignal<keyof T> = input.required<keyof T>();
   public readonly idKey: InputSignal<keyof T> = input.required<keyof T>();
@@ -88,6 +96,11 @@ export class DynamicInputComponent<T> implements OnInit {
   public readonly excludeKeys: InputSignal<(keyof T)[]> = input<(keyof T)[]>([]);
   public readonly iconTemplate: InputSignal<TemplateRef<unknown> | null> =
     input<TemplateRef<unknown> | null>(null);
+  public readonly entityTransformer: InputSignal<((entity: T) => T) | null> = input<
+    ((entity: T) => T) | null
+  >(null);
+  public readonly newEntityPreview: InputSignal<((entity: T | null) => string | null) | null> =
+    input<((entity: T | null) => string | null) | null>(null);
 
   public readonly entities: ModelSignal<T[] | undefined> = model<T[]>();
 
@@ -116,8 +129,10 @@ export class DynamicInputComponent<T> implements OnInit {
       ...newEntity,
       [this.idKey()]: newId,
     } as T;
+    const transformer = this.entityTransformer();
+    const normalizedEntity = transformer ? transformer(entityToAdd) : entityToAdd;
 
-    this.entities.set([...(this.entities() ?? []), entityToAdd]);
+    this.entities.set([...(this.entities() ?? []), normalizedEntity]);
 
     this.newEntity.set(null);
     this.isAdding.set(false);
@@ -127,14 +142,33 @@ export class DynamicInputComponent<T> implements OnInit {
     this.newEntity.update(current => ({ ...current, [key]: value }) as T);
 
     if (key === this.labelKey()) {
-      const newVal = String(value).trim().toLowerCase();
+      const normalizedText = this.#normalizeDuplicateValue(this.newEntity() as T);
 
-      const exists = (this.entities() ?? []).some(
-        item => String(item[this.labelKey()]).trim().toLowerCase() === newVal
-      );
+      const exists = (this.entities() ?? []).some(item => {
+        return this.#normalizeDuplicateValue(item) === normalizedText;
+      });
 
-      this.duplicateValue.set(exists ? newVal : null);
+      this.duplicateValue.set(exists ? normalizedText : null);
     }
+  }
+
+  #normalizeDuplicateValue(entity?: T): string {
+    const previewFn = this.newEntityPreview();
+    const targetEntity = entity ?? (this.newEntity() as T | null);
+
+    if (previewFn && targetEntity) {
+      const previewValue = previewFn(targetEntity);
+      if (previewValue) {
+        return previewValue.trim().toLowerCase();
+      }
+    }
+
+    if (targetEntity) {
+      const label = this.getLabel(targetEntity);
+      return label.trim().toLowerCase();
+    }
+
+    return '';
   }
 
   protected resetEntities(): void {

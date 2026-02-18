@@ -244,10 +244,12 @@ export class PeriodFormComponent implements OnInit, AfterViewInit {
       const rawValue = this.form.getRawValue();
 
       const webSitesWithFavicons: IFocus.WebSite[] = rawValue.webSites.map(site => {
-        const imageUrl = FaviconHelper.getGoogleUrl(site.url);
+        const cleanedUrl = cleanUrlHelper(site.url);
+        const imageUrl = FaviconHelper.getGoogleUrl(cleanedUrl);
 
         return {
           ...site,
+          url: cleanedUrl,
           imageUrl,
         };
       });
@@ -417,17 +419,32 @@ export class PeriodFormComponent implements OnInit, AfterViewInit {
     sites.forEach(site => {
       if (!site.url) return;
 
-      const url = cleanUrlHelper(site.url);
+      const cleanedUrl = cleanUrlHelper(site.url);
 
-      if (url && !uniqueMap.has(url)) {
-        uniqueMap.set(url, {
+      if (cleanedUrl && !uniqueMap.has(cleanedUrl)) {
+        uniqueMap.set(cleanedUrl, {
           ...site,
-          url,
+          url: cleanedUrl,
         });
       }
     });
 
     return Array.from(uniqueMap.values());
+  }
+
+  protected normalizeWebsite(site: IFocus.WebSite): IFocus.WebSite {
+    return {
+      ...site,
+      url: cleanUrlHelper(site.url),
+    };
+  }
+
+  protected previewNormalizedWebsite(site: IFocus.WebSite | null): string | null {
+    if (!site) {
+      return null;
+    }
+
+    return cleanUrlHelper(site.url);
   }
 
   protected readonly viewTypes = VIEW_ENUM;

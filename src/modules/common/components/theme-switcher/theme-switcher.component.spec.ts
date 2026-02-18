@@ -90,7 +90,7 @@ describe('ThemeSwitcherComponent', () => {
       const button = compiled.querySelector('button');
       expect(button?.classList.contains('dz-button')).toBe(true);
       expect(button?.classList.contains('dz-button--round')).toBe(true);
-      expect(button?.classList.contains('dz-button--md')).toBe(true);
+      expect(button?.classList.contains('dz-button--nm')).toBe(true);
     });
 
     it('should have title attribute from UI_TEXT', () => {

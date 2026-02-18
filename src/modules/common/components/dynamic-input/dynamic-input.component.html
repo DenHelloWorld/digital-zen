@@ -76,6 +76,10 @@
           ></ng-container>
         }
 
+        @if (previewText()) {
+          <span class="dz-form__hint ellipsis">{{ previewText() }}</span>
+        }
+
         <div class="actions">
           <button
             class="dz-button dz-button--xs dz-button--icon dz-button--activated dz-button--ghost shadow"

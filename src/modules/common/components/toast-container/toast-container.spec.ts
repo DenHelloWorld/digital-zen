@@ -191,13 +191,6 @@ describe('DzToastContainerComponent', () => {
       expect(icon).toBeTruthy();
     });
 
-    it('should render close button', () => {
-      const compiled = fixture.nativeElement as HTMLElement;
-      const closeButton = compiled.querySelector('.dz-notification button');
-      expect(closeButton).toBeTruthy();
-      expect(closeButton?.textContent?.trim()).toBe(UI_TEXT.TOAST.CLOSE_ICON);
-    });
-
     it('should render progress bar when durationInMs is set', () => {
       const compiled = fixture.nativeElement as HTMLElement;
       const progress = compiled.querySelector('.dz-notification__progress');

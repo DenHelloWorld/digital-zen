@@ -268,11 +268,11 @@ export class FocusService {
     const period = this.currentPeriod();
 
     if (tab?.url && period) {
-      const clearedUrl = cleanUrlHelper(tab.url);
+      const cleanedUrl = cleanUrlHelper(tab.url);
 
       // Check if the URL matches any UNBLOCKABLE website
       const isUnblockable = WEBSITES_UNBLOCKABLE.some(
-        site => cleanUrlHelper(site.url) === clearedUrl
+        site => cleanUrlHelper(site.url) === cleanedUrl
       );
 
       if (isUnblockable) {
@@ -283,16 +283,16 @@ export class FocusService {
         return;
       }
 
-      const existingSite = period.webSites.find(s => cleanUrlHelper(s.url) === clearedUrl);
+      const existingSite = period.webSites.find(s => cleanUrlHelper(s.url) === cleanedUrl);
 
       if (!existingSite) {
-        const iconUrl = tab.favIconUrl ?? FaviconHelper.getGoogleUrl(clearedUrl);
+        const iconUrl = tab.favIconUrl ?? FaviconHelper.getGoogleUrl(cleanedUrl);
         const newSite: IFocus.WebSite = {
-          id: clearedUrl,
-          url: clearedUrl,
-          name: tab.title || clearedUrl,
+          id: cleanedUrl,
+          url: cleanedUrl,
+          name: tab.title || cleanedUrl,
           iconUrl: isSvgIcon(iconUrl) ? iconUrl : ICONS.GLOBE,
-          description: tab.title || clearedUrl,
+          description: tab.title || cleanedUrl,
           imageUrl: isImageIcon(iconUrl) ? iconUrl : '',
           type: IFocus.EWebSiteType.DEFAULT,
           isActivated,
@@ -312,7 +312,7 @@ export class FocusService {
         const updatedPeriod = {
           ...period,
           webSites: period.webSites.map(s =>
-            cleanUrlHelper(s.url) === clearedUrl ? { ...s, isActivated: true } : s
+            cleanUrlHelper(s.url) === cleanedUrl ? { ...s, isActivated: true } : s
           ),
         };
 
@@ -323,7 +323,7 @@ export class FocusService {
         });
       } else {
         this.#toastService.show({
-          message: `${TOAST_MESSAGES_ENUM.ALREADY_ADDED}: ${clearedUrl}`,
+          message: `${TOAST_MESSAGES_ENUM.ALREADY_ADDED}: ${cleanedUrl}`,
           type: TOAST_TYPE_ENUM.WARN,
         });
       }

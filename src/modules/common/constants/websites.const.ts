@@ -22,8 +22,8 @@ export const WEBSITE_INST: Readonly<IFocus.WebSite> = {
   id: 'instagram',
   name: 'Instagram',
   description: 'Instagram',
-  url: 'https://www.instagram.com',
-  imageUrl: FaviconHelper.getGoogleUrl('https://www.instagram.com'),
+  url: 'https://instagram.com',
+  imageUrl: FaviconHelper.getGoogleUrl('https://instagram.com'),
   iconUrl: ICONS.INSTAGRAM,
   type: IFocus.EWebSiteType.SOCIAL_MEDIA,
   isActivated: true,
@@ -143,8 +143,8 @@ export const WEBSITE_THREADS: Readonly<IFocus.WebSite> = {
   id: 'threads',
   name: 'Threads',
   description: 'Threads',
-  url: 'https://threads.net',
-  imageUrl: FaviconHelper.getGoogleUrl('https://threads.net'),
+  url: 'https://threads.com',
+  imageUrl: FaviconHelper.getGoogleUrl('https://threads.com'),
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.SOCIAL_MEDIA,
   isActivated: true,
@@ -220,8 +220,8 @@ export const WEBSITE_BING_CHAT: Readonly<IFocus.WebSite> = {
   id: 'bing-chat',
   name: 'Bing Chat',
   description: 'Bing AI Chat',
-  url: 'https://bing.com/chat',
-  imageUrl: FaviconHelper.getGoogleUrl('https://bing.com'),
+  url: 'https://copilot.microsoft.com/',
+  imageUrl: FaviconHelper.getGoogleUrl('https://copilot.microsoft.com/'),
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.AI,
   isActivated: true,
@@ -297,19 +297,8 @@ export const WEBSITE_SPOTIFY: Readonly<IFocus.WebSite> = {
   id: 'spotify',
   name: 'Spotify',
   description: 'Spotify',
-  url: 'https://spotify.com',
-  imageUrl: FaviconHelper.getGoogleUrl('https://spotify.com'),
-  iconUrl: ICONS.GLOBE,
-  type: IFocus.EWebSiteType.ENTERTAINMENT,
-  isActivated: true,
-};
-
-export const WEBSITE_HULU: Readonly<IFocus.WebSite> = {
-  id: 'hulu',
-  name: 'Hulu',
-  description: 'Hulu',
-  url: 'https://hulu.com',
-  imageUrl: FaviconHelper.getGoogleUrl('https://hulu.com'),
+  url: 'https://open.spotify.com/',
+  imageUrl: FaviconHelper.getGoogleUrl('https://open.spotify.com/'),
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.ENTERTAINMENT,
   isActivated: true,
@@ -364,7 +353,7 @@ export const WEBSITE_STEAM: Readonly<IFocus.WebSite> = {
   name: 'Steam',
   description: 'Steam Store & Community',
   url: 'https://store.steampowered.com',
-  imageUrl: FaviconHelper.getGoogleUrl('https://steampowered.com'),
+  imageUrl: FaviconHelper.getGoogleUrl('https://store.steampowered.com'),
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.ENTERTAINMENT,
   isActivated: true,
@@ -462,8 +451,8 @@ export const WEBSITE_CNN: Readonly<IFocus.WebSite> = {
   id: 'cnn',
   name: 'CNN',
   description: 'CNN',
-  url: 'https://cnn.com',
-  imageUrl: FaviconHelper.getGoogleUrl('https://cnn.com'),
+  url: 'https://edition.cnn.com/',
+  imageUrl: FaviconHelper.getGoogleUrl('https://edition.cnn.com/'),
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.NEWS,
   isActivated: true,
@@ -545,6 +534,28 @@ export const WEBSITE_HABR: Readonly<IFocus.WebSite> = {
   type: IFocus.EWebSiteType.WORK_DEVELOPMENT,
   isActivated: true,
 };
+
+export const WEBSITE_NOTION: Readonly<IFocus.WebSite> = {
+  id: 'notion',
+  name: 'Notion',
+  description: 'Notion',
+  url: 'https://notion.com',
+  imageUrl: FaviconHelper.getGoogleUrl('https://notion.com'),
+  iconUrl: ICONS.GLOBE,
+  type: IFocus.EWebSiteType.WORK_DEVELOPMENT,
+  isActivated: true,
+};
+
+export const WEBSITE_MIRO: Readonly<IFocus.WebSite> = {
+  id: 'miro',
+  name: 'Miro',
+  description: 'Miro',
+  url: 'https://miro.com',
+  imageUrl: FaviconHelper.getGoogleUrl('https://miro.com'),
+  iconUrl: ICONS.GLOBE,
+  type: IFocus.EWebSiteType.WORK_DEVELOPMENT,
+  isActivated: true,
+};
 /**
  * Array of all social media websites
  */
@@ -582,7 +593,6 @@ export const WEBSITES_AI: Readonly<readonly IFocus.WebSite[]> = Object.freeze([
 export const WEBSITES_ENTERTAINMENT: Readonly<readonly IFocus.WebSite[]> = Object.freeze([
   WEBSITE_NETFLIX,
   WEBSITE_SPOTIFY,
-  WEBSITE_HULU,
   WEBSITE_DISNEY_PLUS,
   WEBSITE_PRIME_VIDEO,
   WEBSITE_HBO_MAX,
@@ -616,6 +626,8 @@ export const WEBSITES_WORK_DEVELOPMENT: Readonly<readonly IFocus.WebSite[]> = Ob
   WEBSITE_STACK_OVERFLOW,
   WEBSITE_HACKER_NEWS,
   WEBSITE_HABR,
+  WEBSITE_NOTION,
+  WEBSITE_MIRO,
 ]);
 
 /**
