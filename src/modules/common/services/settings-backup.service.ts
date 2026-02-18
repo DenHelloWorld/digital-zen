@@ -52,6 +52,16 @@ export interface SettingsBackupPayload {
 
 const BACKUP_DATA_KEYS = BACKUP_KEYS;
 
+const STORAGE_KEY_TO_DATA_KEY: Partial<Record<CHROME_STORAGE_KEY_ENUM, keyof SettingsBackupData>> =
+  {
+    [CHROME_STORAGE_KEY_ENUM.PERIODS]: 'periods',
+    [CHROME_STORAGE_KEY_ENUM.CURRENT_PERIOD]: 'currentPeriod',
+    [CHROME_STORAGE_KEY_ENUM.USER_EMAIL]: 'userEmail',
+    [CHROME_STORAGE_KEY_ENUM.USER_ID]: 'userId',
+    [CHROME_STORAGE_KEY_ENUM.POMODORO_SETTINGS]: 'pomodoroSettings',
+    [CHROME_STORAGE_KEY_ENUM.POMODORO_STATE]: 'pomodoroState',
+  };
+
 @Injectable({
   providedIn: 'root',
 })
@@ -163,16 +173,16 @@ export class SettingsBackupService {
     };
 
     for (const key of BACKUP_DATA_KEYS) {
-      if (!this.#hasOwnKey(data, key)) {
+      const targetKey = STORAGE_KEY_TO_DATA_KEY[key];
+      if (!targetKey || !this.#hasOwnKey(data, targetKey)) {
         continue;
       }
 
-      const parsedValue = this.#parseBackupValue(key, data[key]);
+      const parsedValue = this.#parseBackupValue(key, data[targetKey]);
       if (parsedValue === undefined) {
         continue;
       }
 
-      const targetKey = key as keyof SettingsBackupData;
       sanitizedData[targetKey] = parsedValue as never;
     }
 
