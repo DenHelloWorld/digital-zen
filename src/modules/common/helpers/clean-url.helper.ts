@@ -27,7 +27,10 @@ export const cleanUrlHelper = (value: string | null | undefined): string => {
       return value;
     }
 
-    return url.origin;
+    // Remove www. prefix from hostname for consistent comparison
+    const hostname = url.hostname.replace(/^www\./, '');
+    const port = url.port ? `:${url.port}` : '';
+    return `${url.protocol}//${hostname}${port}`;
   } catch {
     return value;
   }

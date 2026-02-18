@@ -246,6 +246,8 @@
       [(entities)]="selectedWebSites"
       [excludeKeys]="excludedSiteKeysArray"
       [iconTemplate]="websiteIconTemplate"
+      [entityTransformer]="normalizeWebsite"
+      [newEntityPreview]="previewNormalizedWebsite"
       idKey="id"
       labelKey="url"
     />
