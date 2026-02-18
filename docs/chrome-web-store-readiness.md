@@ -168,9 +168,10 @@ The extension has a solid technical foundation but requires several critical add
    - Productivity metrics
    - Website visit statistics
 
-2. **Export/Import Settings** (for user convenience)
+2. **Export/Import Settings** (available via the menu backup controls)
    - Backup blocked site lists
    - Share configurations
+   - Export/import the focus configuration as a JSON backup
 
 3. **Customization Options** (for user satisfaction)
    - Theme selection (light/dark mode)
@@ -537,7 +538,7 @@ Current permissions need to be justified in the store listing:
 
 8. **Additional Features** ⏰ 7-10 days
    - [ ] Statistics dashboard
-   - [ ] Export/import settings
+   - [x] Export/import settings
    - [ ] Dark mode
    - [ ] Notification system
 

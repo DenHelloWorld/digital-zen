@@ -5,6 +5,53 @@
   </svg>
 </ng-template>
 
+<div class="dz-menu__backup">
+  <div class="dz-menu__import-actions">
+    <button
+      class="dz-button dz-button--full dz-button--md dz-button--ghost shadow"
+      [disabled]="isExportingBackup() || isImportingBackup()"
+      [title]="uiText.MENU.EXPORT_TITLE"
+      (click)="exportSettings()"
+      type="button"
+    >
+      @if (isExportingBackup()) {
+        <dz-loader />
+        <span>{{ uiText.MENU.EXPORTING_SETTINGS_BUTTON }}</span>
+      } @else {
+        <ng-container
+          *ngTemplateOutlet="icon; context: { href: icons.EXPORT_SETTINGS }"
+        ></ng-container>
+        <span>{{ uiText.MENU.EXPORT_SETTINGS_BUTTON }}</span>
+      }
+    </button>
+
+    <button
+      class="dz-button dz-button--full dz-button--md dz-button--ghost shadow"
+      [disabled]="isImportingBackup() || isExportingBackup()"
+      [title]="uiText.MENU.IMPORT_TITLE"
+      (click)="triggerImport(importInput)"
+      type="button"
+    >
+      @if (isImportingBackup()) {
+        <dz-loader />
+        <span>{{ uiText.MENU.IMPORTING_SETTINGS_BUTTON }}</span>
+      } @else {
+        <ng-container
+          *ngTemplateOutlet="icon; context: { href: icons.IMPORT_SETTINGS }"
+        ></ng-container>
+        <span>{{ uiText.MENU.IMPORT_SETTINGS_BUTTON }}</span>
+      }
+    </button>
+  </div>
+  <input
+    #importInput
+    (change)="handleImportFile($event)"
+    type="file"
+    accept="application/json"
+    hidden
+  />
+</div>
+
 <ul class="dz-list">
   @for (period of periods(); track period.id) {
     <li>
