@@ -27,6 +27,17 @@ export const UI_TEXT = Object.freeze({
   // Menu Component
   MENU: {
     ADD_PERIOD_BUTTON: 'Add Period',
+    EXPORT_SETTINGS_BUTTON: 'Export settings',
+    IMPORT_SETTINGS_BUTTON: 'Import settings',
+    EXPORTING_SETTINGS_BUTTON: 'Preparing export...',
+    IMPORTING_SETTINGS_BUTTON: 'Importing settings...',
+    EXPORT_SUCCESS: 'Settings backup exported. Check your downloads folder.',
+    IMPORT_SUCCESS: 'Settings imported successfully.',
+    EXPORT_ERROR: 'Failed to export settings.',
+    IMPORT_ERROR: 'Failed to import settings. Please choose a valid backup file.',
+    EXPORT_TITLE:
+      'Export settings (filename uses local time: digital-zen-backup-YYYY-MM-DD-HH-mm-ss)',
+    IMPORT_TITLE: 'Import settings from a digital-zen-backup-YYYY-MM-DD-HH-mm-ss file.',
   },
 
   // Period Form Component

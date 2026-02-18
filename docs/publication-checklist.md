@@ -138,8 +138,8 @@ This is a condensed, actionable checklist derived from the full readiness report
 ### Additional Features
 
 - [ ] Statistics dashboard (focus time tracking)
-- [ ] Export settings functionality
-- [ ] Import settings functionality
+- [x] Export settings functionality
+- [x] Import settings functionality
 - [ ] Dark mode theme
 - [ ] Notification system (focus session alerts)
 - [ ] Productivity metrics

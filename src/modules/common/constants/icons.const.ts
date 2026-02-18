@@ -72,6 +72,8 @@ export const ICONS = Object.freeze({
   CANCEL: '#icon-cancel',
   OPEN_IN_NEW: '#icon-open-in-new',
   FOLDER_OPEN: '#icon-folder-open',
+  EXPORT_SETTINGS: '#icon-export',
+  IMPORT_SETTINGS: '#icon-import',
 } as const);
 
 /**
