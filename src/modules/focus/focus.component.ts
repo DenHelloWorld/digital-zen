@@ -181,6 +181,7 @@ export class FocusComponent {
   protected onOpenWebsitesList(): void {
     this.isWebsitesPopupShown.set(true);
   }
+
   protected onCloseWebsitesList(): void {
     this.isWebsitesPopupShown.set(false);
   }

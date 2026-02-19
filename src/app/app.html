@@ -43,16 +43,12 @@
       [disabled]="isGoogleAuthPending()"
       (click)="isGoogleAuthenticated() ? logoutFromGoogle() : loginWithGoogle()"
     >
-      @if (isGoogleAuthPending()) {
-        <dz-loader />
-      } @else {
-        <ng-container
-          *ngTemplateOutlet="
-            icon;
-            context: { href: isGoogleAuthenticated() ? icons.LOGOUT : icons.GOOGLE_LOGO }
-          "
-        />
-      }
+      <ng-container
+        *ngTemplateOutlet="
+          icon;
+          context: { href: isGoogleAuthenticated() ? icons.LOGOUT : icons.GOOGLE_LOGO }
+        "
+      />
     </button>
 
     <a [href]="websites.PRIVACY_POLICY.url" target="_blank" rel="noopener noreferrer">
@@ -75,13 +71,9 @@
       [title]="uiText.MENU.IMPORT_TITLE"
       (click)="triggerImport(importInput)"
     >
-      @if (isExportingBackup()) {
-        <dz-loader />
-      } @else {
-        <ng-container
-          *ngTemplateOutlet="icon; context: { href: icons.IMPORT_SETTINGS }"
-        ></ng-container>
-      }
+      <ng-container
+        *ngTemplateOutlet="icon; context: { href: icons.IMPORT_SETTINGS }"
+      ></ng-container>
     </button>
 
     <button
@@ -90,13 +82,9 @@
       [title]="uiText.MENU.EXPORT_TITLE"
       (click)="exportSettings()"
     >
-      @if (isExportingBackup()) {
-        <dz-loader />
-      } @else {
-        <ng-container
-          *ngTemplateOutlet="icon; context: { href: icons.EXPORT_SETTINGS }"
-        ></ng-container>
-      }
+      <ng-container
+        *ngTemplateOutlet="icon; context: { href: icons.EXPORT_SETTINGS }"
+      ></ng-container>
     </button>
 
     <input

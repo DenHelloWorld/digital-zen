@@ -254,6 +254,7 @@ export class PeriodFormComponent implements OnInit, AfterViewInit {
   protected savePeriod() {
     if (this.form.valid) {
       const rawValue = this.form.getRawValue();
+      const isCurrentPeriod = this.isCurrentPeriod();
 
       const webSitesWithFavicons: IFocus.WebSite[] = rawValue.webSites.map(site => {
         const cleanedUrl = cleanUrlHelper(site.url);
@@ -294,7 +295,7 @@ export class PeriodFormComponent implements OnInit, AfterViewInit {
         this.#router.navigate(VIEW_ENUM.MENU, { scrollPeriodId: periodData.id });
       }
 
-      if (!this.isCurrentPeriod() && rawValue.setAsCurrentPeriod) {
+      if (!isCurrentPeriod && rawValue.setAsCurrentPeriod) {
         this.#focusService.setCurrentPeriod(periodData.id);
       }
     }

@@ -1,9 +1,5 @@
 import { AuthService } from '../modules/auth';
-import {
-  DzToastContainerComponent,
-  LoaderComponent,
-  ThemeSwitcherComponent,
-} from '../modules/common/components';
+import { DzToastContainerComponent, ThemeSwitcherComponent } from '../modules/common/components';
 import { ICONS } from '../modules/common/constants/icons.const';
 import { UI_TEXT } from '../modules/common/constants/ui-text.const';
 import { WEBSITE_PRIVACY_POLICY } from '../modules/common/constants/websites.const';
@@ -47,7 +43,6 @@ import { ChangeDetectionStrategy, Component, HostBinding, inject, Signal } from 
     FocusComponent,
     PomodoroComponent,
     DzToastContainerComponent,
-    LoaderComponent,
     PeriodFormComponent,
     MenuComponent,
   ],

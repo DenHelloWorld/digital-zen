@@ -44,6 +44,13 @@ export class BackgroundService {
     let operationQueue: Promise<void> = Promise.resolve();
 
     chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+      const safeSendResponse = (response?: unknown) => {
+        try {
+          sendResponse(response);
+        } catch (sendError) {
+          this.#logger.error('sendResponse failed:', sendError);
+        }
+      };
       /**
        * sidePanel.open() requires a direct user gesture to function.
        * It must be called SYNCHRONOUSLY (outside the promise queue),
@@ -57,10 +64,10 @@ export class BackgroundService {
 
         chrome.sidePanel
           .open(options)
-          .then(() => sendResponse({ success: true }))
+          .then(() => safeSendResponse({ success: true }))
           .catch(err => {
             this.#logger.error('SidePanel gesture error:', err);
-            sendResponse({ success: false });
+            safeSendResponse({ success: false });
           });
         return true;
       }
@@ -70,50 +77,50 @@ export class BackgroundService {
           switch (message.command as ChromeCommandType) {
             case CHROME_COMMAND_ENUM.ADD_PERIOD:
               await this.addPeriod(message.period);
-              sendResponse({ success: true });
+              safeSendResponse({ success: true });
               break;
             case CHROME_COMMAND_ENUM.REMOVE_PERIOD:
               await this.removePeriod(message.id);
-              sendResponse({ success: true });
+              safeSendResponse({ success: true });
               break;
             case CHROME_COMMAND_ENUM.UPDATE_PERIOD:
               await this.updatePeriod(message.period);
-              sendResponse({ success: true });
+              safeSendResponse({ success: true });
               break;
             case CHROME_COMMAND_ENUM.TOGGLE_BLOCKED_WEBSITE:
               await this.toggleWebSiteBlocking(message.site);
-              sendResponse({ success: true });
+              safeSendResponse({ success: true });
               break;
             case CHROME_COMMAND_ENUM.START_FOCUS: {
               const periods = await StorageAdapter.getPeriods();
               const periodToStart = periods.find(p => p.id === message.periodId);
               if (periodToStart) {
                 const result = await this.#focusService.startFocus(periodToStart);
-                sendResponse(result);
+                safeSendResponse(result);
               } else {
-                sendResponse({ success: false, error: FOCUS_ERROR_ENUM.PERIOD_NOT_FOUND });
+                safeSendResponse({ success: false, error: FOCUS_ERROR_ENUM.PERIOD_NOT_FOUND });
               }
               break;
             }
             case CHROME_COMMAND_ENUM.STOP_FOCUS: {
               const result = await this.#focusService.stopFocus();
-              sendResponse(result);
+              safeSendResponse(result);
               break;
             }
             case CHROME_COMMAND_ENUM.TOGGLE_FOCUS: {
               const result = await this.#focusService.toggleFocus();
-              sendResponse(result);
+              safeSendResponse(result);
               break;
             }
             case CHROME_COMMAND_ENUM.TOGGLE_QUICK_FOCUS: {
               const result = await this.#focusService.toggleQuickFocus(message.siteUrl);
-              sendResponse(result);
+              safeSendResponse(result);
               break;
             }
             case CHROME_COMMAND_ENUM.GET_ACTIVE_TAB: {
               const tab = await this.getActiveTab();
 
-              sendResponse({
+              safeSendResponse({
                 success: true,
                 tab: tab
                   ? {
@@ -128,22 +135,22 @@ export class BackgroundService {
             }
             case CHROME_COMMAND_ENUM.SET_CURRENT_PERIOD: {
               const result = await this.setCurrentPeriod(message.periodId);
-              sendResponse(result);
+              safeSendResponse(result);
               break;
             }
             case CHROME_COMMAND_ENUM.SYNC_USER_DATA: {
               const syncResult = await this.syncUserData(message.userEmail, message.userId);
-              sendResponse(syncResult);
+              safeSendResponse(syncResult);
               break;
             }
             case CHROME_COMMAND_ENUM.START_GOOGLE_AUTH: {
               const authResult = await GoogleAuthAdapter.login();
-              sendResponse(authResult);
+              safeSendResponse(authResult);
               break;
             }
             case CHROME_COMMAND_ENUM.LOGOUT_GOOGLE_AUTH: {
               const logoutResult = await GoogleAuthAdapter.logout();
-              sendResponse(logoutResult);
+              safeSendResponse(logoutResult);
               break;
             }
             case CHROME_COMMAND_ENUM.CLOSE_TAB: {
@@ -173,62 +180,45 @@ export class BackgroundService {
             }
             case CHROME_COMMAND_ENUM.START_POMODORO: {
               await this.#pomodoroService.start();
-              sendResponse({ success: true });
+              safeSendResponse({ success: true });
               break;
             }
             case CHROME_COMMAND_ENUM.STOP_POMODORO: {
               await this.#pomodoroService.stop();
-              sendResponse({ success: true });
+              safeSendResponse({ success: true });
               break;
             }
             case CHROME_COMMAND_ENUM.RESET_POMODORO: {
               await this.#pomodoroService.reset();
-              sendResponse({ success: true });
+              safeSendResponse({ success: true });
               break;
             }
             case CHROME_COMMAND_ENUM.PAUSE_POMODORO: {
               await this.#pomodoroService.pause();
-              sendResponse({ success: true });
+              safeSendResponse({ success: true });
               break;
             }
             case CHROME_COMMAND_ENUM.RESUME_POMODORO: {
               await this.#pomodoroService.resume();
-              sendResponse({ success: true });
+              safeSendResponse({ success: true });
               break;
             }
             case CHROME_COMMAND_ENUM.SET_POMODORO_SETTINGS: {
               await this.#pomodoroService.setPomodoroSettings(message.settings);
-              sendResponse({ success: true });
+              safeSendResponse({ success: true });
               break;
             }
             case CHROME_COMMAND_ENUM.SET_POMODORO_STATE: {
               await this.#pomodoroService.setPomodoroState(message.state);
-              sendResponse({ success: true });
+              safeSendResponse({ success: true });
               break;
             }
-            // case CHROME_COMMAND_ENUM.OPEN_SIDE_PANEL_APP: {
-            //   const targetWindowId = message.windowId || sender.tab?.windowId;
-            //
-            //   if (targetWindowId) {
-            //     try {
-            //       await chrome.sidePanel.open({ windowId: targetWindowId });
-            //       sendResponse({ success: true });
-            //     } catch (err) {
-            //       this.#logger.error('SidePanel gesture error:', err);
-            //       sendResponse({ success: false });
-            //     }
-            //   } else {
-            //     await chrome.sidePanel.open({ windowId: chrome.windows.WINDOW_ID_CURRENT });
-            //     sendResponse({ success: true });
-            //   }
-            //   break;
-            // }
             default:
-              sendResponse({ success: false, error: FOCUS_ERROR_ENUM.UNKNOWN_COMMAND });
+              safeSendResponse({ success: false, error: FOCUS_ERROR_ENUM.UNKNOWN_COMMAND });
           }
         } catch (error) {
           this.#logger.error(`Error handling message ${message.command}:`, error);
-          sendResponse({ success: false, error: FOCUS_ERROR_ENUM.GENERIC_ERROR });
+          safeSendResponse({ success: false, error: FOCUS_ERROR_ENUM.GENERIC_ERROR });
         }
       });
 
