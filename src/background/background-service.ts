@@ -41,8 +41,10 @@ export class BackgroundService {
    *  Initialization of messages and events
    *  */
   private initializeListeners(): void {
+    let operationQueue: Promise<void> = Promise.resolve();
+
     chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-      (async () => {
+      operationQueue = operationQueue.then(async () => {
         try {
           switch (message.command as ChromeCommandType) {
             case CHROME_COMMAND_ENUM.ADD_PERIOD:
@@ -145,7 +147,6 @@ export class BackgroundService {
                 } else {
                   await chrome.tabs.remove(tab.id);
                 }
-                return;
               }
               break;
             }
@@ -188,15 +189,15 @@ export class BackgroundService {
               const targetWindowId = message.windowId || sender.tab?.windowId;
 
               if (targetWindowId) {
-                chrome.sidePanel
-                  .open({ windowId: targetWindowId })
-                  .then(() => sendResponse({ success: true }))
-                  .catch(err => {
-                    this.#logger.error('SidePanel gesture error:', err);
-                    sendResponse({ success: false });
-                  });
+                try {
+                  await chrome.sidePanel.open({ windowId: targetWindowId });
+                  sendResponse({ success: true });
+                } catch (err) {
+                  this.#logger.error('SidePanel gesture error:', err);
+                  sendResponse({ success: false });
+                }
               } else {
-                chrome.sidePanel.open({ windowId: chrome.windows.WINDOW_ID_CURRENT });
+                await chrome.sidePanel.open({ windowId: chrome.windows.WINDOW_ID_CURRENT });
                 sendResponse({ success: true });
               }
               break;
@@ -205,10 +206,10 @@ export class BackgroundService {
               sendResponse({ success: false, error: FOCUS_ERROR_ENUM.UNKNOWN_COMMAND });
           }
         } catch (error) {
-          this.#logger.error('Error handling message:', error);
+          this.#logger.error(`Error handling message ${message.command}:`, error);
           sendResponse({ success: false, error: FOCUS_ERROR_ENUM.GENERIC_ERROR });
         }
-      })();
+      });
 
       return true;
     });

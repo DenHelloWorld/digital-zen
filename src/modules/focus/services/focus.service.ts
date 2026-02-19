@@ -220,7 +220,7 @@ export class FocusService {
 
     if (isUpdatingActivePeriod) {
       this.#logger.info('Stopping active focus before persisting edited period.');
-      await this.stopFocus();
+      this.stopFocus();
       this.#toastService.show({
         message: TOAST_MESSAGES_ENUM.FOCUS_STOPPED_FOR_SETTINGS,
         type: TOAST_TYPE_ENUM.INFO,
@@ -236,19 +236,10 @@ export class FocusService {
     }
   }
 
-  public stopFocus(): Promise<void> {
-    if (!this.#isChromeRuntime) {
-      return Promise.resolve();
+  public stopFocus() {
+    if (this.#isChromeRuntime) {
+      chrome.runtime.sendMessage({ command: CHROME_COMMAND_ENUM.STOP_FOCUS });
     }
-
-    return new Promise(resolve => {
-      chrome.runtime.sendMessage({ command: CHROME_COMMAND_ENUM.STOP_FOCUS }, () => {
-        if (chrome.runtime.lastError) {
-          this.#logger.error('Error requesting focus stop:', chrome.runtime.lastError);
-        }
-        resolve();
-      });
-    });
   }
 
   public toggleFocus(): void {
@@ -369,7 +360,7 @@ export class FocusService {
     const currentPeriod = this.#currentPeriod();
     if (currentPeriod && currentPeriod.isActive) {
       this.#logger.info('Stopping active focus before updating website list.');
-      await this.stopFocus();
+      this.stopFocus();
       this.#toastService.show({
         message: TOAST_MESSAGES_ENUM.FOCUS_STOPPED_FOR_SETTINGS,
         type: TOAST_TYPE_ENUM.INFO,
