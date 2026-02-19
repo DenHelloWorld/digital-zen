@@ -6,6 +6,7 @@ export enum TOAST_MESSAGES_ENUM {
   PERIOD_NOT_SCHEDULED_TODAY = 'This period is not scheduled for today.',
   PERIOD_OUTSIDE_TIME_RANGE = 'Current time is outside the period time range.',
   PERIOD_ACTIVATED = 'Period activated.',
+  FOCUS_STOPPED_FOR_SETTINGS = 'Focus stopped to apply your changes. Start focus again when ready.',
   PERIOD_NOT_FOUND = 'Period not found.',
   FAILED_TO_SWITCH_PERIOD = 'Failed to switch period.',
   FAILED_TO_ACTIVATE_PERIOD = 'Failed to activate period.',
@@ -21,6 +22,7 @@ export type ToastMessagesType =
   | TOAST_MESSAGES_ENUM.PERIOD_NOT_SCHEDULED_TODAY
   | TOAST_MESSAGES_ENUM.PERIOD_OUTSIDE_TIME_RANGE
   | TOAST_MESSAGES_ENUM.PERIOD_ACTIVATED
+  | TOAST_MESSAGES_ENUM.FOCUS_STOPPED_FOR_SETTINGS
   | TOAST_MESSAGES_ENUM.PERIOD_NOT_FOUND
   | TOAST_MESSAGES_ENUM.FAILED_TO_SWITCH_PERIOD
   | TOAST_MESSAGES_ENUM.FAILED_TO_ACTIVATE_PERIOD

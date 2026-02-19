@@ -210,10 +210,45 @@ export class FocusService {
     }
   }
 
-  public updatePeriod(period: IFocus.Period): void {
-    if (this.#isChromeRuntime) {
-      chrome.runtime.sendMessage({ command: CHROME_COMMAND_ENUM.UPDATE_PERIOD, period });
+  public async updatePeriod(period: IFocus.Period): Promise<void> {
+    const currentPeriod = this.#currentPeriod();
+    const isUpdatingActivePeriod = Boolean(
+      currentPeriod && currentPeriod.id === period.id && currentPeriod.isActive
+    );
+
+    let periodToSend = period;
+
+    if (isUpdatingActivePeriod) {
+      this.#logger.info('Stopping active focus before persisting edited period.');
+      await this.stopFocus();
+      this.#toastService.show({
+        message: TOAST_MESSAGES_ENUM.FOCUS_STOPPED_FOR_SETTINGS,
+        type: TOAST_TYPE_ENUM.INFO,
+      });
+      periodToSend = { ...period, isActive: false };
     }
+
+    if (this.#isChromeRuntime) {
+      chrome.runtime.sendMessage({
+        command: CHROME_COMMAND_ENUM.UPDATE_PERIOD,
+        period: periodToSend,
+      });
+    }
+  }
+
+  public stopFocus(): Promise<void> {
+    if (!this.#isChromeRuntime) {
+      return Promise.resolve();
+    }
+
+    return new Promise(resolve => {
+      chrome.runtime.sendMessage({ command: CHROME_COMMAND_ENUM.STOP_FOCUS }, () => {
+        if (chrome.runtime.lastError) {
+          this.#logger.error('Error requesting focus stop:', chrome.runtime.lastError);
+        }
+        resolve();
+      });
+    });
   }
 
   public toggleFocus(): void {
@@ -303,7 +338,7 @@ export class FocusService {
           webSites: [...period.webSites, newSite],
         };
 
-        this.updatePeriod(updatedPeriod);
+        void this.updatePeriod(updatedPeriod);
         this.#toastService.show({
           message: TOAST_MESSAGES_ENUM.ADDED,
           type: TOAST_TYPE_ENUM.ACCENT,
@@ -316,7 +351,7 @@ export class FocusService {
           ),
         };
 
-        this.updatePeriod(updatedPeriod);
+        void this.updatePeriod(updatedPeriod);
         this.#toastService.show({
           message: TOAST_MESSAGES_ENUM.WEBSITE_BLOCKED,
           type: TOAST_TYPE_ENUM.ACCENT,
@@ -330,7 +365,17 @@ export class FocusService {
     }
   }
 
-  public toggleBlockedWebsite(site: IFocus.WebSite): void {
+  public async toggleBlockedWebsite(site: IFocus.WebSite): Promise<void> {
+    const currentPeriod = this.#currentPeriod();
+    if (currentPeriod && currentPeriod.isActive) {
+      this.#logger.info('Stopping active focus before updating website list.');
+      await this.stopFocus();
+      this.#toastService.show({
+        message: TOAST_MESSAGES_ENUM.FOCUS_STOPPED_FOR_SETTINGS,
+        type: TOAST_TYPE_ENUM.INFO,
+      });
+    }
+
     if (this.#isChromeRuntime) {
       chrome.runtime.sendMessage({ command: CHROME_COMMAND_ENUM.TOGGLE_BLOCKED_WEBSITE, site });
     }

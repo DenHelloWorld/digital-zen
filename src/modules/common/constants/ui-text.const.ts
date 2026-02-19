@@ -21,7 +21,7 @@ export const UI_TEXT = Object.freeze({
     LOGIN_GOOGLE_TITLE: 'Login with Google',
     LOGOUT_GOOGLE_TITLE: 'Logout from Google',
     POMODORO_MENU_TITLE: 'Pomodoro timer',
-    PERIODS_LIST_TITLE: 'List of al periods',
+    PERIODS_LIST_TITLE: 'List of all periods',
   },
 
   // Menu Component
