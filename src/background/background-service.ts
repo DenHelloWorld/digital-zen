@@ -1,5 +1,6 @@
 /// <reference types="chrome"/>
 import { ALARM_PERIOD_IN_MINUTES } from '../modules/common/constants/alarm-period-in-minutes.const';
+import { CHROME_PAGES } from '../modules/common/constants/chrome-pages.const';
 import { DEFAULT_POMODORO_SETTINGS } from '../modules/common/constants/default-pomodoro-settings.const';
 import { CHROME_ALARM_ENUM } from '../modules/common/enums/chrome-alarm-name.enum';
 import {
@@ -123,8 +124,27 @@ export class BackgroundService {
               break;
             }
             case CHROME_COMMAND_ENUM.CLOSE_TAB: {
-              if (sender.tab && sender.tab.id) {
-                await chrome.tabs.remove(sender.tab.id);
+              const tab = sender.tab;
+              if (tab?.id) {
+                const windowId = tab.windowId;
+                let shouldRedirect = false;
+
+                if (windowId !== undefined) {
+                  const windowTabs = await chrome.tabs.query({ windowId });
+                  if (windowTabs.length === 1) {
+                    /**
+                     * Redirect intentionally keeps the window open so the block stays active.
+                     * */
+
+                    shouldRedirect = true;
+                  }
+                }
+
+                if (shouldRedirect) {
+                  await chrome.tabs.update(tab.id, { url: CHROME_PAGES.NEW_TAB });
+                } else {
+                  await chrome.tabs.remove(tab.id);
+                }
                 return;
               }
               break;
