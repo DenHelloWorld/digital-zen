@@ -211,8 +211,32 @@ export class FocusService {
   }
 
   public updatePeriod(period: IFocus.Period): void {
+    const currentPeriod = this.#currentPeriod();
+    const isUpdatingActivePeriod = Boolean(
+      currentPeriod && currentPeriod.id === period.id && currentPeriod.isActive
+    );
+
+    if (isUpdatingActivePeriod) {
+      this.#logger.info('Stopping active focus before persisting edited period.');
+      this.stopFocus();
+      this.#toastService.show({
+        message: TOAST_MESSAGES_ENUM.FOCUS_STOPPED_FOR_SETTINGS,
+        type: TOAST_TYPE_ENUM.INFO,
+      });
+    }
+
     if (this.#isChromeRuntime) {
       chrome.runtime.sendMessage({ command: CHROME_COMMAND_ENUM.UPDATE_PERIOD, period });
+    }
+  }
+
+  public stopFocus(): void {
+    if (this.#isChromeRuntime) {
+      chrome.runtime.sendMessage({ command: CHROME_COMMAND_ENUM.STOP_FOCUS }, () => {
+        if (chrome.runtime.lastError) {
+          this.#logger.error('Error requesting focus stop:', chrome.runtime.lastError);
+        }
+      });
     }
   }
 
