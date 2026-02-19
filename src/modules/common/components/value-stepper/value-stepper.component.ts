@@ -26,7 +26,10 @@ import { NG_VALUE_ACCESSOR, ControlValueAccessor } from '@angular/forms';
       multi: true,
     },
   ],
-  imports: [NgTemplateOutlet],
+  imports: [
+    // angular modules
+    NgTemplateOutlet,
+  ],
 })
 export class ValueStepperComponent implements ControlValueAccessor {
   readonly #isDisabled = signal(false);

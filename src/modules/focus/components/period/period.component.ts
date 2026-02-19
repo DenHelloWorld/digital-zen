@@ -51,11 +51,11 @@ import {
   imports: [
     // angular modules
     CommonModule,
+    // pipes
+    RemoveProtocolPipe,
     // components
     TimeLineComponent,
     WeekdaysSelectorComponent,
-    // pipes
-    RemoveProtocolPipe,
     SwitchComponent,
   ],
 })

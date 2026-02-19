@@ -14,7 +14,10 @@ export interface IStepBarOption {
   templateUrl: './step-bar.component.html',
   styleUrls: ['./step-bar.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [NgTemplateOutlet],
+  imports: [
+    // angular modules
+    NgTemplateOutlet,
+  ],
 })
 export class StepBarComponent {
   protected readonly uiText = UI_TEXT;

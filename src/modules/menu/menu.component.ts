@@ -41,7 +41,6 @@ import {
 export class MenuComponent {
   readonly #focusService = inject(FocusService);
   readonly #router = inject(MiniRouterService);
-  // readonly #injector = inject(Injector);
 
   protected readonly uiText = UI_TEXT;
   protected readonly icons = ICONS;
