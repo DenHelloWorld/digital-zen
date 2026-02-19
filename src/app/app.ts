@@ -74,7 +74,7 @@ export class App {
   protected readonly isSidePanel = this.#router.isSidePanel;
 
   protected readonly colorSchemes: typeof COLOR_SCHEMA_ENUM = COLOR_SCHEMA_ENUM;
-  protected readonly viewTypes: typeof VIEW_ENUM = VIEW_ENUM;
+  protected readonly views: typeof VIEW_ENUM = VIEW_ENUM;
   /** @guideline DZ_10 - UI text constants usage */
   protected readonly uiText = UI_TEXT;
   protected readonly icons = ICONS;

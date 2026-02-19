@@ -1,5 +1,6 @@
 import { DynamicInputComponent } from '../../../common/components/dynamic-input/dynamic-input.component';
 import { MultiSelectorComponent } from '../../../common/components/multi-selector/multi-selector.component';
+import { SwitchComponent } from '../../../common/components/switch/switch.component';
 import { WeekdaysSelectorComponent } from '../../../common/components/weekdays-selector/weekdays-selector.component';
 import { ALL_DAYS_OF_WEEK, WORK_DAYS_OF_WEEKS } from '../../../common/constants/days-of-week.const';
 import { ICONS } from '../../../common/constants/icons.const';
@@ -49,6 +50,7 @@ import {
   signal,
   untracked,
   WritableSignal,
+  computed,
 } from '@angular/core';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -88,6 +90,7 @@ import { distinctUntilChanged, map } from 'rxjs';
     WeekdaysSelectorComponent,
     DynamicInputComponent,
     MultiSelectorComponent,
+    SwitchComponent,
   ],
 })
 export class PeriodFormComponent implements OnInit, AfterViewInit {
@@ -109,6 +112,7 @@ export class PeriodFormComponent implements OnInit, AfterViewInit {
   } | null>;
 
   protected readonly currentRoute = this.#router.currentRoute;
+  protected readonly currentPeriod = this.#focusService.currentPeriod;
   /** @guideline DZ_15 - Typed Reactive Form */
   protected form: FormGroup<IFocusForm.UpsertPeriod>;
   /** @guideline DZ_10 - UI text constants */
@@ -123,7 +127,7 @@ export class PeriodFormComponent implements OnInit, AfterViewInit {
   protected readonly manualTimeRangeId = MANUAL_TIME_RANGE.id;
   protected readonly blockBehaviours = BLOCK_BEHAVIOUR_ENUM;
 
-  protected excludedSiteKeysArray: (keyof IFocus.WebSite)[] = [
+  protected readonly excludedSiteKeysArray: (keyof IFocus.WebSite)[] = [
     'imageUrl',
     'iconUrl',
     'isActivated',
@@ -132,18 +136,27 @@ export class PeriodFormComponent implements OnInit, AfterViewInit {
     'name',
   ];
 
-  protected selectedTimeRanges: WritableSignal<IFocus.TimeRange[]> = signal<IFocus.TimeRange[]>([]);
-  protected selectedDays: WritableSignal<IFocus.DayOfWeek[]> = signal<IFocus.DayOfWeek[]>([]);
-  protected selectedWebSites: WritableSignal<IFocus.WebSite[]> = signal<IFocus.WebSite[]>([
+  protected readonly isCurrentPeriod = computed(
+    () => this.#focusService.currentPeriod()?.id === this.payload()?.period.id
+  );
+
+  protected readonly setAsCurrentPeriod = signal<boolean>(false);
+  protected readonly selectedTimeRanges: WritableSignal<IFocus.TimeRange[]> = signal<
+    IFocus.TimeRange[]
+  >([]);
+  protected readonly selectedDays: WritableSignal<IFocus.DayOfWeek[]> = signal<IFocus.DayOfWeek[]>(
+    []
+  );
+  protected readonly selectedWebSites: WritableSignal<IFocus.WebSite[]> = signal<IFocus.WebSite[]>([
     WEBSITE_TIKTOK,
     WEBSITE_FACEBOOK,
   ]);
 
   protected readonly siteStatuses = signal<Record<string, ResourceRef<boolean | undefined>>>({});
 
-  protected shakeBehaviour = signal(false);
+  protected readonly shakeBehaviour = signal(false);
 
-  protected behaviourBlock = viewChild<ElementRef>('behaviourBlock');
+  protected readonly behaviourBlock = viewChild<ElementRef>('behaviourBlock');
 
   public ngOnInit(): void {
     this.#initForm();
@@ -158,6 +171,7 @@ export class PeriodFormComponent implements OnInit, AfterViewInit {
       )
       .subscribe(value => {
         this.#logger.debug('Form value changed:', value);
+        this.setAsCurrentPeriod.set(value.setAsCurrentPeriod);
       });
 
     toObservable(this.selectedDays, { injector: this.#injector })
@@ -268,7 +282,7 @@ export class PeriodFormComponent implements OnInit, AfterViewInit {
         blockBehaviour: rawValue.blockBehaviour,
         daysOfWeek: rawValue.daysOfWeek,
         focusedTimes: rawValue.focusedTimes,
-        isActive: rawValue.isFocused,
+        isActive: rawValue.isActive,
         sessionStartTime: rawValue.sessionStartTime,
       };
 
@@ -278,8 +292,18 @@ export class PeriodFormComponent implements OnInit, AfterViewInit {
         this.#focusService.addPeriod(periodData);
       }
 
-      this.#router.navigate(this.#router.previousRoute() || VIEW_ENUM.FOCUS);
+      if (!this.isCurrentPeriod() && rawValue.setAsCurrentPeriod) {
+        this.#focusService.setCurrentPeriod(periodData.id);
+      }
+
+      // TODO: fix navigation
+      // this.#router.navigate(this.#router.previousRoute() || VIEW_ENUM.FOCUS);
     }
+  }
+
+  protected onSetAsCurrentPeriodChange(value: boolean): void {
+    if (this.isCurrentPeriod()) return;
+    this.form.controls.setAsCurrentPeriod.setValue(value);
   }
 
   protected cancelForm(): void {
@@ -358,7 +382,8 @@ export class PeriodFormComponent implements OnInit, AfterViewInit {
         ),
         daysOfWeek: this.#fb.nonNullable.control([], arrayMinLengthValidator()),
         focusedTimes: this.#fb.nonNullable.control([]),
-        isFocused: this.#fb.nonNullable.control(false),
+        isActive: this.#fb.nonNullable.control(false),
+        setAsCurrentPeriod: this.#fb.nonNullable.control(false),
         sessionStartTime: this.#fb.control<Date | null>(null),
         blockBehaviour: this.#fb.nonNullable.control<BlockBehaviourType>(
           BLOCK_BEHAVIOUR_ENUM.BLOCK
@@ -390,7 +415,8 @@ export class PeriodFormComponent implements OnInit, AfterViewInit {
         startFrom: startFromTime,
         endTo: endToTime,
         focusedTimes: periodData.focusedTimes,
-        isFocused: periodData.isActive,
+        isActive: periodData.isActive,
+        setAsCurrentPeriod: this.isCurrentPeriod(),
         sessionStartTime: periodData.sessionStartTime,
         blockBehaviour: periodData.blockBehaviour,
       });
@@ -446,6 +472,4 @@ export class PeriodFormComponent implements OnInit, AfterViewInit {
 
     return cleanUrlHelper(site.url);
   }
-
-  protected readonly viewTypes = VIEW_ENUM;
 }

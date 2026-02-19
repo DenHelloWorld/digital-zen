@@ -14,16 +14,36 @@
 
 @let p = period();
 
-<details class="dz-accordion glass" [class.dz-accordion--accent]="p.isActive" open>
-  <summary
-    class="dz-accordion__header dz-accordion__header--hoverless"
-    (click)="$event.preventDefault()"
-  >
+<details
+  class="dz-accordion glass"
+  [class.dz-accordion--accent]="p.isActive"
+  [open]="isCurrentPeriod()"
+>
+  <summary class="dz-accordion__header">
     <span>
-      <h2 class="title">
+      <h2 class="title hint ellipsis full">
         {{ p.name }}
       </h2>
     </span>
+
+    <span class="full"></span>
+
+    <dz-switch
+      [checked]="isCurrentPeriod()"
+      [title]="
+        isCurrentPeriod() ? uiText.PERIOD.ACTIVATED : uiText.PERIOD.ARIA_LABELS.ACTIVATE_PERIOD
+      "
+      [statusIcons]="{
+        activated: icons.CHECK,
+        unActivated: icons.POWER_SWITCHER,
+      }"
+      (checkedChange)="onIsCurrentPeriodChange()"
+      size="lg"
+    />
+
+    <div class="dz-accordion__icon dz-icon-box dz-icon-box--sm">
+      <ng-container *ngTemplateOutlet="icon; context: { href: icons.ARROW_DROP_DOWN }" />
+    </div>
   </summary>
 
   <div class="dz-accordion__content">
@@ -56,9 +76,7 @@
     >
       @switch (p.blockBehaviour) {
         @case (blockBehaviours.BLOCK) {
-          <ng-container
-            *ngTemplateOutlet="bannerIcon; context: { href: icons.BLOCK }"
-          ></ng-container>
+          <ng-container *ngTemplateOutlet="bannerIcon; context: { href: icons.BLOCK }" />
           <div class="dz-banner__content">
             <div class="dz-banner__message">{{ uiText.PERIOD.BLOCK_BEHAVIOUR.BANNER_BLOCK }}</div>
           </div>
@@ -125,48 +143,35 @@
             <ng-container *ngTemplateOutlet="icon; context: { href: icons.CLOSE }"></ng-container>
           </button>
         </div>
-      } @else if (!period().isActive) {
-        <button
-          class="dz-button dz-button--sm shadow"
-          [title]="uiText.PERIOD.ARIA_LABELS.EDIT_PERIOD"
-          [attr.aria-label]="uiText.PERIOD.ARIA_LABELS.EDIT_PERIOD"
-          (click)="onEdit()"
-          type="button"
-        >
-          <ng-container *ngTemplateOutlet="icon; context: { href: icons.EDIT }"></ng-container>
-        </button>
-
-        @if (totalPeriodsCount() > 1 && !isCurrent()) {
-          <button
-            class="dz-button dz-button--sm dz-button--error shadow"
-            [title]="uiText.PERIOD.ARIA_LABELS.DELETE_PERIOD"
-            [attr.aria-label]="uiText.PERIOD.ARIA_LABELS.DELETE_PERIOD"
-            (click)="onDelete()"
-            type="button"
-          >
-            <ng-container *ngTemplateOutlet="icon; context: { href: icons.DELETE }"></ng-container>
-          </button>
-        }
-
-        @if (!isCurrent() && !period().isActive) {
-          <button
-            class="dz-button dz-button--sm dz-button--round dz-button--activated shadow"
-            [attr.aria-label]="uiText.PERIOD.ARIA_LABELS.ACTIVATE_PERIOD"
-            [attr.title]="
-              isFocusActive()
-                ? uiText.PERIOD.ACTIVATE_DISABLED_TOOLTIP
-                : uiText.PERIOD.ARIA_LABELS.ACTIVATE_PERIOD
-            "
-            [disabled]="isFocusActive()"
-            (click)="onActivate()"
-            type="button"
-          >
-            <ng-container
-              *ngTemplateOutlet="icon; context: { href: icons.POWER_SWITCHER }"
-            ></ng-container>
-          </button>
-        }
       }
+
+      @let deleteBtnDisabled = totalPeriodsCount() <= 1 || isCurrentPeriod() || period().isActive;
+      <button
+        class="dz-button dz-button--sm"
+        [disabled]="deleteBtnDisabled"
+        [class.dz-button--ghost]="!deleteBtnDisabled"
+        [class.shadow]="!deleteBtnDisabled"
+        [title]="uiText.PERIOD.ARIA_LABELS.DELETE_PERIOD"
+        [attr.aria-label]="uiText.PERIOD.ARIA_LABELS.DELETE_PERIOD"
+        (click)="onDelete()"
+        type="button"
+      >
+        <ng-container *ngTemplateOutlet="icon; context: { href: icons.DELETE }"></ng-container>
+      </button>
+
+      @let editBtnDisabled = period().isActive;
+      <button
+        class="dz-button dz-button--md"
+        [class.dz-button--ghost]="!editBtnDisabled"
+        [class.shadow]="!editBtnDisabled"
+        [disabled]="editBtnDisabled"
+        [title]="uiText.PERIOD.ARIA_LABELS.EDIT_PERIOD"
+        [attr.aria-label]="uiText.PERIOD.ARIA_LABELS.EDIT_PERIOD"
+        (click)="onEdit()"
+        type="button"
+      >
+        <ng-container *ngTemplateOutlet="icon; context: { href: icons.EDIT }"></ng-container>
+      </button>
     </div>
   </div>
 </details>

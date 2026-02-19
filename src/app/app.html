@@ -3,8 +3,8 @@
     <button
       class="dz-button dz-button--nm"
       [title]="uiText.HEADER.FOCUS_TITLE"
-      [class.dz-button--activated]="currentRoute() === viewTypes.FOCUS"
-      (click)="setViewType(viewTypes.FOCUS)"
+      [class.dz-button--activated]="currentRoute() === views.FOCUS"
+      (click)="setViewType(views.FOCUS)"
     >
       <svg class="dz-icon" aria-hidden="true" focusable="false">
         <use [attr.href]="icons.PERSON_ZEN"></use>
@@ -14,8 +14,8 @@
     <button
       class="dz-button dz-button--nm"
       [title]="uiText.HEADER.PERIODS_LIST_TITLE"
-      [class.dz-button--activated]="currentRoute() === viewTypes.MENU"
-      (click)="setViewType(viewTypes.MENU)"
+      [class.dz-button--activated]="currentRoute() === views.MENU"
+      (click)="setViewType(views.MENU)"
     >
       <svg class="dz-icon" aria-hidden="true" focusable="false">
         <use [attr.href]="icons.ASSIGMENT"></use>
@@ -25,8 +25,8 @@
     <button
       class="dz-button dz-button--nm"
       [title]="uiText.HEADER.POMODORO_MENU_TITLE"
-      [class.dz-button--activated]="currentRoute() === viewTypes.POMODORO"
-      (click)="setViewType(viewTypes.POMODORO)"
+      [class.dz-button--activated]="currentRoute() === views.POMODORO"
+      (click)="setViewType(views.POMODORO)"
     >
       <svg class="dz-icon" aria-hidden="true" focusable="false">
         <use [attr.href]="icons.TOMATO"></use>
@@ -75,23 +75,23 @@
 <main class="dz-main" [class.dark-theme]="theme() === colorSchemes.DARK">
   @defer {
     @switch (currentRoute()) {
-      @case (viewTypes.POMODORO) {
+      @case (views.POMODORO) {
         <dz-pomodoro />
       }
 
-      @case (viewTypes.EDIT_PERIOD) {
+      @case (views.EDIT_PERIOD) {
         <div class="dz-box">
           <dz-period-form />
         </div>
       }
 
-      @case (viewTypes.ADD_PERIOD) {
+      @case (views.ADD_PERIOD) {
         <div class="dz-box">
           <dz-period-form />
         </div>
       }
 
-      @case (viewTypes.MENU) {
+      @case (views.MENU) {
         <div class="dz-box">
           <dz-menu />
         </div>

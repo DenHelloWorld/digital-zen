@@ -43,6 +43,7 @@ export const UI_TEXT = Object.freeze({
   // Period Form Component
   PERIOD_FORM: {
     LABELS: {
+      ACTIVATE_ON_SAVE: 'Activate on save',
       NAME: 'Name',
       DESCRIPTION: 'Description',
       DAYS_OF_WEEK: 'Days of week',
@@ -81,7 +82,8 @@ export const UI_TEXT = Object.freeze({
       CANCEL_DELETE: 'Cancel delete',
       ACTIVATE_PERIOD: 'Activate period',
     },
-    ACTIVATE_BUTTON: 'Activate',
+    ACTIVATED: 'Activated',
+    DEACTIVATED: 'Deactivated',
     ACTIVATE_DISABLED_TOOLTIP: 'Stop focus to activate this period',
     BLOCK_BEHAVIOUR: {
       BANNER_BLOCK: 'Tabs will be closed for the websites below',
