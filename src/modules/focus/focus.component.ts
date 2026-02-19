@@ -1,3 +1,4 @@
+import { DzToastContainerComponent } from '../common/components';
 import { SwitchComponent } from '../common/components/switch/switch.component';
 import { WeekdaysSelectorComponent } from '../common/components/weekdays-selector/weekdays-selector.component';
 import { ALL_DAYS_OF_WEEK } from '../common/constants/days-of-week.const';
@@ -38,6 +39,7 @@ import {
     // components
     WeekdaysSelectorComponent,
     SwitchComponent,
+    DzToastContainerComponent,
     // directives
     ProgressBorderDirective,
     PopupDirective,
