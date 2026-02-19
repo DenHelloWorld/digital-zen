@@ -14,7 +14,8 @@ export namespace IFocusForm {
     daysOfWeek: FormControl<DayOfWeekType[]>;
     blockBehaviour: FormControl<BlockBehaviourType>;
     focusedTimes: FormControl<IFocus.FocusedTime[]>;
-    isFocused: FormControl<boolean>;
+    isActive: FormControl<boolean>;
     sessionStartTime: FormControl<Date | null>;
+    setAsCurrentPeriod: FormControl<boolean>;
   }
 }

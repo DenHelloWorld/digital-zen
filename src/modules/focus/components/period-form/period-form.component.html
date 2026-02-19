@@ -50,6 +50,29 @@
 
 <form class="dz-form" [formGroup]="form">
   <div class="dz-form__field dz-box shadow shadow--hoverless">
+    <div class="dz-form__hint-wrapper">
+      @let activationHint =
+        isCurrentPeriod()
+          ? uiText.PERIOD.ACTIVATED
+          : setAsCurrentPeriod()
+            ? uiText.PERIOD_FORM.LABELS.ACTIVATE_ON_SAVE
+            : uiText.PERIOD.DEACTIVATED;
+      <span class="dz-form__hint">{{ activationHint }}</span>
+
+      <dz-switch
+        [title]="activationHint"
+        [checked]="setAsCurrentPeriod()"
+        [statusIcons]="{
+          activated: icons.CHECK,
+          unActivated: icons.POWER_SWITCHER,
+        }"
+        (checkedChange)="onSetAsCurrentPeriodChange($event)"
+        size="lg"
+      />
+    </div>
+  </div>
+
+  <div class="dz-form__field dz-box shadow shadow--hoverless">
     <span class="dz-form__hint">
       <span class="dz-form__required">{{ uiText.COMMON.REQUIRED_MARKER }}</span>
       {{ uiText.PERIOD_FORM.LABELS.NAME }}
@@ -72,11 +95,7 @@
     }
   </div>
 
-  <div
-    class="dz-form__field dz-box shadow shadow--hoverless"
-    #behaviourBlock
-    [class.shake]="shakeBehaviour()"
-  >
+  <div class="dz-form__field dz-box shadow shadow--hoverless" #behaviourBlock>
     <span class="dz-form__hint">
       <span class="dz-form__required">{{ uiText.COMMON.REQUIRED_MARKER }}</span>
       Behavior
@@ -361,6 +380,15 @@
 
   <div class="dz-form__actions dz-box dz-box--fit shadow blurred shadow--hoverless">
     <button
+      class="dz-button dz-button--sm dz-button--ghost shadow"
+      [title]="uiText.PERIOD_FORM.BUTTONS.CANCEL"
+      (click)="cancelForm()"
+      type="button"
+    >
+      <ng-container *ngTemplateOutlet="icon; context: { href: icons.CANCEL }"></ng-container>
+    </button>
+
+    <button
       class="dz-button dz-button--md dz-button--activated shadow"
       [title]="
         currentRoute() === views.EDIT_PERIOD
@@ -371,15 +399,6 @@
       (click)="savePeriod()"
     >
       <ng-container *ngTemplateOutlet="icon; context: { href: icons.SAVE }"></ng-container>
-    </button>
-
-    <button
-      class="dz-button dz-button--md dz-button--error shadow"
-      [title]="uiText.PERIOD_FORM.BUTTONS.CANCEL"
-      (click)="cancelForm()"
-      type="button"
-    >
-      <ng-container *ngTemplateOutlet="icon; context: { href: icons.CANCEL }"></ng-container>
     </button>
   </div>
 </form>

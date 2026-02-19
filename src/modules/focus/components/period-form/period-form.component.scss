@@ -13,11 +13,16 @@
   }
 
   .dz-form {
+    &__hint-wrapper {
+      display: flex;
+      align-items: center;
+    }
     &__actions {
+      align-items: center;
       position: sticky;
       bottom: var(--spacing);
       margin-left: auto;
-      width: fit-content;
+
       z-index: 1;
       background-color: var(--color-bg);
     }

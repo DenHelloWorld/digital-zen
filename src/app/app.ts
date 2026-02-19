@@ -1,9 +1,5 @@
 import { AuthService } from '../modules/auth';
-import {
-  DzToastContainerComponent,
-  LoaderComponent,
-  ThemeSwitcherComponent,
-} from '../modules/common/components';
+import { DzToastContainerComponent, ThemeSwitcherComponent } from '../modules/common/components';
 import { ICONS } from '../modules/common/constants/icons.const';
 import { UI_TEXT } from '../modules/common/constants/ui-text.const';
 import { WEBSITE_PRIVACY_POLICY } from '../modules/common/constants/websites.const';
@@ -11,6 +7,7 @@ import { CHROME_COMMAND_ENUM } from '../modules/common/enums/chrome-command.enum
 import { COLOR_SCHEMA_ENUM, ColorSchemaType } from '../modules/common/enums/color-schema.enum';
 import { VIEW_ENUM, ViewType } from '../modules/common/enums/view.enum';
 import { MiniRouterService } from '../modules/common/services/mini-router.service';
+import { SettingsBackupService } from '../modules/common/services/settings-backup.service';
 import { ThemeService } from '../modules/common/services/theme.service';
 import { PeriodFormComponent } from '../modules/focus/components/period-form/period-form.component';
 import { FocusComponent } from '../modules/focus/focus.component';
@@ -46,7 +43,6 @@ import { ChangeDetectionStrategy, Component, HostBinding, inject, Signal } from 
     FocusComponent,
     PomodoroComponent,
     DzToastContainerComponent,
-    LoaderComponent,
     PeriodFormComponent,
     MenuComponent,
   ],
@@ -61,6 +57,7 @@ export class App {
   readonly #themeService = inject(ThemeService);
   readonly #authService = inject(AuthService);
   readonly #router = inject(MiniRouterService);
+  readonly #settingsBackupService = inject(SettingsBackupService);
 
   /** @guideline DZ_04 - Signal for reactive theme state */
   protected readonly theme: Signal<ColorSchemaType> = this.#themeService.theme;
@@ -72,9 +69,11 @@ export class App {
   /** @guideline DZ_04 - Signal for reactive auth pending state */
   protected readonly isGoogleAuthPending: Signal<boolean> = this.#authService.isGoogleAuthPending;
   protected readonly isSidePanel = this.#router.isSidePanel;
+  protected readonly isExportingBackup = this.#settingsBackupService.isExportingBackup;
+  protected readonly isImportingBackup = this.#settingsBackupService.isImportingBackup;
 
   protected readonly colorSchemes: typeof COLOR_SCHEMA_ENUM = COLOR_SCHEMA_ENUM;
-  protected readonly viewTypes: typeof VIEW_ENUM = VIEW_ENUM;
+  protected readonly views: typeof VIEW_ENUM = VIEW_ENUM;
   /** @guideline DZ_10 - UI text constants usage */
   protected readonly uiText = UI_TEXT;
   protected readonly icons = ICONS;
@@ -103,6 +102,26 @@ export class App {
         window.close();
       });
     }
+  }
+
+  protected async exportSettings(): Promise<void> {
+    await this.#settingsBackupService.exportSettingsWithDownload();
+  }
+
+  protected triggerImport(fileInput: HTMLInputElement | null): void {
+    fileInput?.click();
+  }
+
+  protected async handleImportFile(event: Event): Promise<void> {
+    const input = event.target as HTMLInputElement | null;
+    const file = input?.files?.[0];
+
+    if (!file) {
+      return;
+    }
+
+    input.value = '';
+    await this.#settingsBackupService.importBackupFromFile(file);
   }
 
   @HostBinding('class.dz-app--side-panel')

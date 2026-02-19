@@ -117,6 +117,11 @@ a {
     color: var(--color-on-warn);
   }
 
+  &--success {
+    background-color: var(--color-zen-success);
+    color: var(--color-on-success);
+  }
+
   &--full {
     width: 100%;
   }
@@ -149,6 +154,10 @@ a {
 
   .title {
     border: none;
+  }
+
+  &__icon {
+    width: auto;
   }
 }
 

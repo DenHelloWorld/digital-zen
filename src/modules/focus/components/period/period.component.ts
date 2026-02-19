@@ -1,4 +1,5 @@
 import { DzToastService } from '../../../common/components';
+import { SwitchComponent } from '../../../common/components/switch/switch.component';
 import { WeekdaysSelectorComponent } from '../../../common/components/weekdays-selector/weekdays-selector.component';
 import { ALL_DAYS_OF_WEEK } from '../../../common/constants/days-of-week.const';
 import { ICONS } from '../../../common/constants/icons.const';
@@ -50,11 +51,12 @@ import {
   imports: [
     // angular modules
     CommonModule,
+    // pipes
+    RemoveProtocolPipe,
     // components
     TimeLineComponent,
     WeekdaysSelectorComponent,
-    // pipes
-    RemoveProtocolPipe,
+    SwitchComponent,
   ],
 })
 export class PeriodComponent {
@@ -82,7 +84,7 @@ export class PeriodComponent {
       )
   );
   protected readonly totalPeriodsCount = computed(() => this.#focusService.periods()?.length || 0);
-  protected readonly isCurrent = computed(
+  protected readonly isCurrentPeriod = computed(
     () => this.#focusService.currentPeriod()?.id === this.period().id
   );
   protected readonly isFocusActive = computed(() => this.period().isActive);
@@ -118,7 +120,8 @@ export class PeriodComponent {
     this.isConfirmingDelete.set(false);
   }
 
-  protected onActivate(): void {
+  protected onIsCurrentPeriodChange(): void {
+    if (this.isCurrentPeriod()) return;
     this.#focusService.setCurrentPeriod(this.period().id);
   }
 }

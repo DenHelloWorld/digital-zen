@@ -29,7 +29,7 @@ import {
   templateUrl: './multi-selector.component.html',
   styleUrls: ['./multi-selector.component.scss'],
   imports: [
-    // angular
+    // angular modules
     NgTemplateOutlet,
     // pipes
     TitleCasePipe,

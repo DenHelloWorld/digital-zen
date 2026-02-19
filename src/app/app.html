@@ -1,36 +1,36 @@
+<ng-template #icon let-iconHref="href">
+  <svg class="dz-icon" aria-hidden="true" focusable="false">
+    <use [attr.href]="iconHref"></use>
+  </svg>
+</ng-template>
+
 <header class="dz-header" [class.dark-theme]="theme() === colorSchemes.DARK">
-  <nav class="dz-header__navigation">
+  <nav class="dz-header__navigation full">
     <button
       class="dz-button dz-button--nm"
       [title]="uiText.HEADER.FOCUS_TITLE"
-      [class.dz-button--activated]="currentRoute() === viewTypes.FOCUS"
-      (click)="setViewType(viewTypes.FOCUS)"
+      [class.dz-button--activated]="currentRoute() === views.FOCUS"
+      (click)="setViewType(views.FOCUS)"
     >
-      <svg class="dz-icon" aria-hidden="true" focusable="false">
-        <use [attr.href]="icons.PERSON_ZEN"></use>
-      </svg>
+      <ng-container *ngTemplateOutlet="icon; context: { href: icons.PERSON_ZEN }" />
     </button>
 
     <button
       class="dz-button dz-button--nm"
       [title]="uiText.HEADER.PERIODS_LIST_TITLE"
-      [class.dz-button--activated]="currentRoute() === viewTypes.MENU"
-      (click)="setViewType(viewTypes.MENU)"
+      [class.dz-button--activated]="currentRoute() === views.MENU"
+      (click)="setViewType(views.MENU)"
     >
-      <svg class="dz-icon" aria-hidden="true" focusable="false">
-        <use [attr.href]="icons.ASSIGMENT"></use>
-      </svg>
+      <ng-container *ngTemplateOutlet="icon; context: { href: icons.ASSIGMENT }" />
     </button>
 
     <button
       class="dz-button dz-button--nm"
       [title]="uiText.HEADER.POMODORO_MENU_TITLE"
-      [class.dz-button--activated]="currentRoute() === viewTypes.POMODORO"
-      (click)="setViewType(viewTypes.POMODORO)"
+      [class.dz-button--activated]="currentRoute() === views.POMODORO"
+      (click)="setViewType(views.POMODORO)"
     >
-      <svg class="dz-icon" aria-hidden="true" focusable="false">
-        <use [attr.href]="icons.TOMATO"></use>
-      </svg>
+      <ng-container *ngTemplateOutlet="icon; context: { href: icons.TOMATO }" />
     </button>
 
     <button
@@ -43,30 +43,57 @@
       [disabled]="isGoogleAuthPending()"
       (click)="isGoogleAuthenticated() ? logoutFromGoogle() : loginWithGoogle()"
     >
-      @if (isGoogleAuthPending()) {
-        <dz-loader />
-      } @else {
-        <svg class="dz-icon" aria-hidden="true">
-          <use [attr.href]="isGoogleAuthenticated() ? icons.LOGOUT : icons.GOOGLE_LOGO"></use>
-        </svg>
-      }
+      <ng-container
+        *ngTemplateOutlet="
+          icon;
+          context: { href: isGoogleAuthenticated() ? icons.LOGOUT : icons.GOOGLE_LOGO }
+        "
+      />
     </button>
 
     <a [href]="websites.PRIVACY_POLICY.url" target="_blank" rel="noopener noreferrer">
       <button class="dz-button dz-button--xs" [title]="uiText.FOOTER.PRIVACY_POLICY_ARIA_LABEL">
-        <svg class="dz-icon" aria-hidden="true" focusable="false">
-          <use [attr.href]="icons.PRIVACY_TIP"></use>
-        </svg>
+        <ng-container *ngTemplateOutlet="icon; context: { href: icons.PRIVACY_TIP }" />
       </button>
     </a>
 
     @if (!isSidePanel()) {
       <button class="dz-button dz-button--xs" (click)="openSidePanel()" title="Open in side panel">
-        <svg class="dz-icon" aria-hidden="true" focusable="false">
-          <use [attr.href]="icons.VIEW_SIDEBAR"></use>
-        </svg>
+        <ng-container *ngTemplateOutlet="icon; context: { href: icons.VIEW_SIDEBAR }" />
       </button>
     }
+
+    <span class="full"></span>
+
+    <button
+      class="dz-button dz-button--xs"
+      [disabled]="isImportingBackup() || isExportingBackup()"
+      [title]="uiText.MENU.IMPORT_TITLE"
+      (click)="triggerImport(importInput)"
+    >
+      <ng-container
+        *ngTemplateOutlet="icon; context: { href: icons.IMPORT_SETTINGS }"
+      ></ng-container>
+    </button>
+
+    <button
+      class="dz-button dz-button--xs"
+      [disabled]="isImportingBackup() || isExportingBackup()"
+      [title]="uiText.MENU.EXPORT_TITLE"
+      (click)="exportSettings()"
+    >
+      <ng-container
+        *ngTemplateOutlet="icon; context: { href: icons.EXPORT_SETTINGS }"
+      ></ng-container>
+    </button>
+
+    <input
+      #importInput
+      (change)="handleImportFile($event)"
+      type="file"
+      accept="application/json"
+      hidden
+    />
   </nav>
 
   <dz-theme-switcher />
@@ -75,23 +102,23 @@
 <main class="dz-main" [class.dark-theme]="theme() === colorSchemes.DARK">
   @defer {
     @switch (currentRoute()) {
-      @case (viewTypes.POMODORO) {
+      @case (views.POMODORO) {
         <dz-pomodoro />
       }
 
-      @case (viewTypes.EDIT_PERIOD) {
+      @case (views.EDIT_PERIOD) {
         <div class="dz-box">
           <dz-period-form />
         </div>
       }
 
-      @case (viewTypes.ADD_PERIOD) {
+      @case (views.ADD_PERIOD) {
         <div class="dz-box">
           <dz-period-form />
         </div>
       }
 
-      @case (viewTypes.MENU) {
+      @case (views.MENU) {
         <div class="dz-box">
           <dz-menu />
         </div>
