@@ -44,6 +44,27 @@ export class BackgroundService {
     let operationQueue: Promise<void> = Promise.resolve();
 
     chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+      /**
+       * sidePanel.open() requires a direct user gesture to function.
+       * It must be called SYNCHRONOUSLY (outside the promise queue),
+       * otherwise Chrome will treat the user gesture as expired.
+       */
+      if (message.command === CHROME_COMMAND_ENUM.OPEN_SIDE_PANEL_APP) {
+        const targetWindowId = message.windowId || sender.tab?.windowId;
+        const options = targetWindowId
+          ? { windowId: targetWindowId }
+          : { windowId: chrome.windows.WINDOW_ID_CURRENT };
+
+        chrome.sidePanel
+          .open(options)
+          .then(() => sendResponse({ success: true }))
+          .catch(err => {
+            this.#logger.error('SidePanel gesture error:', err);
+            sendResponse({ success: false });
+          });
+        return true;
+      }
+
       operationQueue = operationQueue.then(async () => {
         try {
           switch (message.command as ChromeCommandType) {
@@ -185,23 +206,23 @@ export class BackgroundService {
               sendResponse({ success: true });
               break;
             }
-            case CHROME_COMMAND_ENUM.OPEN_SIDE_PANEL_APP: {
-              const targetWindowId = message.windowId || sender.tab?.windowId;
-
-              if (targetWindowId) {
-                try {
-                  await chrome.sidePanel.open({ windowId: targetWindowId });
-                  sendResponse({ success: true });
-                } catch (err) {
-                  this.#logger.error('SidePanel gesture error:', err);
-                  sendResponse({ success: false });
-                }
-              } else {
-                await chrome.sidePanel.open({ windowId: chrome.windows.WINDOW_ID_CURRENT });
-                sendResponse({ success: true });
-              }
-              break;
-            }
+            // case CHROME_COMMAND_ENUM.OPEN_SIDE_PANEL_APP: {
+            //   const targetWindowId = message.windowId || sender.tab?.windowId;
+            //
+            //   if (targetWindowId) {
+            //     try {
+            //       await chrome.sidePanel.open({ windowId: targetWindowId });
+            //       sendResponse({ success: true });
+            //     } catch (err) {
+            //       this.#logger.error('SidePanel gesture error:', err);
+            //       sendResponse({ success: false });
+            //     }
+            //   } else {
+            //     await chrome.sidePanel.open({ windowId: chrome.windows.WINDOW_ID_CURRENT });
+            //     sendResponse({ success: true });
+            //   }
+            //   break;
+            // }
             default:
               sendResponse({ success: false, error: FOCUS_ERROR_ENUM.UNKNOWN_COMMAND });
           }

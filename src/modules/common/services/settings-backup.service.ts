@@ -1,5 +1,12 @@
+import { DzToastService } from '../components';
+import { UI_TEXT } from '../constants/ui-text.const';
 import { CHROME_STORAGE_KEY_ENUM } from '../enums/chrome-storage-key.enum';
-import { Injectable } from '@angular/core';
+import { SettingsBackupFileNameEnum } from '../enums/settings-backup-file-name.enum';
+import { TOAST_TYPE_ENUM } from '../enums/toast-type.enum';
+import { logger } from '../helpers/logger';
+import { IFocus } from '../models/focus.model';
+import { IPomodoro } from '../models/pomodoro.model';
+import { Injectable, signal, inject } from '@angular/core';
 
 const BACKUP_FORMAT_VERSION = 1;
 const BACKUP_KEYS: readonly CHROME_STORAGE_KEY_ENUM[] = [
@@ -37,12 +44,12 @@ const BACKUP_METADATA_FIELDS = {
 } as const;
 
 interface SettingsBackupData {
-  periods: unknown[];
-  currentPeriod: unknown | null;
+  periods: IFocus.Period[];
+  currentPeriod: IFocus.Period | null;
   userEmail?: string | null;
   userId?: string | null;
-  pomodoroSettings?: unknown | null;
-  pomodoroState?: unknown | null;
+  pomodoroSettings?: IPomodoro.Settings | null;
+  pomodoroState?: IPomodoro.State | null;
 }
 
 export interface SettingsBackupPayload {
@@ -67,6 +74,13 @@ const STORAGE_KEY_TO_DATA_KEY: Partial<Record<CHROME_STORAGE_KEY_ENUM, keyof Set
 })
 export class SettingsBackupService {
   readonly #backupKeys = BACKUP_KEYS;
+  readonly #toastService = inject(DzToastService);
+  readonly #logger = logger.createLogger('SettingsBackupService');
+  readonly #isExportingBackup = signal(false);
+  readonly #isImportingBackup = signal(false);
+
+  readonly isExportingBackup = this.#isExportingBackup.asReadonly();
+  readonly isImportingBackup = this.#isImportingBackup.asReadonly();
 
   public async exportSettings(): Promise<SettingsBackupPayload> {
     const storage = await this.#readStorage();
@@ -77,12 +91,35 @@ export class SettingsBackupService {
       currentPeriod:
         storage[CHROME_STORAGE_KEY_ENUM.CURRENT_PERIOD] === undefined
           ? null
-          : storage[CHROME_STORAGE_KEY_ENUM.CURRENT_PERIOD],
+          : (storage[CHROME_STORAGE_KEY_ENUM.CURRENT_PERIOD] as IFocus.Period),
       userEmail: this.#castStringOrNull(storage[CHROME_STORAGE_KEY_ENUM.USER_EMAIL]),
       userId: this.#castStringOrNull(storage[CHROME_STORAGE_KEY_ENUM.USER_ID]),
-      pomodoroSettings: storage[CHROME_STORAGE_KEY_ENUM.POMODORO_SETTINGS] ?? null,
-      pomodoroState: storage[CHROME_STORAGE_KEY_ENUM.POMODORO_STATE] ?? null,
+      pomodoroSettings:
+        (storage[CHROME_STORAGE_KEY_ENUM.POMODORO_SETTINGS] as IPomodoro.Settings) ?? null,
+      pomodoroState: (storage[CHROME_STORAGE_KEY_ENUM.POMODORO_STATE] as IPomodoro.State) ?? null,
     };
+
+    /**
+     * Disable it so that it does not start during import.
+     */
+    if (data.currentPeriod) {
+      data.currentPeriod = { ...data.currentPeriod, isActive: false };
+    }
+    /**
+     * Disable it so that it does not start during import.
+     */
+    if (data.periods && Array.isArray(data.periods)) {
+      data.periods = data.periods.map(period => ({
+        ...period,
+        isActive: false,
+      }));
+    }
+    /**
+     * Disable it so that it does not start during import.
+     */
+    if (data.pomodoroState) {
+      data.pomodoroState = { ...data.pomodoroState, isPaused: true, isRunning: false };
+    }
 
     return {
       metadata: {
@@ -91,6 +128,31 @@ export class SettingsBackupService {
       },
       data,
     };
+  }
+
+  public async exportSettingsWithDownload(): Promise<void> {
+    if (this.#isExportingBackup()) {
+      return;
+    }
+
+    this.#isExportingBackup.set(true);
+
+    try {
+      const backup = await this.exportSettings();
+      this.#downloadBackupFile(backup);
+      this.#toastService.show({
+        message: UI_TEXT.MENU.EXPORT_SUCCESS,
+        type: TOAST_TYPE_ENUM.SUCCESS,
+      });
+    } catch (error) {
+      this.#logger.error('Failed to export settings backup', error);
+      this.#toastService.show({
+        message: error instanceof Error ? error.message : UI_TEXT.MENU.EXPORT_ERROR,
+        type: TOAST_TYPE_ENUM.ERROR,
+      });
+    } finally {
+      this.#isExportingBackup.set(false);
+    }
   }
 
   public async importBackup(payload: SettingsBackupPayload): Promise<void> {
@@ -119,6 +181,32 @@ export class SettingsBackupService {
     );
 
     await this.#writeStorage(entries);
+  }
+
+  public async importBackupFromFile(file: File): Promise<void> {
+    if (this.#isImportingBackup()) {
+      return;
+    }
+
+    this.#isImportingBackup.set(true);
+
+    try {
+      const content = await file.text();
+      const backup = this.parseBackupFromJson(content);
+      await this.importBackup(backup);
+      this.#toastService.show({
+        message: UI_TEXT.MENU.IMPORT_SUCCESS,
+        type: TOAST_TYPE_ENUM.SUCCESS,
+      });
+    } catch (error) {
+      this.#logger.error('Failed to import settings backup', error);
+      this.#toastService.show({
+        message: error instanceof Error ? error.message : UI_TEXT.MENU.IMPORT_ERROR,
+        type: TOAST_TYPE_ENUM.ERROR,
+      });
+    } finally {
+      this.#isImportingBackup.set(false);
+    }
   }
 
   public parseBackupFromJson(content: string): SettingsBackupPayload {
@@ -289,5 +377,43 @@ export class SettingsBackupService {
       default:
         return value;
     }
+  }
+
+  #downloadBackupFile(backup: SettingsBackupPayload): void {
+    const fileName = this.#createFileName(backup.metadata.exportedAt);
+    const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement('a');
+
+    anchor.href = url;
+    anchor.download = fileName;
+    anchor.click();
+    URL.revokeObjectURL(url);
+  }
+
+  #createFileName(exportedAt: string): string {
+    const date = this.#normalizeDate(exportedAt);
+    return `${SettingsBackupFileNameEnum.PREFIX}-${this.#formatForFilename(date)}${SettingsBackupFileNameEnum.EXTENSION}`;
+  }
+
+  #normalizeDate(value: string): Date {
+    const candidate = new Date(value);
+    if (Number.isNaN(candidate.getTime())) {
+      return new Date();
+    }
+
+    return candidate;
+  }
+
+  #formatForFilename(date: Date): string {
+    const pad = (value: number): string => value.toString().padStart(2, '0');
+    return [
+      date.getFullYear(),
+      pad(date.getMonth() + 1),
+      pad(date.getDate()),
+      pad(date.getHours()),
+      pad(date.getMinutes()),
+      pad(date.getSeconds()),
+    ].join('-');
   }
 }
