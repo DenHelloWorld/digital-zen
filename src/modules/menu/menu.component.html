@@ -7,7 +7,7 @@
 
 <ul class="dz-list dz-list--full">
   @for (period of periods(); track period.id) {
-    <li>
+    <li #periodItem [id]="period.id">
       <dz-period [period]="period" />
     </li>
   }

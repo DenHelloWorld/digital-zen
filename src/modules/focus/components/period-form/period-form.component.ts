@@ -137,7 +137,7 @@ export class PeriodFormComponent implements OnInit, AfterViewInit {
   ];
 
   protected readonly isCurrentPeriod = computed(
-    () => this.#focusService.currentPeriod()?.id === this.payload()?.period.id
+    () => this.#focusService.currentPeriod()?.id === this.payload()?.period?.id
   );
 
   protected readonly setAsCurrentPeriod = signal<boolean>(false);
@@ -153,8 +153,6 @@ export class PeriodFormComponent implements OnInit, AfterViewInit {
   ]);
 
   protected readonly siteStatuses = signal<Record<string, ResourceRef<boolean | undefined>>>({});
-
-  protected readonly shakeBehaviour = signal(false);
 
   protected readonly behaviourBlock = viewChild<ElementRef>('behaviourBlock');
 
@@ -248,8 +246,8 @@ export class PeriodFormComponent implements OnInit, AfterViewInit {
 
   public ngAfterViewInit(): void {
     if (this.payload()?.scrollToBehaviours) {
-      this.shakeBehaviour.set(true);
       this.behaviourBlock()?.nativeElement.scrollIntoView({ behavior: 'smooth' });
+      this.behaviourBlock()?.nativeElement.classList.add('shake');
     }
   }
 
@@ -288,16 +286,17 @@ export class PeriodFormComponent implements OnInit, AfterViewInit {
 
       if (this.currentRoute() === VIEW_ENUM.EDIT_PERIOD) {
         this.#focusService.updatePeriod(periodData);
+        this.#router.navigate(this.#router.previousRoute() || VIEW_ENUM.FOCUS, {
+          scrollPeriodId: periodData.id,
+        });
       } else if (this.currentRoute() === VIEW_ENUM.ADD_PERIOD) {
         this.#focusService.addPeriod(periodData);
+        this.#router.navigate(VIEW_ENUM.MENU, { scrollPeriodId: periodData.id });
       }
 
       if (!this.isCurrentPeriod() && rawValue.setAsCurrentPeriod) {
         this.#focusService.setCurrentPeriod(periodData.id);
       }
-
-      // TODO: fix navigation
-      // this.#router.navigate(this.#router.previousRoute() || VIEW_ENUM.FOCUS);
     }
   }
 
