@@ -65,7 +65,12 @@
     }
 
     <div class="weekdays" [class.shake]="isNotScheduledToday()">
-      <dz-weekdays-selector [selectedDays]="selectedDays()" [isSelectable]="false" />
+      <dz-weekdays-selector
+        [idKey]="'day'"
+        [selectedEntities]="selectedDays()"
+        [entities]="allDays"
+        [isSelectable]="false"
+      />
     </div>
 
     <div

@@ -126,6 +126,7 @@ export class PeriodFormComponent implements OnInit, AfterViewInit {
   protected readonly timeRanges = [...TIME_RANGES];
   protected readonly manualTimeRangeId = MANUAL_TIME_RANGE.id;
   protected readonly blockBehaviours = BLOCK_BEHAVIOUR_ENUM;
+  protected readonly allDays: Readonly<IFocus.DayOfWeek>[] = [...ALL_DAYS_OF_WEEK];
 
   protected readonly excludedSiteKeysArray: (keyof IFocus.WebSite)[] = [
     'imageUrl',

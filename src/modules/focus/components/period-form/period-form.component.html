@@ -304,7 +304,12 @@
       {{ uiText.PERIOD_FORM.LABELS.DAYS_OF_WEEK }}
     </span>
 
-    <dz-weekdays-selector [(selectedDays)]="selectedDays" [isTodayShow]="false" />
+    <dz-weekdays-selector
+      [(selectedEntities)]="selectedDays"
+      [isSelectable]="true"
+      [entities]="allDays"
+      [idKey]="'day'"
+    />
 
     @if (form.controls.daysOfWeek.invalid) {
       <div class="dz-form__error">

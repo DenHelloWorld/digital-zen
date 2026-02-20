@@ -1,12 +1,11 @@
+import { MultiSelectorDirective } from './multi-selector.directive';
 import { NgTemplateOutlet, TitleCasePipe } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
   contentChild,
+  inject,
   input,
-  InputSignal,
-  model,
-  ModelSignal,
   TemplateRef,
 } from '@angular/core';
 
@@ -34,75 +33,39 @@ import {
     // pipes
     TitleCasePipe,
   ],
+  hostDirectives: [
+    {
+      directive: MultiSelectorDirective,
+      inputs: [
+        'entities',
+        'idKey',
+        'readonlyKeys',
+        'isSelectable',
+        'isOnlySingleSelectable',
+        'selectedEntities',
+      ],
+      outputs: ['selectedEntitiesChange'],
+    },
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MultiSelectorComponent<T> {
-  /** @guideline DZ_04 - InputSignal for component inputs */
-  public readonly entities: InputSignal<T[]> = input.required<T[]>();
-  public readonly labelKey: InputSignal<keyof T> = input.required<keyof T>();
-  public readonly idKey: InputSignal<keyof T> = input.required<keyof T>();
-  public readonly readonlyKeys: InputSignal<T[keyof T][]> = input<T[keyof T][]>([]);
-  public readonly orientation: InputSignal<'vertical' | 'horizontal'> = input<
-    'vertical' | 'horizontal'
-  >('vertical');
-  public readonly size = input<'sm' | 'md' | 'lg'>('sm');
-  public readonly isSelectable: InputSignal<boolean> = input<boolean>(true);
-  public readonly highlightedId: InputSignal<T[keyof T] | null> = input<T[keyof T] | null>(null);
-  /**
-   * When true, component behaves as a single-select control:
-   * only one entity can be selected at a time.
-   */
-  public readonly isOnlySingleSelectable: InputSignal<boolean> = input<boolean>(false);
+  protected readonly selection = inject<MultiSelectorDirective<T>>(MultiSelectorDirective);
 
-  /** @guideline DZ_04 - ModelSignal for two-way binding */
-  public readonly selectedEntities: ModelSignal<T[] | undefined> = model<T[]>();
+  public readonly labelKey = input.required<keyof T>();
+  public readonly orientation = input<'vertical' | 'horizontal'>('vertical');
+  public readonly size = input<'sm' | 'md' | 'lg'>('sm');
+  public readonly highlightedId = input<T[keyof T] | null>(null);
 
   public readonly itemTemplate = contentChild<TemplateRef<{ $implicit: T }>>('itemTemplate');
 
-  protected isSelected = (item: T): boolean => {
-    const selected = this.selectedEntities() ?? [];
-    const itemId = item[this.idKey()];
-    return selected.some(e => e[this.idKey()] === itemId);
-  };
-
   protected getLabel(item: T): string {
-    const label: T[keyof T] = item[this.labelKey()];
+    const label = item[this.labelKey()];
     return typeof label === 'string' ? label : String(label);
   }
 
-  protected isReadonly = (item: T): boolean => {
-    if (this.isSelectable()) {
-      return this.readonlyKeys().includes(item[this.idKey()]);
-    } else {
-      return true;
-    }
-  };
-
-  protected toggle(item: T): void {
-    if (this.isReadonly(item) || !this.isSelectable()) {
-      return;
-    }
-
-    const current = this.selectedEntities() ?? [];
-    const id = item[this.idKey()];
-    const isAlready = current.some(e => e[this.idKey()] === id);
-
-    if (this.isOnlySingleSelectable()) {
-      /**
-       * Single selection only - switch selection to current item or remove selection
-       */
-      this.selectedEntities.set(isAlready ? [] : [item]);
-      return;
-    }
-
-    // Обычный множественный выбор
-    this.selectedEntities.set(
-      isAlready ? current.filter(e => e[this.idKey()] !== id) : [...current, item]
-    );
-  }
-
-  protected isHighlighted = (item: T): boolean => {
+  protected isHighlighted(item: T): boolean {
     const highlighted = this.highlightedId();
-    return highlighted != null && item[this.idKey()] === highlighted;
-  };
+    return highlighted != null && item[this.selection.idKey()] === highlighted;
+  }
 }

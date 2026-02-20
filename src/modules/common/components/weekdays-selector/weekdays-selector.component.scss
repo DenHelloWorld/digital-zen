@@ -1,0 +1,9 @@
+:host {
+  .dz-list {
+    border-radius: var(--radius-xs);
+
+    &--horizontal {
+      align-items: center;
+    }
+  }
+}

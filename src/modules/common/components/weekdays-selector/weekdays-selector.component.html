@@ -1,9 +1,14 @@
-<dz-multi-selector
-  [(selectedEntities)]="selectedDays"
-  [isSelectable]="isSelectable()"
-  [entities]="allDays"
-  [labelKey]="labelKey"
-  [idKey]="idKey"
-  [highlightedId]="isTodayShow() ? todayDayId : null"
-  orientation="horizontal"
-/>
+<ul class="dz-list dz-list--fit dz-list--horizontal shadow shadow--hoverless">
+  @for (entity of selection.entities(); track entity[selection.idKey()]) {
+    <li class="dz-list__item" [class.dz-list__item--highlighted]="isHighlighted(entity)">
+      <button
+        class="dz-button dz-button--free dz-icon-box dz-icon-box--sm"
+        [disabled]="selection.isReadonly(entity) || !selection.isSelectable()"
+        [class.strikethrough]="!selection.isSelected(entity)"
+        (click)="selection.toggle(entity)"
+      >
+        {{ getLabel(entity) | titlecase }}
+      </button>
+    </li>
+  }
+</ul>
