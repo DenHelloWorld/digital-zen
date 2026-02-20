@@ -154,6 +154,7 @@ export class FocusComponent {
   protected readonly icons = ICONS;
   protected readonly colors = COLORS_ENUM;
   protected readonly viewTypes = VIEW_ENUM;
+  protected readonly allDays: Readonly<IFocus.DayOfWeek>[] = [...ALL_DAYS_OF_WEEK];
   protected readonly websiteTypes = Object.values(IFocus.EWebSiteType).filter(
     type => type !== IFocus.EWebSiteType.DEFAULT && type !== IFocus.EWebSiteType.UNBLOCKABLE
   );

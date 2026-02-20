@@ -5,24 +5,5 @@
     &--horizontal {
       align-items: center;
     }
-
-    &__item {
-      &--highlighted {
-        position: relative;
-        z-index: 1;
-
-        &::before {
-          content: '';
-          position: absolute;
-          top: -4px;
-          bottom: -4px;
-          left: -6px;
-          right: -6px;
-          border: 2px solid var(--color-zen-error);
-          border-radius: var(--radius-xs);
-          pointer-events: none;
-        }
-      }
-    }
   }
 }

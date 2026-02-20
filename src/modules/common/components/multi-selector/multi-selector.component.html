@@ -2,46 +2,26 @@
   class="dz-list dz-list--full"
   [class.dz-list--horizontal]="orientation() === 'horizontal'"
   [class.dz-list--vertical]="orientation() === 'vertical'"
-  [class.shadow]="highlightedId()"
-  [class.shadow--hoverless]="highlightedId()"
 >
-  @for (entity of entities(); track entity[this.idKey()]) {
+  @for (entity of selection.entities(); track entity[selection.idKey()]) {
     <li class="dz-list__item" [class.dz-list__item--highlighted]="isHighlighted(entity)">
-      @if (isSelectable()) {
-        <button
-          class="dz-button"
-          [disabled]="isReadonly(entity)"
-          [class.dz-button--activated]="isSelected(entity)"
-          [class]="'dz-button--' + size()"
-          (click)="toggle(entity)"
-        >
-          @if (itemTemplate()) {
-            <ng-container
-              [ngTemplateOutlet]="itemTemplate()!"
-              [ngTemplateOutletContext]="{ $implicit: entity }"
-            >
-            </ng-container>
-          } @else {
-            {{ getLabel(entity) | titlecase }}
-          }
-        </button>
-      } @else {
-        <div
-          class="dz-icon-box"
-          [class.strikethrough]="!isSelected(entity)"
-          [class]="'dz-icon-box--' + size()"
-        >
-          @if (itemTemplate()) {
-            <ng-container
-              [ngTemplateOutlet]="itemTemplate()!"
-              [ngTemplateOutletContext]="{ $implicit: entity }"
-            >
-            </ng-container>
-          } @else {
-            {{ getLabel(entity) | titlecase }}
-          }
-        </div>
-      }
+      <button
+        class="dz-button"
+        [disabled]="selection.isReadonly(entity) || !selection.isSelectable()"
+        [class.dz-button--activated]="selection.isSelected(entity)"
+        [class]="'dz-button--' + size()"
+        (click)="selection.toggle(entity)"
+      >
+        @if (itemTemplate()) {
+          <ng-container
+            [ngTemplateOutlet]="itemTemplate()!"
+            [ngTemplateOutletContext]="{ $implicit: entity }"
+          >
+          </ng-container>
+        } @else {
+          {{ getLabel(entity) | titlecase }}
+        }
+      </button>
     </li>
   }
 </ul>

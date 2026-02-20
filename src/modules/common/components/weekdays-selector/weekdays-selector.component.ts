@@ -1,14 +1,7 @@
-import { ALL_DAYS_OF_WEEK } from '../../constants/days-of-week.const';
 import { IFocus } from '../../models/focus.model';
-import { MultiSelectorComponent } from '../multi-selector/multi-selector.component';
-import {
-  ChangeDetectionStrategy,
-  Component,
-  input,
-  InputSignal,
-  model,
-  ModelSignal,
-} from '@angular/core';
+import { MultiSelectorDirective } from '../multi-selector/multi-selector.directive';
+import { TitleCasePipe } from '@angular/common';
+import { ChangeDetectionStrategy, Component, inject, input, InputSignal } from '@angular/core';
 
 /**
  * Weekdays selector component for choosing days of the week
@@ -26,18 +19,40 @@ import {
   styleUrls: ['./weekdays-selector.component.scss'],
   imports: [
     // components
-    MultiSelectorComponent,
+    TitleCasePipe,
+  ],
+  hostDirectives: [
+    {
+      directive: MultiSelectorDirective,
+      inputs: [
+        'entities',
+        'idKey',
+        'readonlyKeys',
+        'isSelectable',
+        'isOnlySingleSelectable',
+        'selectedEntities',
+      ],
+      outputs: ['selectedEntitiesChange'],
+    },
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class WeekdaysSelectorComponent {
-  protected readonly idKey: keyof IFocus.DayOfWeek = 'day';
+  protected readonly selection =
+    inject<MultiSelectorDirective<IFocus.DayOfWeek>>(MultiSelectorDirective);
+
   protected readonly labelKey: keyof IFocus.DayOfWeek = 'name';
-  protected readonly allDays: Readonly<IFocus.DayOfWeek>[] = [...ALL_DAYS_OF_WEEK];
   protected readonly todayDayId: number = new Date().getDay();
 
-  public readonly isSelectable: InputSignal<boolean> = input<boolean>(true);
   public readonly isTodayShow: InputSignal<boolean> = input<boolean>(true);
-  public readonly selectedDays: ModelSignal<IFocus.DayOfWeek[] | undefined> =
-    model<IFocus.DayOfWeek[]>();
+
+  protected isHighlighted(item: IFocus.DayOfWeek): boolean {
+    const highlighted = this.isTodayShow() ? this.todayDayId : null;
+    return highlighted != null && item[this.selection.idKey()] === this.todayDayId;
+  }
+
+  protected getLabel(item: IFocus.DayOfWeek): string {
+    const label = item[this.labelKey];
+    return typeof label === 'string' ? label : String(label);
+  }
 }

@@ -179,7 +179,12 @@
     </div>
 
     <div class="dz-focus__weekdays">
-      <dz-weekdays-selector [selectedDays]="selectedDays()" [isSelectable]="false" />
+      <dz-weekdays-selector
+        [entities]="allDays"
+        [selectedEntities]="selectedDays()"
+        [idKey]="'day'"
+        [isSelectable]="false"
+      />
     </div>
 
     <div class="dz-focus__time-group">
