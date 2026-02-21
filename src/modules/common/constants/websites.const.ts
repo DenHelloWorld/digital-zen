@@ -653,16 +653,14 @@ export const WEBSITES_UNBLOCKABLE: Readonly<readonly IFocus.WebSite[]> = Object.
   WEBSITE_PRIVACY_POLICY,
 ]);
 
-export const ALL_PRESET_WEBSITES: Record<IFocus.IWebSiteType, readonly IFocus.WebSite[]> =
-  Object.freeze({
-    [IFocus.EWebSiteType.FROM_CURRENT_PERIOD]: [],
-    [IFocus.EWebSiteType.AI]: WEBSITES_AI,
-    [IFocus.EWebSiteType.EDUCATION]: WEBSITES_EDUCATION,
-    [IFocus.EWebSiteType.SOCIAL_MEDIA]: WEBSITES_SOCIAL_MEDIA,
-    [IFocus.EWebSiteType.ENTERTAINMENT]: WEBSITES_ENTERTAINMENT,
-    [IFocus.EWebSiteType.SHOPPING]: WEBSITES_SHOPPING,
-    [IFocus.EWebSiteType.NEWS]: WEBSITES_NEWS,
-    [IFocus.EWebSiteType.WORK_DEVELOPMENT]: WEBSITES_WORK_DEVELOPMENT,
-    [IFocus.EWebSiteType.DEFAULT]: [],
-    [IFocus.EWebSiteType.UNBLOCKABLE]: WEBSITES_UNBLOCKABLE,
-  });
+export const WEBSITES_LIBRARY_PRESET: Record<string, readonly IFocus.WebSite[]> = Object.freeze({
+  [IFocus.EWebSiteType.AI]: WEBSITES_AI,
+  [IFocus.EWebSiteType.EDUCATION]: WEBSITES_EDUCATION,
+  [IFocus.EWebSiteType.SOCIAL_MEDIA]: WEBSITES_SOCIAL_MEDIA,
+  [IFocus.EWebSiteType.ENTERTAINMENT]: WEBSITES_ENTERTAINMENT,
+  [IFocus.EWebSiteType.SHOPPING]: WEBSITES_SHOPPING,
+  [IFocus.EWebSiteType.NEWS]: WEBSITES_NEWS,
+  [IFocus.EWebSiteType.WORK_DEVELOPMENT]: WEBSITES_WORK_DEVELOPMENT,
+  [IFocus.EWebSiteType.DEFAULT]: [],
+  [IFocus.EWebSiteType.UNBLOCKABLE]: WEBSITES_UNBLOCKABLE,
+});

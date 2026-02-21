@@ -55,20 +55,18 @@ export namespace IFocus {
   }
 
   export enum EWebSiteType {
-    FROM_CURRENT_PERIOD = 'From Current Period',
-    DEFAULT = 'Default',
-    AI = 'AI',
-    WORK_DEVELOPMENT = 'Work Development',
-    EDUCATION = 'Education',
-    ENTERTAINMENT = 'Entertainment',
-    SOCIAL_MEDIA = 'Social Media',
-    SHOPPING = 'Shopping',
-    NEWS = 'News',
+    DEFAULT = 'Default 🌐',
+    AI = 'AI 🤖',
+    WORK_DEVELOPMENT = 'Work Development 💻',
+    EDUCATION = 'Education 🎓',
+    ENTERTAINMENT = 'Entertainment 🎮',
+    SOCIAL_MEDIA = 'Social Media 📱',
+    SHOPPING = 'Shopping 🛒',
+    NEWS = 'News 📰',
     UNBLOCKABLE = 'Unblockable',
   }
 
   export type IWebSiteType =
-    | IFocus.EWebSiteType.FROM_CURRENT_PERIOD
     | IFocus.EWebSiteType.SOCIAL_MEDIA
     | IFocus.EWebSiteType.AI
     | IFocus.EWebSiteType.ENTERTAINMENT

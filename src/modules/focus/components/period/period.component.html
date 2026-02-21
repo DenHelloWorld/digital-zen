@@ -109,7 +109,7 @@
 
     <ul class="dz-list dz-list--horizontal dz-list--full" aria-labelledby="social-title">
       @for (site of p.webSites; track site.id) {
-        <li>
+        <li [class.hidden]="!site.isActivated">
           <div class="dz-icon-box dz-icon-box--sm" [title]="site.url | removeProtocol">
             @if (isHttpUrl(site.imageUrl)) {
               <img class="dz-icon dz-icon--shadow" [src]="site.imageUrl" [alt]="site.name" />

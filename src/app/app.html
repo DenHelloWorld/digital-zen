@@ -33,23 +33,23 @@
       <ng-container *ngTemplateOutlet="icon; context: { href: icons.TOMATO }" />
     </button>
 
-    <button
-      class="dz-button dz-button--nm"
-      [title]="
-        isGoogleAuthenticated()
-          ? uiText.HEADER.LOGOUT_GOOGLE_TITLE
-          : uiText.HEADER.LOGIN_GOOGLE_TITLE
-      "
-      [disabled]="isGoogleAuthPending()"
-      (click)="isGoogleAuthenticated() ? logoutFromGoogle() : loginWithGoogle()"
-    >
-      <ng-container
-        *ngTemplateOutlet="
-          icon;
-          context: { href: isGoogleAuthenticated() ? icons.LOGOUT : icons.GOOGLE_LOGO }
-        "
-      />
-    </button>
+    <!--    <button-->
+    <!--      class="dz-button dz-button&#45;&#45;nm"-->
+    <!--      [title]="-->
+    <!--        isGoogleAuthenticated()-->
+    <!--          ? uiText.HEADER.LOGOUT_GOOGLE_TITLE-->
+    <!--          : uiText.HEADER.LOGIN_GOOGLE_TITLE-->
+    <!--      "-->
+    <!--      [disabled]="isGoogleAuthPending()"-->
+    <!--      (click)="isGoogleAuthenticated() ? logoutFromGoogle() : loginWithGoogle()"-->
+    <!--    >-->
+    <!--      <ng-container-->
+    <!--        *ngTemplateOutlet="-->
+    <!--          icon;-->
+    <!--          context: { href: isGoogleAuthenticated() ? icons.LOGOUT : icons.GOOGLE_LOGO }-->
+    <!--        "-->
+    <!--      />-->
+    <!--    </button>-->
 
     <a [href]="websites.PRIVACY_POLICY.url" target="_blank" rel="noopener noreferrer">
       <button class="dz-button dz-button--xs" [title]="uiText.FOOTER.PRIVACY_POLICY_ARIA_LABEL">

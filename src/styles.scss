@@ -173,6 +173,7 @@ img {
   --color-component-bg-light: #ebf2ff;
   --btn-size-nm: 38px;
   --color-glass-text: rgba(71, 85, 105, 0.7);
+  interpolate-size: allow-keywords;
 }
 
 .light {
@@ -295,6 +296,7 @@ details {
     block-size: auto;
   }
 }
+
 summary::marker {
   color: var(--color-zen-accent);
   font-size: 1.2em;
@@ -328,6 +330,34 @@ summary::marker {
   &--xxl {
     font-size: var(--font-size-xxl);
   }
+
+  &--error {
+    border-radius: var(--radius-xs);
+    padding: var(--spacing-xs);
+    color: var(--color-on-info);
+    background-color: var(--color-zen-error);
+  }
+
+  &--activated {
+    border-radius: var(--radius-xs);
+    padding: var(--spacing-xs);
+    color: var(--color-on-info);
+    background-color: var(--color-zen-accent);
+  }
+
+  &--warn {
+    border-radius: var(--radius-xs);
+    padding: var(--spacing-xs);
+    color: var(--color-on-warn);
+    background-color: var(--color-zen-warn);
+  }
+
+  &--success {
+    border-radius: var(--radius-xs);
+    padding: var(--spacing-xs);
+    color: var(--color-on-success);
+    background-color: var(--color-zen-success);
+  }
 }
 
 .square {
@@ -347,6 +377,10 @@ summary::marker {
 
 .full {
   width: 100%;
+}
+
+.fit {
+  width: fit-content;
 }
 
 @keyframes breathe {
@@ -375,7 +409,7 @@ summary::marker {
     border-radius: inherit;
 
     &--transparrent {
-      opacity: 0.2;
+      opacity: 0.3;
     }
   }
 }
@@ -490,4 +524,8 @@ summary::marker {
       }
     }
   }
+}
+
+.copy {
+  cursor: copy;
 }
