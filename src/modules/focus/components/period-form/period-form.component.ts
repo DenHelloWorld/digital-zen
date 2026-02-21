@@ -158,6 +158,7 @@ export class PeriodFormComponent implements OnInit, AfterViewInit {
   protected readonly behaviourBlock = viewChild<ElementRef>('behaviourBlock');
 
   public ngOnInit(): void {
+    // TODO: отобразить здесь вебсайты как в попапе или просто показывать здесь тот же попап.
     this.#initForm();
     this.#loadPeriodData();
     this.#setupValidatorUpdates();

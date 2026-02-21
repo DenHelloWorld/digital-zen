@@ -115,6 +115,7 @@ export const UI_TEXT = Object.freeze({
   // Common
   COMMON: {
     REQUIRED_MARKER: '*',
+    WEBSITE_LIBRARY: 'Website library',
   },
 
   // Time Line Component

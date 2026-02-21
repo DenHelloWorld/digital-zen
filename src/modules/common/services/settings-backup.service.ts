@@ -16,6 +16,7 @@ const BACKUP_KEYS: readonly CHROME_STORAGE_KEY_ENUM[] = [
   CHROME_STORAGE_KEY_ENUM.USER_ID,
   CHROME_STORAGE_KEY_ENUM.POMODORO_SETTINGS,
   CHROME_STORAGE_KEY_ENUM.POMODORO_STATE,
+  CHROME_STORAGE_KEY_ENUM.WEBSITES_LIBRARY,
 ] as const;
 
 type BackupStorageRecord = Partial<Record<CHROME_STORAGE_KEY_ENUM, unknown>>;
@@ -46,10 +47,11 @@ const BACKUP_METADATA_FIELDS = {
 interface SettingsBackupData {
   periods: IFocus.Period[];
   currentPeriod: IFocus.Period | null;
-  userEmail?: string | null;
-  userId?: string | null;
-  pomodoroSettings?: IPomodoro.Settings | null;
-  pomodoroState?: IPomodoro.State | null;
+  userEmail: string | null;
+  userId: string | null;
+  pomodoroSettings: IPomodoro.Settings | null;
+  pomodoroState: IPomodoro.State | null;
+  websitesLibrary: Record<string, readonly IFocus.WebSite[]> | null;
 }
 
 export interface SettingsBackupPayload {
@@ -67,6 +69,7 @@ const STORAGE_KEY_TO_DATA_KEY: Partial<Record<CHROME_STORAGE_KEY_ENUM, keyof Set
     [CHROME_STORAGE_KEY_ENUM.USER_ID]: 'userId',
     [CHROME_STORAGE_KEY_ENUM.POMODORO_SETTINGS]: 'pomodoroSettings',
     [CHROME_STORAGE_KEY_ENUM.POMODORO_STATE]: 'pomodoroState',
+    [CHROME_STORAGE_KEY_ENUM.WEBSITES_LIBRARY]: 'websitesLibrary',
   };
 
 @Injectable({
@@ -97,6 +100,11 @@ export class SettingsBackupService {
       pomodoroSettings:
         (storage[CHROME_STORAGE_KEY_ENUM.POMODORO_SETTINGS] as IPomodoro.Settings) ?? null,
       pomodoroState: (storage[CHROME_STORAGE_KEY_ENUM.POMODORO_STATE] as IPomodoro.State) ?? null,
+      websitesLibrary:
+        (storage[CHROME_STORAGE_KEY_ENUM.WEBSITES_LIBRARY] as Record<
+          string,
+          readonly IFocus.WebSite[]
+        >) ?? null,
     };
 
     /**
@@ -167,6 +175,11 @@ export class SettingsBackupService {
       [CHROME_STORAGE_KEY_ENUM.CURRENT_PERIOD]: payload.data.currentPeriod ?? null,
     };
 
+    this.#assignIfProvided(
+      entries,
+      CHROME_STORAGE_KEY_ENUM.WEBSITES_LIBRARY,
+      payload.data.websitesLibrary
+    );
     this.#assignIfProvided(entries, CHROME_STORAGE_KEY_ENUM.USER_EMAIL, payload.data.userEmail);
     this.#assignIfProvided(entries, CHROME_STORAGE_KEY_ENUM.USER_ID, payload.data.userId);
     this.#assignIfProvided(
@@ -258,6 +271,11 @@ export class SettingsBackupService {
     const sanitizedData: SettingsBackupData = {
       periods: [],
       currentPeriod: null,
+      websitesLibrary: null,
+      userEmail: null,
+      userId: null,
+      pomodoroState: null,
+      pomodoroSettings: null,
     };
 
     for (const key of BACKUP_DATA_KEYS) {
@@ -373,6 +391,8 @@ export class SettingsBackupService {
         return this.#castStringOrNull(value);
       case CHROME_STORAGE_KEY_ENUM.POMODORO_SETTINGS:
       case CHROME_STORAGE_KEY_ENUM.POMODORO_STATE:
+        return value ?? null;
+      case CHROME_STORAGE_KEY_ENUM.WEBSITES_LIBRARY:
         return value ?? null;
       default:
         return value;

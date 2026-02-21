@@ -143,6 +143,14 @@ export class StorageAdapter {
     };
   }
 
+  static async setWebsitesLibraryState(
+    state: Record<string, readonly IFocus.WebSite[]>
+  ): Promise<void> {
+    return this.enqueue(async () => {
+      await chrome.storage.local.set({ [CHROME_STORAGE_KEY_ENUM.WEBSITES_LIBRARY]: state });
+    });
+  }
+
   // === Private helpers ===
 
   private static async enqueue<T>(task: () => Promise<T>): Promise<T> {

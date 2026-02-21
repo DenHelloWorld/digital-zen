@@ -74,6 +74,10 @@ export const ICONS = Object.freeze({
   FOLDER_OPEN: '#icon-folder-open',
   EXPORT_SETTINGS: '#icon-export',
   IMPORT_SETTINGS: '#icon-import',
+  RADIO_UNCHECKED: '#icon-radio-unchecked',
+  RADIO_PARTIAL: '#icon-radio-partial',
+  RADIO_CHECKED: '#icon-radio-checked',
+  GLOBE_BOOK: '#icon-globe-book',
 } as const);
 
 /**

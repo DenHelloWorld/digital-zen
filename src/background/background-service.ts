@@ -2,6 +2,7 @@
 import { ALARM_PERIOD_IN_MINUTES } from '../modules/common/constants/alarm-period-in-minutes.const';
 import { CHROME_PAGES } from '../modules/common/constants/chrome-pages.const';
 import { DEFAULT_POMODORO_SETTINGS } from '../modules/common/constants/default-pomodoro-settings.const';
+import { WEBSITES_LIBRARY_PRESET } from '../modules/common/constants/websites.const';
 import { CHROME_ALARM_ENUM } from '../modules/common/enums/chrome-alarm-name.enum';
 import {
   CHROME_COMMAND_ENUM,
@@ -237,6 +238,7 @@ export class BackgroundService {
 
     chrome.runtime.onInstalled.addListener(() => {
       this.initializePomodoroDefaults();
+      this.initWebsitesLibrary();
       this.#logger.info('Pomodoro defaults initialized via onInstalled');
     });
   }
@@ -422,5 +424,13 @@ export class BackgroundService {
       await StorageAdapter.savePomodoroState(initialState);
       this.#logger.info('Pomodoro state initialized');
     }
+  }
+
+  private async initWebsitesLibrary(): Promise<void> {
+    /**
+     * Подготовка к менеджменту библиотекой сайтов
+     * TODO: добавить возможность создавать папки(тип сайта) и редактировать его. Удалять предустановленные папки и сайты нельзя(IWebSiteType)
+     * */
+    await StorageAdapter.setWebsitesLibraryState(WEBSITES_LIBRARY_PRESET);
   }
 }
