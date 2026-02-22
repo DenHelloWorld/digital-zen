@@ -9,6 +9,7 @@
 
   .dz-focus {
     &__header {
+      position: relative;
       width: 100%;
       max-height: var(--header-height);
       display: flex;
@@ -17,6 +18,11 @@
       gap: var(--spacing);
       flex-shrink: 0;
       border-bottom: 5px solid var(--color-component-bg-light);
+
+      .library-btn {
+        position: absolute;
+        right: 0;
+      }
     }
 
     &__tab,
@@ -65,7 +71,7 @@
     }
 
     &__tab-title {
-      width: 27ch;
+      width: 25ch;
       font-size: var(--font-size-sm);
       white-space: nowrap;
       overflow: hidden;

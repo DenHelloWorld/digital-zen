@@ -1,10 +1,7 @@
 import { DzToastService } from '../../common/components';
 import { ICONS } from '../../common/constants/icons.const';
 import { QUICK_FOCUS_ID } from '../../common/constants/quick-focus-id.const';
-import {
-  WEBSITES_LIBRARY_PRESET,
-  WEBSITES_UNBLOCKABLE,
-} from '../../common/constants/websites.const';
+import { WEBSITES_UNBLOCKABLE } from '../../common/constants/websites.const';
 import { CHROME_COMMAND_ENUM } from '../../common/enums/chrome-command.enum';
 import { CHROME_STORAGE_KEY_ENUM } from '../../common/enums/chrome-storage-key.enum';
 import { FOCUS_ERROR_ENUM } from '../../common/enums/focus-error.enum';
@@ -57,14 +54,12 @@ export class FocusService {
   readonly #isChromeRuntime: boolean = !!chrome.runtime;
   /** @guideline DZ_02, DZ_08, DZ_09 - Dependency injection with inject(), private #, readonly */
   readonly #toastService = inject(DzToastService);
-  readonly #chromeStorageService = inject(ChromeStorageService);
+  readonly #storage = inject(ChromeStorageService);
   readonly #destroyRef = inject(DestroyRef);
   /** @guideline DZ_11 - Universal Logger usage */
   readonly #logger = logger.createLogger('FocusService');
 
   /** @guideline DZ_04, DZ_08 - Private writable signals for internal state */
-  readonly #websitesLibrary =
-    signal<Record<IFocus.IWebSiteType, readonly IFocus.WebSite[]>>(WEBSITES_LIBRARY_PRESET);
   readonly #currentPeriod: WritableSignal<IFocus.Period | null> = signal<IFocus.Period | null>(
     null
   );
@@ -100,7 +95,6 @@ export class FocusService {
 
   public readonly currentPeriod = this.#currentPeriod.asReadonly();
   public readonly activeTab = this.#activeTab.asReadonly();
-  public readonly websitesLibrary = this.#websitesLibrary.asReadonly();
 
   public readonly progress = computed(() => {
     if (!this.isPeriodCurrentlyApplicable()) {
@@ -419,7 +413,7 @@ export class FocusService {
       return;
     }
 
-    this.#chromeStorageService.getMany<InitialStorageSchema>(
+    this.#storage.getMany<InitialStorageSchema>(
       [
         CHROME_STORAGE_KEY_ENUM.CURRENT_PERIOD,
         CHROME_STORAGE_KEY_ENUM.PERIODS,
@@ -481,17 +475,6 @@ export class FocusService {
           this.#currentPeriod.set(
             newCurrentPeriod ? this.#convertPeriodFromStorage(newCurrentPeriod) : null
           );
-        }
-
-        if (changes[CHROME_STORAGE_KEY_ENUM.WEBSITES_LIBRARY]) {
-          const newLibrary = changes[CHROME_STORAGE_KEY_ENUM.WEBSITES_LIBRARY].newValue as Record<
-            IFocus.IWebSiteType,
-            readonly IFocus.WebSite[]
-          > | null;
-
-          if (newLibrary) {
-            this.#websitesLibrary.set(newLibrary);
-          }
         }
       }
     });

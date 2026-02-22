@@ -10,6 +10,7 @@ import { FaviconHelper } from '../../../common/helpers/favicon.helper';
 import { IFocus } from '../../../common/models/focus.model';
 import { ChromeStorageService } from '../../../common/services/chrome-storage.service';
 import { FocusService } from '../../services/focus.service';
+import { LibraryService } from '../../services/library.service';
 import { NgTemplateOutlet } from '@angular/common';
 import {
   ChangeDetectionStrategy,
@@ -40,10 +41,11 @@ import {
 })
 export class WebsitesLibraryComponent implements OnInit {
   readonly #focusService = inject(FocusService);
+  readonly #libraryService = inject(LibraryService);
   readonly #storage = inject(ChromeStorageService);
 
   protected readonly currentPeriod: Signal<IFocus.Period | null> = this.#focusService.currentPeriod;
-  protected readonly websitesLibrary = this.#focusService.websitesLibrary;
+  protected readonly websitesLibrary = this.#libraryService.websitesLibrary;
 
   protected readonly currentPeriodWebSites: Signal<IFocus.WebSite[]> = computed(
     () => this.currentPeriod()?.webSites ?? []

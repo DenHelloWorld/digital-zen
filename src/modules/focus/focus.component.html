@@ -19,7 +19,7 @@
       [title]="
         activeTab() ? uiText.FOCUS.ADD_CURRENT_TAB_TITLE : uiText.FOCUS.CANNOT_ADD_CURRENT_TAB_TITLE
       "
-      (click)="onBlockCurrentTab()"
+      (click)="onAddCurrentTab()"
     >
       @if (isSvgIcon(activeTab()?.favIconUrl)) {
         <ng-container
@@ -28,6 +28,8 @@
             context: {
               href: activeTab()?.favIconUrl ? activeTab()?.favIconUrl : icons.SAVE,
               class: 'dz-icon dz-icon--shadow',
+              width: 24,
+              height: 24,
             }
           "
         ></ng-container>
@@ -35,8 +37,8 @@
         <img
           class="dz-icon dz-icon--shadow"
           [src]="activeTab()?.favIconUrl"
-          width="20"
-          height="20"
+          width="24"
+          height="24"
           alt="Favicon"
         />
       } @else {
@@ -46,8 +48,8 @@
             context: {
               href: icons.GLOBE,
               class: 'dz-icon dz-icon--shadow',
-              width: 20,
-              height: 20,
+              width: 24,
+              height: 24,
             }
           "
         ></ng-container>
@@ -60,7 +62,7 @@
       @let tabIcon =
         !isTabButtonDisabled()
           ? isCurrentTabInCurrentPeriod()
-            ? icons.CHECK
+            ? icons.SUCCESS
             : icons.ADD_LINK
           : null;
       <ng-container *ngTemplateOutlet="icon; context: { href: tabIcon }"></ng-container>
@@ -68,9 +70,8 @@
   </div>
 
   <button
-    class="dz-button dz-button--sm"
+    class="dz-button dz-button--sm library-btn"
     [title]="uiText.COMMON.WEBSITE_LIBRARY"
-    [style.position]="'relative'"
     (click)="onOpenWebsitesList()"
   >
     <ng-container *ngTemplateOutlet="icon; context: { href: icons.GLOBE_BOOK }"></ng-container>

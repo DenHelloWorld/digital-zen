@@ -9,6 +9,7 @@ import { BLOCK_BEHAVIOUR_ENUM } from '../common/enums/block-behaviour.enum';
 import { COLORS_ENUM } from '../common/enums/colors.enum';
 import { VIEW_ENUM, ViewType } from '../common/enums/view.enum';
 import { cleanUrlHelper } from '../common/helpers/clean-url.helper';
+import { FaviconHelper } from '../common/helpers/favicon.helper';
 import { isHttpUrl } from '../common/helpers/is-http-url.helper';
 import { isImageIcon } from '../common/helpers/is-image-icon.helper';
 import { isSvgIcon } from '../common/helpers/is-svg-icon.helper';
@@ -130,6 +131,7 @@ export class FocusComponent {
 
   protected readonly isSvgIcon: (url: string | null | undefined) => boolean = isSvgIcon;
   protected readonly isImageIcon: (url: string | null | undefined) => boolean = isImageIcon;
+  protected readonly faviconHelper = FaviconHelper;
   /** @guideline DZ_10 - UI text constants */
   protected readonly uiText = UI_TEXT;
   protected readonly icons = ICONS;
@@ -141,7 +143,7 @@ export class FocusComponent {
     this.#focusService.toggleFocus();
   }
 
-  protected onBlockCurrentTab(): void {
+  protected onAddCurrentTab(): void {
     this.#focusService.addCurrentTabToPeriod(true);
   }
 
