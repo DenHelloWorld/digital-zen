@@ -125,29 +125,3 @@
     }
   }
 }
-
-::ng-deep {
-  // Websites list
-  .dz-popup-content {
-    interpolate-size: allow-keywords;
-
-    &__folder-actions {
-      display: flex;
-      gap: var(--spacing);
-      align-items: center;
-    }
-  }
-  // Websites list
-  .dz-tree {
-    &:not(.dz-tree--root) {
-      height: 0;
-
-      overflow: hidden;
-      transition: height 0.3s ease-in-out;
-    }
-
-    &.dz-tree--open {
-      height: auto;
-    }
-  }
-}

@@ -456,44 +456,56 @@ summary::marker {
   &--root {
     padding-left: 0;
   }
-}
 
-.dz-tree__item {
-  position: relative;
-  padding: 4px 0 4px 20px;
-  display: flex;
-  align-items: center;
-  gap: var(--spacing);
-  //cursor: pointer;
-  border-radius: var(--radius-xs);
-  transition: background 0.2s;
-}
+  &:not(.dz-tree--root) {
+    height: 0;
 
-/* Вертикальная линия ветки */
-.dz-tree__item::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: -10px;
-  bottom: 50%;
-  width: 1px;
-  border-left: 1px solid var(--color-glass-text);
-}
+    overflow: hidden;
+    transition: height 0.3s ease-in-out;
+  }
 
-/* Горизонтальная линия к иконке */
-.dz-tree__item::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 50%;
-  width: 1rem;
-  height: 1px;
-  border-top: 1px solid var(--color-glass-text);
-}
+  &.dz-tree--open {
+    height: auto;
+  }
 
-/* Убираем лишнюю линию у первого элемента */
-.dz-tree__item:first-child::before {
-  top: 50%;
+  &__item {
+    position: relative;
+    padding: 4px 0 4px 20px;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing);
+    //cursor: pointer;
+    border-radius: var(--radius-xs);
+    transition: background 0.2s;
+
+    /* Вертикальная линия ветки */
+    &::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: -10px;
+      bottom: 50%;
+      width: 1px;
+      border-left: 1px solid var(--color-glass-text);
+    }
+
+    /* Горизонтальная линия к иконке */
+    &::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 50%;
+      width: 1rem;
+      height: 1px;
+      border-top: 1px solid var(--color-glass-text);
+    }
+
+    &:first-child {
+      &::before {
+        top: 50%;
+      }
+    }
+  }
 }
 
 .dz-input {

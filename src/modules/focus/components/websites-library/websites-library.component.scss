@@ -1,0 +1,9 @@
+::ng-deep {
+  .dz-popup-content {
+    &__folder-actions {
+      display: flex;
+      gap: var(--spacing);
+      align-items: center;
+    }
+  }
+}
