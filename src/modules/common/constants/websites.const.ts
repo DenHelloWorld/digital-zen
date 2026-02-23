@@ -970,3 +970,71 @@ export const WEBSITES_LIBRARY_PRESET: Record<string, readonly IFocus.WebSite[]> 
   [IFocus.EWebSiteType.UNBLOCKABLE]: WEBSITES_UNBLOCKABLE,
   [IFocus.EWebSiteType.DELETE]: [],
 });
+
+export const FOLDER_EMOJI_COLLECTION: readonly string[] = Object.freeze([
+  '🎯',
+  '🚀',
+  '💻',
+  '📈',
+  '🛠️',
+  '📅',
+  '📝',
+
+  '📚',
+  '🎓',
+  '🧠',
+  '💡',
+  '🧪',
+  '🌍',
+
+  '💬',
+  '📱',
+  '👥',
+  '💌',
+  '📢',
+
+  '💰',
+  '💳',
+  '📊',
+  '💎',
+
+  '🎮',
+  '🎬',
+  '🎧',
+  '🎨',
+  '📸',
+  '🍿',
+  '✏️',
+
+  '🍏',
+  '💪',
+  '🧘',
+  '🏃',
+  '🚴',
+
+  '🛍️',
+  '🛒',
+  '📦',
+
+  '✈️',
+  '🏝️',
+  '☕',
+  '🍕',
+
+  '🔒',
+  '🛡️',
+  '⚙️',
+  '⚡',
+  '🔌',
+
+  '🔞',
+  '🍷',
+  '🚬',
+  '🍕',
+
+  '📁',
+  '📂',
+  '✨',
+  '🔥',
+  '⭐',
+]);

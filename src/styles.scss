@@ -517,6 +517,10 @@ summary::marker {
       box-shadow: none;
     }
   }
+
+  &::placeholder {
+    color: var(--color-glass-text);
+  }
   &--checkbox {
     cursor: pointer;
     width: var(--btn-size-xs);

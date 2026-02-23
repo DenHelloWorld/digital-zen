@@ -140,7 +140,7 @@
 
       <div class="dz-popup-content__header-actions">
         <button class="dz-button round dz-button--sm" (click)="onCloseCreateNewFolderPopup()">
-          <ng-container *ngTemplateOutlet="icon; context: { href: icons.CLOSE }"></ng-container>
+          <ng-container *ngTemplateOutlet="icon; context: { href: icons.CLOSE }" />
         </button>
       </div>
     </header>
@@ -150,8 +150,22 @@
         class="dz-input dz-input--free font-lg"
         [(ngModel)]="newFolderName"
         type="text"
-        placeholder="✏️"
+        placeholder="... ✏️"
       />
+
+      <small class="hint">{{ uiText.WEBSITE_LIBRARY.YOU_CAN_ADD_EMOJI }}</small>
+      <ul class="dz-list dz-list--horizontal">
+        @for (emoji of emojiCollection; track emoji) {
+          <li>
+            <button
+              class="dz-button dz-button--sm dz-button--ghost shadow shadow--hoverless font-xl"
+              (click)="newFolderName.set(newFolderName() + `${emoji}`)"
+            >
+              {{ emoji }}
+            </button>
+          </li>
+        }
+      </ul>
     </main>
 
     <footer class="dz-popup-content__footer">

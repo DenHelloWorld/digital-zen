@@ -9,6 +9,7 @@ export const UI_TEXT = Object.freeze({
   WEBSITE_LIBRARY: {
     TITLE: 'Websites',
     NEW_FOLDER_TITLE: 'Create New Folder',
+    YOU_CAN_ADD_EMOJI: 'You can add emojis to name',
     DELETE_FOLDER_TITLE: 'Delete Folder',
     ALREADY_EXISTS: 'already exists',
     CONFIRM_DELETE: 'Confirm to delete',

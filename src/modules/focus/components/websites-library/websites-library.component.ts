@@ -2,7 +2,10 @@ import { DzToastContainerComponent } from '../../../common/components';
 import { SwitchComponent } from '../../../common/components/switch/switch.component';
 import { ICONS } from '../../../common/constants/icons.const';
 import { UI_TEXT } from '../../../common/constants/ui-text.const';
-import { WEBSITES_LIBRARY_PRESET } from '../../../common/constants/websites.const';
+import {
+  FOLDER_EMOJI_COLLECTION,
+  WEBSITES_LIBRARY_PRESET,
+} from '../../../common/constants/websites.const';
 import { CopyToClipboardDirective } from '../../../common/directives/copy.directive';
 import { PopupDirective } from '../../../common/directives/popup.directive';
 import { CHROME_STORAGE_KEY_ENUM } from '../../../common/enums/chrome-storage-key.enum';
@@ -96,6 +99,7 @@ export class WebsitesLibraryComponent implements OnInit {
   protected readonly isCreateNewFolderPopupShown = signal<boolean>(false);
   protected readonly isDeleteFolderPopupShown = signal<boolean>(false);
 
+  protected readonly emojiCollection = FOLDER_EMOJI_COLLECTION;
   protected readonly icons = ICONS;
   protected readonly uiText = UI_TEXT;
   protected readonly cleanProtocolHelper = cleanProtocolHelper;
