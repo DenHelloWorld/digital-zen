@@ -1,3 +1,5 @@
+import { UI_TEXT } from '../../modules/common/constants/ui-text.const';
+import { WEBSITES_LIBRARY_PRESET } from '../../modules/common/constants/websites.const';
 import { CHROME_STORAGE_KEY_ENUM } from '../../modules/common/enums/chrome-storage-key.enum';
 import { logger } from '../../modules/common/helpers/logger';
 import { toWallTimeISO, fromWallTimeISO } from '../../modules/common/helpers/time.helper';
@@ -148,6 +150,69 @@ export class StorageAdapter {
   ): Promise<void> {
     return this.enqueue(async () => {
       await chrome.storage.local.set({ [CHROME_STORAGE_KEY_ENUM.WEBSITES_LIBRARY]: state });
+    });
+  }
+
+  static async addNewFolderToLibrary(folderName: string): Promise<void> {
+    return this.enqueue(async () => {
+      const result = await chrome.storage.local.get(CHROME_STORAGE_KEY_ENUM.WEBSITES_LIBRARY);
+
+      const currentLibrary = (result[CHROME_STORAGE_KEY_ENUM.WEBSITES_LIBRARY] || {}) as Record<
+        string,
+        readonly IFocus.WebSite[]
+      >;
+
+      if (!currentLibrary[folderName]) {
+        const updatedLibrary = {
+          ...currentLibrary,
+          [folderName]: [],
+        };
+
+        await chrome.storage.local.set({
+          [CHROME_STORAGE_KEY_ENUM.WEBSITES_LIBRARY]: updatedLibrary,
+        });
+      }
+    });
+  }
+
+  public static removeFolderFromLibrary(folderName: string): Promise<void> {
+    return this.enqueue(async () => {
+      const result = await chrome.storage.local.get(CHROME_STORAGE_KEY_ENUM.WEBSITES_LIBRARY);
+      const library = (result[CHROME_STORAGE_KEY_ENUM.WEBSITES_LIBRARY] || {}) as Record<
+        string,
+        IFocus.WebSite[]
+      >;
+
+      if (!library[folderName]) {
+        throw new Error(UI_TEXT.WEBSITE_LIBRARY.ERRORS.FOLDER_NOT_FOUND);
+      }
+
+      if (folderName in WEBSITES_LIBRARY_PRESET) {
+        throw new Error(UI_TEXT.WEBSITE_LIBRARY.ERRORS.SYSTEM_FOLDER_DELETE);
+      }
+
+      const updatedLibrary = { ...library };
+      const sitesToMove = updatedLibrary[folderName];
+
+      delete updatedLibrary[folderName];
+
+      const trashKey = IFocus.EWebSiteType.DELETE;
+
+      const remappedSites = sitesToMove.map(site => ({
+        ...site,
+        type: trashKey,
+      }));
+
+      const existingTrash = updatedLibrary[trashKey] || [];
+      const allSites = [...existingTrash, ...remappedSites];
+
+      updatedLibrary[trashKey] = allSites.filter(
+        (site, index, self) => index === self.findIndex(s => s.url === site.url)
+      );
+
+      await chrome.storage.local.set({
+        [CHROME_STORAGE_KEY_ENUM.WEBSITES_LIBRARY]: updatedLibrary,
+      });
     });
   }
 

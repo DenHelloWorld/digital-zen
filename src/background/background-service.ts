@@ -76,6 +76,9 @@ export class BackgroundService {
       operationQueue = operationQueue.then(async () => {
         try {
           switch (message.command as ChromeCommandType) {
+            /**
+             * Focus actions
+             * */
             case CHROME_COMMAND_ENUM.ADD_PERIOD:
               await this.addPeriod(message.period);
               safeSendResponse({ success: true });
@@ -179,6 +182,30 @@ export class BackgroundService {
               }
               break;
             }
+            case CHROME_COMMAND_ENUM.ADD_NEW_FOLDER: {
+              await this.#focusService.addNewFolderToLibrary(message.folder);
+              safeSendResponse({ success: true });
+              break;
+            }
+
+            case CHROME_COMMAND_ENUM.REMOVE_FOLDER: {
+              try {
+                await this.#focusService.removeFolderFromLibrary(message.folder);
+                safeSendResponse({ success: true });
+              } catch (error: unknown) {
+                const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+
+                safeSendResponse({
+                  success: false,
+                  error: errorMessage,
+                });
+              }
+              break;
+            }
+
+            /**
+             * Pomodoro actions
+             * */
             case CHROME_COMMAND_ENUM.START_POMODORO: {
               await this.#pomodoroService.start();
               safeSendResponse({ success: true });

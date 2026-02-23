@@ -67,6 +67,8 @@ export class PopupDirective<T = unknown> implements OnInit, OnDestroy {
 
   /** Trigger signal: opens when non-null, closes when null */
   public readonly openPayload = input<T | null>(null, { alias: 'dzPopup' });
+  public readonly hasBackdrop = input<boolean>(true);
+  public readonly anchor = input<HTMLElement | null>(null);
 
   /** Emits when the popup is closed by any means */
   public readonly closed = output<PopupCloseEvent<T>>();
@@ -107,10 +109,26 @@ export class PopupDirective<T = unknown> implements OnInit, OnDestroy {
     if (this.#overlayRef?.hasAttached()) return;
 
     // Build the overlay
+    const hasBackdrop = this.hasBackdrop();
+    const anchorElement = this.anchor();
+    let positionStrategy;
+
+    if (anchorElement) {
+      positionStrategy = this.#overlay
+        .position()
+        .flexibleConnectedTo(anchorElement)
+        .withPositions([
+          { originX: 'start', originY: 'bottom', overlayX: 'start', overlayY: 'top' },
+          { originX: 'start', originY: 'top', overlayX: 'start', overlayY: 'bottom' },
+        ]);
+    } else {
+      positionStrategy = this.#overlay.position().global().centerHorizontally().centerVertically();
+    }
+
     this.#overlayRef = this.#overlay.create({
-      positionStrategy: this.#overlay.position().global().centerHorizontally().centerVertically(),
-      scrollStrategy: this.#overlay.scrollStrategies.block(),
-      hasBackdrop: true,
+      positionStrategy,
+      scrollStrategy: this.#overlay.scrollStrategies.reposition(),
+      hasBackdrop,
       backdropClass: ['gradient-overlay', 'dz-popup-fade-in'],
       panelClass: this.#themeService.theme() === COLOR_SCHEMA_ENUM.DARK ? ['dark-theme'] : [],
     });

@@ -50,20 +50,25 @@ export namespace IFocus {
     url: string;
     imageUrl: string;
     iconUrl: string;
-    type: IWebSiteType;
+    type: IWebSiteType | string;
     isActivated: boolean;
   }
 
   export enum EWebSiteType {
     DEFAULT = 'Default 🌐',
-    AI = 'AI 🤖',
+    COMMUNICATION = 'Mail & Chat 📩',
     WORK_DEVELOPMENT = 'Work Development 💻',
+    AI = 'AI 🤖',
     EDUCATION = 'Education 🎓',
-    ENTERTAINMENT = 'Entertainment 🎮',
+    FINANCE_CRYPTO = 'Finance & Crypto 💸',
+    HEALTH_FITNESS = 'Health & Fitness 🍎',
     SOCIAL_MEDIA = 'Social Media 📱',
+    ENTERTAINMENT = 'Entertainment 🎮',
     SHOPPING = 'Shopping 🛒',
     NEWS = 'News 📰',
+    ADULT = 'Adult 18+ 🔞',
     UNBLOCKABLE = 'Unblockable',
+    DELETE = 'Wastebasket 🗑️',
   }
 
   export type IWebSiteType =
@@ -75,7 +80,12 @@ export namespace IFocus {
     | IFocus.EWebSiteType.EDUCATION
     | IFocus.EWebSiteType.WORK_DEVELOPMENT
     | IFocus.EWebSiteType.DEFAULT
-    | IFocus.EWebSiteType.UNBLOCKABLE;
+    | IFocus.EWebSiteType.UNBLOCKABLE
+    | IFocus.EWebSiteType.ADULT
+    | IFocus.EWebSiteType.HEALTH_FITNESS
+    | IFocus.EWebSiteType.FINANCE_CRYPTO
+    | IFocus.EWebSiteType.COMMUNICATION
+    | IFocus.EWebSiteType.DELETE;
 
   export interface DayOfWeek {
     day: DayOfWeekType;

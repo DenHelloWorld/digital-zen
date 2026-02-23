@@ -78,6 +78,8 @@ export const ICONS = Object.freeze({
   RADIO_PARTIAL: '#icon-radio-partial',
   RADIO_CHECKED: '#icon-radio-checked',
   GLOBE_BOOK: '#icon-globe-book',
+  CREATE_NEW_FOLDER: '#icon-create-new-folder',
+  FOLDER_DELETE: '#icon-folder-delete',
 } as const);
 
 /**

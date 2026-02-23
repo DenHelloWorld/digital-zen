@@ -556,9 +556,306 @@ export const WEBSITE_MIRO: Readonly<IFocus.WebSite> = {
   type: IFocus.EWebSiteType.WORK_DEVELOPMENT,
   isActivated: true,
 };
-/**
- * Array of all social media websites
- */
+
+// --- COMMUNICATION ---
+export const WEBSITE_GMAIL: Readonly<IFocus.WebSite> = {
+  id: 'gmail',
+  name: 'Gmail',
+  description: 'Google Mail',
+  url: 'https://mail.google.com',
+  imageUrl: FaviconHelper.getGoogleUrl('https://mail.google.com'),
+  iconUrl: ICONS.GLOBE,
+  type: IFocus.EWebSiteType.COMMUNICATION,
+  isActivated: true,
+};
+
+export const WEBSITE_OUTLOOK: Readonly<IFocus.WebSite> = {
+  id: 'outlook',
+  name: 'Outlook',
+  description: 'Microsoft Outlook',
+  url: 'https://outlook.live.com',
+  imageUrl: FaviconHelper.getGoogleUrl('https://outlook.live.com'),
+  iconUrl: ICONS.GLOBE,
+  type: IFocus.EWebSiteType.COMMUNICATION,
+  isActivated: true,
+};
+
+export const WEBSITE_SLACK: Readonly<IFocus.WebSite> = {
+  id: 'slack',
+  name: 'Slack',
+  description: 'Slack Web',
+  url: 'https://app.slack.com',
+  imageUrl: FaviconHelper.getGoogleUrl('https://slack.com'),
+  iconUrl: ICONS.GLOBE,
+  type: IFocus.EWebSiteType.COMMUNICATION,
+  isActivated: true,
+};
+
+export const WEBSITE_TELEGRAM: Readonly<IFocus.WebSite> = {
+  id: 'telegram',
+  name: 'Telegram',
+  description: 'Telegram Web',
+  url: 'https://web.telegram.org',
+  imageUrl: FaviconHelper.getGoogleUrl('https://telegram.org'),
+  iconUrl: ICONS.GLOBE,
+  type: IFocus.EWebSiteType.COMMUNICATION,
+  isActivated: true,
+};
+
+// --- FINANCE & CRYPTO ---
+export const WEBSITE_BINANCE: Readonly<IFocus.WebSite> = {
+  id: 'binance',
+  name: 'Binance',
+  description: 'Binance Exchange',
+  url: 'https://binance.com',
+  imageUrl: FaviconHelper.getGoogleUrl('https://binance.com'),
+  iconUrl: ICONS.GLOBE,
+  type: IFocus.EWebSiteType.FINANCE_CRYPTO,
+  isActivated: true,
+};
+
+export const WEBSITE_TRADINGVIEW: Readonly<IFocus.WebSite> = {
+  id: 'tradingview',
+  name: 'TradingView',
+  description: 'Trading Charts',
+  url: 'https://tradingview.com',
+  imageUrl: FaviconHelper.getGoogleUrl('https://tradingview.com'),
+  iconUrl: ICONS.GLOBE,
+  type: IFocus.EWebSiteType.FINANCE_CRYPTO,
+  isActivated: true,
+};
+
+export const WEBSITE_COINMARKETCAP: Readonly<IFocus.WebSite> = {
+  id: 'coinmarketcap',
+  name: 'CoinMarketCap',
+  description: 'Crypto Prices',
+  url: 'https://coinmarketcap.com',
+  imageUrl: FaviconHelper.getGoogleUrl('https://coinmarketcap.com'),
+  iconUrl: ICONS.GLOBE,
+  type: IFocus.EWebSiteType.FINANCE_CRYPTO,
+  isActivated: true,
+};
+
+// --- HEALTH & FITNESS ---
+export const WEBSITE_MYFITNESSPAL: Readonly<IFocus.WebSite> = {
+  id: 'myfitnesspal',
+  name: 'MyFitnessPal',
+  description: 'Calorie Counter',
+  url: 'https://myfitnesspal.com',
+  imageUrl: FaviconHelper.getGoogleUrl('https://myfitnesspal.com'),
+  iconUrl: ICONS.GLOBE,
+  type: IFocus.EWebSiteType.HEALTH_FITNESS,
+  isActivated: true,
+};
+
+export const WEBSITE_STRAVA: Readonly<IFocus.WebSite> = {
+  id: 'strava',
+  name: 'Strava',
+  description: 'Strava Activity',
+  url: 'https://strava.com',
+  imageUrl: FaviconHelper.getGoogleUrl('https://strava.com'),
+  iconUrl: ICONS.GLOBE,
+  type: IFocus.EWebSiteType.HEALTH_FITNESS,
+  isActivated: true,
+};
+
+// --- ADULT ---
+export const WEBSITE_PORNHUB: Readonly<IFocus.WebSite> = {
+  id: 'pornhub',
+  name: 'Pornhub',
+  description: 'Pornhub',
+  url: 'https://pornhub.com',
+  imageUrl: FaviconHelper.getGoogleUrl('https://pornhub.com'),
+  iconUrl: ICONS.GLOBE,
+  type: IFocus.EWebSiteType.ADULT,
+  isActivated: true,
+};
+
+export const WEBSITE_XNXX: Readonly<IFocus.WebSite> = {
+  id: 'xnxx',
+  name: 'XNXX',
+  description: 'XNXX',
+  url: 'https://xnxx.com',
+  imageUrl: FaviconHelper.getGoogleUrl('https://xnxx.com'),
+  iconUrl: ICONS.GLOBE,
+  type: IFocus.EWebSiteType.ADULT,
+  isActivated: true,
+};
+
+export const WEBSITE_DUOLINGO: Readonly<IFocus.WebSite> = {
+  id: 'duolingo',
+  name: 'Duolingo',
+  description: 'Language Learning',
+  url: 'https://duolingo.com',
+  imageUrl: FaviconHelper.getGoogleUrl('https://duolingo.com'),
+  iconUrl: ICONS.GLOBE,
+  type: IFocus.EWebSiteType.EDUCATION,
+  isActivated: true,
+};
+
+export const WEBSITE_EDX: Readonly<IFocus.WebSite> = {
+  id: 'edx',
+  name: 'edX',
+  description: 'University Courses',
+  url: 'https://edx.org',
+  imageUrl: FaviconHelper.getGoogleUrl('https://edx.org'),
+  iconUrl: ICONS.GLOBE,
+  type: IFocus.EWebSiteType.EDUCATION,
+  isActivated: true,
+};
+
+export const WEBSITE_ETSY: Readonly<IFocus.WebSite> = {
+  id: 'etsy',
+  name: 'Etsy',
+  description: 'Handmade & Vintage',
+  url: 'https://etsy.com',
+  imageUrl: FaviconHelper.getGoogleUrl('https://etsy.com'),
+  iconUrl: ICONS.GLOBE,
+  type: IFocus.EWebSiteType.SHOPPING,
+  isActivated: true,
+};
+
+export const WEBSITE_TEMU: Readonly<IFocus.WebSite> = {
+  id: 'temu',
+  name: 'Temu',
+  description: 'Temu Shopping',
+  url: 'https://temu.com',
+  imageUrl: FaviconHelper.getGoogleUrl('https://temu.com'),
+  iconUrl: ICONS.GLOBE,
+  type: IFocus.EWebSiteType.SHOPPING,
+  isActivated: true,
+};
+
+export const WEBSITE_XVIDEOS: Readonly<IFocus.WebSite> = {
+  id: 'xvideos',
+  name: 'XVideos',
+  description: 'XVideos',
+  url: 'https://xvideos.com',
+  imageUrl: FaviconHelper.getGoogleUrl('https://xvideos.com'),
+  iconUrl: ICONS.GLOBE,
+  type: IFocus.EWebSiteType.ADULT,
+  isActivated: true,
+};
+
+export const WEBSITE_XHAMSTER: Readonly<IFocus.WebSite> = {
+  id: 'xhamster',
+  name: 'xHamster',
+  description: 'xHamster',
+  url: 'https://xhamster.com',
+  imageUrl: FaviconHelper.getGoogleUrl('https://xhamster.com'),
+  iconUrl: ICONS.GLOBE,
+  type: IFocus.EWebSiteType.ADULT,
+  isActivated: true,
+};
+
+export const WEBSITE_CHATURBATE: Readonly<IFocus.WebSite> = {
+  id: 'chaturbate',
+  name: 'Chaturbate',
+  description: 'Chaturbate Live',
+  url: 'https://chaturbate.com',
+  imageUrl: FaviconHelper.getGoogleUrl('https://chaturbate.com'),
+  iconUrl: ICONS.GLOBE,
+  type: IFocus.EWebSiteType.ADULT,
+  isActivated: true,
+};
+
+export const WEBSITE_FITBIT: Readonly<IFocus.WebSite> = {
+  id: 'fitbit',
+  name: 'Fitbit',
+  description: 'Activity Tracking',
+  url: 'https://www.fitbit.com',
+  imageUrl: FaviconHelper.getGoogleUrl('https://fitbit.com'),
+  iconUrl: ICONS.GLOBE,
+  type: IFocus.EWebSiteType.HEALTH_FITNESS,
+  isActivated: true,
+};
+
+export const WEBSITE_NIKE_TRAINING: Readonly<IFocus.WebSite> = {
+  id: 'nike-training',
+  name: 'Nike Training',
+  description: 'Fitness & Workouts',
+  url: 'https://www.nike.com/ntc-app',
+  imageUrl: FaviconHelper.getGoogleUrl('https://nike.com'),
+  iconUrl: ICONS.GLOBE,
+  type: IFocus.EWebSiteType.HEALTH_FITNESS,
+  isActivated: true,
+};
+
+export const WEBSITE_HEALTHLINE: Readonly<IFocus.WebSite> = {
+  id: 'healthline',
+  name: 'Healthline',
+  description: 'Health Information',
+  url: 'https://www.healthline.com',
+  imageUrl: FaviconHelper.getGoogleUrl('https://healthline.com'),
+  iconUrl: ICONS.GLOBE,
+  type: IFocus.EWebSiteType.HEALTH_FITNESS,
+  isActivated: true,
+};
+
+export const WEBSITE_COINBASE: Readonly<IFocus.WebSite> = {
+  id: 'coinbase',
+  name: 'Coinbase',
+  description: 'Crypto Exchange',
+  url: 'https://www.coinbase.com',
+  imageUrl: FaviconHelper.getGoogleUrl('https://coinbase.com'),
+  iconUrl: ICONS.GLOBE,
+  type: IFocus.EWebSiteType.FINANCE_CRYPTO,
+  isActivated: true,
+};
+
+export const WEBSITE_YAHOO_FINANCE: Readonly<IFocus.WebSite> = {
+  id: 'yahoo-finance',
+  name: 'Yahoo Finance',
+  description: 'Stock Market & News',
+  url: 'https://finance.yahoo.com',
+  imageUrl: FaviconHelper.getGoogleUrl('https://finance.yahoo.com'),
+  iconUrl: ICONS.GLOBE,
+  type: IFocus.EWebSiteType.FINANCE_CRYPTO,
+  isActivated: true,
+};
+
+export const WEBSITE_WHATSAPP: Readonly<IFocus.WebSite> = {
+  id: 'whatsapp',
+  name: 'WhatsApp',
+  description: 'WhatsApp Web',
+  url: 'https://web.whatsapp.com',
+  imageUrl: FaviconHelper.getGoogleUrl('https://whatsapp.com'),
+  iconUrl: ICONS.GLOBE,
+  type: IFocus.EWebSiteType.COMMUNICATION,
+  isActivated: true,
+};
+
+export const WEBSITES_COMMUNICATION: Readonly<readonly IFocus.WebSite[]> = Object.freeze([
+  WEBSITE_GMAIL,
+  WEBSITE_OUTLOOK,
+  WEBSITE_TELEGRAM,
+  WEBSITE_SLACK,
+  WEBSITE_WHATSAPP,
+]);
+
+export const WEBSITES_FINANCE_CRYPTO: Readonly<readonly IFocus.WebSite[]> = Object.freeze([
+  WEBSITE_BINANCE,
+  WEBSITE_TRADINGVIEW,
+  WEBSITE_COINMARKETCAP,
+  WEBSITE_COINBASE,
+  WEBSITE_YAHOO_FINANCE,
+]);
+
+export const WEBSITES_HEALTH_FITNESS: Readonly<readonly IFocus.WebSite[]> = Object.freeze([
+  WEBSITE_MYFITNESSPAL,
+  WEBSITE_STRAVA,
+  WEBSITE_FITBIT,
+  WEBSITE_NIKE_TRAINING,
+  WEBSITE_HEALTHLINE,
+]);
+export const WEBSITES_ADULT: Readonly<readonly IFocus.WebSite[]> = Object.freeze([
+  WEBSITE_PORNHUB,
+  WEBSITE_XNXX,
+  WEBSITE_XVIDEOS,
+  WEBSITE_XHAMSTER,
+  WEBSITE_CHATURBATE,
+]);
+
 export const WEBSITES_SOCIAL_MEDIA: Readonly<readonly IFocus.WebSite[]> = Object.freeze([
   WEBSITE_X,
   WEBSITE_INST,
@@ -605,6 +902,8 @@ export const WEBSITES_SHOPPING: Readonly<readonly IFocus.WebSite[]> = Object.fre
   WEBSITE_AMAZON,
   WEBSITE_ALIEXPRESS,
   WEBSITE_EBAY,
+  WEBSITE_ETSY,
+  WEBSITE_TEMU,
 ]);
 
 export const WEBSITES_NEWS: Readonly<readonly IFocus.WebSite[]> = Object.freeze([
@@ -620,6 +919,8 @@ export const WEBSITES_EDUCATION: Readonly<readonly IFocus.WebSite[]> = Object.fr
   WEBSITE_COURSERA,
   WEBSITE_UDEMY,
   WEBSITE_KHAN_ACADEMY,
+  WEBSITE_DUOLINGO,
+  WEBSITE_EDX,
 ]);
 
 export const WEBSITES_WORK_DEVELOPMENT: Readonly<readonly IFocus.WebSite[]> = Object.freeze([
@@ -654,13 +955,18 @@ export const WEBSITES_UNBLOCKABLE: Readonly<readonly IFocus.WebSite[]> = Object.
 ]);
 
 export const WEBSITES_LIBRARY_PRESET: Record<string, readonly IFocus.WebSite[]> = Object.freeze({
+  [IFocus.EWebSiteType.DEFAULT]: [],
   [IFocus.EWebSiteType.AI]: WEBSITES_AI,
+  [IFocus.EWebSiteType.WORK_DEVELOPMENT]: WEBSITES_WORK_DEVELOPMENT,
   [IFocus.EWebSiteType.EDUCATION]: WEBSITES_EDUCATION,
+  [IFocus.EWebSiteType.FINANCE_CRYPTO]: WEBSITES_FINANCE_CRYPTO,
+  [IFocus.EWebSiteType.HEALTH_FITNESS]: WEBSITES_HEALTH_FITNESS,
+  [IFocus.EWebSiteType.COMMUNICATION]: WEBSITES_COMMUNICATION,
   [IFocus.EWebSiteType.SOCIAL_MEDIA]: WEBSITES_SOCIAL_MEDIA,
   [IFocus.EWebSiteType.ENTERTAINMENT]: WEBSITES_ENTERTAINMENT,
   [IFocus.EWebSiteType.SHOPPING]: WEBSITES_SHOPPING,
   [IFocus.EWebSiteType.NEWS]: WEBSITES_NEWS,
-  [IFocus.EWebSiteType.WORK_DEVELOPMENT]: WEBSITES_WORK_DEVELOPMENT,
-  [IFocus.EWebSiteType.DEFAULT]: [],
+  [IFocus.EWebSiteType.ADULT]: WEBSITES_ADULT,
   [IFocus.EWebSiteType.UNBLOCKABLE]: WEBSITES_UNBLOCKABLE,
+  [IFocus.EWebSiteType.DELETE]: [],
 });

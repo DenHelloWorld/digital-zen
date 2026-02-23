@@ -369,12 +369,6 @@ summary::marker {
   -webkit-backdrop-filter: blur(3px);
 }
 
-.ellipsis {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
 .full {
   width: 100%;
 }
@@ -509,11 +503,36 @@ summary::marker {
 }
 
 .dz-input {
+  &--free {
+    border: none;
+    background-color: transparent;
+    box-shadow: none;
+    padding: 0;
+    border-radius: 0;
+    color: inherit;
+    font-size: inherit;
+    width: 100%;
+    height: 100%;
+    &:focus {
+      box-shadow: none;
+    }
+  }
   &--checkbox {
     cursor: pointer;
     width: var(--btn-size-xs);
     height: var(--btn-size-xs);
+    min-width: var(--btn-size-xs);
+    min-height: var(--btn-size-xs);
     box-shadow: none;
+  }
+
+  &::placeholder {
+    font-size: inherit;
+    line-height: inherit;
+    font-family: inherit;
+    opacity: 1;
+    display: flex;
+    align-items: center;
   }
 }
 
@@ -540,4 +559,55 @@ summary::marker {
 
 .copy {
   cursor: copy;
+}
+
+@keyframes dz-entry-slide {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.ellipsis {
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  word-break: break-all;
+}
+
+.no-wrap {
+  white-space: nowrap;
+}
+
+.font {
+  &-xxs {
+    font-size: var(--font-size-xxs);
+  }
+  &-xs {
+    font-size: var(--font-size-xs);
+  }
+
+  &-sm {
+    font-size: var(--font-size-sm);
+  }
+
+  &-md {
+    font-size: var(--font-size-md);
+  }
+
+  &-lg {
+    font-size: var(--font-size-lg);
+  }
+  &-xl {
+    font-size: var(--font-size-xl);
+  }
+
+  &-xxl {
+    font-size: var(--font-size-xxl);
+  }
 }

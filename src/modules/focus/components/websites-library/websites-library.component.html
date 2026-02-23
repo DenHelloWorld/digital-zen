@@ -11,58 +11,97 @@
   </svg>
 </ng-template>
 
+<!--Library Popup-->
 <ng-template [dzPopup]="isWebsitesPopupShown()" (closed)="onCloseWebsitesList()">
   <div
     class="dz-box shadow shadow--hoverless dz-popup-content dz-popup-content--full-h dz-popup-content--full-w dz-popup-websites"
   >
     <dz-toast-container />
     <header class="dz-popup-content__header">
-      <h1 class="hint hint--xl">Websites</h1>
+      <h1 class="hint hint--xl dz-popup-content__title">{{ uiText.WEBSITE_LIBRARY.TITLE }}</h1>
 
-      <button class="dz-button round dz-button--sm" (click)="onCloseWebsitesList()">
-        <ng-container *ngTemplateOutlet="icon; context: { href: icons.CLOSE }"></ng-container>
-      </button>
+      <div class="dz-popup-content__header-actions">
+        <button class="dz-button round dz-button--sm" (click)="onOpenCreateNewFolderPopup()">
+          <ng-container
+            *ngTemplateOutlet="icon; context: { href: icons.CREATE_NEW_FOLDER }"
+          ></ng-container>
+        </button>
+
+        <button class="dz-button round dz-button--sm" (click)="onCloseWebsitesList()">
+          <ng-container *ngTemplateOutlet="icon; context: { href: icons.CLOSE }"></ng-container>
+        </button>
+      </div>
     </header>
 
     <main class="dz-popup-content__main">
       <ul class="dz-tree dz-tree--root dz-list">
-        @for (type of websiteTypes; track type) {
-          @let sites = websitesPopupData()[type] || [];
+        @for (folder of folders(); track folder) {
+          @let sites = websitesPopupData()[folder] || [];
 
-          <li class="dz-box shadow shadow--hoverless">
+          <li class="dz-box shadow shadow--hoverless" #folder [attr.data-name]="folder">
             <div class="dz-popup-content__folder-actions">
               <button
                 class="dz-button dz-button--ghost dz-button--md"
-                [disabled]="!sites.length"
-                [class.shadow]="!isFolderOpen(type)"
-                (click)="toggleFolder(type)"
+                [class.shadow]="!isFolderOpen(folder)"
+                [title]="folder"
+                (click)="toggleFolder(folder)"
               >
-                @let folderIcon = isFolderOpen(type) ? icons.FOLDER_OPEN : icons.FOLDER;
-                <ng-container *ngTemplateOutlet="icon; context: { href: folderIcon }" />
+                @let folderIcon =
+                  folder === presetFolderNames.DELETE
+                    ? icons.FOLDER_DELETE
+                    : isFolderOpen(folder)
+                      ? icons.FOLDER_OPEN
+                      : icons.FOLDER;
+                <div class="dz-icon-box dz-icon-box--md">
+                  <ng-container *ngTemplateOutlet="icon; context: { href: folderIcon }" />
+                </div>
 
-                <span class="ellipsis">{{ type }}</span>
+                <div class="ellipsis">{{ folder }}</div>
               </button>
 
               <dz-switch
-                [class.hidden]="!(sites.length > 1)"
+                [class.hidden]="!(sites.length > 1) || folder === presetFolderNames.DELETE"
                 [statusIcons]="{
                   activated: icons.RADIO_CHECKED,
-                  unActivated: isFolderPartiallyActivated(type)
+                  unActivated: isFolderPartiallyActivated(folder)
                     ? icons.RADIO_PARTIAL
                     : icons.RADIO_UNCHECKED,
                 }"
-                [checked]="isFolderFullyActivated(type)"
-                (checkedChange)="onToggleFolderOfWebsites(type)"
+                [checked]="isFolderFullyActivated(folder)"
+                (checkedChange)="onToggleFolderOfWebsites(folder)"
                 size="md"
               />
 
-              <small class="hint hint--xs hint--activated round"
-                >({{ categoryActiveCounts()[type] }})</small
+              <button
+                class="dz-button dz-button--free dz-button--ghost shadow shadow--hoverless"
+                [class.hidden]="folder === presetFolderNames.DELETE"
               >
-              <small class="hint hint--xs">/ ({{ sites.length }})</small>
+                <div class="dz-icon-box dz-icon-box--xs">
+                  <ng-container *ngTemplateOutlet="icon; context: { href: icons.ADD_LINK }" />
+                </div>
+              </button>
+
+              <button
+                class="dz-button dz-button--free dz-button--ghost shadow shadow--hoverless"
+                [class.hidden]="isFolderSystem(folder)"
+                (click)="onOpenDeleteFolderPopup(folder)"
+              >
+                <div class="dz-icon-box dz-icon-box--xs">
+                  <ng-container *ngTemplateOutlet="icon; context: { href: icons.DELETE }" />
+                </div>
+              </button>
+
+              <span class="no-wrap">
+                <small
+                  class="hint hint--xs hint--activated round"
+                  [class.hidden]="folder === presetFolderNames.DELETE"
+                  >({{ categoryActiveCounts()[folder] }})</small
+                >
+                <small class="hint hint--xs"> ({{ sites.length }})</small>
+              </span>
             </div>
 
-            <ul class="dz-tree" [class.dz-tree--open]="isFolderOpen(type)">
+            <ul class="dz-tree" [class.dz-tree--open]="isFolderOpen(folder)">
               @for (site of sites; track site.url) {
                 <li class="dz-tree__item fit">
                   <input
@@ -86,5 +125,96 @@
         }
       </ul>
     </main>
+  </div>
+</ng-template>
+
+<!--New Folder Popup-->
+<ng-template
+  [dzPopup]="isCreateNewFolderPopupShown()"
+  [hasBackdrop]="false"
+  (closed)="onCloseCreateNewFolderPopup()"
+>
+  <div class="dz-box shadow shadow--hoverless dz-popup-content dz-popup-content--new-folder">
+    <header class="dz-popup-content__header">
+      <h1 class="hint hint--xs">{{ uiText.WEBSITE_LIBRARY.NEW_FOLDER_TITLE }}</h1>
+
+      <div class="dz-popup-content__header-actions">
+        <button class="dz-button round dz-button--sm" (click)="onCloseCreateNewFolderPopup()">
+          <ng-container *ngTemplateOutlet="icon; context: { href: icons.CLOSE }"></ng-container>
+        </button>
+      </div>
+    </header>
+
+    <main class="dz-popup-content__main">
+      <input
+        class="dz-input dz-input--free font-lg"
+        [(ngModel)]="newFolderName"
+        type="text"
+        placeholder="✏️"
+      />
+    </main>
+
+    <footer class="dz-popup-content__footer">
+      @if (folders().includes(newFolderName())) {
+        <div class="hint hint--sm hint--warn fit">
+          {{ newFolderName() }} {{ uiText.WEBSITE_LIBRARY.ALREADY_EXISTS }}
+        </div>
+      } @else {
+        <button
+          class="dz-button dz-button--activated shadow shadow--hoverless dz-button--sm"
+          [disabled]="folders().includes(newFolderName()) || !newFolderName()"
+          (click)="onAddNewFolder()"
+        >
+          <ng-container *ngTemplateOutlet="icon; context: { href: icons.SAVE }"></ng-container>
+        </button>
+      }
+    </footer>
+  </div>
+</ng-template>
+
+<!-- Delete Folder Popup-->
+<ng-template
+  [dzPopup]="isDeleteFolderPopupShown()"
+  [hasBackdrop]="false"
+  (closed)="onCloseDeleteFolderPopup()"
+>
+  <div class="dz-box shadow shadow--hoverless dz-popup-content dz-popup-content--new-folder">
+    <header class="dz-popup-content__header">
+      <h1 class="hint hint--xs">
+        {{ uiText.WEBSITE_LIBRARY.DELETE_FOLDER_TITLE }} {{ deleteFolderName() }}
+      </h1>
+
+      <div class="dz-popup-content__header-actions">
+        <button class="dz-button round dz-button--sm" (click)="onCloseDeleteFolderPopup()">
+          <ng-container *ngTemplateOutlet="icon; context: { href: icons.CLOSE }" />
+        </button>
+      </div>
+    </header>
+
+    <main class="dz-popup-content__main">
+      <div class="dz-banner dz-banner--warn">
+        <div class="dz-banner__icon">
+          <ng-container *ngTemplateOutlet="icon; context: { href: icons.WARNING }" />
+        </div>
+
+        <div class="dz-banner__message">{{ uiText.WEBSITE_LIBRARY.CONFIRM_DELETE }}</div>
+      </div>
+    </main>
+
+    <footer class="dz-popup-content__footer">
+      <button
+        class="dz-button dz-button--activated shadow shadow--hoverless dz-button--sm"
+        (click)="onCloseDeleteFolderPopup()"
+      >
+        <ng-container *ngTemplateOutlet="icon; context: { href: icons.CANCEL }"></ng-container>
+      </button>
+
+      <button
+        class="dz-button dz-button--activated shadow shadow--hoverless dz-button--sm"
+        (click)="onDeleteFolder()"
+      >
+        <ng-container *ngTemplateOutlet="icon; context: { href: icons.DELETE }"></ng-container>
+      </button>
+    </footer>
   </div>
 </ng-template>

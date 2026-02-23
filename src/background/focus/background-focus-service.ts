@@ -139,4 +139,12 @@ export class BackgroundFocusService {
     };
     return this.startFocus(quickPeriod);
   }
+
+  async addNewFolderToLibrary(newFolder: string): Promise<void> {
+    await StorageAdapter.addNewFolderToLibrary(newFolder);
+  }
+
+  async removeFolderFromLibrary(folder: string): Promise<void> {
+    await StorageAdapter.removeFolderFromLibrary(folder);
+  }
 }

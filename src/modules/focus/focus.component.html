@@ -32,7 +32,7 @@
               height: 24,
             }
           "
-        ></ng-container>
+        />
       } @else if (isImageIcon(activeTab()?.favIconUrl)) {
         <img
           class="dz-icon dz-icon--shadow"
@@ -52,7 +52,7 @@
               height: 24,
             }
           "
-        ></ng-container>
+        />
       }
 
       <span class="dz-focus__tab-title">
@@ -65,7 +65,19 @@
             ? icons.SUCCESS
             : icons.ADD_LINK
           : null;
-      <ng-container *ngTemplateOutlet="icon; context: { href: tabIcon }"></ng-container>
+      <div
+        class="dz-icon-box dz-icon-box--sm"
+        [class.dz-icon-box--success]="isCurrentTabInCurrentPeriod()"
+      >
+        <ng-container
+          *ngTemplateOutlet="
+            icon;
+            context: {
+              href: tabIcon,
+            }
+          "
+        />
+      </div>
     </button>
   </div>
 
@@ -74,7 +86,7 @@
     [title]="uiText.COMMON.WEBSITE_LIBRARY"
     (click)="onOpenWebsitesList()"
   >
-    <ng-container *ngTemplateOutlet="icon; context: { href: icons.GLOBE_BOOK }"></ng-container>
+    <ng-container *ngTemplateOutlet="icon; context: { href: icons.GLOBE_BOOK }" />
   </button>
 
   <dz-websites-library-popup [(isWebsitesPopupShown)]="isWebsitesPopupShown" />
@@ -107,10 +119,10 @@
               })
             "
           >
-            <ng-container *ngTemplateOutlet="icon; context: { href: icons.INFO }"></ng-container>
+            <ng-container *ngTemplateOutlet="icon; context: { href: icons.INFO }" />
           </button>
         </div>
-        <ng-container *ngTemplateOutlet="icon; context: { href: statusIcon() }"></ng-container>
+        <ng-container *ngTemplateOutlet="icon; context: { href: statusIcon() }" />
       </div>
 
       <div class="hint hint--xl">
@@ -137,7 +149,7 @@
       </div>
 
       <div class="dz-icon-box dz-icon-box--sm">
-        <ng-container *ngTemplateOutlet="icon; context: { href: icons.LINE_END }"></ng-container>
+        <ng-container *ngTemplateOutlet="icon; context: { href: icons.LINE_END }" />
       </div>
 
       <div class="dz-box">
@@ -176,7 +188,7 @@
     [title]="uiText.PERIOD.ARIA_LABELS.EDIT_PERIOD"
     (click)="onEditCurrentPeriod()"
   >
-    <ng-container *ngTemplateOutlet="icon; context: { href: icons.EDIT }"></ng-container>
+    <ng-container *ngTemplateOutlet="icon; context: { href: icons.EDIT }" />
   </button>
 
   <button
@@ -184,6 +196,6 @@
     [title]="uiText.HEADER.ADD_NEW_PERIOD_TITLE"
     (click)="onAddPeriod()"
   >
-    <ng-container *ngTemplateOutlet="icon; context: { href: icons.PLUS }"></ng-container>
+    <ng-container *ngTemplateOutlet="icon; context: { href: icons.PLUS }" />
   </button>
 </div>
