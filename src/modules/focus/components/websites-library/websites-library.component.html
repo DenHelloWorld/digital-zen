@@ -75,6 +75,7 @@
               <button
                 class="dz-button dz-button--free dz-button--ghost shadow shadow--hoverless"
                 [class.hidden]="folder === presetFolderNames.DELETE"
+                (click)="onOpenCreateLinkPopup(folder)"
               >
                 <div class="dz-icon-box dz-icon-box--xs">
                   <ng-container *ngTemplateOutlet="icon; context: { href: icons.ADD_LINK }" />
@@ -103,21 +104,58 @@
 
             <ul class="dz-tree" [class.dz-tree--open]="isFolderOpen(folder)">
               @for (site of sites; track site.url) {
-                <li class="dz-tree__item fit">
-                  <input
-                    class="dz-input dz-input--checkbox"
-                    [checked]="site.isActivated"
-                    (change)="onToggleBlockedWebsite(site)"
-                    type="checkbox"
-                  />
-                  <img
-                    [alt]="site.url"
-                    [src]="site.imageUrl || getFavicon(site.url)"
-                    style="width: 16px; height: 16px; border-radius: 4px"
-                  />
-                  <span class="ellipsis copy" [dzCopy]="site.url" [title]="site.url">
-                    {{ cleanProtocolHelper(site.url) }}
-                  </span>
+                <li
+                  class="dz-tree__item full"
+                  (mouseenter)="itemActions.classList.remove('hidden')"
+                  (mouseleave)="itemActions.classList.add('hidden')"
+                >
+                  <div class="dz-tree__item-group">
+                    <input
+                      class="dz-input dz-input--checkbox"
+                      [checked]="site.isActivated"
+                      (change)="onToggleBlockedWebsite(site)"
+                      type="checkbox"
+                    />
+                    <div class="dz-icon-box dz-icon-box--sm" #favicon>
+                      <img
+                        #favicon
+                        [alt]="site.url"
+                        [src]="site.imageUrl || getFavicon(site.url)"
+                        (load)="tempIcon.classList.add('hidden')"
+                        (error)="favicon.classList.add('hidden')"
+                      />
+                    </div>
+                    <div class="dz-icon-box dz-icon-box--sm" #tempIcon>
+                      <ng-container *ngTemplateOutlet="icon; context: { href: icons.GLOBE }" />
+                    </div>
+                    <span class="ellipsis copy" [dzCopy]="site.url" [title]="site.url">
+                      {{ cleanProtocolHelper(site.url) }}
+                    </span>
+                  </div>
+
+                  <div class="dz-tree__item-group dz-tree__item-group--actions hidden" #itemActions>
+                    @if (site.permissionLvl !== permissionLvls.READ_ONLY) {
+                      <button
+                        class="dz-button dz-button--free dz-button--ghost shadow shadow--hoverless"
+                        [title]="'Move to other folder'"
+                      >
+                        <div class="dz-icon-box dz-icon-box--xs">
+                          <ng-container
+                            *ngTemplateOutlet="icon; context: { href: icons.MOVE_DOWN }"
+                          />
+                        </div>
+                      </button>
+                      <button
+                        class="dz-button dz-button--free dz-button--ghost shadow shadow--hoverless"
+                        [title]="'Delete it'"
+                        (click)="onOpenDeleteLinkPopup(site.type, site.url)"
+                      >
+                        <div class="dz-icon-box dz-icon-box--xs">
+                          <ng-container *ngTemplateOutlet="icon; context: { href: icons.DELETE }" />
+                        </div>
+                      </button>
+                    }
+                  </div>
                 </li>
               }
             </ul>
@@ -130,7 +168,7 @@
 
 <!--New Folder Popup-->
 <ng-template
-  [dzPopup]="isCreateNewFolderPopupShown()"
+  [dzPopup]="isCreateFolderPopupShown()"
   [hasBackdrop]="false"
   (closed)="onCloseCreateNewFolderPopup()"
 >
@@ -217,17 +255,122 @@
 
     <footer class="dz-popup-content__footer">
       <button
-        class="dz-button dz-button--activated shadow shadow--hoverless dz-button--sm"
+        class="dz-button dz-button--free dz-button--ghost shadow shadow--hoverless"
         (click)="onCloseDeleteFolderPopup()"
       >
-        <ng-container *ngTemplateOutlet="icon; context: { href: icons.CANCEL }"></ng-container>
+        <div class="dz-icon-box dz-icon-box--xs">
+          <ng-container *ngTemplateOutlet="icon; context: { href: icons.CANCEL }" />
+        </div>
       </button>
 
       <button
-        class="dz-button dz-button--activated shadow shadow--hoverless dz-button--sm"
+        class="dz-button dz-button--free dz-button--ghost shadow shadow--hoverless"
         (click)="onDeleteFolder()"
       >
-        <ng-container *ngTemplateOutlet="icon; context: { href: icons.DELETE }"></ng-container>
+        <div class="dz-icon-box dz-icon-box--xs">
+          <ng-container *ngTemplateOutlet="icon; context: { href: icons.DELETE }" />
+        </div>
+      </button>
+    </footer>
+  </div>
+</ng-template>
+
+<!-- Create Link Popup-->
+<ng-template
+  [dzPopup]="isCreateLinkPopupShown()"
+  [hasBackdrop]="false"
+  (closed)="onCloseCreateLinkPopup()"
+>
+  <div class="dz-box shadow shadow--hoverless dz-popup-content dz-popup-content--new-folder">
+    <header class="dz-popup-content__header">
+      <h1 class="hint hint--xs">
+        {{ uiText.WEBSITE_LIBRARY.CREATE_LINK_TITLE }} {{ newLink()?.url ?? '' }}
+      </h1>
+
+      <div class="dz-popup-content__header-actions">
+        <button class="dz-button round dz-button--sm" (click)="onCloseCreateLinkPopup()">
+          <ng-container *ngTemplateOutlet="icon; context: { href: icons.CLOSE }" />
+        </button>
+      </div>
+    </header>
+
+    <main class="dz-popup-content__main">
+      <input
+        class="dz-input dz-input--free font-lg"
+        #linkInput
+        [value]="newLink()?.url"
+        (input)="onInputNewLinkUrl(linkInput.value)"
+        type="text"
+        placeholder="... ✏️"
+      />
+    </main>
+
+    <footer class="dz-popup-content__footer">
+      @if (newLink()?.isDuplicate) {
+        <div class="hint hint--sm hint--warn fit">
+          {{ newLink()?.url }} {{ uiText.WEBSITE_LIBRARY.ALREADY_EXISTS }}
+        </div>
+      } @else {
+        <button
+          class="dz-button dz-button--free dz-button--ghost shadow shadow--hoverless"
+          [disabled]="newLink()?.isDuplicate || !newLink()?.url"
+          (click)="onAddNewLink()"
+        >
+          <div class="dz-icon-box dz-icon-box--xs">
+            <ng-container *ngTemplateOutlet="icon; context: { href: icons.SAVE }" />
+          </div>
+        </button>
+      }
+    </footer>
+  </div>
+</ng-template>
+
+<!-- Delete Link Popup-->
+<ng-template
+  [dzPopup]="isDeleteLinkPopupShown()"
+  [hasBackdrop]="false"
+  (closed)="onCloseDeleteLinkPopup()"
+>
+  <div class="dz-box shadow shadow--hoverless dz-popup-content dz-popup-content--new-folder">
+    <header class="dz-popup-content__header">
+      <h1 class="hint hint--xs">
+        {{ uiText.WEBSITE_LIBRARY.DELETE_LINK_TITLE }} {{ deleteLink()?.url }}
+      </h1>
+
+      <div class="dz-popup-content__header-actions">
+        <button class="dz-button round dz-button--sm" (click)="onCloseDeleteLinkPopup()">
+          <ng-container *ngTemplateOutlet="icon; context: { href: icons.CLOSE }" />
+        </button>
+      </div>
+    </header>
+
+    <main class="dz-popup-content__main">
+      <div class="dz-banner dz-banner--warn">
+        <div class="dz-banner__icon">
+          <ng-container *ngTemplateOutlet="icon; context: { href: icons.WARNING }" />
+        </div>
+
+        <div class="dz-banner__message">{{ uiText.WEBSITE_LIBRARY.CONFIRM_DELETE }}</div>
+      </div>
+    </main>
+
+    <footer class="dz-popup-content__footer">
+      <button
+        class="dz-button dz-button--free dz-button--ghost shadow shadow--hoverless"
+        (click)="onCloseDeleteLinkPopup()"
+      >
+        <div class="dz-icon-box dz-icon-box--xs">
+          <ng-container *ngTemplateOutlet="icon; context: { href: icons.CANCEL }" />
+        </div>
+      </button>
+
+      <button
+        class="dz-button dz-button--free dz-button--ghost shadow shadow--hoverless"
+        (click)="onDeleteLink()"
+      >
+        <div class="dz-icon-box dz-icon-box--xs">
+          <ng-container *ngTemplateOutlet="icon; context: { href: icons.DELETE }" />
+        </div>
       </button>
     </footer>
   </div>

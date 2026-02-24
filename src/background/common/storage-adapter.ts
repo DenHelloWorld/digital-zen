@@ -216,6 +216,306 @@ export class StorageAdapter {
     });
   }
 
+  static async addWebsiteToFolder(folderName: string, website: IFocus.WebSite): Promise<void> {
+    return this.enqueue(async () => {
+      const result = await chrome.storage.local.get(CHROME_STORAGE_KEY_ENUM.WEBSITES_LIBRARY);
+      const library = (result[CHROME_STORAGE_KEY_ENUM.WEBSITES_LIBRARY] || {}) as Record<
+        string,
+        IFocus.WebSite[]
+      >;
+
+      if (!library[folderName]) {
+        throw new Error(UI_TEXT.WEBSITE_LIBRARY.ERRORS.FOLDER_NOT_FOUND);
+      }
+
+      const folderContent = [...library[folderName]];
+
+      const exists = folderContent.some(site => site.url === website.url);
+
+      if (!exists) {
+        folderContent.push({
+          ...website,
+          type: folderName,
+        });
+
+        const updatedLibrary = {
+          ...library,
+          [folderName]: folderContent,
+        };
+
+        await chrome.storage.local.set({
+          [CHROME_STORAGE_KEY_ENUM.WEBSITES_LIBRARY]: updatedLibrary,
+        });
+      }
+    });
+  }
+
+  static async addWebsiteToSystem(
+    folderName: string,
+    website: IFocus.WebSite,
+    periodId: string
+  ): Promise<void> {
+    return this.enqueue(async () => {
+      const keys = [
+        CHROME_STORAGE_KEY_ENUM.WEBSITES_LIBRARY,
+        CHROME_STORAGE_KEY_ENUM.PERIODS,
+        CHROME_STORAGE_KEY_ENUM.CURRENT_PERIOD,
+      ];
+      const storage = await chrome.storage.local.get(keys);
+
+      // 1. Обновляем библиотеку
+      const library = (storage[CHROME_STORAGE_KEY_ENUM.WEBSITES_LIBRARY] || {}) as Record<
+        string,
+        IFocus.WebSite[]
+      >;
+      if (!library[folderName]) library[folderName] = [];
+
+      if (!library[folderName].some(s => s.url === website.url)) {
+        library[folderName].push({ ...website, type: folderName });
+      }
+
+      // 2. Обновляем список всех периодов
+      const periods = (storage[CHROME_STORAGE_KEY_ENUM.PERIODS] || []) as StoredPeriod[];
+      const periodIndex = periods.findIndex(p => p.id === periodId);
+      if (periodIndex !== -1) {
+        const p = periods[periodIndex];
+        if (!p.webSites.some(s => s.url === website.url)) {
+          p.webSites.push({ ...website, type: folderName });
+        }
+      }
+
+      // 3. Обновляем текущий период (если совпадает ID)
+      const current = storage[CHROME_STORAGE_KEY_ENUM.CURRENT_PERIOD] as StoredPeriod | null;
+      if (current && current.id === periodId) {
+        if (!current.webSites.some(s => s.url === website.url)) {
+          current.webSites.push({ ...website, type: folderName });
+        }
+      }
+
+      await chrome.storage.local.set({
+        [CHROME_STORAGE_KEY_ENUM.WEBSITES_LIBRARY]: library,
+        [CHROME_STORAGE_KEY_ENUM.PERIODS]: periods,
+        [CHROME_STORAGE_KEY_ENUM.CURRENT_PERIOD]: current,
+      });
+    });
+  }
+
+  static async removeWebsiteFromFolder(folderName: string, websiteUrl: string): Promise<void> {
+    return this.enqueue(async () => {
+      const trashKey = IFocus.EWebSiteType.DELETE;
+      const keys = [
+        CHROME_STORAGE_KEY_ENUM.WEBSITES_LIBRARY,
+        CHROME_STORAGE_KEY_ENUM.PERIODS,
+        CHROME_STORAGE_KEY_ENUM.CURRENT_PERIOD,
+      ];
+      const storage = await chrome.storage.local.get(keys);
+
+      // Если мы уже в корзине — вызываем физическое удаление БЕЗ вложенного enqueue
+      if (folderName === trashKey) {
+        await this.internalPermanentDeleteLogic(websiteUrl, storage);
+        return;
+      }
+
+      const library = (storage[CHROME_STORAGE_KEY_ENUM.WEBSITES_LIBRARY] || {}) as Record<
+        string,
+        IFocus.WebSite[]
+      >;
+      const folder = library[folderName] || [];
+      const siteToMove = folder.find(site => site.url === websiteUrl);
+
+      if (!siteToMove) return;
+
+      // 1. Убираем из текущей папки
+      library[folderName] = folder.filter(site => site.url !== websiteUrl);
+
+      // 2. Добавляем в корзину
+      if (!library[trashKey]) library[trashKey] = [];
+      if (!library[trashKey].some(s => s.url === websiteUrl)) {
+        library[trashKey].push({ ...siteToMove, type: trashKey });
+      }
+
+      // 3. Обновляем тип в периодах (чтобы в UI сайт переместился в папку корзины)
+      const updateType = (sites: IFocus.WebSite[]) =>
+        (sites || []).map(s => (s.url === websiteUrl ? { ...s, type: trashKey } : s));
+
+      const periods = (storage[CHROME_STORAGE_KEY_ENUM.PERIODS] || []) as StoredPeriod[];
+      const updatedPeriods = periods.map(p => ({ ...p, webSites: updateType(p.webSites) }));
+
+      let current = storage[CHROME_STORAGE_KEY_ENUM.CURRENT_PERIOD] as StoredPeriod | null;
+      if (current?.webSites) {
+        current = { ...current, webSites: updateType(current.webSites) };
+      }
+
+      await chrome.storage.local.set({
+        [CHROME_STORAGE_KEY_ENUM.WEBSITES_LIBRARY]: library,
+        [CHROME_STORAGE_KEY_ENUM.PERIODS]: updatedPeriods,
+        [CHROME_STORAGE_KEY_ENUM.CURRENT_PERIOD]: current,
+      });
+    });
+  }
+
+  /**
+   * Полное удаление сайта из базы: из корзины и из всех периодов.
+   */
+  static async permanentDeleteWebsite(websiteUrl: string): Promise<void> {
+    return this.enqueue(async () => {
+      const keys = [
+        CHROME_STORAGE_KEY_ENUM.WEBSITES_LIBRARY,
+        CHROME_STORAGE_KEY_ENUM.PERIODS,
+        CHROME_STORAGE_KEY_ENUM.CURRENT_PERIOD,
+      ];
+      const storage = await chrome.storage.local.get(keys);
+      await this.internalPermanentDeleteLogic(websiteUrl, storage);
+    });
+  }
+
+  /**
+   * Приватный метод с логикой полного удаления.
+   * НЕ использует enqueue сам, вызывается только внутри других enqueue задач.
+   */
+  private static async internalPermanentDeleteLogic(
+    websiteUrl: string,
+    storage: Record<string, unknown>
+  ): Promise<void> {
+    const library = (storage[CHROME_STORAGE_KEY_ENUM.WEBSITES_LIBRARY] || {}) as Record<
+      string,
+      IFocus.WebSite[]
+    >;
+
+    // Удаляем из всех папок библиотеки
+    Object.keys(library).forEach(key => {
+      library[key] = library[key].filter(s => s.url !== websiteUrl);
+    });
+
+    const filterFn = (sites: IFocus.WebSite[]) => (sites || []).filter(s => s.url !== websiteUrl);
+
+    const periods = (storage[CHROME_STORAGE_KEY_ENUM.PERIODS] || []) as StoredPeriod[];
+    const updatedPeriods = periods.map(p => ({ ...p, webSites: filterFn(p.webSites) }));
+
+    let current = storage[CHROME_STORAGE_KEY_ENUM.CURRENT_PERIOD] as StoredPeriod | null;
+    if (current?.webSites) {
+      current = { ...current, webSites: filterFn(current.webSites) };
+    }
+
+    await chrome.storage.local.set({
+      [CHROME_STORAGE_KEY_ENUM.WEBSITES_LIBRARY]: library,
+      [CHROME_STORAGE_KEY_ENUM.PERIODS]: updatedPeriods,
+      [CHROME_STORAGE_KEY_ENUM.CURRENT_PERIOD]: current,
+    });
+  }
+
+  static async clearTrash(): Promise<void> {
+    return this.enqueue(async () => {
+      const keys = [
+        CHROME_STORAGE_KEY_ENUM.WEBSITES_LIBRARY,
+        CHROME_STORAGE_KEY_ENUM.PERIODS,
+        CHROME_STORAGE_KEY_ENUM.CURRENT_PERIOD,
+      ];
+      const storage = await chrome.storage.local.get(keys);
+
+      const library = (storage[CHROME_STORAGE_KEY_ENUM.WEBSITES_LIBRARY] || {}) as Record<
+        string,
+        IFocus.WebSite[]
+      >;
+      const trashKey = IFocus.EWebSiteType.DELETE;
+
+      const sitesInTrash = library[trashKey] || [];
+      if (sitesInTrash.length === 0) return;
+
+      const urlsToDelete = new Set(sitesInTrash.map(s => s.url));
+
+      library[trashKey] = [];
+
+      const periods = (storage[CHROME_STORAGE_KEY_ENUM.PERIODS] || []) as StoredPeriod[];
+      const updatedPeriods = periods.map(p => ({
+        ...p,
+        webSites: p.webSites.filter(s => !urlsToDelete.has(s.url)),
+      }));
+
+      let current = storage[CHROME_STORAGE_KEY_ENUM.CURRENT_PERIOD] as StoredPeriod | null;
+      if (current?.webSites) {
+        current = {
+          ...current,
+          webSites: current.webSites.filter(s => !urlsToDelete.has(s.url)),
+        };
+      }
+
+      await chrome.storage.local.set({
+        [CHROME_STORAGE_KEY_ENUM.WEBSITES_LIBRARY]: library,
+        [CHROME_STORAGE_KEY_ENUM.PERIODS]: updatedPeriods,
+        [CHROME_STORAGE_KEY_ENUM.CURRENT_PERIOD]: current,
+      });
+
+      StorageAdapter.logger.info(`Trash cleared. Removed ${urlsToDelete.size} websites.`);
+    });
+  }
+
+  static async moveWebsiteToFolder(
+    websiteUrl: string,
+    fromFolder: string,
+    toFolder: string
+  ): Promise<void> {
+    return this.enqueue(async () => {
+      const keys = [
+        CHROME_STORAGE_KEY_ENUM.WEBSITES_LIBRARY,
+        CHROME_STORAGE_KEY_ENUM.PERIODS,
+        CHROME_STORAGE_KEY_ENUM.CURRENT_PERIOD,
+      ];
+      const storage = await chrome.storage.local.get(keys);
+
+      const library = (storage[CHROME_STORAGE_KEY_ENUM.WEBSITES_LIBRARY] || {}) as Record<
+        string,
+        IFocus.WebSite[]
+      >;
+
+      if (!library[fromFolder] || !library[toFolder]) {
+        this.logger.error('Move failed: Source or destination folder not found');
+        return;
+      }
+
+      const siteToMove = library[fromFolder].find(s => s.url === websiteUrl);
+      if (!siteToMove) return;
+
+      library[fromFolder] = library[fromFolder].filter(s => s.url !== websiteUrl);
+
+      const isAlreadyInDest = library[toFolder].some(s => s.url === websiteUrl);
+      if (!isAlreadyInDest) {
+        library[toFolder].push({
+          ...siteToMove,
+          type: toFolder,
+        });
+      }
+
+      const periods = (storage[CHROME_STORAGE_KEY_ENUM.PERIODS] || []) as StoredPeriod[];
+      const updatedPeriods = periods.map(period => ({
+        ...period,
+        webSites: period.webSites.map(site =>
+          site.url === websiteUrl ? { ...site, type: toFolder } : site
+        ),
+      }));
+
+      let updatedCurrentPeriod = storage[
+        CHROME_STORAGE_KEY_ENUM.CURRENT_PERIOD
+      ] as StoredPeriod | null;
+      if (updatedCurrentPeriod?.webSites) {
+        updatedCurrentPeriod = {
+          ...updatedCurrentPeriod,
+          webSites: updatedCurrentPeriod.webSites.map(site =>
+            site.url === websiteUrl ? { ...site, type: toFolder } : site
+          ),
+        };
+      }
+
+      await chrome.storage.local.set({
+        [CHROME_STORAGE_KEY_ENUM.WEBSITES_LIBRARY]: library,
+        [CHROME_STORAGE_KEY_ENUM.PERIODS]: updatedPeriods,
+        [CHROME_STORAGE_KEY_ENUM.CURRENT_PERIOD]: updatedCurrentPeriod,
+      });
+
+      StorageAdapter.logger.info(`Moved ${websiteUrl} from ${fromFolder} to ${toFolder}`);
+    });
+  }
+
   // === Private helpers ===
 
   private static async enqueue<T>(task: () => Promise<T>): Promise<T> {

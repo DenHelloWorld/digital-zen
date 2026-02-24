@@ -3,6 +3,7 @@ import { WEBSITES_LIBRARY_PRESET } from '../../common/constants/websites.const';
 import { CHROME_COMMAND_ENUM } from '../../common/enums/chrome-command.enum';
 import { CHROME_STORAGE_KEY_ENUM } from '../../common/enums/chrome-storage-key.enum';
 import { TOAST_TYPE_ENUM } from '../../common/enums/toast-type.enum';
+import { cleanProtocolHelper } from '../../common/helpers/clean-protocol.helper';
 import { IFocus } from '../../common/models/focus.model';
 import { ChromeStorageService } from '../../common/services/chrome-storage.service';
 import { inject, Injectable, signal } from '@angular/core';
@@ -50,6 +51,53 @@ export class LibraryService {
 
         this.#toastService.show({
           message: `Content from "${folder}" moved to ${IFocus.EWebSiteType.DELETE}`,
+          type: TOAST_TYPE_ENUM.SUCCESS,
+          durationInMs: 3000,
+        });
+      }
+    );
+  }
+
+  public addWebsiteToFolder(folder: string, website: IFocus.WebSite): void {
+    if (!this.#isChromeRuntime) return;
+
+    chrome.runtime.sendMessage(
+      { command: CHROME_COMMAND_ENUM.ADD_WEBSITE_TO_FOLDER, folder, website },
+      (response: { success: boolean; error?: string }) => {
+        if (response && !response.success) {
+          this.#toastService.show({
+            message: response.error || 'Failed to add website',
+            type: TOAST_TYPE_ENUM.ERROR,
+            durationInMs: 4000,
+          });
+          return;
+        }
+
+        this.#toastService.show({
+          message: `Website added to "${folder}"`,
+          type: TOAST_TYPE_ENUM.SUCCESS,
+          durationInMs: 3000,
+        });
+      }
+    );
+  }
+
+  public removeWebsiteFromFolder(folder: string, url: string): void {
+    if (!this.#isChromeRuntime) return;
+
+    chrome.runtime.sendMessage(
+      { command: CHROME_COMMAND_ENUM.REMOVE_WEBSITE, folder, url },
+      (response: { success: boolean; error?: string }) => {
+        if (response && !response.success) {
+          this.#toastService.show({
+            message: response.error || 'Failed to remove website',
+            type: TOAST_TYPE_ENUM.ERROR,
+            durationInMs: 4000,
+          });
+          return;
+        }
+        this.#toastService.show({
+          message: `${cleanProtocolHelper(url)} removed from ${folder}`,
           type: TOAST_TYPE_ENUM.SUCCESS,
           durationInMs: 3000,
         });

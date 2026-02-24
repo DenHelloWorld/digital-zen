@@ -1,6 +1,7 @@
 import { BlockBehaviourType } from '../enums/block-behaviour.enum';
 import { DayOfWeekShortNameType } from '../enums/day-of-week-short-name.enum';
 import { DayOfWeekType } from '../enums/day-of-week.enum';
+import { PermissionLvlType } from '../enums/permission-lvl.enum';
 
 export namespace IFocus {
   export namespace Api {
@@ -52,6 +53,7 @@ export namespace IFocus {
     iconUrl: string;
     type: IWebSiteType | string;
     isActivated: boolean;
+    permissionLvl: PermissionLvlType;
   }
 
   export enum EWebSiteType {

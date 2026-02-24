@@ -80,6 +80,8 @@ export const ICONS = Object.freeze({
   GLOBE_BOOK: '#icon-globe-book',
   CREATE_NEW_FOLDER: '#icon-create-new-folder',
   FOLDER_DELETE: '#icon-folder-delete',
+  MOVE_DOWN: '#icon-move-down',
+  LOCK: '#icon-lock',
 } as const);
 
 /**

@@ -1,3 +1,4 @@
+import { PERMISSION_LVL_ENUM } from '../enums/permission-lvl.enum';
 import { FaviconHelper } from '../helpers/favicon.helper';
 import { IFocus } from '../models/focus.model';
 import { ICONS } from './icons.const';
@@ -16,6 +17,7 @@ export const WEBSITE_X: Readonly<IFocus.WebSite> = {
   iconUrl: ICONS.X,
   type: IFocus.EWebSiteType.SOCIAL_MEDIA,
   isActivated: true,
+  permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
 export const WEBSITE_INST: Readonly<IFocus.WebSite> = {
@@ -27,6 +29,7 @@ export const WEBSITE_INST: Readonly<IFocus.WebSite> = {
   iconUrl: ICONS.INSTAGRAM,
   type: IFocus.EWebSiteType.SOCIAL_MEDIA,
   isActivated: true,
+  permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
 export const WEBSITE_FACEBOOK: Readonly<IFocus.WebSite> = {
@@ -38,6 +41,7 @@ export const WEBSITE_FACEBOOK: Readonly<IFocus.WebSite> = {
   iconUrl: ICONS.FACEBOOK,
   type: IFocus.EWebSiteType.SOCIAL_MEDIA,
   isActivated: true,
+  permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
 export const WEBSITE_TIKTOK: Readonly<IFocus.WebSite> = {
@@ -49,6 +53,7 @@ export const WEBSITE_TIKTOK: Readonly<IFocus.WebSite> = {
   iconUrl: ICONS.TIKTOK,
   type: IFocus.EWebSiteType.SOCIAL_MEDIA,
   isActivated: true,
+  permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
 export const WEBSITE_VK: Readonly<IFocus.WebSite> = {
@@ -60,6 +65,7 @@ export const WEBSITE_VK: Readonly<IFocus.WebSite> = {
   iconUrl: ICONS.VK,
   type: IFocus.EWebSiteType.SOCIAL_MEDIA,
   isActivated: true,
+  permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
 export const WEBSITE_SNAPCHAT: Readonly<IFocus.WebSite> = {
@@ -71,6 +77,7 @@ export const WEBSITE_SNAPCHAT: Readonly<IFocus.WebSite> = {
   iconUrl: ICONS.SNAPCHAT,
   type: IFocus.EWebSiteType.SOCIAL_MEDIA,
   isActivated: true,
+  permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
 export const WEBSITE_LINKEDIN: Readonly<IFocus.WebSite> = {
@@ -82,6 +89,7 @@ export const WEBSITE_LINKEDIN: Readonly<IFocus.WebSite> = {
   iconUrl: ICONS.LINKEDIN,
   type: IFocus.EWebSiteType.SOCIAL_MEDIA,
   isActivated: true,
+  permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
 export const WEBSITE_PINTEREST: Readonly<IFocus.WebSite> = {
@@ -93,6 +101,7 @@ export const WEBSITE_PINTEREST: Readonly<IFocus.WebSite> = {
   iconUrl: ICONS.PINTEREST,
   type: IFocus.EWebSiteType.SOCIAL_MEDIA,
   isActivated: true,
+  permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
 export const WEBSITE_YOUTUBE: Readonly<IFocus.WebSite> = {
@@ -104,6 +113,7 @@ export const WEBSITE_YOUTUBE: Readonly<IFocus.WebSite> = {
   iconUrl: ICONS.YOUTUBE,
   type: IFocus.EWebSiteType.SOCIAL_MEDIA,
   isActivated: true,
+  permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
 export const WEBSITE_REDDIT: Readonly<IFocus.WebSite> = {
@@ -115,6 +125,7 @@ export const WEBSITE_REDDIT: Readonly<IFocus.WebSite> = {
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.SOCIAL_MEDIA,
   isActivated: true,
+  permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
 export const WEBSITE_DISCORD: Readonly<IFocus.WebSite> = {
@@ -126,6 +137,7 @@ export const WEBSITE_DISCORD: Readonly<IFocus.WebSite> = {
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.SOCIAL_MEDIA,
   isActivated: true,
+  permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
 export const WEBSITE_TWITCH: Readonly<IFocus.WebSite> = {
@@ -137,6 +149,7 @@ export const WEBSITE_TWITCH: Readonly<IFocus.WebSite> = {
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.SOCIAL_MEDIA,
   isActivated: true,
+  permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
 export const WEBSITE_THREADS: Readonly<IFocus.WebSite> = {
@@ -148,6 +161,7 @@ export const WEBSITE_THREADS: Readonly<IFocus.WebSite> = {
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.SOCIAL_MEDIA,
   isActivated: true,
+  permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
 export const WEBSITE_BLUESKY: Readonly<IFocus.WebSite> = {
@@ -159,6 +173,7 @@ export const WEBSITE_BLUESKY: Readonly<IFocus.WebSite> = {
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.SOCIAL_MEDIA,
   isActivated: true,
+  permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
 export const WEBSITE_MASTODON: Readonly<IFocus.WebSite> = {
@@ -170,6 +185,7 @@ export const WEBSITE_MASTODON: Readonly<IFocus.WebSite> = {
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.SOCIAL_MEDIA,
   isActivated: true,
+  permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
 export const WEBSITE_TUMBLR: Readonly<IFocus.WebSite> = {
@@ -181,6 +197,7 @@ export const WEBSITE_TUMBLR: Readonly<IFocus.WebSite> = {
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.SOCIAL_MEDIA,
   isActivated: true,
+  permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
 export const WEBSITE_CHATGPT: Readonly<IFocus.WebSite> = {
@@ -192,6 +209,7 @@ export const WEBSITE_CHATGPT: Readonly<IFocus.WebSite> = {
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.AI,
   isActivated: true,
+  permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
 export const WEBSITE_CLAUDE: Readonly<IFocus.WebSite> = {
@@ -203,6 +221,7 @@ export const WEBSITE_CLAUDE: Readonly<IFocus.WebSite> = {
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.AI,
   isActivated: true,
+  permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
 export const WEBSITE_GEMINI: Readonly<IFocus.WebSite> = {
@@ -214,6 +233,7 @@ export const WEBSITE_GEMINI: Readonly<IFocus.WebSite> = {
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.AI,
   isActivated: true,
+  permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
 export const WEBSITE_BING_CHAT: Readonly<IFocus.WebSite> = {
@@ -225,6 +245,7 @@ export const WEBSITE_BING_CHAT: Readonly<IFocus.WebSite> = {
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.AI,
   isActivated: true,
+  permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
 export const WEBSITE_GROK: Readonly<IFocus.WebSite> = {
@@ -236,6 +257,7 @@ export const WEBSITE_GROK: Readonly<IFocus.WebSite> = {
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.AI,
   isActivated: true,
+  permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
 export const WEBSITE_PERPLEXITY: Readonly<IFocus.WebSite> = {
@@ -247,6 +269,7 @@ export const WEBSITE_PERPLEXITY: Readonly<IFocus.WebSite> = {
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.AI,
   isActivated: true,
+  permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
 export const WEBSITE_GITHUB_COPILOT: Readonly<IFocus.WebSite> = {
@@ -258,6 +281,7 @@ export const WEBSITE_GITHUB_COPILOT: Readonly<IFocus.WebSite> = {
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.AI,
   isActivated: true,
+  permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
 export const WEBSITE_MIDJOURNEY: Readonly<IFocus.WebSite> = {
@@ -269,6 +293,7 @@ export const WEBSITE_MIDJOURNEY: Readonly<IFocus.WebSite> = {
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.AI,
   isActivated: true,
+  permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
 export const WEBSITE_POE: Readonly<IFocus.WebSite> = {
@@ -280,6 +305,7 @@ export const WEBSITE_POE: Readonly<IFocus.WebSite> = {
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.AI,
   isActivated: true,
+  permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
 export const WEBSITE_NETFLIX: Readonly<IFocus.WebSite> = {
@@ -291,6 +317,7 @@ export const WEBSITE_NETFLIX: Readonly<IFocus.WebSite> = {
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.ENTERTAINMENT,
   isActivated: true,
+  permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
 export const WEBSITE_SPOTIFY: Readonly<IFocus.WebSite> = {
@@ -302,6 +329,7 @@ export const WEBSITE_SPOTIFY: Readonly<IFocus.WebSite> = {
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.ENTERTAINMENT,
   isActivated: true,
+  permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
 export const WEBSITE_DISNEY_PLUS: Readonly<IFocus.WebSite> = {
@@ -313,6 +341,7 @@ export const WEBSITE_DISNEY_PLUS: Readonly<IFocus.WebSite> = {
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.ENTERTAINMENT,
   isActivated: true,
+  permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
 export const WEBSITE_PRIME_VIDEO: Readonly<IFocus.WebSite> = {
@@ -324,6 +353,7 @@ export const WEBSITE_PRIME_VIDEO: Readonly<IFocus.WebSite> = {
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.ENTERTAINMENT,
   isActivated: true,
+  permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
 export const WEBSITE_HBO_MAX: Readonly<IFocus.WebSite> = {
@@ -335,6 +365,7 @@ export const WEBSITE_HBO_MAX: Readonly<IFocus.WebSite> = {
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.ENTERTAINMENT,
   isActivated: true,
+  permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
 export const WEBSITE_PARAMOUNT_PLUS: Readonly<IFocus.WebSite> = {
@@ -346,6 +377,7 @@ export const WEBSITE_PARAMOUNT_PLUS: Readonly<IFocus.WebSite> = {
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.ENTERTAINMENT,
   isActivated: true,
+  permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
 export const WEBSITE_STEAM: Readonly<IFocus.WebSite> = {
@@ -357,6 +389,7 @@ export const WEBSITE_STEAM: Readonly<IFocus.WebSite> = {
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.ENTERTAINMENT,
   isActivated: true,
+  permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
 export const WEBSITE_9GAG: Readonly<IFocus.WebSite> = {
@@ -368,6 +401,7 @@ export const WEBSITE_9GAG: Readonly<IFocus.WebSite> = {
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.ENTERTAINMENT,
   isActivated: true,
+  permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
 export const WEBSITE_AMAZON: Readonly<IFocus.WebSite> = {
@@ -379,6 +413,7 @@ export const WEBSITE_AMAZON: Readonly<IFocus.WebSite> = {
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.SHOPPING,
   isActivated: true,
+  permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
 export const WEBSITE_ALIEXPRESS: Readonly<IFocus.WebSite> = {
@@ -390,6 +425,7 @@ export const WEBSITE_ALIEXPRESS: Readonly<IFocus.WebSite> = {
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.SHOPPING,
   isActivated: true,
+  permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
 export const WEBSITE_EBAY: Readonly<IFocus.WebSite> = {
@@ -401,6 +437,7 @@ export const WEBSITE_EBAY: Readonly<IFocus.WebSite> = {
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.SHOPPING,
   isActivated: true,
+  permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
 export const WEBSITE_MEDIUM: Readonly<IFocus.WebSite> = {
@@ -412,6 +449,7 @@ export const WEBSITE_MEDIUM: Readonly<IFocus.WebSite> = {
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.NEWS,
   isActivated: true,
+  permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
 export const WEBSITE_QUORA: Readonly<IFocus.WebSite> = {
@@ -423,6 +461,7 @@ export const WEBSITE_QUORA: Readonly<IFocus.WebSite> = {
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.NEWS,
   isActivated: true,
+  permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
 export const WEBSITE_WIKIPEDIA: Readonly<IFocus.WebSite> = {
@@ -434,6 +473,7 @@ export const WEBSITE_WIKIPEDIA: Readonly<IFocus.WebSite> = {
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.NEWS,
   isActivated: true,
+  permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
 export const WEBSITE_BBC: Readonly<IFocus.WebSite> = {
@@ -445,6 +485,7 @@ export const WEBSITE_BBC: Readonly<IFocus.WebSite> = {
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.NEWS,
   isActivated: true,
+  permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
 export const WEBSITE_CNN: Readonly<IFocus.WebSite> = {
@@ -456,6 +497,7 @@ export const WEBSITE_CNN: Readonly<IFocus.WebSite> = {
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.NEWS,
   isActivated: true,
+  permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
 export const WEBSITE_REUTERS: Readonly<IFocus.WebSite> = {
@@ -467,6 +509,7 @@ export const WEBSITE_REUTERS: Readonly<IFocus.WebSite> = {
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.NEWS,
   isActivated: true,
+  permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
 export const WEBSITE_COURSERA: Readonly<IFocus.WebSite> = {
@@ -478,6 +521,7 @@ export const WEBSITE_COURSERA: Readonly<IFocus.WebSite> = {
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.EDUCATION,
   isActivated: true,
+  permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
 export const WEBSITE_UDEMY: Readonly<IFocus.WebSite> = {
@@ -489,6 +533,7 @@ export const WEBSITE_UDEMY: Readonly<IFocus.WebSite> = {
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.EDUCATION,
   isActivated: true,
+  permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
 export const WEBSITE_KHAN_ACADEMY: Readonly<IFocus.WebSite> = {
@@ -500,6 +545,7 @@ export const WEBSITE_KHAN_ACADEMY: Readonly<IFocus.WebSite> = {
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.EDUCATION,
   isActivated: true,
+  permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
 export const WEBSITE_STACK_OVERFLOW: Readonly<IFocus.WebSite> = {
@@ -511,6 +557,7 @@ export const WEBSITE_STACK_OVERFLOW: Readonly<IFocus.WebSite> = {
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.WORK_DEVELOPMENT,
   isActivated: true,
+  permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
 export const WEBSITE_HACKER_NEWS: Readonly<IFocus.WebSite> = {
@@ -522,6 +569,7 @@ export const WEBSITE_HACKER_NEWS: Readonly<IFocus.WebSite> = {
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.WORK_DEVELOPMENT,
   isActivated: true,
+  permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
 export const WEBSITE_HABR: Readonly<IFocus.WebSite> = {
@@ -533,6 +581,7 @@ export const WEBSITE_HABR: Readonly<IFocus.WebSite> = {
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.WORK_DEVELOPMENT,
   isActivated: true,
+  permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
 export const WEBSITE_NOTION: Readonly<IFocus.WebSite> = {
@@ -544,6 +593,7 @@ export const WEBSITE_NOTION: Readonly<IFocus.WebSite> = {
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.WORK_DEVELOPMENT,
   isActivated: true,
+  permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
 export const WEBSITE_MIRO: Readonly<IFocus.WebSite> = {
@@ -555,6 +605,7 @@ export const WEBSITE_MIRO: Readonly<IFocus.WebSite> = {
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.WORK_DEVELOPMENT,
   isActivated: true,
+  permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
 // --- COMMUNICATION ---
@@ -567,6 +618,7 @@ export const WEBSITE_GMAIL: Readonly<IFocus.WebSite> = {
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.COMMUNICATION,
   isActivated: true,
+  permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
 export const WEBSITE_OUTLOOK: Readonly<IFocus.WebSite> = {
@@ -578,6 +630,7 @@ export const WEBSITE_OUTLOOK: Readonly<IFocus.WebSite> = {
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.COMMUNICATION,
   isActivated: true,
+  permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
 export const WEBSITE_SLACK: Readonly<IFocus.WebSite> = {
@@ -589,6 +642,7 @@ export const WEBSITE_SLACK: Readonly<IFocus.WebSite> = {
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.COMMUNICATION,
   isActivated: true,
+  permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
 export const WEBSITE_TELEGRAM: Readonly<IFocus.WebSite> = {
@@ -600,6 +654,7 @@ export const WEBSITE_TELEGRAM: Readonly<IFocus.WebSite> = {
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.COMMUNICATION,
   isActivated: true,
+  permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
 // --- FINANCE & CRYPTO ---
@@ -612,6 +667,7 @@ export const WEBSITE_BINANCE: Readonly<IFocus.WebSite> = {
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.FINANCE_CRYPTO,
   isActivated: true,
+  permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
 export const WEBSITE_TRADINGVIEW: Readonly<IFocus.WebSite> = {
@@ -623,6 +679,7 @@ export const WEBSITE_TRADINGVIEW: Readonly<IFocus.WebSite> = {
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.FINANCE_CRYPTO,
   isActivated: true,
+  permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
 export const WEBSITE_COINMARKETCAP: Readonly<IFocus.WebSite> = {
@@ -634,6 +691,7 @@ export const WEBSITE_COINMARKETCAP: Readonly<IFocus.WebSite> = {
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.FINANCE_CRYPTO,
   isActivated: true,
+  permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
 // --- HEALTH & FITNESS ---
@@ -646,6 +704,7 @@ export const WEBSITE_MYFITNESSPAL: Readonly<IFocus.WebSite> = {
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.HEALTH_FITNESS,
   isActivated: true,
+  permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
 export const WEBSITE_STRAVA: Readonly<IFocus.WebSite> = {
@@ -657,6 +716,7 @@ export const WEBSITE_STRAVA: Readonly<IFocus.WebSite> = {
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.HEALTH_FITNESS,
   isActivated: true,
+  permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
 // --- ADULT ---
@@ -669,6 +729,7 @@ export const WEBSITE_PORNHUB: Readonly<IFocus.WebSite> = {
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.ADULT,
   isActivated: true,
+  permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
 export const WEBSITE_XNXX: Readonly<IFocus.WebSite> = {
@@ -680,6 +741,7 @@ export const WEBSITE_XNXX: Readonly<IFocus.WebSite> = {
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.ADULT,
   isActivated: true,
+  permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
 export const WEBSITE_DUOLINGO: Readonly<IFocus.WebSite> = {
@@ -691,6 +753,7 @@ export const WEBSITE_DUOLINGO: Readonly<IFocus.WebSite> = {
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.EDUCATION,
   isActivated: true,
+  permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
 export const WEBSITE_EDX: Readonly<IFocus.WebSite> = {
@@ -702,6 +765,7 @@ export const WEBSITE_EDX: Readonly<IFocus.WebSite> = {
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.EDUCATION,
   isActivated: true,
+  permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
 export const WEBSITE_ETSY: Readonly<IFocus.WebSite> = {
@@ -713,6 +777,7 @@ export const WEBSITE_ETSY: Readonly<IFocus.WebSite> = {
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.SHOPPING,
   isActivated: true,
+  permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
 export const WEBSITE_TEMU: Readonly<IFocus.WebSite> = {
@@ -724,6 +789,7 @@ export const WEBSITE_TEMU: Readonly<IFocus.WebSite> = {
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.SHOPPING,
   isActivated: true,
+  permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
 export const WEBSITE_XVIDEOS: Readonly<IFocus.WebSite> = {
@@ -735,6 +801,7 @@ export const WEBSITE_XVIDEOS: Readonly<IFocus.WebSite> = {
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.ADULT,
   isActivated: true,
+  permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
 export const WEBSITE_XHAMSTER: Readonly<IFocus.WebSite> = {
@@ -746,6 +813,7 @@ export const WEBSITE_XHAMSTER: Readonly<IFocus.WebSite> = {
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.ADULT,
   isActivated: true,
+  permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
 export const WEBSITE_CHATURBATE: Readonly<IFocus.WebSite> = {
@@ -757,6 +825,7 @@ export const WEBSITE_CHATURBATE: Readonly<IFocus.WebSite> = {
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.ADULT,
   isActivated: true,
+  permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
 export const WEBSITE_FITBIT: Readonly<IFocus.WebSite> = {
@@ -768,6 +837,7 @@ export const WEBSITE_FITBIT: Readonly<IFocus.WebSite> = {
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.HEALTH_FITNESS,
   isActivated: true,
+  permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
 export const WEBSITE_NIKE_TRAINING: Readonly<IFocus.WebSite> = {
@@ -779,6 +849,7 @@ export const WEBSITE_NIKE_TRAINING: Readonly<IFocus.WebSite> = {
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.HEALTH_FITNESS,
   isActivated: true,
+  permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
 export const WEBSITE_HEALTHLINE: Readonly<IFocus.WebSite> = {
@@ -790,6 +861,7 @@ export const WEBSITE_HEALTHLINE: Readonly<IFocus.WebSite> = {
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.HEALTH_FITNESS,
   isActivated: true,
+  permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
 export const WEBSITE_COINBASE: Readonly<IFocus.WebSite> = {
@@ -801,6 +873,7 @@ export const WEBSITE_COINBASE: Readonly<IFocus.WebSite> = {
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.FINANCE_CRYPTO,
   isActivated: true,
+  permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
 export const WEBSITE_YAHOO_FINANCE: Readonly<IFocus.WebSite> = {
@@ -812,6 +885,7 @@ export const WEBSITE_YAHOO_FINANCE: Readonly<IFocus.WebSite> = {
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.FINANCE_CRYPTO,
   isActivated: true,
+  permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
 export const WEBSITE_WHATSAPP: Readonly<IFocus.WebSite> = {
@@ -823,6 +897,7 @@ export const WEBSITE_WHATSAPP: Readonly<IFocus.WebSite> = {
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.COMMUNICATION,
   isActivated: true,
+  permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
 export const WEBSITES_COMMUNICATION: Readonly<readonly IFocus.WebSite[]> = Object.freeze([
@@ -944,6 +1019,7 @@ export const WEBSITE_PRIVACY_POLICY: Readonly<IFocus.WebSite> = {
   iconUrl: ICONS.PRIVACY_TIP,
   type: IFocus.EWebSiteType.UNBLOCKABLE,
   isActivated: false,
+  permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
 /**

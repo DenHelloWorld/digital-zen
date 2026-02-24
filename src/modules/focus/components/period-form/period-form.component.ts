@@ -20,6 +20,7 @@ import { COLORS_ENUM } from '../../../common/enums/colors.enum';
 import { VIEW_ENUM } from '../../../common/enums/view.enum';
 import { cleanUrlHelper } from '../../../common/helpers/clean-url.helper';
 import { FaviconHelper } from '../../../common/helpers/favicon.helper';
+import { getUniqueWebsitesHelper } from '../../../common/helpers/get-unique-websites.helper';
 import { logger } from '../../../common/helpers/logger';
 import { setTimeFromStr } from '../../../common/helpers/time.helper';
 import { IFocusForm } from '../../../common/models/focus-form.model';
@@ -135,6 +136,7 @@ export class PeriodFormComponent implements OnInit, AfterViewInit {
     'description',
     'type',
     'name',
+    'permissionLvl',
   ];
 
   protected readonly isCurrentPeriod = computed(
@@ -183,7 +185,7 @@ export class PeriodFormComponent implements OnInit, AfterViewInit {
     effect(
       () => {
         const sites = this.selectedWebSites();
-        const cleaned = this.#getUniqueCleanedSites(sites);
+        const cleaned = getUniqueWebsitesHelper(sites);
 
         untracked(() => {
           this.form.controls.webSites.setValue(cleaned);
@@ -439,25 +441,6 @@ export class PeriodFormComponent implements OnInit, AfterViewInit {
     const hours = date.getHours().toString().padStart(2, '0');
     const minutes = date.getMinutes().toString().padStart(2, '0');
     return `${hours}:${minutes}`;
-  }
-
-  #getUniqueCleanedSites(sites: IFocus.WebSite[]): IFocus.WebSite[] {
-    const uniqueMap = new Map<string, IFocus.WebSite>();
-
-    sites.forEach(site => {
-      if (!site.url) return;
-
-      const cleanedUrl = cleanUrlHelper(site.url);
-
-      if (cleanedUrl && !uniqueMap.has(cleanedUrl)) {
-        uniqueMap.set(cleanedUrl, {
-          ...site,
-          url: cleanedUrl,
-        });
-      }
-    });
-
-    return Array.from(uniqueMap.values());
   }
 
   protected normalizeWebsite(site: IFocus.WebSite): IFocus.WebSite {

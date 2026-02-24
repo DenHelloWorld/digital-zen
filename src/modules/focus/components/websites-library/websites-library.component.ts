@@ -9,9 +9,11 @@ import {
 import { CopyToClipboardDirective } from '../../../common/directives/copy.directive';
 import { PopupDirective } from '../../../common/directives/popup.directive';
 import { CHROME_STORAGE_KEY_ENUM } from '../../../common/enums/chrome-storage-key.enum';
+import { PERMISSION_LVL_ENUM } from '../../../common/enums/permission-lvl.enum';
 import { cleanProtocolHelper } from '../../../common/helpers/clean-protocol.helper';
 import { cleanUrlHelper } from '../../../common/helpers/clean-url.helper';
 import { FaviconHelper } from '../../../common/helpers/favicon.helper';
+import { buildRequestDomainVariants } from '../../../common/helpers/request-domain-variants.helper';
 import { IFocus } from '../../../common/models/focus.model';
 import { ChromeStorageService } from '../../../common/services/chrome-storage.service';
 import { FocusService } from '../../services/focus.service';
@@ -95,18 +97,27 @@ export class WebsitesLibraryComponent implements OnInit {
 
   protected readonly openedFolders = signal<Set<string>>(new Set(this.folders()));
   protected readonly newFolderName = signal<string>('');
+  protected readonly newLink = signal<{ url: string; type: string; isDuplicate: boolean } | null>(
+    null
+  );
+  protected readonly deleteLink = signal<{ url: string; folder: string } | null>(null);
   protected readonly deleteFolderName = signal<string>('');
-  protected readonly isCreateNewFolderPopupShown = signal<boolean>(false);
+  protected readonly isRemoveLinkPopupShown = signal<boolean>(false);
+  protected readonly isCreateFolderPopupShown = signal<boolean>(false);
+  protected readonly isCreateLinkPopupShown = signal<boolean>(false);
   protected readonly isDeleteFolderPopupShown = signal<boolean>(false);
+  protected readonly isDeleteLinkPopupShown = signal<boolean>(false);
 
   protected readonly emojiCollection = FOLDER_EMOJI_COLLECTION;
+  protected readonly permissionLvls = PERMISSION_LVL_ENUM;
   protected readonly icons = ICONS;
   protected readonly uiText = UI_TEXT;
-  protected readonly cleanProtocolHelper = cleanProtocolHelper;
   protected readonly presetFolderNames = IFocus.EWebSiteType;
 
   public readonly isWebsitesPopupShown = model<boolean>(false);
   protected readonly scrollToFolderItems = viewChildren<ElementRef>('folder');
+
+  protected readonly cleanProtocolHelper = cleanProtocolHelper;
 
   public ngOnInit(): void {
     this.#initWebsitesFoldersState();
@@ -178,10 +189,25 @@ export class WebsitesLibraryComponent implements OnInit {
     this.isWebsitesPopupShown.set(false);
     this.onCloseCreateNewFolderPopup();
   }
+  // Create folder
+  protected onOpenCreateNewFolderPopup(): void {
+    this.isCreateFolderPopupShown.set(true);
+  }
 
   protected onCloseCreateNewFolderPopup(): void {
-    this.isCreateNewFolderPopupShown.set(false);
+    this.isCreateFolderPopupShown.set(false);
     this.newFolderName.set('');
+  }
+
+  protected onAddNewFolder(): void {
+    this.#libraryService.addNewFolder(this.newFolderName());
+    this.isCreateFolderPopupShown.set(false);
+  }
+
+  // Delete folder
+  protected onOpenDeleteFolderPopup(folder: string): void {
+    this.deleteFolderName.set(folder);
+    this.isDeleteFolderPopupShown.set(true);
   }
 
   protected onCloseDeleteFolderPopup(): void {
@@ -189,25 +215,91 @@ export class WebsitesLibraryComponent implements OnInit {
     this.deleteFolderName.set('');
   }
 
-  protected onOpenCreateNewFolderPopup(): void {
-    this.isCreateNewFolderPopupShown.set(true);
-  }
-
-  protected onOpenDeleteFolderPopup(folder: string): void {
-    this.deleteFolderName.set(folder);
-    this.isDeleteFolderPopupShown.set(true);
-  }
-
-  protected onAddNewFolder(): void {
-    this.#libraryService.addNewFolder(this.newFolderName());
-    this.isCreateNewFolderPopupShown.set(false);
-  }
-
   protected onDeleteFolder(): void {
     this.#libraryService.removeFolderFromLibrary(this.deleteFolderName());
     this.isDeleteFolderPopupShown.set(false);
   }
 
+  // Create Link
+  protected onOpenCreateLinkPopup(folder: string): void {
+    this.newLink.set({
+      url: '',
+      type: folder,
+      isDuplicate: false,
+    });
+    this.isCreateLinkPopupShown.set(true);
+  }
+
+  protected onAddNewLink(): void {
+    const newLink = this.newLink();
+
+    if (newLink) {
+      this.#libraryService.addWebsiteToFolder(newLink.type, {
+        id: newLink.url,
+        description: newLink.url,
+        name: newLink.url,
+        imageUrl: FaviconHelper.getGoogleUrl(newLink.url),
+        iconUrl: '',
+        isActivated: false,
+        type: newLink.type,
+        url: newLink.url,
+        permissionLvl: PERMISSION_LVL_ENUM.FULL_ACCESS,
+      });
+    }
+
+    this.onCloseCreateLinkPopup();
+  }
+
+  protected onCloseCreateLinkPopup(): void {
+    this.newLink.set(null);
+    this.isCreateLinkPopupShown.set(false);
+  }
+
+  protected onInputNewLinkUrl(url: string): void {
+    const current = this.newLink();
+    if (!current) return;
+
+    const trimmedUrl = url.trim();
+
+    const inputBaseDomain = buildRequestDomainVariants(trimmedUrl)[0];
+
+    const lib = this.library();
+    const isDuplicate =
+      !!inputBaseDomain &&
+      Object.values(lib)
+        .flat()
+        .some(site => buildRequestDomainVariants(site.url)[0] === inputBaseDomain);
+
+    this.newLink.set({
+      ...current,
+      url: cleanUrlHelper(url),
+      isDuplicate,
+    });
+  }
+
+  // Delete link
+  protected onOpenDeleteLinkPopup(folder: string, url: string): void {
+    this.deleteLink.set({ folder, url });
+    this.isDeleteLinkPopupShown.set(true);
+  }
+
+  protected onCloseDeleteLinkPopup(): void {
+    this.isDeleteLinkPopupShown.set(false);
+    this.deleteLink.set(null);
+  }
+
+  protected onDeleteLink(): void {
+    const data = this.deleteLink();
+
+    if (data) {
+      const { url, folder } = data;
+      this.#libraryService.removeWebsiteFromFolder(folder, url);
+    }
+
+    this.onCloseDeleteLinkPopup();
+  }
+
+  // Tree helpers
   protected isFolderOpen(type: string): boolean {
     return this.openedFolders().has(type);
   }
@@ -215,8 +307,6 @@ export class WebsitesLibraryComponent implements OnInit {
   protected isFolderSystem(folderName: string): boolean {
     return folderName in WEBSITES_LIBRARY_PRESET;
   }
-
-  // TODO: add opportunity to manage websites in library
 
   protected getFavicon(url: string): string {
     return FaviconHelper.getGoogleUrl(url);

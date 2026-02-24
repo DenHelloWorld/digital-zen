@@ -116,11 +116,6 @@ export class BackgroundService {
               safeSendResponse(result);
               break;
             }
-            case CHROME_COMMAND_ENUM.TOGGLE_QUICK_FOCUS: {
-              const result = await this.#focusService.toggleQuickFocus(message.siteUrl);
-              safeSendResponse(result);
-              break;
-            }
             case CHROME_COMMAND_ENUM.GET_ACTIVE_TAB: {
               const tab = await this.getActiveTab();
 
@@ -198,6 +193,40 @@ export class BackgroundService {
                 safeSendResponse({
                   success: false,
                   error: errorMessage,
+                });
+              }
+              break;
+            }
+
+            case CHROME_COMMAND_ENUM.ADD_WEBSITE_TO_FOLDER: {
+              try {
+                await this.#focusService.addWebsiteToFolder(message.folder, message.website);
+                safeSendResponse({ success: true });
+              } catch (error: unknown) {
+                safeSendResponse({
+                  success: false,
+                  error: error instanceof Error ? error.message : 'Unknown error',
+                });
+              }
+              break;
+            }
+            case CHROME_COMMAND_ENUM.ADD_WEBSITE_TO_SYSTEM: {
+              await this.#focusService.addWebsiteToSystem(
+                message.folder,
+                message.website,
+                message.periodId
+              );
+              sendResponse({ success: true });
+              break;
+            }
+            case CHROME_COMMAND_ENUM.REMOVE_WEBSITE: {
+              try {
+                await this.#focusService.removeWebsiteFromFolder(message.folder, message.url);
+                safeSendResponse({ success: true });
+              } catch (error: unknown) {
+                safeSendResponse({
+                  success: false,
+                  error: error instanceof Error ? error.message : 'Unknown error',
                 });
               }
               break;

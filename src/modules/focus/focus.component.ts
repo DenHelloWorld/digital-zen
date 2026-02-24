@@ -73,8 +73,8 @@ export class FocusComponent {
   });
 
   protected readonly isWebsitesPopupShown = signal<boolean>(false);
-  protected readonly isCurrentTabInCurrentPeriod: Signal<boolean> =
-    this.#focusService.isCurrentTabInCurrentPeriod;
+  protected readonly isCurrentTabInSystem: Signal<boolean> =
+    this.#focusService.isCurrentTabInSystem;
   protected readonly isPeriodCurrentlyApplicable: Signal<boolean> =
     this.#focusService.isPeriodCurrentlyApplicable;
   protected readonly isCurrentTabUnblockable: Signal<boolean> = computed(() => {

@@ -60,14 +60,10 @@
       >
 
       @let tabIcon =
-        !isTabButtonDisabled()
-          ? isCurrentTabInCurrentPeriod()
-            ? icons.SUCCESS
-            : icons.ADD_LINK
-          : null;
+        !isTabButtonDisabled() ? (isCurrentTabInSystem() ? icons.SUCCESS : icons.ADD_LINK) : null;
       <div
         class="dz-icon-box dz-icon-box--sm"
-        [class.dz-icon-box--success]="isCurrentTabInCurrentPeriod()"
+        [class.dz-icon-box--success]="isCurrentTabInSystem()"
       >
         <ng-container
           *ngTemplateOutlet="

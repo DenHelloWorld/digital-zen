@@ -174,6 +174,7 @@ img {
   --btn-size-nm: 38px;
   --color-glass-text: rgba(71, 85, 105, 0.7);
   interpolate-size: allow-keywords;
+  --btn-size-xxs: 18px;
 }
 
 .light {
@@ -206,11 +207,15 @@ img {
   display: flex;
   align-items: center;
   border-radius: var(--radius);
-  padding: var(--spacing-xs);
+  //padding: var(--spacing-xs);
   background-color: transparent;
   justify-content: center;
   aspect-ratio: 1/1;
   gap: var(--spacing-xs);
+
+  &--xxs {
+    height: var(--btn-size-xxs);
+  }
 
   &--xs {
     height: var(--btn-size-xs);
