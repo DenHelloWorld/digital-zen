@@ -1,5 +1,6 @@
 import { ICONS } from '../../constants/icons.const';
 import { UI_TEXT } from '../../constants/ui-text.const';
+import { CopyToClipboardDirective } from '../../directives/copy.directive';
 import { CommonModule } from '@angular/common';
 import {
   ChangeDetectionStrategy,
@@ -37,6 +38,8 @@ import {
   imports: [
     // angular modules
     CommonModule,
+    // directives
+    CopyToClipboardDirective,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

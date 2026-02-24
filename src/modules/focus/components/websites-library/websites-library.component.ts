@@ -114,8 +114,8 @@ export class WebsitesLibraryComponent implements OnInit {
   protected readonly uiText = UI_TEXT;
   protected readonly presetFolderNames = IFocus.EWebSiteType;
 
-  public readonly isWebsitesPopupShown = model<boolean>(false);
   protected readonly scrollToFolderItems = viewChildren<ElementRef>('folder');
+  public readonly isWebsitesPopupShown = model<boolean>(false);
 
   protected readonly cleanProtocolHelper = cleanProtocolHelper;
 

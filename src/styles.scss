@@ -512,12 +512,9 @@ summary::marker {
     border: none;
     background-color: transparent;
     box-shadow: none;
-    padding: 0;
     border-radius: 0;
     color: inherit;
     font-size: inherit;
-    width: 100%;
-    height: 100%;
     &:focus {
       box-shadow: none;
     }
@@ -619,4 +616,9 @@ summary::marker {
   &-xxl {
     font-size: var(--font-size-xxl);
   }
+}
+
+.dz-form__error {
+  width: 100%;
+  margin: var(--list-gap) 0 0 0;
 }

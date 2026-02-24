@@ -78,20 +78,37 @@
       {{ uiText.PERIOD_FORM.LABELS.NAME }}
     </span>
 
-    <input
-      class="dz-input"
-      [class.dz-input--invalid]="form.controls.name.invalid"
-      [placeholder]="uiText.PERIOD_FORM.PLACEHOLDERS.NAME"
-      formControlName="name"
-    />
+    <input class="dz-input dz-input--free" placeholder="... ✏️" formControlName="name" />
 
     @if (form.controls.name.hasError('duplicatePeriodName') && form.controls.name.touched) {
-      <ng-container
-        *ngTemplateOutlet="
-          errorBanner;
-          context: { message: uiText.PERIOD_FORM.ERRORS.DUPLICATE_NAME }
-        "
-      ></ng-container>
+      <div class="dz-form__error">
+        <ng-container
+          *ngTemplateOutlet="
+            errorBanner;
+            context: { message: uiText.PERIOD_FORM.ERRORS.DUPLICATE_NAME, href: icons.ERROR }
+          "
+        />
+      </div>
+    }
+    @if (!form.controls.name.value) {
+      <div class="dz-form__error">
+        <ng-container
+          *ngTemplateOutlet="errorBanner; context: { message: 'Enter Name', href: icons.ERROR }"
+        />
+      </div>
+    }
+    @if (form.controls.name.hasError('maxlength')) {
+      <div class="dz-form__error">
+        <ng-container
+          *ngTemplateOutlet="
+            errorBanner;
+            context: {
+              message: 'Name is too long',
+              href: icons.ERROR,
+            }
+          "
+        />
+      </div>
     }
   </div>
 
@@ -220,23 +237,6 @@
     </span>
 
     <ng-template #websiteIconTemplate let-site>
-      @let statusRes = siteStatuses()[site.url];
-      @let isOnline = statusRes?.value();
-
-      <div
-        class="dz-icon-box dz-icon-box--sm dz-icon-box--error"
-        [title]="isOnline ? 'Online' : 'Offline'"
-        [class.dz-icon-box--success]="isOnline"
-      >
-        @if (isOnline === undefined) {
-          <ng-container *ngTemplateOutlet="icon; context: { href: icons.WIFI_FIND }"></ng-container>
-        } @else if (isOnline) {
-          <ng-container *ngTemplateOutlet="icon; context: { href: icons.WIFI }"></ng-container>
-        } @else {
-          <ng-container *ngTemplateOutlet="icon; context: { href: icons.WIFI_OFF }"></ng-container>
-        }
-      </div>
-
       <div class="dz-icon-box dz-icon-box--sm" [title]="site.url">
         <input
           class="dz-input dz-input--checkbox"
@@ -325,6 +325,7 @@
 
   <div class="dz-form__field--fit dz-box shadow shadow--hoverless">
     <span class="dz-form__hint">
+      <span class="dz-form__required">{{ uiText.COMMON.REQUIRED_MARKER }}</span>
       {{ uiText.PERIOD_FORM.LABELS.TIME_RANGE }}
     </span>
 
@@ -336,18 +337,11 @@
       [idKey]="'id'"
       orientation="horizontal"
     />
-  </div>
 
-  <div class="dz-form__field dz-box shadow shadow--hoverless">
     <ul class="dz-list dz-list--horizontal dz-list--full">
       <li class="dz-form__field--fit">
-        <span class="dz-form__hint">
-          <span class="dz-form__required">{{ uiText.COMMON.REQUIRED_MARKER }}</span>
-          {{ uiText.PERIOD_FORM.LABELS.START_FROM }}
-        </span>
-
         <input
-          class="dz-input dz-input--fit"
+          class="dz-input dz-input--free"
           [class.dz-input--invalid]="form.errors?.['invalidTimeRange']"
           [placeholder]="uiText.PERIOD_FORM.PLACEHOLDERS.START_FROM"
           type="time"
@@ -356,13 +350,8 @@
       </li>
 
       <li class="dz-form__field--fit">
-        <span class="dz-form__hint">
-          <span class="dz-form__required">{{ uiText.COMMON.REQUIRED_MARKER }}</span>
-          {{ uiText.PERIOD_FORM.LABELS.END_TO }}
-        </span>
-
         <input
-          class="dz-input dz-input--fit"
+          class="dz-input dz-input--free"
           [class.dz-input--invalid]="form.errors?.['invalidTimeRange']"
           [placeholder]="uiText.PERIOD_FORM.PLACEHOLDERS.END_TO"
           type="time"

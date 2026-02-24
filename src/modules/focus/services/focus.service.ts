@@ -99,7 +99,6 @@ export class FocusService {
 
   public readonly currentPeriod = this.#currentPeriod.asReadonly();
   public readonly activeTab = this.#activeTab.asReadonly();
-  public readonly allLibraryWebsites = this.#allLibraryWebsites.asReadonly();
 
   public readonly progress = computed(() => {
     if (!this.isPeriodCurrentlyApplicable()) {
@@ -296,8 +295,16 @@ export class FocusService {
     }
   }
 
-  public addCurrentTabToPeriod(isActivated = false): void {
+  public addCurrentTabToLibrary(isActivated = false): void {
     if (!this.#isChromeRuntime) return;
+
+    if (this.isCurrentTabInSystem()) {
+      this.#toastService.show({
+        message: TOAST_MESSAGES_ENUM.ALREADY_ADDED,
+        type: TOAST_TYPE_ENUM.WARN,
+      });
+      return;
+    }
 
     const tab = this.activeTab();
     const period = this.currentPeriod();
@@ -323,7 +330,7 @@ export class FocusService {
         iconUrl: isSvgIcon(iconUrl) ? iconUrl : ICONS.GLOBE,
         description: tab.title || cleanedUrl,
         imageUrl: isImageIcon(iconUrl) ? iconUrl : '',
-        type: IFocus.EWebSiteType.DEFAULT, // Папка по умолчанию
+        type: IFocus.EWebSiteType.DEFAULT,
         isActivated,
         permissionLvl: PERMISSION_LVL_ENUM.FULL_ACCESS,
       };

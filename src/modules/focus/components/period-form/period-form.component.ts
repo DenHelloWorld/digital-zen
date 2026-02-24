@@ -25,7 +25,6 @@ import { logger } from '../../../common/helpers/logger';
 import { setTimeFromStr } from '../../../common/helpers/time.helper';
 import { IFocusForm } from '../../../common/models/focus-form.model';
 import { IFocus } from '../../../common/models/focus.model';
-import { WebsiteConnectivityProvider } from '../../../common/providers/website-connectivity.provider';
 import { MiniRouterService } from '../../../common/services/mini-router.service';
 import { arrayMinLengthValidator } from '../../../common/validators/array-min-length.validator';
 import { noUnactivatableWebsitesValidator } from '../../../common/validators/no-unactivatable-websites.validator';
@@ -45,8 +44,6 @@ import {
   AfterViewInit,
   ElementRef,
   viewChild,
-  resource,
-  ResourceRef,
   Signal,
   signal,
   untracked,
@@ -105,7 +102,6 @@ export class PeriodFormComponent implements OnInit, AfterViewInit {
   readonly #logger = logger.createLogger('PeriodFormComponent');
 
   readonly #maxPeriodNameLength = 100;
-  readonly #siteStatusesCache = new Map<string, ResourceRef<boolean | undefined>>();
 
   protected readonly payload = this.#router.payload as Signal<{
     period: IFocus.Period;
@@ -155,12 +151,9 @@ export class PeriodFormComponent implements OnInit, AfterViewInit {
     WEBSITE_FACEBOOK,
   ]);
 
-  protected readonly siteStatuses = signal<Record<string, ResourceRef<boolean | undefined>>>({});
-
   protected readonly behaviourBlock = viewChild<ElementRef>('behaviourBlock');
 
   public ngOnInit(): void {
-    // TODO: отобразить здесь вебсайты как в попапе или просто показывать здесь тот же попап.
     this.#initForm();
     this.#loadPeriodData();
     this.#setupValidatorUpdates();
@@ -185,10 +178,13 @@ export class PeriodFormComponent implements OnInit, AfterViewInit {
     effect(
       () => {
         const sites = this.selectedWebSites();
-        const cleaned = getUniqueWebsitesHelper(sites);
+        const cleaned = getUniqueWebsitesHelper(sites).map(site => ({
+          ...site,
+          type: site.type ?? IFocus.EWebSiteType.DEFAULT,
+        }));
 
         untracked(() => {
-          this.form.controls.webSites.setValue(cleaned);
+          this.form.controls.webSites.setValue(cleaned, { emitEvent: false });
 
           if (JSON.stringify(sites) !== JSON.stringify(cleaned)) {
             this.selectedWebSites.set(cleaned);
@@ -216,33 +212,6 @@ export class PeriodFormComponent implements OnInit, AfterViewInit {
 
         this.form.controls.startFrom.setValue(timeRange.startFrom);
         this.form.controls.endTo.setValue(timeRange.endTo);
-      },
-      { injector: this.#injector }
-    );
-
-    effect(
-      () => {
-        const sites = this.selectedWebSites();
-        let hasChanged = false;
-        const currentMap = { ...this.siteStatuses() };
-
-        sites.forEach(site => {
-          if (!this.#siteStatusesCache.has(site.url)) {
-            const res = untracked(() =>
-              resource({
-                loader: () => WebsiteConnectivityProvider.isAlive(site.url),
-                injector: this.#injector,
-              })
-            );
-            this.#siteStatusesCache.set(site.url, res);
-            currentMap[site.url] = res;
-            hasChanged = true;
-          }
-        });
-
-        if (hasChanged) {
-          this.siteStatuses.set(currentMap);
-        }
       },
       { injector: this.#injector }
     );
@@ -369,14 +338,11 @@ export class PeriodFormComponent implements OnInit, AfterViewInit {
         id: this.#fb.nonNullable.control<string>(
           `${Date.now()}-${Math.floor(Math.random() * 10000)}`
         ),
-        name: this.#fb.nonNullable.control(
-          `New Period ${(this.#focusService.periods()?.length ?? 0) + 1}`,
-          [
-            requiredTrimmedValidator,
-            uniquePeriodNameValidator(periods, currentPeriodId),
-            Validators.maxLength(this.#maxPeriodNameLength),
-          ]
-        ),
+        name: this.#fb.nonNullable.control('', [
+          requiredTrimmedValidator,
+          uniquePeriodNameValidator(periods, currentPeriodId),
+          Validators.maxLength(this.#maxPeriodNameLength),
+        ]),
         description: this.#fb.nonNullable.control<string | null>(null),
         startFrom: this.#fb.control<string | null>(null),
         endTo: this.#fb.control<string | null>(null),

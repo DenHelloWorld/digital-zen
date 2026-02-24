@@ -144,7 +144,7 @@ export class FocusComponent {
   }
 
   protected onAddCurrentTab(): void {
-    this.#focusService.addCurrentTabToPeriod(true);
+    this.#focusService.addCurrentTabToLibrary(true);
   }
 
   protected onEditCurrentPeriod(): void {

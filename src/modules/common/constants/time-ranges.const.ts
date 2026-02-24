@@ -2,7 +2,7 @@ import { IFocus } from '../models/focus.model';
 
 export const MANUAL_TIME_RANGE: Readonly<IFocus.TimeRange> = Object.freeze({
   id: 'MANUAL_RANGE',
-  name: 'Manual range',
+  name: 'Manual',
   description: 'Custom time range',
   startFrom: '00:00',
   endTo: '23:59',
@@ -10,7 +10,7 @@ export const MANUAL_TIME_RANGE: Readonly<IFocus.TimeRange> = Object.freeze({
 
 export const MORNING_TIME_RANGE: Readonly<IFocus.TimeRange> = Object.freeze({
   id: 'MORNING_HOURS',
-  name: 'Morning hours',
+  name: 'Morning',
   description: 'From 06:00 to 09:00',
   startFrom: '06:00',
   endTo: '09:00',
@@ -18,7 +18,7 @@ export const MORNING_TIME_RANGE: Readonly<IFocus.TimeRange> = Object.freeze({
 
 export const WORK_TIME_RANGE: Readonly<IFocus.TimeRange> = Object.freeze({
   id: 'WORK_HOURS',
-  name: 'Work hours',
+  name: 'Work',
   description: 'From 09:00 to 17:00',
   startFrom: '09:00',
   endTo: '17:00',
@@ -26,7 +26,7 @@ export const WORK_TIME_RANGE: Readonly<IFocus.TimeRange> = Object.freeze({
 
 export const EVENING_TIME_RANGE: Readonly<IFocus.TimeRange> = Object.freeze({
   id: 'EVENING_HOURS',
-  name: 'Evening hours',
+  name: 'Evening',
   description: 'From 17:00 to 21:00',
   startFrom: '17:00',
   endTo: '21:00',
