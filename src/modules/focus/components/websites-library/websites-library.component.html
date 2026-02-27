@@ -185,10 +185,10 @@
 
     <main class="dz-popup-content__main">
       <input
-        class="dz-input dz-input--free font-lg"
+        class="dz-input font-lg"
         [(ngModel)]="newFolderName"
         type="text"
-        placeholder="... ✏️"
+        placeholder="folder name... ✏️"
       />
 
       <small class="hint">{{ uiText.WEBSITE_LIBRARY.YOU_CAN_ADD_EMOJI }}</small>
@@ -296,12 +296,12 @@
 
     <main class="dz-popup-content__main">
       <input
-        class="dz-input dz-input--free font-lg"
+        class="dz-input font-lg"
         #linkInput
         [value]="newLink()?.url"
         (input)="onInputNewLinkUrl(linkInput.value)"
         type="text"
-        placeholder="... ✏️"
+        placeholder="url... ✏️"
       />
     </main>
 

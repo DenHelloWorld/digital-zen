@@ -145,6 +145,8 @@ a {
 }
 
 .dz-accordion {
+  background-color: transparent;
+
   &__header {
     &--hoverless {
       pointer-events: none;
@@ -194,11 +196,6 @@ img {
   }
 }
 
-.dz-accordion {
-  background-color: transparent;
-  border: 1px solid color-mix(in srgb, var(--color-component-bg-light), white 20%);
-}
-
 .shadow {
   border: 1px solid color-mix(in srgb, var(--color-component-bg-light), white 20%);
 }
@@ -224,6 +221,10 @@ img {
 
   &--sm {
     height: var(--btn-size-sm);
+  }
+
+  &--nm {
+    height: var(--btn-size-nm);
   }
 
   &--md {
@@ -385,10 +386,10 @@ summary::marker {
 @keyframes breathe {
   0%,
   100% {
-    filter: brightness(1);
+    filter: brightness(0.7);
   }
   50% {
-    filter: brightness(1.2);
+    filter: brightness(1.1);
   }
 }
 
@@ -506,23 +507,31 @@ summary::marker {
     }
   }
 }
-
+.text-center {
+  text-align: center;
+}
 .dz-input {
-  &--free {
-    border: none;
-    background-color: transparent;
-    box-shadow: none;
-    border-radius: 0;
-    color: inherit;
-    font-size: inherit;
-    &:focus {
-      box-shadow: none;
+  background-color: transparent;
+  &--hidden {
+    opacity: 0;
+    width: 0;
+    height: 0;
+    padding: 0;
+    margin: 0;
+    pointer-events: none;
+  }
+
+  &[type='time'] {
+    padding: 0;
+    &::-webkit-calendar-picker-indicator {
+      display: none !important;
     }
   }
 
   &::placeholder {
     color: var(--color-glass-text);
   }
+
   &--checkbox {
     cursor: pointer;
     width: var(--btn-size-xs);
@@ -621,4 +630,8 @@ summary::marker {
 .dz-form__error {
   width: 100%;
   margin: var(--list-gap) 0 0 0;
+}
+
+.relative {
+  position: relative;
 }

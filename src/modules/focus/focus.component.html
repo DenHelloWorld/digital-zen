@@ -77,19 +77,11 @@
     </button>
   </div>
 
-  <button
-    class="dz-button dz-button--sm library-btn"
-    [title]="uiText.COMMON.WEBSITE_LIBRARY"
-    (click)="onOpenWebsitesList()"
-  >
-    <ng-container *ngTemplateOutlet="icon; context: { href: icons.GLOBE_BOOK }" />
-  </button>
-
   <dz-websites-library-popup [(isWebsitesPopupShown)]="isWebsitesPopupShown" />
 </div>
 
 <div class="dz-focus__main">
-  @let bgByStatus = './bg/' + status() + '.png';
+  @let bgByStatus = './bg/' + currentPeriod()?.blockBehaviour + '.png';
   <div
     class="dz-focus__widget dz-box round square"
     [style.--bg-url]="'url(' + bgByStatus + ')'"
@@ -103,7 +95,7 @@
   >
     <div class="dz-box__bg dz-box__bg--transparrent breathe"></div>
 
-    <div class="dz-focus__timer dz-focus__timer--focus">
+    <div class="dz-focus__bahaviour">
       <div class="dz-icon-box dz-icon-box--md">
         <div class="dz-badge" [title]="'More details'">
           <button
@@ -126,14 +118,12 @@
       </div>
     </div>
 
-    <div class="dz-focus__weekdays">
-      <dz-weekdays-selector
-        [entities]="allDays"
-        [selectedEntities]="selectedDays()"
-        [idKey]="'day'"
-        [isSelectable]="false"
-      />
-    </div>
+    <dz-weekdays-selector
+      [entities]="allDays"
+      [selectedEntities]="selectedDays()"
+      [idKey]="'day'"
+      [isSelectable]="false"
+    />
 
     <div class="dz-focus__time-group">
       <div class="dz-box">
@@ -162,6 +152,20 @@
         </div>
       }
     </div>
+
+    <button
+      class="dz-button dz-button--md dz-button--ghost shadow shadow--hoverless relative"
+      [title]="uiText.COMMON.WEBSITE_LIBRARY"
+      (click)="onOpenWebsitesList()"
+    >
+      <ng-container *ngTemplateOutlet="icon; context: { href: icons.GLOBE_BOOK }" />
+
+      <div class="dz-badge" [title]="'Amount of active websites'">
+        <span class="hint hint--activated shadow shadow--hoverless">{{
+          activeWebsitesCount()
+        }}</span>
+      </div>
+    </button>
   </div>
 </div>
 

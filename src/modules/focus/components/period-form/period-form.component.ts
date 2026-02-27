@@ -1,4 +1,3 @@
-import { DynamicInputComponent } from '../../../common/components/dynamic-input/dynamic-input.component';
 import { MultiSelectorComponent } from '../../../common/components/multi-selector/multi-selector.component';
 import { SwitchComponent } from '../../../common/components/switch/switch.component';
 import { WeekdaysSelectorComponent } from '../../../common/components/weekdays-selector/weekdays-selector.component';
@@ -12,6 +11,7 @@ import {
 import { UI_TEXT } from '../../../common/constants/ui-text.const';
 import { VALIDATION_ERROR_KEYS } from '../../../common/constants/validation-errors.const';
 import { WEBSITE_FACEBOOK, WEBSITE_TIKTOK } from '../../../common/constants/websites.const';
+import { ProgressBorderDirective } from '../../../common/directives/progress-border.directive';
 import {
   BLOCK_BEHAVIOUR_ENUM,
   BlockBehaviourType,
@@ -22,7 +22,7 @@ import { cleanUrlHelper } from '../../../common/helpers/clean-url.helper';
 import { FaviconHelper } from '../../../common/helpers/favicon.helper';
 import { getUniqueWebsitesHelper } from '../../../common/helpers/get-unique-websites.helper';
 import { logger } from '../../../common/helpers/logger';
-import { setTimeFromStr } from '../../../common/helpers/time.helper';
+import { getTimeInMilliseconds, setTimeFromStr } from '../../../common/helpers/time.helper';
 import { IFocusForm } from '../../../common/models/focus-form.model';
 import { IFocus } from '../../../common/models/focus.model';
 import { MiniRouterService } from '../../../common/services/mini-router.service';
@@ -50,9 +50,9 @@ import {
   WritableSignal,
   computed,
 } from '@angular/core';
-import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed, toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { distinctUntilChanged, map } from 'rxjs';
+import { distinctUntilChanged, interval, map } from 'rxjs';
 
 /**
  * Period form component for creating and editing focus periods
@@ -86,9 +86,9 @@ import { distinctUntilChanged, map } from 'rxjs';
     ReactiveFormsModule,
     // components
     WeekdaysSelectorComponent,
-    DynamicInputComponent,
     MultiSelectorComponent,
     SwitchComponent,
+    ProgressBorderDirective,
   ],
 })
 export class PeriodFormComponent implements OnInit, AfterViewInit {
@@ -102,6 +102,8 @@ export class PeriodFormComponent implements OnInit, AfterViewInit {
   readonly #logger = logger.createLogger('PeriodFormComponent');
 
   readonly #maxPeriodNameLength = 100;
+
+  readonly #tick = toSignal(interval(1000), { initialValue: 0 });
 
   protected readonly payload = this.#router.payload as Signal<{
     period: IFocus.Period;
@@ -125,19 +127,49 @@ export class PeriodFormComponent implements OnInit, AfterViewInit {
   protected readonly blockBehaviours = BLOCK_BEHAVIOUR_ENUM;
   protected readonly allDays: Readonly<IFocus.DayOfWeek>[] = [...ALL_DAYS_OF_WEEK];
 
-  protected readonly excludedSiteKeysArray: (keyof IFocus.WebSite)[] = [
-    'imageUrl',
-    'iconUrl',
-    'isActivated',
-    'description',
-    'type',
-    'name',
-    'permissionLvl',
-  ];
+  protected readonly status = computed(() => {
+    const blockBehaviour = this.form.controls.blockBehaviour.value;
+
+    switch (blockBehaviour) {
+      case BLOCK_BEHAVIOUR_ENUM.WHITELIST:
+        return 'Focus';
+      case BLOCK_BEHAVIOUR_ENUM.BLOCK:
+        return 'Block';
+      case BLOCK_BEHAVIOUR_ENUM.WARN:
+        return 'Warn';
+      default:
+        return 'Idle';
+    }
+  });
 
   protected readonly isCurrentPeriod = computed(
     () => this.#focusService.currentPeriod()?.id === this.payload()?.period?.id
   );
+  protected readonly isFocusActive: Signal<boolean> = computed(
+    () => this.currentPeriod()?.isActive ?? false
+  );
+  protected readonly formProgress = computed(() => {
+    this.#tick();
+    if (!this.form) return 0;
+
+    const { startFrom, endTo } = this.form.getRawValue();
+    if (!startFrom || !endTo) return 0;
+
+    const nowMs = getTimeInMilliseconds(new Date());
+    const dummyDate = new Date();
+    const startMs = getTimeInMilliseconds(setTimeFromStr(dummyDate, startFrom));
+    const endMs = getTimeInMilliseconds(setTimeFromStr(dummyDate, endTo));
+
+    // TODO: add helper? See focus service duplicate
+    const total = startMs <= endMs ? endMs - startMs : 24 * 60 * 60 * 1000 - startMs + endMs;
+
+    if (total === 0) return 0;
+
+    const elapsed = nowMs >= startMs ? nowMs - startMs : 24 * 60 * 60 * 1000 - startMs + nowMs;
+
+    const result = 1 - elapsed / total;
+    return Math.min(Math.max(result, 0), 1);
+  });
 
   protected readonly setAsCurrentPeriod = signal<boolean>(false);
   protected readonly selectedTimeRanges: WritableSignal<IFocus.TimeRange[]> = signal<
@@ -200,14 +232,6 @@ export class PeriodFormComponent implements OnInit, AfterViewInit {
 
         if (timeRange === null) {
           return;
-        }
-
-        this.form.controls.startFrom.enable();
-        this.form.controls.endTo.enable();
-
-        if (timeRange.id !== this.manualTimeRangeId) {
-          this.form.controls.startFrom.disable();
-          this.form.controls.endTo.disable();
         }
 
         this.form.controls.startFrom.setValue(timeRange.startFrom);
@@ -409,18 +433,18 @@ export class PeriodFormComponent implements OnInit, AfterViewInit {
     return `${hours}:${minutes}`;
   }
 
-  protected normalizeWebsite(site: IFocus.WebSite): IFocus.WebSite {
-    return {
-      ...site,
-      url: cleanUrlHelper(site.url),
-    };
-  }
-
-  protected previewNormalizedWebsite(site: IFocus.WebSite | null): string | null {
-    if (!site) {
-      return null;
-    }
-
-    return cleanUrlHelper(site.url);
-  }
+  // protected normalizeWebsite(site: IFocus.WebSite): IFocus.WebSite {
+  //   return {
+  //     ...site,
+  //     url: cleanUrlHelper(site.url),
+  //   };
+  // }
+  //
+  // protected previewNormalizedWebsite(site: IFocus.WebSite | null): string | null {
+  //   if (!site) {
+  //     return null;
+  //   }
+  //
+  //   return cleanUrlHelper(site.url);
+  // }
 }

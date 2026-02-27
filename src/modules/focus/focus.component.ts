@@ -86,7 +86,9 @@ export class FocusComponent {
     const cleanedUrl = cleanUrlHelper(tab.url);
     return WEBSITES_UNBLOCKABLE.some(site => cleanUrlHelper(site.url) === cleanedUrl);
   });
-
+  protected readonly activeWebsitesCount: Signal<number> = computed(() => {
+    return this.currentPeriod()?.webSites.filter(site => site.isActivated).length ?? 0;
+  });
   protected readonly isTabButtonDisabled = computed(() => {
     return this.isCurrentTabUnblockable() || !isHttpUrl(this.activeTab()?.url);
   });
@@ -94,7 +96,7 @@ export class FocusComponent {
   protected readonly statusIcon = computed(() => {
     const period = this.currentPeriod();
 
-    if (!period?.isActive) {
+    if (!period) {
       return this.icons.MOON;
     }
 
@@ -113,7 +115,7 @@ export class FocusComponent {
   protected readonly status = computed(() => {
     const period = this.currentPeriod();
 
-    if (!period?.isActive) {
+    if (!period) {
       return 'Idle';
     }
 

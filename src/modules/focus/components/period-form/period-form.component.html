@@ -6,49 +6,22 @@
 </ng-template>
 
 <!-- Banner templates -->
-<ng-template #errorBanner let-message="message" let-href="href">
-  <div class="dz-banner dz-banner--error dz-banner--sm">
-    @if (href) {
-      <div class="dz-banner__icon">
-        <ng-container *ngTemplateOutlet="icon; context: { href }"></ng-container>
-      </div>
-    }
-
-    <div class="dz-banner__content">
-      <div class="dz-banner__message">{{ message }}</div>
-    </div>
-  </div>
-</ng-template>
-
 <ng-template #warnBanner let-message="message" let-href="href">
-  <div class="dz-banner dz-banner--warn dz-banner--sm">
+  <div class="dz-banner dz-banner--warn dz-banner--sm shadow shadow--hoverless">
     @if (href) {
       <div class="dz-banner__icon">
-        <ng-container *ngTemplateOutlet="icon; context: { href }"></ng-container>
+        <ng-container *ngTemplateOutlet="icon; context: { href }" />
       </div>
     }
 
     <div class="dz-banner__content">
-      <div class="dz-banner__message">{{ message }}</div>
-    </div>
-  </div>
-</ng-template>
-
-<ng-template #infoBanner let-message="message" let-href="href">
-  <div class="dz-banner dz-banner--info dz-banner--sm">
-    @if (href) {
-      <div class="dz-banner__icon">
-        <ng-container *ngTemplateOutlet="icon; context: { href }"></ng-container>
-      </div>
-    }
-
-    <div class="dz-banner__content">
-      <div class="dz-banner__message">{{ message }}</div>
+      <div class="font-xs">{{ message }}</div>
     </div>
   </div>
 </ng-template>
 
 <form class="dz-form" [formGroup]="form">
+  <!-- Status -->
   <div class="dz-form__field dz-box shadow shadow--hoverless">
     <div class="dz-form__hint-wrapper">
       @let activationHint =
@@ -72,307 +45,238 @@
     </div>
   </div>
 
-  <div class="dz-form__field dz-box shadow shadow--hoverless">
-    <span class="dz-form__hint">
-      <span class="dz-form__required">{{ uiText.COMMON.REQUIRED_MARKER }}</span>
-      {{ uiText.PERIOD_FORM.LABELS.NAME }}
-    </span>
+  <!-- Widgets-->
+  <div class="dz-form__field widget-box">
+    @let bgByStatus = './bg/' + form.controls.blockBehaviour.value + '.png';
+    <div
+      class="dz-box widget-box__progress round square"
+      [style.--bg-url]="'url(' + bgByStatus + ')'"
+      [class.light--accent]="isFocusActive()"
+      [progress]="formProgress()"
+      [progressConfig]="{
+        thickness: 10,
+        color: currentPeriod()?.isActive ? colors.ACCENT : colors.DEFAULT,
+      }"
+      dzProgressBorder
+    >
+      <div class="dz-box__bg dz-box__bg--transparrent breathe"></div>
 
-    <input class="dz-input dz-input--free" placeholder="... ✏️" formControlName="name" />
-
-    @if (form.controls.name.hasError('duplicatePeriodName') && form.controls.name.touched) {
-      <div class="dz-form__error">
-        <ng-container
-          *ngTemplateOutlet="
-            errorBanner;
-            context: { message: uiText.PERIOD_FORM.ERRORS.DUPLICATE_NAME, href: icons.ERROR }
-          "
-        />
-      </div>
-    }
-    @if (!form.controls.name.value) {
-      <div class="dz-form__error">
-        <ng-container
-          *ngTemplateOutlet="errorBanner; context: { message: 'Enter Name', href: icons.ERROR }"
-        />
-      </div>
-    }
-    @if (form.controls.name.hasError('maxlength')) {
-      <div class="dz-form__error">
-        <ng-container
-          *ngTemplateOutlet="
-            errorBanner;
-            context: {
-              message: 'Name is too long',
-              href: icons.ERROR,
-            }
-          "
-        />
-      </div>
-    }
-  </div>
-
-  <div class="dz-form__field dz-box shadow shadow--hoverless" #behaviourBlock>
-    <span class="dz-form__hint">
-      <span class="dz-form__required">{{ uiText.COMMON.REQUIRED_MARKER }}</span>
-      Behavior
-    </span>
-
-    <div class="block-behaviour">
-      <div class="dz-box block-behaviour__option shadow shadow--hoverless">
-        <span
-          class="dz-form__hint"
-          [style.color]="
-            form.controls.blockBehaviour.value === blockBehaviours.BLOCK ||
-            form.controls.blockBehaviour.value === blockBehaviours.WARN
-              ? colors.ACCENT
-              : null
-          "
-        >
-          <div class="dz-icon-box dz-icon-box--sm">
-            <ng-container *ngTemplateOutlet="icon; context: { href: icons.BLOCK }"></ng-container>
-
-            Block
-          </div>
-        </span>
-        <button
-          class="dz-button dz-button--free shadow"
-          [class.light--error]="form.controls.blockBehaviour.value === blockBehaviours.BLOCK"
-          (click)="setBlockBehaviour(blockBehaviours.BLOCK)"
-        >
-          @if (form.controls.blockBehaviour.value === blockBehaviours.BLOCK) {
-            <div class="dz-badge" [title]="'More details'">
-              <div class="dz-icon-box dz-icon-box--xs blurred">
-                <ng-container
-                  *ngTemplateOutlet="icon; context: { href: icons.CHECK }"
-                ></ng-container>
-              </div>
+      <div class="widget-box__group">
+        <div class="widget-box__behaviours" #behaviourBlock>
+          <button
+            class="dz-button dz-button--free dz-button--ghost shadow shadow--hoverless relative"
+            (click)="setBlockBehaviour(blockBehaviours.BLOCK)"
+          >
+            <div class="dz-icon-box dz-icon-box--lg">
+              <ng-container *ngTemplateOutlet="icon; context: { href: icons.BLOCK }" />
             </div>
-          }
+            @if (form.controls.blockBehaviour.value === blockBehaviours.BLOCK) {
+              <div class="dz-badge dz-badge--danger round">
+                <div class="dz-icon-box dz-icon-box--xs">
+                  <ng-container *ngTemplateOutlet="icon; context: { href: icons.CHECK }" />
+                </div>
+              </div>
+            }
+          </button>
 
+          <button
+            class="dz-button dz-button--free dz-button--ghost shadow shadow--hoverless relative"
+            (click)="setBlockBehaviour(blockBehaviours.WARN)"
+          >
+            <div class="dz-icon-box dz-icon-box--lg">
+              <ng-container *ngTemplateOutlet="icon; context: { href: icons.WARNING }" />
+            </div>
+
+            @if (form.controls.blockBehaviour.value === blockBehaviours.WARN) {
+              <div class="dz-badge dz-badge--warning round">
+                <div class="dz-icon-box dz-icon-box--xs">
+                  <ng-container *ngTemplateOutlet="icon; context: { href: icons.CHECK }" />
+                </div>
+              </div>
+            }
+          </button>
+
+          <button
+            class="dz-button dz-button--free dz-button--ghost shadow shadow--hoverless relative"
+            (click)="setBlockBehaviour(blockBehaviours.WHITELIST)"
+          >
+            <div class="dz-icon-box dz-icon-box--lg">
+              <ng-container *ngTemplateOutlet="icon; context: { href: icons.PERSON_ZEN }" />
+            </div>
+
+            @if (form.controls.blockBehaviour.value === blockBehaviours.WHITELIST) {
+              <div class="dz-badge dz-badge--primary round">
+                <div class="dz-icon-box dz-icon-box--xs">
+                  <ng-container *ngTemplateOutlet="icon; context: { href: icons.CHECK }" />
+                </div>
+              </div>
+            }
+          </button>
+        </div>
+        <div class="dz-banner dz-banner--sm shadow shadow--hoverless blurred">
+          <div class="dz-banner__content">
+            @switch (form.controls.blockBehaviour.value) {
+              @case (blockBehaviours.BLOCK) {
+                <div class="font-xs text-center">
+                  {{ uiText.PERIOD.BLOCK_BEHAVIOUR.BANNER_BLOCK }}
+                </div>
+              }
+              @case (blockBehaviours.WHITELIST) {
+                <div class="font-xs text-center">
+                  {{ uiText.PERIOD.BLOCK_BEHAVIOUR.BANNER_WHITE_LIST }}
+                </div>
+              }
+              @default {
+                <div class="font-xs text-center">
+                  {{ uiText.PERIOD.BLOCK_BEHAVIOUR.BANNER_WARN }}
+                </div>
+              }
+            }
+          </div>
+        </div>
+
+        <dz-weekdays-selector
+          [(selectedEntities)]="selectedDays"
+          [isSelectable]="true"
+          [entities]="allDays"
+          [idKey]="'day'"
+          size="xs"
+        />
+
+        @if (form.controls.daysOfWeek.invalid) {
           <ng-container
             *ngTemplateOutlet="
-              errorBanner;
-              context: {
-                message: uiText.PERIOD.BLOCK_BEHAVIOUR.BANNER_BLOCK,
-              }
+              warnBanner;
+              context: { href: icons.ERROR, message: uiText.PERIOD_FORM.ERRORS.CHOOSE_DAYS }
             "
-          ></ng-container>
-        </button>
+          />
+        }
 
-        <button
-          class="dz-button dz-button--free shadow"
-          [class.light--warn]="form.controls.blockBehaviour.value === blockBehaviours.WARN"
-          (click)="setBlockBehaviour(blockBehaviours.WARN)"
+        <dz-multi-selector
+          [(selectedEntities)]="selectedTimeRanges"
+          [isOnlySingleSelectable]="true"
+          [entities]="timeRanges"
+          [labelKey]="'name'"
+          [idKey]="'id'"
+          orientation="horizontal"
         >
-          @if (form.controls.blockBehaviour.value === blockBehaviours.WARN) {
-            <div class="dz-badge" [title]="'More details'">
-              <div class="dz-icon-box dz-icon-box--xs blurred">
-                <ng-container
-                  *ngTemplateOutlet="icon; context: { href: icons.CHECK }"
-                ></ng-container>
+          <ng-template #itemTemplate let-entity>
+            <div class="font-xxl square">{{ entity.name }}</div>
+          </ng-template>
+        </dz-multi-selector>
+
+        <div class="time-group fit">
+          @let isManualTimeRange = selectedTimeRanges()[0]?.id === manualTimeRangeId;
+
+          <div class="dz-box fit">
+            <span class="hint">Start</span>
+
+            <div class="time">
+              {{ form.controls.startFrom.value ?? '00:00' }}
+
+              <div class="dz-badge dz-badge--right">
+                @if (isManualTimeRange) {
+                  <button
+                    class="dz-button dz-button--free dz-button--ghost shadow shadow--hoverless"
+                    (click)="startFrom.showPicker()"
+                  >
+                    <div class="dz-icon-box dz-icon-box--xs">
+                      <ng-container *ngTemplateOutlet="icon; context: { href: icons.TIME_RANGE }" />
+                    </div>
+                  </button>
+                }
+                <input
+                  class="dz-input dz-input--hidden"
+                  #startFrom
+                  type="time"
+                  formControlName="startFrom"
+                />
               </div>
             </div>
-          }
+          </div>
 
+          <div class="dz-icon-box dz-icon-box--sm">
+            <ng-container *ngTemplateOutlet="icon; context: { href: icons.LINE_END }" />
+          </div>
+
+          <div class="dz-box fit">
+            <span class="hint">End</span>
+
+            <div class="time fit">
+              {{ form.controls.endTo.value ?? '00:00' }}
+              <div class="dz-badge dz-badge--right">
+                @if (isManualTimeRange) {
+                  <button
+                    class="dz-button dz-button--free dz-button--ghost shadow shadow--hoverless"
+                    (click)="endTo.showPicker()"
+                  >
+                    <div class="dz-icon-box dz-icon-box--xs">
+                      <ng-container *ngTemplateOutlet="icon; context: { href: icons.TIME_RANGE }" />
+                    </div>
+                  </button>
+                }
+                <input
+                  class="dz-input dz-input--hidden"
+                  #endTo
+                  type="time"
+                  formControlName="endTo"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        @if (form.errors?.['invalidTimeRange']) {
           <ng-container
             *ngTemplateOutlet="
               warnBanner;
               context: {
-                message: uiText.PERIOD.BLOCK_BEHAVIOUR.BANNER_WARN,
+                href: icons.ERROR,
+                message: uiText.PERIOD_FORM.ERRORS.INVALID_TIME_RANGE,
               }
             "
-          ></ng-container>
-        </button>
-      </div>
+          />
+        }
 
-      <div class="dz-box block-behaviour__option shadow shadow--hoverless">
-        <span
-          class="dz-form__hint"
-          [style.color]="
-            form.controls.blockBehaviour.value === blockBehaviours.WHITELIST ? colors.ACCENT : null
-          "
-        >
-          <div class="dz-icon-box dz-icon-box--sm">
-            <ng-container
-              *ngTemplateOutlet="icon; context: { href: icons.PERSON_ZEN }"
-            ></ng-container>
-
-            Focus
-          </div>
-        </span>
-
-        <button
-          class="dz-button dz-button--free shadow"
-          [class.light--accent]="form.controls.blockBehaviour.value === blockBehaviours.WHITELIST"
-          (click)="setBlockBehaviour(blockBehaviours.WHITELIST)"
-        >
-          @if (form.controls.blockBehaviour.value === blockBehaviours.WHITELIST) {
-            <div class="dz-badge" [title]="'More details'">
-              <div class="dz-icon-box dz-icon-box--xs blurred">
-                <ng-container
-                  *ngTemplateOutlet="icon; context: { href: icons.CHECK }"
-                ></ng-container>
-              </div>
-            </div>
-          }
-
+        <!-- Name Errors-->
+        @if (form.controls.name.hasError('duplicatePeriodName') && form.controls.name.touched) {
           <ng-container
             *ngTemplateOutlet="
-              infoBanner;
+              warnBanner;
+              context: { message: uiText.PERIOD_FORM.ERRORS.DUPLICATE_NAME, href: icons.ERROR }
+            "
+          />
+        }
+        @if (!form.controls.name.value) {
+          <ng-container
+            *ngTemplateOutlet="warnBanner; context: { message: 'Enter Name', href: icons.ERROR }"
+          />
+        }
+        @if (form.controls.name.hasError('maxlength')) {
+          <ng-container
+            *ngTemplateOutlet="
+              warnBanner;
               context: {
-                message: uiText.PERIOD.BLOCK_BEHAVIOUR.BANNER_WHITE_LIST,
+                message: 'Name is too long',
+                href: icons.ERROR,
               }
             "
-          ></ng-container>
-        </button>
+          />
+        }
       </div>
     </div>
   </div>
 
-  <div class="dz-form__field dz-box shadow shadow--hoverless">
-    <span class="dz-form__hint">
-      <span class="dz-form__required">{{ uiText.COMMON.REQUIRED_MARKER }}</span>
-      {{ uiText.PERIOD_FORM.LABELS.WEBSITES_URLS }}
-    </span>
-
-    <ng-template #websiteIconTemplate let-site>
-      <div class="dz-icon-box dz-icon-box--sm" [title]="site.url">
-        <input
-          class="dz-input dz-input--checkbox"
-          [checked]="site.isActivated"
-          (change)="onToggleBlockedWebsite(site)"
-          type="checkbox"
-        />
-      </div>
-
-      <div class="dz-icon-box dz-icon-box--sm" [title]="site.url">
-        <img
-          class="dz-icon"
-          #imgRef
-          [class.hidden]="imgRef.hidden"
-          [src]="site.imageUrl || getFavicon(site.url)"
-          [alt]="site.url"
-          (error)="imgRef.hidden = true"
-        />
-        @if (imgRef.hidden) {
-          <ng-container *ngTemplateOutlet="icon; context: { href: icons.ERROR }"></ng-container>
-        }
-      </div>
-    </ng-template>
-
-    <dz-dynamic-input
-      [(entities)]="selectedWebSites"
-      [excludeKeys]="excludedSiteKeysArray"
-      [iconTemplate]="websiteIconTemplate"
-      [entityTransformer]="normalizeWebsite"
-      [newEntityPreview]="previewNormalizedWebsite"
-      idKey="id"
-      labelKey="url"
+  <!-- Actions-->
+  <div class="dz-form__actions dz-box shadow shadow--hoverless">
+    <!-- Name-->
+    <input
+      class="dz-input"
+      [class.dz-input--error]="form.controls.name.invalid"
+      placeholder="name... ✏️"
+      formControlName="name"
     />
 
-    @if (form.controls.webSites.hasError(validationErrorKeys.UNACTIVATABLE_NOT_ALLOWED)) {
-      <div class="dz-form__error">
-        <ng-container
-          *ngTemplateOutlet="
-            errorBanner;
-            context: {
-              href: icons.ERROR,
-              message:
-                uiText.PERIOD_FORM.ERRORS.UNBLOCKABLE_WEBSITE +
-                ': ' +
-                (form.controls.webSites.errors?.['invalidUrls']?.join(', ') || ''),
-            }
-          "
-        ></ng-container>
-      </div>
-    } @else if (form.controls.webSites.invalid) {
-      <div class="dz-form__error">
-        <ng-container
-          *ngTemplateOutlet="
-            errorBanner;
-            context: { href: icons.ERROR, message: uiText.PERIOD_FORM.ERRORS.CHOOSE_WEBSITES }
-          "
-        ></ng-container>
-      </div>
-    }
-  </div>
-
-  <div class="dz-form__field dz-box shadow shadow--hoverless">
-    <span class="dz-form__hint">
-      <span class="dz-form__required">{{ uiText.COMMON.REQUIRED_MARKER }}</span>
-      {{ uiText.PERIOD_FORM.LABELS.DAYS_OF_WEEK }}
-    </span>
-
-    <dz-weekdays-selector
-      [(selectedEntities)]="selectedDays"
-      [isSelectable]="true"
-      [entities]="allDays"
-      [idKey]="'day'"
-    />
-
-    @if (form.controls.daysOfWeek.invalid) {
-      <div class="dz-form__error">
-        <ng-container
-          *ngTemplateOutlet="
-            errorBanner;
-            context: { href: icons.ERROR, message: uiText.PERIOD_FORM.ERRORS.CHOOSE_DAYS }
-          "
-        ></ng-container>
-      </div>
-    }
-  </div>
-
-  <div class="dz-form__field--fit dz-box shadow shadow--hoverless">
-    <span class="dz-form__hint">
-      <span class="dz-form__required">{{ uiText.COMMON.REQUIRED_MARKER }}</span>
-      {{ uiText.PERIOD_FORM.LABELS.TIME_RANGE }}
-    </span>
-
-    <dz-multi-selector
-      [(selectedEntities)]="selectedTimeRanges"
-      [isOnlySingleSelectable]="true"
-      [entities]="timeRanges"
-      [labelKey]="'name'"
-      [idKey]="'id'"
-      orientation="horizontal"
-    />
-
-    <ul class="dz-list dz-list--horizontal dz-list--full">
-      <li class="dz-form__field--fit">
-        <input
-          class="dz-input dz-input--free"
-          [class.dz-input--invalid]="form.errors?.['invalidTimeRange']"
-          [placeholder]="uiText.PERIOD_FORM.PLACEHOLDERS.START_FROM"
-          type="time"
-          formControlName="startFrom"
-        />
-      </li>
-
-      <li class="dz-form__field--fit">
-        <input
-          class="dz-input dz-input--free"
-          [class.dz-input--invalid]="form.errors?.['invalidTimeRange']"
-          [placeholder]="uiText.PERIOD_FORM.PLACEHOLDERS.END_TO"
-          type="time"
-          formControlName="endTo"
-        />
-      </li>
-    </ul>
-
-    @if (form.errors?.['invalidTimeRange']) {
-      <div class="dz-form__error">
-        <ng-container
-          *ngTemplateOutlet="
-            errorBanner;
-            context: { href: icons.ERROR, message: uiText.PERIOD_FORM.ERRORS.INVALID_TIME_RANGE }
-          "
-        ></ng-container>
-      </div>
-    }
-  </div>
-
-  <div class="dz-form__actions dz-box dz-box--fit shadow blurred shadow--hoverless">
     <button
       class="dz-button dz-button--sm dz-button--ghost shadow"
       [title]="uiText.PERIOD_FORM.BUTTONS.CANCEL"

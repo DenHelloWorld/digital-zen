@@ -10,6 +10,10 @@
         [disabled]="selection.isReadonly(entity) || !selection.isSelectable()"
         [class.dz-button--activated]="selection.isSelected(entity)"
         [class]="'dz-button--' + size()"
+        [class.dz-button--ghost]="itemTemplate()"
+        [class.dz-button--free]="itemTemplate()"
+        [class.shadow]="itemTemplate()"
+        [class.shadow--hoverless]="itemTemplate()"
         (click)="selection.toggle(entity)"
       >
         @if (itemTemplate()) {

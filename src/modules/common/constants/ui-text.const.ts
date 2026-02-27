@@ -101,9 +101,10 @@ export const UI_TEXT = Object.freeze({
     DEACTIVATED: 'Deactivated',
     ACTIVATE_DISABLED_TOOLTIP: 'Stop focus to activate this period',
     BLOCK_BEHAVIOUR: {
-      BANNER_BLOCK: 'Tabs will be closed for the websites below',
-      BANNER_WARN: 'Warning overlay will appear on these websites',
-      BANNER_WHITE_LIST: 'Only these websites will be accessible. All others will be blocked',
+      BANNER_BLOCK: 'Tabs will be closed for the active websites in library',
+      BANNER_WARN: 'Warning overlay will appear on active websites in library',
+      BANNER_WHITE_LIST:
+        'Only active websites in library will be accessible. All others will be blocked',
     },
   },
 
@@ -145,8 +146,7 @@ export const UI_TEXT = Object.freeze({
 
   // Focus Component
   FOCUS: {
-    ADD_CURRENT_TAB_TITLE: 'Add current website to period',
-    ADD_AND_BLOCK_CURRENT_TAB_TITLE: 'Add current website to period and block',
+    ADD_CURRENT_TAB_TITLE: 'Add current website to library',
     TOGGLE_FOCUS_TITLE: 'Toggle focus session',
     START: 'Start',
     STOP: 'Stop',

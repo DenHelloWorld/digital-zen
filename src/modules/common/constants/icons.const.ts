@@ -82,6 +82,7 @@ export const ICONS = Object.freeze({
   FOLDER_DELETE: '#icon-folder-delete',
   MOVE_DOWN: '#icon-move-down',
   LOCK: '#icon-lock',
+  TIME_RANGE: '#icon-date-range',
 } as const);
 
 /**

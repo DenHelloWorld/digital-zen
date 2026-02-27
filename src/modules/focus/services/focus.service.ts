@@ -99,6 +99,7 @@ export class FocusService {
 
   public readonly currentPeriod = this.#currentPeriod.asReadonly();
   public readonly activeTab = this.#activeTab.asReadonly();
+  public readonly currentTime = this.#currentTime.asReadonly();
 
   public readonly progress = computed(() => {
     if (!this.isPeriodCurrentlyApplicable()) {
@@ -139,16 +140,13 @@ export class FocusService {
     const endMs = getTimeInMilliseconds(period.endTo);
     const currentMs = getTimeInMilliseconds(now);
 
-    // 1. Проверяем, попадаем ли мы в диапазон времени (с учетом полночи)
     if (!isCurrentTimeInRange(now, period.startFrom, period.endTo)) {
       return false;
     }
 
-    // 2. Проверка дня недели
     if (period.daysOfWeek) {
       const spansMidnight = startMs > endMs;
 
-      // Если сейчас "утро" (до конца периода) и интервал ночной — проверяем ВЧЕРАШНИЙ день
       const isMorningOfNextDay = spansMidnight && currentMs < endMs;
       const dayToCheck = isMorningOfNextDay ? (today + 6) % 7 : today;
 
@@ -321,7 +319,6 @@ export class FocusService {
         return;
       }
 
-      // 2. Создаем объект сайта
       const iconUrl = tab.favIconUrl ?? FaviconHelper.getGoogleUrl(cleanedUrl);
       const newSite: IFocus.WebSite = {
         id: cleanedUrl,
@@ -335,10 +332,9 @@ export class FocusService {
         permissionLvl: PERMISSION_LVL_ENUM.FULL_ACCESS,
       };
 
-      // 3. Шлем ОДНУ команду вместо updatePeriod
       chrome.runtime.sendMessage(
         {
-          command: CHROME_COMMAND_ENUM.ADD_WEBSITE_TO_SYSTEM, // Новая команда!
+          command: CHROME_COMMAND_ENUM.ADD_WEBSITE_TO_SYSTEM,
           folder: newSite.type,
           website: newSite,
           periodId: period.id,
