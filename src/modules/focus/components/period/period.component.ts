@@ -8,14 +8,13 @@ import { ProgressBorderDirective } from '../../../common/directives/progress-bor
 import { BLOCK_BEHAVIOUR_ENUM } from '../../../common/enums/block-behaviour.enum';
 import { COLORS_ENUM } from '../../../common/enums/colors.enum';
 import { TOAST_MESSAGES_ENUM } from '../../../common/enums/toast-messages.enum';
+import { TOAST_TYPE_ENUM } from '../../../common/enums/toast-type.enum';
 import { VIEW_ENUM, ViewType } from '../../../common/enums/view.enum';
 import { isHttpUrl } from '../../../common/helpers/is-http-url.helper';
 import { getTimeInMilliseconds, isCurrentTimeInRange } from '../../../common/helpers/time.helper';
 import { IFocus } from '../../../common/models/focus.model';
-import { RemoveProtocolPipe } from '../../../common/pipes/remove-protocol.pipe';
 import { MiniRouterService } from '../../../common/services/mini-router.service';
 import { FocusService } from '../../services/focus.service';
-import { TimeLineComponent } from '../time-line/time-line.component';
 import { CommonModule } from '@angular/common';
 import {
   ChangeDetectionStrategy,
@@ -56,12 +55,11 @@ import { interval } from 'rxjs';
   imports: [
     // angular modules
     CommonModule,
-    // pipes
-    RemoveProtocolPipe,
     // components
-    TimeLineComponent,
     WeekdaysSelectorComponent,
     SwitchComponent,
+
+    // directives
     ProgressBorderDirective,
   ],
 })
@@ -263,7 +261,13 @@ export class PeriodComponent {
   }
 
   protected onIsCurrentPeriodChange(): void {
-    if (this.isCurrentPeriod()) return;
+    if (this.isCurrentPeriod()) {
+      this.#toastService.show({
+        type: TOAST_TYPE_ENUM.WARN,
+        message: TOAST_MESSAGES_ENUM.REQUIRED_PERIOD,
+      });
+      return;
+    }
     this.#focusService.setCurrentPeriod(this.period().id);
   }
 

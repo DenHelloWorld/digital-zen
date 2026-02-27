@@ -35,7 +35,7 @@ export namespace IFocus {
     description: string | null;
     startFrom: Date | null;
     endTo: Date | null;
-    webSites: IFocus.WebSite[];
+    library: Record<string, IFocus.WebSite[]>;
     daysOfWeek: DayOfWeekType[];
     focusedTimes: IFocus.FocusedTime[];
     isActive: boolean;

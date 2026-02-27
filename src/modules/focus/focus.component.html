@@ -76,12 +76,10 @@
       </div>
     </button>
   </div>
-
-  <dz-websites-library-popup [(isWebsitesPopupShown)]="isWebsitesPopupShown" />
 </div>
 
 <div class="dz-focus__main">
-  @let bgByStatus = './bg/' + currentPeriod()?.blockBehaviour + '.png';
+  @let bgByStatus = './bg/' + currentPeriod().blockBehaviour + '.png';
   <div
     class="dz-focus__widget dz-box round square"
     [style.--bg-url]="'url(' + bgByStatus + ')'"
@@ -89,7 +87,7 @@
     [progress]="progress()"
     [progressConfig]="{
       thickness: 10,
-      color: currentPeriod()?.isActive ? colors.ACCENT : colors.DEFAULT,
+      color: currentPeriod().isActive ? colors.ACCENT : colors.DEFAULT,
     }"
     dzProgressBorder
   >
@@ -130,7 +128,7 @@
         <span class="hint">Start</span>
 
         <div class="dz-focus__time">
-          {{ (currentPeriod()?.startFrom | date: 'HH:mm') || '00:00' }}
+          {{ (currentPeriod().startFrom | date: 'HH:mm') || '00:00' }}
         </div>
       </div>
 
@@ -141,7 +139,7 @@
       <div class="dz-box">
         <span class="hint">End</span>
 
-        <div class="dz-focus__time">{{ (currentPeriod()?.endTo | date: 'HH:mm') || '00:00' }}</div>
+        <div class="dz-focus__time">{{ (currentPeriod().endTo | date: 'HH:mm') || '00:00' }}</div>
       </div>
 
       @if (isPeriodCurrentlyApplicable()) {
@@ -179,7 +177,7 @@
     (checkedChange)="onToggleFocus()"
     size="xxl"
   />
-  @let hintText = currentPeriod()?.name || '';
+  @let hintText = currentPeriod().name || '';
 
   <div class="hint full ellipsis" [title]="hintText">{{ hintText }}</div>
 
@@ -199,3 +197,8 @@
     <ng-container *ngTemplateOutlet="icon; context: { href: icons.PLUS }" />
   </button>
 </div>
+
+<dz-websites-library-popup
+  [(isWebsitesPopupShown)]="isWebsitesPopupShown"
+  [(period)]="popupPeriodData"
+/>

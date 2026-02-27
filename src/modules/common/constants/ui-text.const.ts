@@ -103,8 +103,7 @@ export const UI_TEXT = Object.freeze({
     BLOCK_BEHAVIOUR: {
       BANNER_BLOCK: 'Tabs will be closed for the active websites in library',
       BANNER_WARN: 'Warning overlay will appear on active websites in library',
-      BANNER_WHITE_LIST:
-        'Only active websites in library will be accessible. All others will be blocked',
+      BANNER_WHITE_LIST: 'Only active websites in library will be accessible',
     },
   },
 

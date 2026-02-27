@@ -14,7 +14,7 @@
 
 @let p = period();
 @let bgByStatus = './bg/' + p.blockBehaviour + '.png';
-<details class="dz-accordion" [class.dz-accordion--accent]="p.isActive" open>
+<details class="dz-accordion" open>
   <summary class="dz-accordion__header">
     <span class="full">
       <h2 class="hint ellipsis">
@@ -43,6 +43,7 @@
   <div class="dz-box">
     <div
       class="dz-accordion__content round square dz-box"
+      [class.light--accent]="isFocusActive()"
       [progressConfig]="{
         thickness: 10,
         color: p.isActive ? colors.ACCENT : colors.DEFAULT,
@@ -61,35 +62,6 @@
         <div class="hint hint--xl">
           {{ status() }}
         </div>
-      </div>
-
-      <div class="dz-banner dz-banner--sm shadow shadow--hoverless blurred">
-        @switch (p.blockBehaviour) {
-          @case (blockBehaviours.BLOCK) {
-            <ng-container *ngTemplateOutlet="bannerIcon; context: { href: icons.BLOCK }" />
-            <div class="dz-banner__content">
-              <div class="dz-banner__message">{{ uiText.PERIOD.BLOCK_BEHAVIOUR.BANNER_BLOCK }}</div>
-            </div>
-          }
-          @case (blockBehaviours.WHITELIST) {
-            <ng-container
-              *ngTemplateOutlet="bannerIcon; context: { href: icons.PERSON_ZEN }"
-            ></ng-container>
-            <div class="dz-banner__content">
-              <div class="dz-banner__message">
-                {{ uiText.PERIOD.BLOCK_BEHAVIOUR.BANNER_WHITE_LIST }}
-              </div>
-            </div>
-          }
-          @default {
-            <ng-container
-              *ngTemplateOutlet="bannerIcon; context: { href: icons.WARNING }"
-            ></ng-container>
-            <div class="dz-banner__content">
-              <div class="dz-banner__message">{{ uiText.PERIOD.BLOCK_BEHAVIOUR.BANNER_WARN }}</div>
-            </div>
-          }
-        }
       </div>
 
       <div class="weekdays" [class.shake]="isNotScheduledToday()">
@@ -131,6 +103,7 @@
 
       <div class="dz-period-actions">
         @if (isConfirmingDelete()) {
+          <!--          Add popup-->
           <div class="dz-confirm-delete">
             <span class="dz-confirm-message"
               >{{ uiText.PERIOD.CONFIRM_DELETE }} "{{ p.name }}"?</span
@@ -172,12 +145,8 @@
           <ng-container *ngTemplateOutlet="icon; context: { href: icons.DELETE }"></ng-container>
         </button>
 
-        @let editBtnDisabled = period().isActive;
         <button
-          class="dz-button dz-button--md"
-          [class.dz-button--ghost]="!editBtnDisabled"
-          [class.shadow]="!editBtnDisabled"
-          [disabled]="editBtnDisabled"
+          class="dz-button dz-button--md dz-button--ghost shadow"
           [title]="uiText.PERIOD.ARIA_LABELS.EDIT_PERIOD"
           [attr.aria-label]="uiText.PERIOD.ARIA_LABELS.EDIT_PERIOD"
           (click)="onEdit()"

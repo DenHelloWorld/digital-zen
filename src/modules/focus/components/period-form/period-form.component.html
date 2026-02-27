@@ -55,7 +55,7 @@
       [progress]="formProgress()"
       [progressConfig]="{
         thickness: 10,
-        color: currentPeriod()?.isActive ? colors.ACCENT : colors.DEFAULT,
+        color: currentPeriod().isActive ? colors.ACCENT : colors.DEFAULT,
       }"
       dzProgressBorder
     >
@@ -64,53 +64,39 @@
       <div class="widget-box__group">
         <div class="widget-box__behaviours" #behaviourBlock>
           <button
-            class="dz-button dz-button--free dz-button--ghost shadow shadow--hoverless relative"
+            class="dz-button dz-button--free dz-button--ghost shadow shadow--hoverless"
+            [class.dz-button--activated]="
+              form.controls.blockBehaviour.value === blockBehaviours.BLOCK
+            "
             (click)="setBlockBehaviour(blockBehaviours.BLOCK)"
           >
             <div class="dz-icon-box dz-icon-box--lg">
               <ng-container *ngTemplateOutlet="icon; context: { href: icons.BLOCK }" />
             </div>
-            @if (form.controls.blockBehaviour.value === blockBehaviours.BLOCK) {
-              <div class="dz-badge dz-badge--danger round">
-                <div class="dz-icon-box dz-icon-box--xs">
-                  <ng-container *ngTemplateOutlet="icon; context: { href: icons.CHECK }" />
-                </div>
-              </div>
-            }
           </button>
 
           <button
-            class="dz-button dz-button--free dz-button--ghost shadow shadow--hoverless relative"
+            class="dz-button dz-button--free dz-button--ghost shadow shadow--hoverless"
+            [class.dz-button--activated]="
+              form.controls.blockBehaviour.value === blockBehaviours.WARN
+            "
             (click)="setBlockBehaviour(blockBehaviours.WARN)"
           >
             <div class="dz-icon-box dz-icon-box--lg">
               <ng-container *ngTemplateOutlet="icon; context: { href: icons.WARNING }" />
             </div>
-
-            @if (form.controls.blockBehaviour.value === blockBehaviours.WARN) {
-              <div class="dz-badge dz-badge--warning round">
-                <div class="dz-icon-box dz-icon-box--xs">
-                  <ng-container *ngTemplateOutlet="icon; context: { href: icons.CHECK }" />
-                </div>
-              </div>
-            }
           </button>
 
           <button
-            class="dz-button dz-button--free dz-button--ghost shadow shadow--hoverless relative"
+            class="dz-button dz-button--free dz-button--ghost shadow shadow--hoverless"
+            [class.dz-button--activated]="
+              form.controls.blockBehaviour.value === blockBehaviours.WHITELIST
+            "
             (click)="setBlockBehaviour(blockBehaviours.WHITELIST)"
           >
             <div class="dz-icon-box dz-icon-box--lg">
               <ng-container *ngTemplateOutlet="icon; context: { href: icons.PERSON_ZEN }" />
             </div>
-
-            @if (form.controls.blockBehaviour.value === blockBehaviours.WHITELIST) {
-              <div class="dz-badge dz-badge--primary round">
-                <div class="dz-icon-box dz-icon-box--xs">
-                  <ng-container *ngTemplateOutlet="icon; context: { href: icons.CHECK }" />
-                </div>
-              </div>
-            }
           </button>
         </div>
         <div class="dz-banner dz-banner--sm shadow shadow--hoverless blurred">
@@ -226,6 +212,20 @@
           </div>
         </div>
 
+        <button
+          class="dz-button dz-button--md dz-button--ghost shadow shadow--hoverless relative"
+          [title]="uiText.COMMON.WEBSITE_LIBRARY"
+          (click)="onOpenWebsitesList()"
+        >
+          <ng-container *ngTemplateOutlet="icon; context: { href: icons.GLOBE_BOOK }" />
+
+          <div class="dz-badge" [title]="'Amount of active websites'">
+            <span class="hint hint--activated shadow shadow--hoverless">{{
+              activeWebsitesCount()
+            }}</span>
+          </div>
+        </button>
+
         @if (form.errors?.['invalidTimeRange']) {
           <ng-container
             *ngTemplateOutlet="
@@ -300,3 +300,8 @@
     </button>
   </div>
 </form>
+
+<dz-websites-library-popup
+  [(isWebsitesPopupShown)]="isWebsitesPopupShown"
+  [(period)]="popupPeriodData"
+/>

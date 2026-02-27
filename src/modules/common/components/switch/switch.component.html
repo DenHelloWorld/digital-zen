@@ -22,7 +22,7 @@
   <div class="dz-switch__track" aria-hidden="true">
     @let href = checked() ? statusIcons().activated : statusIcons().unActivated;
     <span class="dz-switch__thumb shadow blurred round square">
-      <ng-container *ngTemplateOutlet="icon; context: { href }"></ng-container>
+      <ng-container *ngTemplateOutlet="icon; context: { href }" />
     </span>
   </div>
 </label>

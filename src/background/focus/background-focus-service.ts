@@ -15,10 +15,13 @@ export type FocusOperationResult = { success: true } | { success: false; error: 
 export class BackgroundFocusService {
   readonly #blocker = new BlockerService();
 
-  async updateBlockRulesForCurrentPeriod(): Promise<void> {
+  async updateBlockRulesForCurrentPeriodLibrary(): Promise<void> {
     const current = await StorageAdapter.getCurrentPeriod();
-    if (current && current.webSites) {
-      const blockableWebsites = filterBlockableWebsites(current.webSites);
+
+    if (current && current.library) {
+      const allLibraryWebsites = Object.values(current.library).flat();
+      const blockableWebsites = filterBlockableWebsites(allLibraryWebsites);
+
       this.#blocker.updateBlockRulesWithBehaviour(
         blockableWebsites.filter(site => site.isActivated).map(site => site.url),
         current.blockBehaviour
@@ -26,7 +29,7 @@ export class BackgroundFocusService {
     }
   }
 
-  clearBlockRules(): void {
+  public clearBlockRules(): void {
     this.#blocker.clearRules();
   }
 
@@ -44,11 +47,11 @@ export class BackgroundFocusService {
 
     period.isActive = true;
     period.sessionStartTime = now;
-
     await StorageAdapter.saveCurrentPeriod(period);
     await StorageAdapter.savePeriod(period);
 
-    const blockableWebsites = filterBlockableWebsites(period.webSites);
+    const allLibraryWebsites = Object.values(period.library).flat();
+    const blockableWebsites = filterBlockableWebsites(allLibraryWebsites);
     this.#blocker.updateBlockRulesWithBehaviour(
       blockableWebsites.filter(site => site.isActivated).map(site => site.url),
       period.blockBehaviour
@@ -97,29 +100,5 @@ export class BackgroundFocusService {
     if (!current) return { success: true };
     if (current.isActive) return this.stopFocus();
     return this.startFocus(current);
-  }
-
-  async addNewFolderToLibrary(newFolder: string): Promise<void> {
-    await StorageAdapter.addNewFolderToLibrary(newFolder);
-  }
-
-  async removeFolderFromLibrary(folder: string): Promise<void> {
-    await StorageAdapter.removeFolderFromLibrary(folder);
-  }
-
-  async addWebsiteToFolder(folderName: string, website: IFocus.WebSite): Promise<void> {
-    await StorageAdapter.addWebsiteToFolder(folderName, website);
-  }
-
-  async addWebsiteToSystem(
-    folderName: string,
-    website: IFocus.WebSite,
-    periodId: string
-  ): Promise<void> {
-    await StorageAdapter.addWebsiteToSystem(folderName, website, periodId);
-  }
-
-  async removeWebsiteFromFolder(folderName: string, websiteUrl: string): Promise<void> {
-    await StorageAdapter.removeWebsiteFromFolder(folderName, websiteUrl);
   }
 }

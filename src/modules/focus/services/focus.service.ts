@@ -61,8 +61,8 @@ export class FocusService {
   readonly #logger = logger.createLogger('FocusService');
 
   /** @guideline DZ_04, DZ_08 - Private writable signals for internal state */
-  readonly #currentPeriod: WritableSignal<IFocus.Period | null> = signal<IFocus.Period | null>(
-    null
+  readonly #currentPeriod: WritableSignal<IFocus.Period> = signal<IFocus.Period>(
+    createDefaultPeriodHelper()
   );
   readonly #periods: WritableSignal<IFocus.Period[] | null> = signal(null);
   readonly #activeTab: WritableSignal<chrome.tabs.Tab | undefined> = signal(undefined);
@@ -101,7 +101,7 @@ export class FocusService {
   public readonly activeTab = this.#activeTab.asReadonly();
   public readonly currentTime = this.#currentTime.asReadonly();
 
-  public readonly progress = computed(() => {
+  public readonly currentPeriodProgress = computed(() => {
     if (!this.isPeriodCurrentlyApplicable()) {
       return 0;
     }
@@ -124,9 +124,6 @@ export class FocusService {
 
   public readonly periods: Signal<IFocus.Period[] | null> = computed(
     () => this.#periods()?.filter(p => p.id !== QUICK_FOCUS_ID) ?? null
-  );
-  public readonly quickPeriod: Signal<IFocus.Period[] | null> = computed(
-    () => this.#periods()?.filter(p => p.id === QUICK_FOCUS_ID) ?? null
   );
 
   public readonly isPeriodCurrentlyApplicable: Signal<boolean> = computed(() => {
@@ -183,16 +180,12 @@ export class FocusService {
   public readonly isCurrentTabInSystem: Signal<boolean> = computed(() => {
     const tab = this.#activeTab();
     const period = this.#currentPeriod();
-    const library = this.#allLibraryWebsites();
 
     if (!tab?.url) return false;
+
     const cleanedUrl = cleanUrlHelper(tab.url);
+    const library = period?.library || {};
 
-    // 1. Проверяем в текущем периоде
-    const inPeriod = period?.webSites?.some(site => cleanUrlHelper(site.url) === cleanedUrl);
-    if (inPeriod) return true;
-
-    // 2. Проверяем во всей библиотеке (во всех папках)
     return Object.values(library).some(folderSites =>
       folderSites.some(site => cleanUrlHelper(site.url) === cleanedUrl)
     );
@@ -329,12 +322,12 @@ export class FocusService {
         imageUrl: isImageIcon(iconUrl) ? iconUrl : '',
         type: IFocus.EWebSiteType.DEFAULT,
         isActivated,
-        permissionLvl: PERMISSION_LVL_ENUM.FULL_ACCESS,
+        permissionLvl: PERMISSION_LVL_ENUM.USER,
       };
 
       chrome.runtime.sendMessage(
         {
-          command: CHROME_COMMAND_ENUM.ADD_WEBSITE_TO_SYSTEM,
+          command: CHROME_COMMAND_ENUM.ADD_WEBSITE_TO_FOLDER,
           folder: newSite.type,
           website: newSite,
           periodId: period.id,
@@ -443,7 +436,9 @@ export class FocusService {
               this.#periods.set(periods);
             }
 
-            this.#currentPeriod.set(currentPeriod);
+            if (currentPeriod) {
+              this.#currentPeriod.set(currentPeriod);
+            }
 
             const library = result[CHROME_STORAGE_KEY_ENUM.WEBSITES_LIBRARY] || {};
             this.#allLibraryWebsites.set(library);
@@ -470,9 +465,9 @@ export class FocusService {
           const newCurrentPeriod = changes[CHROME_STORAGE_KEY_ENUM.CURRENT_PERIOD]
             .newValue as IFocus.Period | null;
 
-          this.#currentPeriod.set(
-            newCurrentPeriod ? this.#convertPeriodFromStorage(newCurrentPeriod) : null
-          );
+          if (newCurrentPeriod) {
+            this.#currentPeriod.set(this.#convertPeriodFromStorage(newCurrentPeriod));
+          }
         }
       }
     });
@@ -525,7 +520,11 @@ export class FocusService {
   }
 
   #notifyIfNoSitesBlocked(period: IFocus.Period | null): void {
-    const hasActivatedSites = period?.webSites.some(site => site.isActivated) ?? false;
+    const hasActivatedSites = period?.library
+      ? Object.values(period.library)
+          .flat()
+          .some(site => site.isActivated)
+      : false;
 
     if (!period?.isActive && !hasActivatedSites) {
       this.#toastService.show({

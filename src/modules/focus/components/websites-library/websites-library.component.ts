@@ -16,8 +16,6 @@ import { FaviconHelper } from '../../../common/helpers/favicon.helper';
 import { buildRequestDomainVariants } from '../../../common/helpers/request-domain-variants.helper';
 import { IFocus } from '../../../common/models/focus.model';
 import { ChromeStorageService } from '../../../common/services/chrome-storage.service';
-import { FocusService } from '../../services/focus.service';
-import { LibraryService } from '../../services/library.service';
 import { NgTemplateOutlet } from '@angular/common';
 import {
   ChangeDetectionStrategy,
@@ -54,12 +52,12 @@ import { FormsModule } from '@angular/forms';
 })
 export class WebsitesLibraryComponent implements OnInit {
   readonly #injector = inject(Injector);
-  readonly #focusService = inject(FocusService);
-  readonly #libraryService = inject(LibraryService);
   readonly #storage = inject(ChromeStorageService);
 
-  protected readonly currentPeriod: Signal<IFocus.Period | null> = this.#focusService.currentPeriod;
-  protected readonly library = this.#libraryService.websitesLibrary;
+  public readonly period = model.required<IFocus.Period>();
+  public readonly isWebsitesPopupShown = model<boolean>(false);
+
+  protected readonly library = computed(() => this.period().library);
 
   protected readonly folders = computed(() => {
     const lib = this.library();
@@ -67,14 +65,14 @@ export class WebsitesLibraryComponent implements OnInit {
     const allKeys = Object.keys(lib);
 
     return [...presetKeys, ...allKeys.filter(k => !presetKeys.includes(k)).sort()].filter(
-      k => k !== IFocus.EWebSiteType.UNBLOCKABLE && lib[k]
+      k => k !== IFocus.EWebSiteType.UNBLOCKABLE
     );
   });
-  protected readonly currentPeriodWebSites: Signal<IFocus.WebSite[]> = computed(
-    () => this.currentPeriod()?.webSites ?? []
+  protected readonly webSites: Signal<IFocus.WebSite[]> = computed(() =>
+    Object.values(this.period().library).flat()
   );
   protected readonly categoryActiveCounts = computed(() => {
-    const currentWebsites = this.currentPeriodWebSites();
+    const currentWebsites = this.webSites();
     const counts = {} as Record<string, number>;
 
     this.folders().forEach(type => (counts[type as string] = 0));
@@ -87,22 +85,24 @@ export class WebsitesLibraryComponent implements OnInit {
 
     return counts;
   });
-  protected readonly websitesPopupData = computed(() => {
-    const currentWebsites = this.currentPeriodWebSites();
+  protected readonly availableFoldersForMove = computed(() => {
+    const currentMove = this.moveLink();
+    if (!currentMove) return [];
 
-    return {
-      ...this.#mapWebsitesToCategories(currentWebsites),
-    };
+    return this.folders().filter(
+      f => f !== currentMove.fromFolder && f !== this.presetFolderNames.DELETE
+    );
   });
 
-  protected readonly openedFolders = signal<Set<string>>(new Set(this.folders()));
+  protected readonly openedFolders = signal<Set<string>>(new Set());
   protected readonly newFolderName = signal<string>('');
   protected readonly newLink = signal<{ url: string; type: string; isDuplicate: boolean } | null>(
     null
   );
+  protected readonly moveLink = signal<{ url: string; fromFolder: string } | null>(null);
+  protected readonly isMoveLinkPopupShown = signal<boolean>(false);
   protected readonly deleteLink = signal<{ url: string; folder: string } | null>(null);
   protected readonly deleteFolderName = signal<string>('');
-  protected readonly isRemoveLinkPopupShown = signal<boolean>(false);
   protected readonly isCreateFolderPopupShown = signal<boolean>(false);
   protected readonly isCreateLinkPopupShown = signal<boolean>(false);
   protected readonly isDeleteFolderPopupShown = signal<boolean>(false);
@@ -115,7 +115,6 @@ export class WebsitesLibraryComponent implements OnInit {
   protected readonly presetFolderNames = IFocus.EWebSiteType;
 
   protected readonly scrollToFolderItems = viewChildren<ElementRef>('folder');
-  public readonly isWebsitesPopupShown = model<boolean>(false);
 
   protected readonly cleanProtocolHelper = cleanProtocolHelper;
 
@@ -147,60 +146,67 @@ export class WebsitesLibraryComponent implements OnInit {
   }
 
   protected onToggleBlockedWebsite(site: IFocus.WebSite): void {
-    this.#focusService.toggleBlockedWebsite(site);
+    const period = this.period();
+    const folderName = site.type;
+
+    if (!folderName || !period.library[folderName]) return;
+
+    const updatedFolder = period.library[folderName].map(s =>
+      s.url === site.url ? { ...s, isActivated: !s.isActivated } : s
+    );
+
+    this.period.set({
+      ...period,
+      library: {
+        ...period.library,
+        [folderName]: updatedFolder,
+      },
+    });
   }
 
-  protected onToggleFolderOfWebsites(type: string): void {
-    const period = this.currentPeriod();
-    if (!period) return;
-
-    const shouldActivate = !this.isFolderFullyActivated(type);
-
-    const presetsInCategory = this.library()[type] || [];
-    const presetUrlsSet = new Set(presetsInCategory.map(p => cleanUrlHelper(p.url)));
-
-    const finalWebsitesMap = new Map<string, IFocus.WebSite>();
-
-    period.webSites.forEach(site => {
-      finalWebsitesMap.set(cleanUrlHelper(site.url), { ...site });
-    });
-
-    presetsInCategory.forEach(preset => {
-      const cleanUrl = cleanUrlHelper(preset.url);
-      if (!finalWebsitesMap.has(cleanUrl)) {
-        finalWebsitesMap.set(cleanUrl, { ...preset, isActivated: false, type });
-      }
-    });
-
-    finalWebsitesMap.forEach(site => {
-      if (site.type === type || presetUrlsSet.has(cleanUrlHelper(site.url))) {
-        site.isActivated = shouldActivate;
-        site.type = type;
-      }
-    });
-
-    void this.#focusService.updatePeriod({
+  protected onToggleFolderInLibrary(folderName: string): void {
+    const period = this.period();
+    const folderContent = period.library[folderName] || [];
+    const shouldActivate = !folderContent.every(site => site.isActivated);
+    const updatedPeriod = {
       ...period,
-      webSites: Array.from(finalWebsitesMap.values()),
-    });
+      library: {
+        ...period.library,
+        [folderName]: folderContent.map(site => ({
+          ...site,
+          isActivated: shouldActivate,
+        })),
+      },
+    };
+
+    this.period.set(updatedPeriod);
   }
 
   protected onCloseWebsitesList(): void {
     this.isWebsitesPopupShown.set(false);
     this.onCloseCreateNewFolderPopup();
   }
+
   // Create folder
   protected onOpenCreateNewFolderPopup(): void {
     this.isCreateFolderPopupShown.set(true);
   }
-
   protected onCloseCreateNewFolderPopup(): void {
     this.isCreateFolderPopupShown.set(false);
     this.newFolderName.set('');
   }
-
   protected onAddNewFolder(): void {
-    this.#libraryService.addNewFolder(this.newFolderName());
+    const period = this.period();
+    const newFolderName = this.newFolderName();
+
+    this.period.set({
+      ...period,
+      library: {
+        ...period.library,
+        [newFolderName]: [],
+      },
+    });
+
     this.isCreateFolderPopupShown.set(false);
   }
 
@@ -214,10 +220,33 @@ export class WebsitesLibraryComponent implements OnInit {
     this.isDeleteFolderPopupShown.set(false);
     this.deleteFolderName.set('');
   }
-
   protected onDeleteFolder(): void {
-    this.#libraryService.removeFolderFromLibrary(this.deleteFolderName());
+    const period = this.period();
+    const deleteFolderName = this.deleteFolderName();
+
+    if (!period || !deleteFolderName) return;
+
+    const library = { ...period.library };
+
+    const itemsToDelete = (library[deleteFolderName] || []).map(site => ({
+      ...site,
+      isActivated: false,
+      type: IFocus.EWebSiteType.DELETE,
+    }));
+
+    const deleteKey = IFocus.EWebSiteType.DELETE;
+
+    library[deleteKey] = [...(library[deleteKey] || []), ...itemsToDelete];
+
+    delete library[deleteFolderName];
+
+    this.period.set({
+      ...period,
+      library,
+    });
+
     this.isDeleteFolderPopupShown.set(false);
+    this.deleteFolderName.set('');
   }
 
   // Create Link
@@ -229,32 +258,42 @@ export class WebsitesLibraryComponent implements OnInit {
     });
     this.isCreateLinkPopupShown.set(true);
   }
-
   protected onAddNewLink(): void {
-    const newLink = this.newLink();
+    const linkData = this.newLink();
+    const period = this.period();
 
-    if (newLink) {
-      this.#libraryService.addWebsiteToFolder(newLink.type, {
-        id: newLink.url,
-        description: newLink.url,
-        name: newLink.url,
-        imageUrl: FaviconHelper.getGoogleUrl(newLink.url),
-        iconUrl: '',
-        isActivated: false,
-        type: newLink.type,
-        url: newLink.url,
-        permissionLvl: PERMISSION_LVL_ENUM.FULL_ACCESS,
-      });
-    }
+    if (!linkData || !linkData.url || linkData.isDuplicate || !period) return;
+
+    const folderName = linkData.type;
+
+    const newSite: IFocus.WebSite = {
+      id: linkData.url,
+      name: cleanProtocolHelper(linkData.url),
+      url: linkData.url,
+      description: linkData.url,
+      imageUrl: this.getFavicon(linkData.url),
+      iconUrl: '',
+      type: folderName,
+      isActivated: true,
+      permissionLvl: PERMISSION_LVL_ENUM.USER,
+    };
+
+    const updatedLibrary = {
+      ...period.library,
+      [folderName]: [...(period.library[folderName] || []), newSite],
+    };
+
+    this.period.set({
+      ...period,
+      library: updatedLibrary,
+    });
 
     this.onCloseCreateLinkPopup();
   }
-
   protected onCloseCreateLinkPopup(): void {
     this.newLink.set(null);
     this.isCreateLinkPopupShown.set(false);
   }
-
   protected onInputNewLinkUrl(url: string): void {
     const current = this.newLink();
     if (!current) return;
@@ -282,21 +321,77 @@ export class WebsitesLibraryComponent implements OnInit {
     this.deleteLink.set({ folder, url });
     this.isDeleteLinkPopupShown.set(true);
   }
-
   protected onCloseDeleteLinkPopup(): void {
     this.isDeleteLinkPopupShown.set(false);
     this.deleteLink.set(null);
   }
-
   protected onDeleteLink(): void {
-    const data = this.deleteLink();
+    const deleteData = this.deleteLink();
+    const period = this.period();
 
-    if (data) {
-      const { url, folder } = data;
-      this.#libraryService.removeWebsiteFromFolder(folder, url);
+    if (!deleteData || !period) {
+      this.onCloseDeleteLinkPopup();
+      return;
     }
 
+    const { folder, url } = deleteData;
+    const currentLibrary = { ...period.library };
+    const deleteKey = IFocus.EWebSiteType.DELETE;
+
+    const siteToDelete = currentLibrary[folder]?.find(s => s.url === url);
+    if (!siteToDelete) {
+      this.onCloseDeleteLinkPopup();
+      return;
+    }
+
+    currentLibrary[folder] = currentLibrary[folder].filter(s => s.url !== url);
+
+    if (folder !== deleteKey) {
+      const movedSite: IFocus.WebSite = {
+        ...siteToDelete,
+        isActivated: false,
+        type: deleteKey,
+      };
+
+      currentLibrary[deleteKey] = [...(currentLibrary[deleteKey] || []), movedSite];
+    }
+
+    this.period.set({
+      ...period,
+      library: currentLibrary,
+    });
+
     this.onCloseDeleteLinkPopup();
+  }
+
+  // Move link
+  protected onOpenMoveLinkPopup(folder: string, url: string): void {
+    this.moveLink.set({ fromFolder: folder, url });
+    this.isMoveLinkPopupShown.set(true);
+  }
+  protected onCloseMoveLinkPopup(): void {
+    this.isMoveLinkPopupShown.set(false);
+    this.moveLink.set(null);
+  }
+  protected onMoveLink(toFolder: string): void {
+    const moveData = this.moveLink();
+    const period = this.period();
+
+    if (!moveData || !period) return;
+
+    const { fromFolder, url } = moveData;
+    const library = { ...period.library };
+
+    const siteIndex = library[fromFolder]?.findIndex(s => s.url === url);
+    if (siteIndex === -1) return;
+
+    const [site] = library[fromFolder].splice(siteIndex, 1);
+
+    const updatedSite = { ...site, type: toFolder };
+    library[toFolder] = [...(library[toFolder] || []), updatedSite];
+
+    this.period.set({ ...period, library });
+    this.onCloseMoveLinkPopup();
   }
 
   // Tree helpers
@@ -328,7 +423,7 @@ export class WebsitesLibraryComponent implements OnInit {
   }
 
   protected isFolderFullyActivated(type: string): boolean {
-    const sitesInCategory = this.websitesPopupData()[type] || [];
+    const sitesInCategory = this.period().library[type] || [];
     if (sitesInCategory.length === 0) return false;
 
     return this.categoryActiveCounts()[type] === sitesInCategory.length;
@@ -336,42 +431,10 @@ export class WebsitesLibraryComponent implements OnInit {
 
   protected isFolderPartiallyActivated(type: string): boolean {
     const activeCount = this.categoryActiveCounts()[type] || 0;
-    const sitesInCategory = this.websitesPopupData()[type] || [];
+    const sitesInCategory = this.period().library[type] || [];
     const totalCount = sitesInCategory.length;
 
     return activeCount > 0 && activeCount < totalCount;
-  }
-
-  #mapWebsitesToCategories(activeWebsites: IFocus.WebSite[]): Record<string, IFocus.WebSite[]> {
-    const result = {} as Record<string, IFocus.WebSite[]>;
-    const library = this.library();
-
-    for (const key in library) {
-      const category = key as string;
-      result[category] = library[category].map(site => ({
-        ...site,
-        isActivated: false,
-      }));
-    }
-
-    activeWebsites.forEach(site => {
-      if (!site.type) return;
-
-      const category = result[site.type];
-      if (!category) return;
-
-      const cleanUrl = cleanUrlHelper(site.url);
-
-      const existingIndex = category.findIndex(p => cleanUrlHelper(p.url) === cleanUrl);
-
-      if (existingIndex !== -1) {
-        category[existingIndex] = { ...site };
-      } else {
-        category.push({ ...site });
-      }
-    });
-
-    return result;
   }
 
   #initWebsitesFoldersState(): void {

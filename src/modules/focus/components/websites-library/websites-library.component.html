@@ -36,7 +36,7 @@
     <main class="dz-popup-content__main">
       <ul class="dz-tree dz-tree--root dz-list">
         @for (folder of folders(); track folder) {
-          @let sites = websitesPopupData()[folder] || [];
+          @let sites = library()[folder] || [];
 
           <li class="dz-box shadow shadow--hoverless" #folder [attr.data-name]="folder">
             <div class="dz-popup-content__folder-actions">
@@ -68,7 +68,7 @@
                     : icons.RADIO_UNCHECKED,
                 }"
                 [checked]="isFolderFullyActivated(folder)"
-                (checkedChange)="onToggleFolderOfWebsites(folder)"
+                (checkedChange)="onToggleFolderInLibrary(folder)"
                 size="md"
               />
 
@@ -112,6 +112,7 @@
                   <div class="dz-tree__item-group">
                     <input
                       class="dz-input dz-input--checkbox"
+                      [class.hidden]="folder === presetFolderNames.DELETE"
                       [checked]="site.isActivated"
                       (change)="onToggleBlockedWebsite(site)"
                       type="checkbox"
@@ -138,6 +139,7 @@
                       <button
                         class="dz-button dz-button--free dz-button--ghost shadow shadow--hoverless"
                         [title]="'Move to other folder'"
+                        (click)="onOpenMoveLinkPopup(folder, site.url)"
                       >
                         <div class="dz-icon-box dz-icon-box--xs">
                           <ng-container
@@ -373,5 +375,40 @@
         </div>
       </button>
     </footer>
+  </div>
+</ng-template>
+
+<!-- Move Link Popup-->
+<ng-template
+  [dzPopup]="isMoveLinkPopupShown()"
+  [hasBackdrop]="false"
+  (closed)="onCloseMoveLinkPopup()"
+>
+  <div class="dz-box shadow shadow--hoverless dz-popup-content dz-popup-content--new-folder">
+    <header class="dz-popup-content__header">
+      <h1 class="hint hint--xs">Move {{ cleanProtocolHelper(moveLink()?.url || '') }} to:</h1>
+      <button class="dz-button round dz-button--sm" (click)="onCloseMoveLinkPopup()">
+        <ng-container *ngTemplateOutlet="icon; context: { href: icons.CLOSE }" />
+      </button>
+    </header>
+
+    <main class="dz-popup-content__main">
+      <ul class="dz-list">
+        @for (targetFolder of availableFoldersForMove(); track targetFolder) {
+          <li>
+            <button
+              class="dz-button dz-button--ghost full shadow--hoverless"
+              (click)="onMoveLink(targetFolder)"
+              style="justify-content: flex-start; width: 100%"
+            >
+              <div class="dz-icon-box dz-icon-box--sm">
+                <ng-container *ngTemplateOutlet="icon; context: { href: icons.FOLDER }" />
+              </div>
+              <span>{{ targetFolder }}</span>
+            </button>
+          </li>
+        }
+      </ul>
+    </main>
   </div>
 </ng-template>
