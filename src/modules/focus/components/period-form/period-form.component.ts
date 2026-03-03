@@ -183,7 +183,9 @@ export class PeriodFormComponent implements OnInit, AfterViewInit {
     return Math.min(Math.max(result, 0), 1);
   });
 
-  protected readonly isWebsitesPopupShown = signal<boolean>(false);
+  protected readonly isWebsitesPopupShown = signal<boolean>(
+    this.currentRoute() === VIEW_ENUM.EDIT_PERIOD_LIBRARY
+  );
   protected readonly popupPeriodData = signal<IFocus.Period>(createDefaultPeriodHelper());
   protected readonly setAsCurrentPeriod = signal<boolean>(false);
   protected readonly selectedTimeRanges: WritableSignal<IFocus.TimeRange[]> = signal<
@@ -393,7 +395,11 @@ export class PeriodFormComponent implements OnInit, AfterViewInit {
       return;
     }
 
-    if (this.currentRoute() === VIEW_ENUM.EDIT_PERIOD && periodData) {
+    if (
+      (this.currentRoute() === VIEW_ENUM.EDIT_PERIOD ||
+        this.currentRoute() === VIEW_ENUM.EDIT_PERIOD_LIBRARY) &&
+      periodData
+    ) {
       const startFromTime = periodData.startFrom
         ? this.#dateToTimeString(periodData.startFrom)
         : '';
@@ -410,6 +416,7 @@ export class PeriodFormComponent implements OnInit, AfterViewInit {
         setAsCurrentPeriod: this.isCurrentPeriod(),
         sessionStartTime: periodData.sessionStartTime,
         blockBehaviour: periodData.blockBehaviour,
+        library: periodData.library,
       });
 
       const matchingRange =

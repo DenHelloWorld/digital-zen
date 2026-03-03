@@ -286,7 +286,7 @@ export class FocusService {
     }
   }
 
-  public addCurrentTabToLibrary(isActivated = false): void {
+  public addCurrentTabWebsiteToLibrary(isActivated = false): void {
     if (!this.#isChromeRuntime) return;
 
     if (this.isCurrentTabInSystem()) {
@@ -303,13 +303,21 @@ export class FocusService {
     if (tab?.url && period) {
       const cleanedUrl = cleanUrlHelper(tab.url);
 
-      // 1. Проверка на защищенные сайты
       if (WEBSITES_UNBLOCKABLE.some(site => cleanUrlHelper(site.url) === cleanedUrl)) {
         this.#toastService.show({
           message: TOAST_MESSAGES_ENUM.UNBLOCKABLE_WEBSITE,
           type: TOAST_TYPE_ENUM.ERROR,
         });
         return;
+      }
+
+      if (period.isActive) {
+        this.#logger.info('Stopping active focus before adding new website to library.');
+        this.stopFocus();
+        this.#toastService.show({
+          message: TOAST_MESSAGES_ENUM.FOCUS_STOPPED_FOR_SETTINGS,
+          type: TOAST_TYPE_ENUM.INFO,
+        });
       }
 
       const iconUrl = tab.favIconUrl ?? FaviconHelper.getGoogleUrl(cleanedUrl);
@@ -344,21 +352,21 @@ export class FocusService {
     }
   }
 
-  public async toggleBlockedWebsite(site: IFocus.WebSite): Promise<void> {
-    const currentPeriod = this.#currentPeriod();
-    if (currentPeriod && currentPeriod.isActive) {
-      this.#logger.info('Stopping active focus before updating website list.');
-      this.stopFocus();
-      this.#toastService.show({
-        message: TOAST_MESSAGES_ENUM.FOCUS_STOPPED_FOR_SETTINGS,
-        type: TOAST_TYPE_ENUM.INFO,
-      });
-    }
-
-    if (this.#isChromeRuntime) {
-      chrome.runtime.sendMessage({ command: CHROME_COMMAND_ENUM.TOGGLE_BLOCKED_WEBSITE, site });
-    }
-  }
+  // public async toggleBlockedWebsite(site: IFocus.WebSite): Promise<void> {
+  //   const currentPeriod = this.#currentPeriod();
+  //   if (currentPeriod && currentPeriod.isActive) {
+  //     this.#logger.info('Stopping active focus before updating website list.');
+  //     this.stopFocus();
+  //     this.#toastService.show({
+  //       message: TOAST_MESSAGES_ENUM.FOCUS_STOPPED_FOR_SETTINGS,
+  //       type: TOAST_TYPE_ENUM.INFO,
+  //     });
+  //   }
+  //
+  //   if (this.#isChromeRuntime) {
+  //     chrome.runtime.sendMessage({ command: CHROME_COMMAND_ENUM.TOGGLE_BLOCKED_WEBSITE, site });
+  //   }
+  // }
 
   public setCurrentPeriod(periodId: string): void {
     if (this.#isChromeRuntime) {

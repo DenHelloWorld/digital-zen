@@ -177,16 +177,6 @@ export class BackgroundService {
               }
               break;
             }
-            case CHROME_COMMAND_ENUM.ADD_FOLDER: {
-              await StorageAdapter.addFolderToPeriodLibrary(message.periodId, message.folder);
-              await this.#focusService.updateBlockRulesForCurrentPeriodLibrary();
-              sendResponse({ success: true });
-              break;
-            }
-
-            case CHROME_COMMAND_ENUM.REMOVE_FOLDER: {
-              break;
-            }
 
             case CHROME_COMMAND_ENUM.ADD_WEBSITE_TO_FOLDER:
               await StorageAdapter.addWebsiteToPeriodLibrary(
@@ -194,8 +184,8 @@ export class BackgroundService {
                 message.folder,
                 message.website
               );
-              await this.#focusService.updateBlockRulesForCurrentPeriodLibrary();
-              sendResponse({ success: true });
+
+              safeSendResponse({ success: true });
               break;
             case CHROME_COMMAND_ENUM.REMOVE_WEBSITE: {
               break;

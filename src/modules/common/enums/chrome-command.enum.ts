@@ -28,8 +28,6 @@ export enum CHROME_COMMAND_ENUM {
   REMOVE_FOLDER = 'removeFolder',
   ADD_WEBSITE_TO_FOLDER = 'addWebsiteToFolder',
   REMOVE_WEBSITE = 'removeWebsite',
-  MOVE_WEBSITE = 'moveWebsite',
-  CLEAR_TRASH = 'clearTrash',
 }
 
 export type ChromeCommandType =

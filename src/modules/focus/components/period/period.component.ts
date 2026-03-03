@@ -4,13 +4,13 @@ import { WeekdaysSelectorComponent } from '../../../common/components/weekdays-s
 import { ALL_DAYS_OF_WEEK } from '../../../common/constants/days-of-week.const';
 import { ICONS } from '../../../common/constants/icons.const';
 import { UI_TEXT } from '../../../common/constants/ui-text.const';
+import { PopupDirective } from '../../../common/directives/popup.directive';
 import { ProgressBorderDirective } from '../../../common/directives/progress-border.directive';
 import { BLOCK_BEHAVIOUR_ENUM } from '../../../common/enums/block-behaviour.enum';
 import { COLORS_ENUM } from '../../../common/enums/colors.enum';
 import { TOAST_MESSAGES_ENUM } from '../../../common/enums/toast-messages.enum';
 import { TOAST_TYPE_ENUM } from '../../../common/enums/toast-type.enum';
-import { VIEW_ENUM, ViewType } from '../../../common/enums/view.enum';
-import { isHttpUrl } from '../../../common/helpers/is-http-url.helper';
+import { VIEW_ENUM } from '../../../common/enums/view.enum';
 import { getTimeInMilliseconds, isCurrentTimeInRange } from '../../../common/helpers/time.helper';
 import { IFocus } from '../../../common/models/focus.model';
 import { MiniRouterService } from '../../../common/services/mini-router.service';
@@ -61,6 +61,7 @@ import { interval } from 'rxjs';
 
     // directives
     ProgressBorderDirective,
+    PopupDirective,
   ],
 })
 export class PeriodComponent {
@@ -211,11 +212,6 @@ export class PeriodComponent {
     }
   });
 
-  protected isOutsideTimeRangeError = computed(() =>
-    this.#toastService
-      .toasts()
-      .find(t => t.target === `${TOAST_MESSAGES_ENUM.PERIOD_OUTSIDE_TIME_RANGE}${this.period().id}`)
-  );
   protected isNotScheduledToday = computed(() =>
     this.#toastService
       .toasts()
@@ -228,15 +224,22 @@ export class PeriodComponent {
     () => this.#focusService.currentPeriod()?.id === this.period().id
   );
   protected readonly isFocusActive = computed(() => this.period().isActive);
+  protected readonly activeWebsitesCount: Signal<number> = computed(() => {
+    const library = this.period()?.library;
+    if (!library) return 0;
+
+    return Object.values(library)
+      .flat()
+      .filter(site => site.isActivated).length;
+  });
 
   /** @guideline DZ_04 - Writable signal for local state */
-  protected readonly isConfirmingDelete: WritableSignal<boolean> = signal(false);
+  protected readonly isDeletePeriodPopupShown: WritableSignal<boolean> = signal(false);
   /** @guideline DZ_10 - UI text constants */
   protected readonly uiText = UI_TEXT;
   protected readonly icons = ICONS;
   protected readonly allDays: Readonly<IFocus.DayOfWeek>[] = [...ALL_DAYS_OF_WEEK];
-  protected readonly blockBehaviours: typeof BLOCK_BEHAVIOUR_ENUM = BLOCK_BEHAVIOUR_ENUM;
-  protected readonly isHttpUrl = isHttpUrl;
+  protected readonly colors = COLORS_ENUM;
 
   /** @guideline DZ_04 - InputSignal for component inputs */
   public readonly period: InputSignal<IFocus.Period> = input.required<IFocus.Period>();
@@ -247,17 +250,21 @@ export class PeriodComponent {
     this.#router.navigate(VIEW_ENUM.EDIT_PERIOD, { period: this.period() });
   }
 
-  protected onDelete(): void {
-    this.isConfirmingDelete.set(true);
+  protected onOpenDeletePeriodPopup(): void {
+    this.isDeletePeriodPopupShown.set(true);
   }
 
-  protected onConfirmDelete(): void {
+  protected onCloseDeletePeriodPopup(): void {
+    this.isDeletePeriodPopupShown.set(false);
+  }
+
+  protected onDeletePeriod(): void {
     this.#focusService.removePeriod(this.period().id);
-    this.isConfirmingDelete.set(false);
+    this.isDeletePeriodPopupShown.set(false);
   }
 
   protected onCancelDelete(): void {
-    this.isConfirmingDelete.set(false);
+    this.isDeletePeriodPopupShown.set(false);
   }
 
   protected onIsCurrentPeriodChange(): void {
@@ -271,10 +278,8 @@ export class PeriodComponent {
     this.#focusService.setCurrentPeriod(this.period().id);
   }
 
-  protected onNavigation(route: ViewType, payload: object | null = null): void {
-    this.#router.navigate(route, payload);
+  protected onOpenWebsitesList(): void {
+    const period = this.period();
+    this.#router.navigate(VIEW_ENUM.EDIT_PERIOD_LIBRARY, { period });
   }
-
-  protected readonly colors = COLORS_ENUM;
-  protected readonly viewTypes = VIEW_ENUM;
 }

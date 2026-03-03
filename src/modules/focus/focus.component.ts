@@ -174,7 +174,7 @@ export class FocusComponent implements OnInit {
   }
 
   protected onAddCurrentTab(): void {
-    this.#focusService.addCurrentTabToLibrary(true);
+    this.#focusService.addCurrentTabWebsiteToLibrary(true);
   }
 
   protected onEditCurrentPeriod(): void {

@@ -101,36 +101,21 @@
         }
       </div>
 
-      <div class="dz-period-actions">
-        @if (isConfirmingDelete()) {
-          <!--          Add popup-->
-          <div class="dz-confirm-delete">
-            <span class="dz-confirm-message"
-              >{{ uiText.PERIOD.CONFIRM_DELETE }} "{{ p.name }}"?</span
-            >
-            <button
-              class="dz-button dz-button--sm dz-button--error shadow"
-              [title]="uiText.PERIOD.ARIA_LABELS.CONFIRM_DELETE"
-              [attr.aria-label]="uiText.PERIOD.ARIA_LABELS.CONFIRM_DELETE"
-              (click)="onConfirmDelete()"
-              type="button"
-            >
-              <ng-container
-                *ngTemplateOutlet="icon; context: { href: icons.DELETE }"
-              ></ng-container>
-            </button>
-            <button
-              class="dz-button dz-button--sm shadow"
-              [title]="uiText.PERIOD.ARIA_LABELS.CANCEL_DELETE"
-              [attr.aria-label]="uiText.PERIOD.ARIA_LABELS.CANCEL_DELETE"
-              (click)="onCancelDelete()"
-              type="button"
-            >
-              <ng-container *ngTemplateOutlet="icon; context: { href: icons.CLOSE }"></ng-container>
-            </button>
-          </div>
-        }
+      <button
+        class="dz-button dz-button--md dz-button--ghost shadow shadow--hoverless relative"
+        [title]="uiText.COMMON.WEBSITE_LIBRARY"
+        (click)="onOpenWebsitesList()"
+      >
+        <ng-container *ngTemplateOutlet="icon; context: { href: icons.GLOBE_BOOK }" />
 
+        <div class="dz-badge" [title]="'Amount of active websites'">
+          <span class="hint hint--activated shadow shadow--hoverless">{{
+            activeWebsitesCount()
+          }}</span>
+        </div>
+      </button>
+
+      <div class="dz-period-actions">
         @let deleteBtnDisabled = totalPeriodsCount() <= 1 || isCurrentPeriod() || period().isActive;
         <button
           class="dz-button dz-button--sm"
@@ -139,11 +124,62 @@
           [class.shadow]="!deleteBtnDisabled"
           [title]="uiText.PERIOD.ARIA_LABELS.DELETE_PERIOD"
           [attr.aria-label]="uiText.PERIOD.ARIA_LABELS.DELETE_PERIOD"
-          (click)="onDelete()"
+          (click)="onOpenDeletePeriodPopup()"
           type="button"
         >
           <ng-container *ngTemplateOutlet="icon; context: { href: icons.DELETE }"></ng-container>
         </button>
+
+        <!-- Delete popup-->
+        <ng-template
+          [dzPopup]="isDeletePeriodPopupShown()"
+          [hasBackdrop]="false"
+          (closed)="onCloseDeletePeriodPopup()"
+        >
+          <div
+            class="dz-box shadow shadow--hoverless dz-popup-content dz-popup-content--new-folder"
+          >
+            <header class="dz-popup-content__header">
+              <h1 class="hint hint--xs">{{ uiText.PERIOD.CONFIRM_DELETE }} {{ p.name }}</h1>
+
+              <div class="dz-popup-content__header-actions">
+                <button class="dz-button round dz-button--sm" (click)="onCloseDeletePeriodPopup()">
+                  <ng-container *ngTemplateOutlet="icon; context: { href: icons.CLOSE }" />
+                </button>
+              </div>
+            </header>
+
+            <main class="dz-popup-content__main">
+              <div class="dz-banner dz-banner--warn">
+                <div class="dz-banner__icon">
+                  <ng-container *ngTemplateOutlet="icon; context: { href: icons.WARNING }" />
+                </div>
+
+                <div class="dz-banner__message">{{ uiText.WEBSITE_LIBRARY.CONFIRM_DELETE }}</div>
+              </div>
+            </main>
+
+            <footer class="dz-popup-content__footer">
+              <button
+                class="dz-button dz-button--free dz-button--ghost shadow shadow--hoverless"
+                (click)="onCloseDeletePeriodPopup()"
+              >
+                <div class="dz-icon-box dz-icon-box--xs">
+                  <ng-container *ngTemplateOutlet="icon; context: { href: icons.CANCEL }" />
+                </div>
+              </button>
+
+              <button
+                class="dz-button dz-button--free dz-button--ghost shadow shadow--hoverless"
+                (click)="onDeletePeriod()"
+              >
+                <div class="dz-icon-box dz-icon-box--xs">
+                  <ng-container *ngTemplateOutlet="icon; context: { href: icons.DELETE }" />
+                </div>
+              </button>
+            </footer>
+          </div>
+        </ng-template>
 
         <button
           class="dz-button dz-button--md dz-button--ghost shadow"
