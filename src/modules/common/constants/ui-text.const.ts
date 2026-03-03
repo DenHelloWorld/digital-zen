@@ -6,6 +6,21 @@
  */
 
 export const UI_TEXT = Object.freeze({
+  WEBSITE_LIBRARY: {
+    TITLE: 'Websites',
+    NEW_FOLDER_TITLE: 'Create New Folder',
+    YOU_CAN_ADD_EMOJI: 'You can add emojis to name',
+    DELETE_FOLDER_TITLE: 'Delete Folder',
+    CREATE_LINK_TITLE: 'Create Link',
+    DELETE_LINK_TITLE: 'Delete Link',
+    ALREADY_EXISTS: 'already exists',
+    CONFIRM_DELETE: 'Confirm to delete',
+    ERRORS: {
+      FOLDER_NOT_FOUND: 'Folder not found',
+      SYSTEM_FOLDER_DELETE: 'System folders cannot be deleted',
+    },
+  },
+
   // Blocked Page
   BLOCKED_PAGE: {
     TITLE: 'Blocked',
@@ -86,9 +101,9 @@ export const UI_TEXT = Object.freeze({
     DEACTIVATED: 'Deactivated',
     ACTIVATE_DISABLED_TOOLTIP: 'Stop focus to activate this period',
     BLOCK_BEHAVIOUR: {
-      BANNER_BLOCK: 'Tabs will be closed for the websites below',
-      BANNER_WARN: 'Warning overlay will appear on these websites',
-      BANNER_WHITE_LIST: 'Only these websites will be accessible. All others will be blocked',
+      BANNER_BLOCK: 'Tabs will be closed for the active websites in library',
+      BANNER_WARN: 'Warning overlay will appear on active websites in library',
+      BANNER_WHITE_LIST: 'Only active websites in library will be accessible',
     },
   },
 
@@ -130,8 +145,7 @@ export const UI_TEXT = Object.freeze({
 
   // Focus Component
   FOCUS: {
-    ADD_CURRENT_TAB_TITLE: 'Add current website to period',
-    ADD_AND_BLOCK_CURRENT_TAB_TITLE: 'Add current website to period and block',
+    ADD_CURRENT_TAB_TITLE: 'Add current website to library',
     TOGGLE_FOCUS_TITLE: 'Toggle focus session',
     START: 'Start',
     STOP: 'Stop',

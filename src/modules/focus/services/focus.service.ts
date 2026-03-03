@@ -1,13 +1,11 @@
 import { DzToastService } from '../../common/components';
 import { ICONS } from '../../common/constants/icons.const';
 import { QUICK_FOCUS_ID } from '../../common/constants/quick-focus-id.const';
-import {
-  WEBSITES_LIBRARY_PRESET,
-  WEBSITES_UNBLOCKABLE,
-} from '../../common/constants/websites.const';
+import { WEBSITES_UNBLOCKABLE } from '../../common/constants/websites.const';
 import { CHROME_COMMAND_ENUM } from '../../common/enums/chrome-command.enum';
 import { CHROME_STORAGE_KEY_ENUM } from '../../common/enums/chrome-storage-key.enum';
 import { FOCUS_ERROR_ENUM } from '../../common/enums/focus-error.enum';
+import { PERMISSION_LVL_ENUM } from '../../common/enums/permission-lvl.enum';
 import { TOAST_MESSAGES_ENUM } from '../../common/enums/toast-messages.enum';
 import { TOAST_TYPE_ENUM } from '../../common/enums/toast-type.enum';
 import { cleanUrlHelper } from '../../common/helpers/clean-url.helper';
@@ -32,7 +30,7 @@ import {
 interface InitialStorageSchema {
   [CHROME_STORAGE_KEY_ENUM.CURRENT_PERIOD]: IFocus.Period;
   [CHROME_STORAGE_KEY_ENUM.PERIODS]: IFocus.Period[];
-  [CHROME_STORAGE_KEY_ENUM.ALL_BLOCKED_WEBSITES]: IFocus.WebSite[];
+  [CHROME_STORAGE_KEY_ENUM.WEBSITES_LIBRARY]: Record<string, readonly IFocus.WebSite[]>;
 }
 
 /**
@@ -57,20 +55,21 @@ export class FocusService {
   readonly #isChromeRuntime: boolean = !!chrome.runtime;
   /** @guideline DZ_02, DZ_08, DZ_09 - Dependency injection with inject(), private #, readonly */
   readonly #toastService = inject(DzToastService);
-  readonly #chromeStorageService = inject(ChromeStorageService);
+  readonly #storage = inject(ChromeStorageService);
   readonly #destroyRef = inject(DestroyRef);
   /** @guideline DZ_11 - Universal Logger usage */
   readonly #logger = logger.createLogger('FocusService');
 
   /** @guideline DZ_04, DZ_08 - Private writable signals for internal state */
-  readonly #websitesLibrary =
-    signal<Record<IFocus.IWebSiteType, readonly IFocus.WebSite[]>>(WEBSITES_LIBRARY_PRESET);
-  readonly #currentPeriod: WritableSignal<IFocus.Period | null> = signal<IFocus.Period | null>(
-    null
+  readonly #currentPeriod: WritableSignal<IFocus.Period> = signal<IFocus.Period>(
+    createDefaultPeriodHelper()
   );
   readonly #periods: WritableSignal<IFocus.Period[] | null> = signal(null);
   readonly #activeTab: WritableSignal<chrome.tabs.Tab | undefined> = signal(undefined);
   readonly #currentTime: WritableSignal<number> = signal(Date.now());
+  readonly #allLibraryWebsites: WritableSignal<Record<string, readonly IFocus.WebSite[]>> = signal(
+    {}
+  );
   /** @guideline DZ_08 - Private field */
   #timerIntervalId: ReturnType<typeof setInterval> | null = null;
 
@@ -100,9 +99,9 @@ export class FocusService {
 
   public readonly currentPeriod = this.#currentPeriod.asReadonly();
   public readonly activeTab = this.#activeTab.asReadonly();
-  public readonly websitesLibrary = this.#websitesLibrary.asReadonly();
+  public readonly currentTime = this.#currentTime.asReadonly();
 
-  public readonly progress = computed(() => {
+  public readonly currentPeriodProgress = computed(() => {
     if (!this.isPeriodCurrentlyApplicable()) {
       return 0;
     }
@@ -126,9 +125,6 @@ export class FocusService {
   public readonly periods: Signal<IFocus.Period[] | null> = computed(
     () => this.#periods()?.filter(p => p.id !== QUICK_FOCUS_ID) ?? null
   );
-  public readonly quickPeriod: Signal<IFocus.Period[] | null> = computed(
-    () => this.#periods()?.filter(p => p.id === QUICK_FOCUS_ID) ?? null
-  );
 
   public readonly isPeriodCurrentlyApplicable: Signal<boolean> = computed(() => {
     const period = this.#currentPeriod();
@@ -141,16 +137,13 @@ export class FocusService {
     const endMs = getTimeInMilliseconds(period.endTo);
     const currentMs = getTimeInMilliseconds(now);
 
-    // 1. Проверяем, попадаем ли мы в диапазон времени (с учетом полночи)
     if (!isCurrentTimeInRange(now, period.startFrom, period.endTo)) {
       return false;
     }
 
-    // 2. Проверка дня недели
     if (period.daysOfWeek) {
       const spansMidnight = startMs > endMs;
 
-      // Если сейчас "утро" (до конца периода) и интервал ночной — проверяем ВЧЕРАШНИЙ день
       const isMorningOfNextDay = spansMidnight && currentMs < endMs;
       const dayToCheck = isMorningOfNextDay ? (today + 6) % 7 : today;
 
@@ -184,16 +177,18 @@ export class FocusService {
     return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
   });
 
-  public readonly isCurrentTabInCurrentPeriod: Signal<boolean> = computed(() => {
+  public readonly isCurrentTabInSystem: Signal<boolean> = computed(() => {
     const tab = this.#activeTab();
     const period = this.#currentPeriod();
 
-    if (!tab?.url || !period?.webSites) {
-      return false;
-    }
+    if (!tab?.url) return false;
 
     const cleanedUrl = cleanUrlHelper(tab.url);
-    return period.webSites.some(site => cleanUrlHelper(site.url) === cleanedUrl);
+    const library = period?.library || {};
+
+    return Object.values(library).some(folderSites =>
+      folderSites.some(site => cleanUrlHelper(site.url) === cleanedUrl)
+    );
   });
 
   constructor() {
@@ -291,8 +286,14 @@ export class FocusService {
     }
   }
 
-  public addCurrentTabToPeriod(isActivated = false): void {
-    if (!this.#isChromeRuntime) {
+  public addCurrentTabWebsiteToLibrary(isActivated = false): void {
+    if (!this.#isChromeRuntime) return;
+
+    if (this.isCurrentTabInSystem()) {
+      this.#toastService.show({
+        message: TOAST_MESSAGES_ENUM.ALREADY_ADDED,
+        type: TOAST_TYPE_ENUM.WARN,
+      });
       return;
     }
 
@@ -302,12 +303,7 @@ export class FocusService {
     if (tab?.url && period) {
       const cleanedUrl = cleanUrlHelper(tab.url);
 
-      // Check if the URL matches any UNBLOCKABLE website
-      const isUnblockable = WEBSITES_UNBLOCKABLE.some(
-        site => cleanUrlHelper(site.url) === cleanedUrl
-      );
-
-      if (isUnblockable) {
+      if (WEBSITES_UNBLOCKABLE.some(site => cleanUrlHelper(site.url) === cleanedUrl)) {
         this.#toastService.show({
           message: TOAST_MESSAGES_ENUM.UNBLOCKABLE_WEBSITE,
           type: TOAST_TYPE_ENUM.ERROR,
@@ -315,68 +311,62 @@ export class FocusService {
         return;
       }
 
-      const existingSite = period.webSites.find(s => cleanUrlHelper(s.url) === cleanedUrl);
-
-      if (!existingSite) {
-        const iconUrl = tab.favIconUrl ?? FaviconHelper.getGoogleUrl(cleanedUrl);
-        const newSite: IFocus.WebSite = {
-          id: cleanedUrl,
-          url: cleanedUrl,
-          name: tab.title || cleanedUrl,
-          iconUrl: isSvgIcon(iconUrl) ? iconUrl : ICONS.GLOBE,
-          description: tab.title || cleanedUrl,
-          imageUrl: isImageIcon(iconUrl) ? iconUrl : '',
-          type: IFocus.EWebSiteType.DEFAULT,
-          isActivated,
-        };
-
-        const updatedPeriod = {
-          ...period,
-          webSites: [...period.webSites, newSite],
-        };
-
-        void this.updatePeriod(updatedPeriod);
+      if (period.isActive) {
+        this.#logger.info('Stopping active focus before adding new website to library.');
+        this.stopFocus();
         this.#toastService.show({
-          message: TOAST_MESSAGES_ENUM.ADDED,
-          type: TOAST_TYPE_ENUM.ACCENT,
-        });
-      } else if (isActivated && !existingSite.isActivated) {
-        const updatedPeriod = {
-          ...period,
-          webSites: period.webSites.map(s =>
-            cleanUrlHelper(s.url) === cleanedUrl ? { ...s, isActivated: true } : s
-          ),
-        };
-
-        void this.updatePeriod(updatedPeriod);
-        this.#toastService.show({
-          message: TOAST_MESSAGES_ENUM.WEBSITE_BLOCKED,
-          type: TOAST_TYPE_ENUM.ACCENT,
-        });
-      } else {
-        this.#toastService.show({
-          message: `${TOAST_MESSAGES_ENUM.ALREADY_ADDED}: ${cleanedUrl}`,
-          type: TOAST_TYPE_ENUM.WARN,
+          message: TOAST_MESSAGES_ENUM.FOCUS_STOPPED_FOR_SETTINGS,
+          type: TOAST_TYPE_ENUM.INFO,
         });
       }
+
+      const iconUrl = tab.favIconUrl ?? FaviconHelper.getGoogleUrl(cleanedUrl);
+      const newSite: IFocus.WebSite = {
+        id: cleanedUrl,
+        url: cleanedUrl,
+        name: tab.title || cleanedUrl,
+        iconUrl: isSvgIcon(iconUrl) ? iconUrl : ICONS.GLOBE,
+        description: tab.title || cleanedUrl,
+        imageUrl: isImageIcon(iconUrl) ? iconUrl : '',
+        type: IFocus.EWebSiteType.DEFAULT,
+        isActivated,
+        permissionLvl: PERMISSION_LVL_ENUM.USER,
+      };
+
+      chrome.runtime.sendMessage(
+        {
+          command: CHROME_COMMAND_ENUM.ADD_WEBSITE_TO_FOLDER,
+          folder: newSite.type,
+          website: newSite,
+          periodId: period.id,
+        },
+        response => {
+          if (response?.success) {
+            this.#toastService.show({
+              message: TOAST_MESSAGES_ENUM.ADDED,
+              type: TOAST_TYPE_ENUM.ACCENT,
+            });
+          }
+        }
+      );
     }
   }
 
-  public async toggleBlockedWebsite(site: IFocus.WebSite): Promise<void> {
-    const currentPeriod = this.#currentPeriod();
-    if (currentPeriod && currentPeriod.isActive) {
-      this.#logger.info('Stopping active focus before updating website list.');
-      this.stopFocus();
-      this.#toastService.show({
-        message: TOAST_MESSAGES_ENUM.FOCUS_STOPPED_FOR_SETTINGS,
-        type: TOAST_TYPE_ENUM.INFO,
-      });
-    }
-
-    if (this.#isChromeRuntime) {
-      chrome.runtime.sendMessage({ command: CHROME_COMMAND_ENUM.TOGGLE_BLOCKED_WEBSITE, site });
-    }
-  }
+  // public async toggleBlockedWebsite(site: IFocus.WebSite): Promise<void> {
+  //   const currentPeriod = this.#currentPeriod();
+  //   if (currentPeriod && currentPeriod.isActive) {
+  //     this.#logger.info('Stopping active focus before updating website list.');
+  //     this.stopFocus();
+  //     this.#toastService.show({
+  //       message: TOAST_MESSAGES_ENUM.FOCUS_STOPPED_FOR_SETTINGS,
+  //       type: TOAST_TYPE_ENUM.INFO,
+  //     });
+  //   }
+  //
+  //   if (this.#isChromeRuntime) {
+  //     chrome.runtime.sendMessage({ command: CHROME_COMMAND_ENUM.TOGGLE_BLOCKED_WEBSITE, site });
+  //   }
+  // }
 
   public setCurrentPeriod(periodId: string): void {
     if (this.#isChromeRuntime) {
@@ -419,11 +409,11 @@ export class FocusService {
       return;
     }
 
-    this.#chromeStorageService.getMany<InitialStorageSchema>(
+    this.#storage.getMany<InitialStorageSchema>(
       [
         CHROME_STORAGE_KEY_ENUM.CURRENT_PERIOD,
         CHROME_STORAGE_KEY_ENUM.PERIODS,
-        CHROME_STORAGE_KEY_ENUM.ALL_BLOCKED_WEBSITES,
+        CHROME_STORAGE_KEY_ENUM.WEBSITES_LIBRARY,
       ],
       result => {
         if (!result) {
@@ -454,7 +444,12 @@ export class FocusService {
               this.#periods.set(periods);
             }
 
-            this.#currentPeriod.set(currentPeriod);
+            if (currentPeriod) {
+              this.#currentPeriod.set(currentPeriod);
+            }
+
+            const library = result[CHROME_STORAGE_KEY_ENUM.WEBSITES_LIBRARY] || {};
+            this.#allLibraryWebsites.set(library);
           }
         );
       }
@@ -478,19 +473,8 @@ export class FocusService {
           const newCurrentPeriod = changes[CHROME_STORAGE_KEY_ENUM.CURRENT_PERIOD]
             .newValue as IFocus.Period | null;
 
-          this.#currentPeriod.set(
-            newCurrentPeriod ? this.#convertPeriodFromStorage(newCurrentPeriod) : null
-          );
-        }
-
-        if (changes[CHROME_STORAGE_KEY_ENUM.WEBSITES_LIBRARY]) {
-          const newLibrary = changes[CHROME_STORAGE_KEY_ENUM.WEBSITES_LIBRARY].newValue as Record<
-            IFocus.IWebSiteType,
-            readonly IFocus.WebSite[]
-          > | null;
-
-          if (newLibrary) {
-            this.#websitesLibrary.set(newLibrary);
+          if (newCurrentPeriod) {
+            this.#currentPeriod.set(this.#convertPeriodFromStorage(newCurrentPeriod));
           }
         }
       }
@@ -544,7 +528,11 @@ export class FocusService {
   }
 
   #notifyIfNoSitesBlocked(period: IFocus.Period | null): void {
-    const hasActivatedSites = period?.webSites.some(site => site.isActivated) ?? false;
+    const hasActivatedSites = period?.library
+      ? Object.values(period.library)
+          .flat()
+          .some(site => site.isActivated)
+      : false;
 
     if (!period?.isActive && !hasActivatedSites) {
       this.#toastService.show({

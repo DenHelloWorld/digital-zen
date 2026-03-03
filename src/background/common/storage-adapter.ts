@@ -54,6 +54,16 @@ export class StorageAdapter {
     });
   }
 
+  static async savePeriods(periods: IFocus.Period[]): Promise<void> {
+    return this.enqueue(async () => {
+      const storedPeriods = periods.map(p => this.toStorageFormat(p));
+      await chrome.storage.local.set({
+        [CHROME_STORAGE_KEY_ENUM.PERIODS]: storedPeriods,
+      });
+      this.logger.info(`Saved ${periods.length} periods to storage`);
+    });
+  }
+
   static async saveCurrentPeriod(period: IFocus.Period): Promise<void> {
     return this.enqueue(async () => {
       await chrome.storage.local.set({
@@ -143,12 +153,88 @@ export class StorageAdapter {
     };
   }
 
-  static async setWebsitesLibraryState(
-    state: Record<string, readonly IFocus.WebSite[]>
+  static async addWebsiteToPeriodLibrary(
+    periodId: string,
+    folderName: string,
+    website: IFocus.WebSite
   ): Promise<void> {
-    return this.enqueue(async () => {
-      await chrome.storage.local.set({ [CHROME_STORAGE_KEY_ENUM.WEBSITES_LIBRARY]: state });
-    });
+    // Достаем все периоды
+    const periods = await this.getPeriods();
+    const targetPeriod = periods.find(p => p.id === periodId);
+
+    if (targetPeriod) {
+      // 1. Обновляем библиотеку в объекте периода
+      if (!targetPeriod.library) targetPeriod.library = {};
+      if (!targetPeriod.library[folderName]) targetPeriod.library[folderName] = [];
+
+      targetPeriod.library[folderName].push(website);
+
+      // 2. Сохраняем этот период в общий список PERIODS
+      await this.savePeriod(targetPeriod);
+
+      // 3. Проверяем, не является ли этот период текущим активным
+      const current = await this.getCurrentPeriod();
+      if (current && current.id === periodId) {
+        // Если да - обновляем и ключ CURRENT_PERIOD
+        await this.saveCurrentPeriod(targetPeriod);
+      }
+    }
+  }
+
+  static async addFolderToPeriodLibrary(periodId: string, folder: string): Promise<void> {
+    const periods = await this.getPeriods();
+    const targetPeriod = periods.find(p => p.id === periodId);
+
+    if (!targetPeriod) {
+      return;
+    }
+
+    if (!targetPeriod.library) {
+      targetPeriod.library = {};
+    }
+
+    if (!targetPeriod.library[folder]) {
+      targetPeriod.library[folder] = [];
+
+      await this.savePeriod(targetPeriod);
+
+      const current = await this.getCurrentPeriod();
+      if (current && current.id === periodId) {
+        await this.saveCurrentPeriod(targetPeriod);
+      }
+    }
+  }
+
+  static async deleteFolderFromPeriodLibrary(periodId: string, folderName: string): Promise<void> {
+    const periods = await this.getPeriods();
+    const targetPeriod = periods.find(p => p.id === periodId);
+
+    // Если периода нет или такой папки не существует — выходим
+    if (!targetPeriod || !targetPeriod.library || !targetPeriod.library[folderName]) {
+      return;
+    }
+
+    // 1. Извлекаем сайты из удаляемой папки
+    const websitesToDelete = targetPeriod.library[folderName];
+
+    // 2. Инициализируем корзину, если её нет
+    const deleteKey = IFocus.EWebSiteType.DELETE;
+    if (!targetPeriod.library[deleteKey]) {
+      targetPeriod.library[deleteKey] = [];
+    }
+
+    // 3. Перемещаем сайты в корзину и удаляем саму папку
+    targetPeriod.library[deleteKey].push(...websitesToDelete);
+    delete targetPeriod.library[folderName];
+
+    // 4. Сохраняем обновленный период в общий список
+    await this.savePeriod(targetPeriod);
+
+    // 5. Синхронизируем с текущим периодом, если он активен
+    const current = await this.getCurrentPeriod();
+    if (current && current.id === periodId) {
+      await this.saveCurrentPeriod(targetPeriod);
+    }
   }
 
   // === Private helpers ===

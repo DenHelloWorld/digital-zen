@@ -107,6 +107,8 @@ a {
 }
 
 .dz-button {
+  border: 2px solid transparent;
+
   &--free {
     padding: 0;
     width: auto;
@@ -142,9 +144,12 @@ a {
 
 .dz-button.dz-button--ghost.dz-button--activated {
   color: var(--color-text);
+  border: 2px solid var(--color-zen-accent);
 }
 
 .dz-accordion {
+  background-color: transparent;
+
   &__header {
     &--hoverless {
       pointer-events: none;
@@ -174,6 +179,7 @@ img {
   --btn-size-nm: 38px;
   --color-glass-text: rgba(71, 85, 105, 0.7);
   interpolate-size: allow-keywords;
+  --btn-size-xxs: 18px;
 }
 
 .light {
@@ -193,11 +199,6 @@ img {
   }
 }
 
-.dz-accordion {
-  background-color: transparent;
-  border: 1px solid color-mix(in srgb, var(--color-component-bg-light), white 20%);
-}
-
 .shadow {
   border: 1px solid color-mix(in srgb, var(--color-component-bg-light), white 20%);
 }
@@ -206,11 +207,15 @@ img {
   display: flex;
   align-items: center;
   border-radius: var(--radius);
-  padding: var(--spacing-xs);
+  //padding: var(--spacing-xs);
   background-color: transparent;
   justify-content: center;
   aspect-ratio: 1/1;
   gap: var(--spacing-xs);
+
+  &--xxs {
+    height: var(--btn-size-xxs);
+  }
 
   &--xs {
     height: var(--btn-size-xs);
@@ -219,6 +224,10 @@ img {
 
   &--sm {
     height: var(--btn-size-sm);
+  }
+
+  &--nm {
+    height: var(--btn-size-nm);
   }
 
   &--md {
@@ -369,12 +378,6 @@ summary::marker {
   -webkit-backdrop-filter: blur(3px);
 }
 
-.ellipsis {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
 .full {
   width: 100%;
 }
@@ -389,7 +392,7 @@ summary::marker {
     filter: brightness(1);
   }
   50% {
-    filter: brightness(1.2);
+    filter: brightness(1.1);
   }
 }
 
@@ -456,52 +459,98 @@ summary::marker {
   &--root {
     padding-left: 0;
   }
-}
 
-.dz-tree__item {
-  position: relative;
-  padding: 4px 0 4px 20px;
-  display: flex;
-  align-items: center;
-  gap: var(--spacing);
-  //cursor: pointer;
-  border-radius: var(--radius-xs);
-  transition: background 0.2s;
-}
+  &:not(.dz-tree--root) {
+    height: 0;
 
-/* Вертикальная линия ветки */
-.dz-tree__item::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: -10px;
-  bottom: 50%;
-  width: 1px;
-  border-left: 1px solid var(--color-glass-text);
-}
+    overflow: hidden;
+    transition: height 0.3s ease-in-out;
+  }
 
-/* Горизонтальная линия к иконке */
-.dz-tree__item::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 50%;
-  width: 1rem;
-  height: 1px;
-  border-top: 1px solid var(--color-glass-text);
-}
+  &.dz-tree--open {
+    height: auto;
+  }
 
-/* Убираем лишнюю линию у первого элемента */
-.dz-tree__item:first-child::before {
-  top: 50%;
-}
+  &__item {
+    position: relative;
+    padding: 4px 0 4px 20px;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing);
+    //cursor: pointer;
+    border-radius: var(--radius-xs);
+    transition: background 0.2s;
 
+    /* Вертикальная линия ветки */
+    &::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: -10px;
+      bottom: 50%;
+      width: 1px;
+      border-left: 1px solid var(--color-glass-text);
+    }
+
+    /* Горизонтальная линия к иконке */
+    &::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 50%;
+      width: 1rem;
+      height: 1px;
+      border-top: 1px solid var(--color-glass-text);
+    }
+
+    &:first-child {
+      &::before {
+        top: 50%;
+      }
+    }
+  }
+}
+.text-center {
+  text-align: center;
+}
 .dz-input {
+  background-color: transparent;
+  &--hidden {
+    opacity: 0;
+    width: 0;
+    height: 0;
+    padding: 0;
+    margin: 0;
+    pointer-events: none;
+  }
+
+  &[type='time'] {
+    padding: 0;
+    &::-webkit-calendar-picker-indicator {
+      display: none !important;
+    }
+  }
+
+  &::placeholder {
+    color: var(--color-glass-text);
+  }
+
   &--checkbox {
     cursor: pointer;
     width: var(--btn-size-xs);
     height: var(--btn-size-xs);
+    min-width: var(--btn-size-xs);
+    min-height: var(--btn-size-xs);
     box-shadow: none;
+  }
+
+  &::placeholder {
+    font-size: inherit;
+    line-height: inherit;
+    font-family: inherit;
+    opacity: 1;
+    display: flex;
+    align-items: center;
   }
 }
 
@@ -528,4 +577,64 @@ summary::marker {
 
 .copy {
   cursor: copy;
+}
+
+@keyframes dz-entry-slide {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.ellipsis {
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  word-break: break-all;
+}
+
+.no-wrap {
+  white-space: nowrap;
+}
+
+.font {
+  &-xxs {
+    font-size: var(--font-size-xxs);
+  }
+  &-xs {
+    font-size: var(--font-size-xs);
+  }
+
+  &-sm {
+    font-size: var(--font-size-sm);
+  }
+
+  &-md {
+    font-size: var(--font-size-md);
+  }
+
+  &-lg {
+    font-size: var(--font-size-lg);
+  }
+  &-xl {
+    font-size: var(--font-size-xl);
+  }
+
+  &-xxl {
+    font-size: var(--font-size-xxl);
+  }
+}
+
+.dz-form__error {
+  width: 100%;
+  margin: var(--list-gap) 0 0 0;
+}
+
+.relative {
+  position: relative;
 }

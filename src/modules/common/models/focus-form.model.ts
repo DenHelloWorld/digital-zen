@@ -10,12 +10,12 @@ export namespace IFocusForm {
     description: FormControl<string | null>;
     startFrom: FormControl<string | null>;
     endTo: FormControl<string | null>;
-    webSites: FormControl<IFocus.WebSite[]>;
     daysOfWeek: FormControl<DayOfWeekType[]>;
     blockBehaviour: FormControl<BlockBehaviourType>;
     focusedTimes: FormControl<IFocus.FocusedTime[]>;
     isActive: FormControl<boolean>;
     sessionStartTime: FormControl<Date | null>;
     setAsCurrentPeriod: FormControl<boolean>;
+    library: FormControl<Record<string, IFocus.WebSite[]> | null>;
   }
 }

@@ -76,6 +76,9 @@ export class BackgroundService {
       operationQueue = operationQueue.then(async () => {
         try {
           switch (message.command as ChromeCommandType) {
+            /**
+             * Focus actions
+             * */
             case CHROME_COMMAND_ENUM.ADD_PERIOD:
               await this.addPeriod(message.period);
               safeSendResponse({ success: true });
@@ -110,11 +113,6 @@ export class BackgroundService {
             }
             case CHROME_COMMAND_ENUM.TOGGLE_FOCUS: {
               const result = await this.#focusService.toggleFocus();
-              safeSendResponse(result);
-              break;
-            }
-            case CHROME_COMMAND_ENUM.TOGGLE_QUICK_FOCUS: {
-              const result = await this.#focusService.toggleQuickFocus(message.siteUrl);
               safeSendResponse(result);
               break;
             }
@@ -179,6 +177,23 @@ export class BackgroundService {
               }
               break;
             }
+
+            case CHROME_COMMAND_ENUM.ADD_WEBSITE_TO_FOLDER:
+              await StorageAdapter.addWebsiteToPeriodLibrary(
+                message.periodId,
+                message.folder,
+                message.website
+              );
+
+              safeSendResponse({ success: true });
+              break;
+            case CHROME_COMMAND_ENUM.REMOVE_WEBSITE: {
+              break;
+            }
+
+            /**
+             * Pomodoro actions
+             * */
             case CHROME_COMMAND_ENUM.START_POMODORO: {
               await this.#pomodoroService.start();
               safeSendResponse({ success: true });
@@ -282,7 +297,7 @@ export class BackgroundService {
     this.updateExtensionIcon(!!current?.isActive);
 
     if (current?.isActive) {
-      this.#focusService.updateBlockRulesForCurrentPeriod();
+      await this.#focusService.updateBlockRulesForCurrentPeriodLibrary();
       this.scheduleAlarm();
     } else {
       this.#focusService.clearBlockRules();
@@ -325,35 +340,43 @@ export class BackgroundService {
     if (current && current.id === period.id) {
       await StorageAdapter.saveCurrentPeriod(period);
       if (period.isActive) {
-        this.#focusService.updateBlockRulesForCurrentPeriod();
+        await this.#focusService.updateBlockRulesForCurrentPeriodLibrary();
         this.scheduleAlarm();
       }
     }
-    await UserDataSyncAdapter.syncPeriodsToBackend();
+    // await UserDataSyncAdapter.syncPeriodsToBackend();
   }
 
   private async toggleWebSiteBlocking(toggledSite: IFocus.WebSite): Promise<void> {
     const currentPeriod = await StorageAdapter.getCurrentPeriod();
-    if (!currentPeriod) {
+    if (!currentPeriod || !currentPeriod.library) {
       return;
     }
 
-    const isNewSite = !currentPeriod.webSites.some(s => s.url === toggledSite.url);
+    const folderName = toggledSite.type as string;
+    const library = { ...currentPeriod.library };
+    const folderSites = library[folderName] ? [...library[folderName]] : [];
 
-    const updatedWebSites = isNewSite
-      ? [...currentPeriod.webSites, { ...toggledSite, isActivated: true }]
-      : currentPeriod.webSites.map(s =>
-          s.url === toggledSite.url ? { ...s, isActivated: !s.isActivated } : s
-        );
+    const siteIndex = folderSites.findIndex(s => s.url === toggledSite.url);
 
-    const updatedPeriod = { ...currentPeriod, webSites: updatedWebSites };
+    if (siteIndex === -1) {
+      folderSites.push({ ...toggledSite, isActivated: true });
+    } else {
+      folderSites[siteIndex] = {
+        ...folderSites[siteIndex],
+        isActivated: !folderSites[siteIndex].isActivated,
+      };
+    }
+
+    library[folderName] = folderSites;
+    const updatedPeriod = { ...currentPeriod, library };
+
     await StorageAdapter.savePeriod(updatedPeriod);
     await StorageAdapter.saveCurrentPeriod(updatedPeriod);
 
     if (updatedPeriod.isActive) {
-      this.#focusService.updateBlockRulesForCurrentPeriod();
+      await this.#focusService.updateBlockRulesForCurrentPeriodLibrary();
     }
-    await UserDataSyncAdapter.syncPeriodsToBackend();
   }
 
   private updateExtensionIcon(isFocused: boolean): void {
@@ -431,6 +454,19 @@ export class BackgroundService {
      * Подготовка к менеджменту библиотекой сайтов
      * TODO: добавить возможность создавать папки(тип сайта) и редактировать его. Удалять предустановленные папки и сайты нельзя(IWebSiteType)
      * */
-    await StorageAdapter.setWebsitesLibraryState(WEBSITES_LIBRARY_PRESET);
+    const periods = await StorageAdapter.getPeriods();
+    let changed = false;
+
+    const migratedPeriods = periods.map(p => {
+      if (!p.library) {
+        p.library = { ...WEBSITES_LIBRARY_PRESET } as Record<string, IFocus.WebSite[]>;
+        changed = true;
+      }
+      return p;
+    });
+
+    if (changed) {
+      await StorageAdapter.savePeriods(migratedPeriods);
+    }
   }
 }

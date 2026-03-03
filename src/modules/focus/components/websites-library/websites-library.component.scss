@@ -1,0 +1,33 @@
+::ng-deep {
+  .dz-popup-content {
+    &__folder-actions,
+    &__header-actions {
+      display: flex;
+      gap: var(--spacing);
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    &--new-folder {
+      min-width: 50vw;
+    }
+
+    .dz-tree {
+      &__item {
+        position: relative;
+        display: flex;
+        justify-content: space-between;
+      }
+      &__item-group {
+        display: flex;
+        gap: var(--spacing);
+        align-items: center;
+        flex-wrap: wrap;
+        &--actions {
+          position: absolute;
+          right: 0;
+        }
+      }
+    }
+  }
+}

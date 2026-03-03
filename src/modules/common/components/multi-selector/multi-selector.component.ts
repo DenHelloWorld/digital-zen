@@ -54,7 +54,7 @@ export class MultiSelectorComponent<T> {
 
   public readonly labelKey = input.required<keyof T>();
   public readonly orientation = input<'vertical' | 'horizontal'>('vertical');
-  public readonly size = input<'sm' | 'md' | 'lg'>('sm');
+  public readonly size = input<'xs' | 'sm' | 'md' | 'lg'>('sm');
   public readonly highlightedId = input<T[keyof T] | null>(null);
 
   public readonly itemTemplate = contentChild<TemplateRef<{ $implicit: T }>>('itemTemplate');

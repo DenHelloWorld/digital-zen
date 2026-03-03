@@ -13,7 +13,7 @@
   flex-direction: column;
   padding: 0;
 
-  animation: dz-popup-in 0.3s ease-out forwards;
+  animation: dz-entry-slide 0.3s ease-out forwards;
 
   &--full-h {
     height: calc(100vh - (var(--spacing) * 2));
@@ -38,31 +38,19 @@
 
   &__main {
     padding: 0 var(--spacing) var(--spacing) var(--spacing);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing);
     flex: 1;
     overflow-y: auto;
   }
-}
 
-.dz-popup-fade-in {
-  animation: dz-fade-in 0.2s ease-out forwards;
-}
+  &__footer {
+    display: flex;
+    padding: 0 var(--spacing) var(--spacing) var(--spacing);
 
-@keyframes dz-fade-in {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes dz-popup-in {
-  from {
-    opacity: 0;
-    transform: scale(0.9) translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1) translateY(0);
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.5rem;
   }
 }

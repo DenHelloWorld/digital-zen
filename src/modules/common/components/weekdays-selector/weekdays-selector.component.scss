@@ -1,6 +1,7 @@
 :host {
   .dz-list {
     border-radius: var(--radius-xs);
+    gap: var(--spacing-xs);
 
     &--horizontal {
       align-items: center;

@@ -6,6 +6,7 @@
 // Usage: <span class="dz-badge dz-badge--primary dz-badge--md">Badge Text</span>
 
 .dz-badge {
+  z-index: 100;
   display: inline-flex;
   gap: var(--spacing-xs);
   font-weight: 500;
@@ -66,6 +67,12 @@
     top: 0;
     left: 0;
     transform: translate(-50%, -50%);
+  }
+
+  &--right {
+    position: absolute;
+    right: 0;
+    transform: translate(calc(100% + 0.3rem), -7%);
   }
 
   &--top-right {

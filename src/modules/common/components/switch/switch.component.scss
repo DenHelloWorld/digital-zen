@@ -73,6 +73,7 @@
         opacity: 1;
       }
       .dz-switch__thumb {
+        color: var(--color-on-accent);
         $offset: 'calc(var(--switch-w) - var(--thumb-s) - (var(--padding)  * 4))';
         transform: translateX(#{$offset});
       }

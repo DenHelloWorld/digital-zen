@@ -4,15 +4,17 @@ import { WeekdaysSelectorComponent } from '../../../common/components/weekdays-s
 import { ALL_DAYS_OF_WEEK } from '../../../common/constants/days-of-week.const';
 import { ICONS } from '../../../common/constants/icons.const';
 import { UI_TEXT } from '../../../common/constants/ui-text.const';
+import { PopupDirective } from '../../../common/directives/popup.directive';
+import { ProgressBorderDirective } from '../../../common/directives/progress-border.directive';
 import { BLOCK_BEHAVIOUR_ENUM } from '../../../common/enums/block-behaviour.enum';
+import { COLORS_ENUM } from '../../../common/enums/colors.enum';
 import { TOAST_MESSAGES_ENUM } from '../../../common/enums/toast-messages.enum';
+import { TOAST_TYPE_ENUM } from '../../../common/enums/toast-type.enum';
 import { VIEW_ENUM } from '../../../common/enums/view.enum';
-import { isHttpUrl } from '../../../common/helpers/is-http-url.helper';
+import { getTimeInMilliseconds, isCurrentTimeInRange } from '../../../common/helpers/time.helper';
 import { IFocus } from '../../../common/models/focus.model';
-import { RemoveProtocolPipe } from '../../../common/pipes/remove-protocol.pipe';
 import { MiniRouterService } from '../../../common/services/mini-router.service';
 import { FocusService } from '../../services/focus.service';
-import { TimeLineComponent } from '../time-line/time-line.component';
 import { CommonModule } from '@angular/common';
 import {
   ChangeDetectionStrategy,
@@ -27,6 +29,8 @@ import {
   signal,
   WritableSignal,
 } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { interval } from 'rxjs';
 
 /**
  * Period display and management component
@@ -51,12 +55,13 @@ import {
   imports: [
     // angular modules
     CommonModule,
-    // pipes
-    RemoveProtocolPipe,
     // components
-    TimeLineComponent,
     WeekdaysSelectorComponent,
     SwitchComponent,
+
+    // directives
+    ProgressBorderDirective,
+    PopupDirective,
   ],
 })
 export class PeriodComponent {
@@ -65,17 +70,148 @@ export class PeriodComponent {
   readonly #toastService: DzToastService = inject(DzToastService);
   readonly #router = inject(MiniRouterService);
 
+  readonly #tick = toSignal(interval(1000), { initialValue: 0 });
+  readonly #currentTime = this.#focusService.currentTime;
+
   /** @guideline DZ_04 - Computed signal (derived state) */
   protected readonly selectedDays: Signal<IFocus.DayOfWeek[]> = computed(() => {
     const selected = this.period().daysOfWeek;
     return this.allDays.filter(day => selected.includes(day.day));
   });
 
-  protected isOutsideTimeRangeError = computed(() =>
-    this.#toastService
-      .toasts()
-      .find(t => t.target === `${TOAST_MESSAGES_ENUM.PERIOD_OUTSIDE_TIME_RANGE}${this.period().id}`)
-  );
+  protected readonly progress = computed(() => {
+    this.#tick();
+
+    const { startFrom, endTo } = this.period();
+    if (!startFrom || !endTo) return 0;
+
+    const now = new Date();
+    const nowMs = getTimeInMilliseconds(now);
+
+    const startMs = getTimeInMilliseconds(startFrom);
+    const endMs = getTimeInMilliseconds(endTo);
+
+    const total = startMs <= endMs ? endMs - startMs : 24 * 60 * 60 * 1000 - startMs + endMs;
+
+    if (total === 0) return 0;
+
+    const elapsed = nowMs >= startMs ? nowMs - startMs : 24 * 60 * 60 * 1000 - startMs + nowMs;
+
+    const result = 1 - elapsed / total;
+
+    return Math.min(Math.max(result, 0), 1);
+  });
+
+  protected readonly focusRemainingTime: Signal<number> = computed(() => {
+    const period = this.period();
+    const nowTimestamp = this.#currentTime();
+    const now = new Date(nowTimestamp);
+
+    if (!period?.endTo) {
+      return 0;
+    }
+
+    const deadline = new Date(now);
+    deadline.setHours(period.endTo.getHours(), period.endTo.getMinutes(), 0, 0);
+
+    if (
+      deadline.getTime() <= now.getTime() &&
+      period.startFrom &&
+      period.endTo.getHours() < period.startFrom.getHours()
+    ) {
+      deadline.setDate(deadline.getDate() + 1);
+    }
+
+    const remaining = deadline.getTime() - now.getTime();
+    return remaining > 0 ? remaining : 0;
+  });
+
+  public readonly focusElapsedTimeFormatted: Signal<string> = computed(() => {
+    const remaining = this.focusRemainingTime();
+
+    if (remaining <= 0) {
+      return '00:00';
+    }
+
+    const totalSeconds = Math.floor(remaining / 1000);
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+
+    if (hours > 0) {
+      return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    }
+
+    return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+  });
+
+  public readonly isPeriodCurrentlyApplicable: Signal<boolean> = computed(() => {
+    const period = this.period();
+    if (!period || !period.startFrom || !period.endTo) return false;
+
+    const now = new Date(this.#currentTime());
+    const today = now.getDay();
+
+    const startMs = getTimeInMilliseconds(period.startFrom);
+    const endMs = getTimeInMilliseconds(period.endTo);
+    const currentMs = getTimeInMilliseconds(now);
+
+    if (!isCurrentTimeInRange(now, period.startFrom, period.endTo)) {
+      return false;
+    }
+
+    if (period.daysOfWeek) {
+      const spansMidnight = startMs > endMs;
+
+      const isMorningOfNextDay = spansMidnight && currentMs < endMs;
+      const dayToCheck = isMorningOfNextDay ? (today + 6) % 7 : today;
+
+      if (!period.daysOfWeek.includes(dayToCheck)) {
+        return false;
+      }
+    }
+
+    return true;
+  });
+
+  protected readonly status = computed(() => {
+    const period = this.period();
+
+    if (!period) {
+      return 'Idle';
+    }
+
+    switch (period.blockBehaviour) {
+      case BLOCK_BEHAVIOUR_ENUM.WHITELIST:
+        return 'Focus';
+      case BLOCK_BEHAVIOUR_ENUM.BLOCK:
+        return 'Block';
+      case BLOCK_BEHAVIOUR_ENUM.WARN:
+        return 'Warn';
+      default:
+        return 'Idle';
+    }
+  });
+
+  protected readonly statusIcon = computed(() => {
+    const period = this.period();
+
+    if (!period) {
+      return this.icons.MOON;
+    }
+
+    switch (period.blockBehaviour) {
+      case BLOCK_BEHAVIOUR_ENUM.WHITELIST:
+        return this.icons.PERSON_ZEN;
+      case BLOCK_BEHAVIOUR_ENUM.BLOCK:
+        return this.icons.BLOCK;
+      case BLOCK_BEHAVIOUR_ENUM.WARN:
+        return this.icons.WARNING;
+      default:
+        return this.icons.MOON;
+    }
+  });
+
   protected isNotScheduledToday = computed(() =>
     this.#toastService
       .toasts()
@@ -88,15 +224,22 @@ export class PeriodComponent {
     () => this.#focusService.currentPeriod()?.id === this.period().id
   );
   protected readonly isFocusActive = computed(() => this.period().isActive);
+  protected readonly activeWebsitesCount: Signal<number> = computed(() => {
+    const library = this.period()?.library;
+    if (!library) return 0;
+
+    return Object.values(library)
+      .flat()
+      .filter(site => site.isActivated).length;
+  });
 
   /** @guideline DZ_04 - Writable signal for local state */
-  protected readonly isConfirmingDelete: WritableSignal<boolean> = signal(false);
+  protected readonly isDeletePeriodPopupShown: WritableSignal<boolean> = signal(false);
   /** @guideline DZ_10 - UI text constants */
   protected readonly uiText = UI_TEXT;
   protected readonly icons = ICONS;
   protected readonly allDays: Readonly<IFocus.DayOfWeek>[] = [...ALL_DAYS_OF_WEEK];
-  protected readonly blockBehaviours: typeof BLOCK_BEHAVIOUR_ENUM = BLOCK_BEHAVIOUR_ENUM;
-  protected readonly isHttpUrl = isHttpUrl;
+  protected readonly colors = COLORS_ENUM;
 
   /** @guideline DZ_04 - InputSignal for component inputs */
   public readonly period: InputSignal<IFocus.Period> = input.required<IFocus.Period>();
@@ -107,21 +250,36 @@ export class PeriodComponent {
     this.#router.navigate(VIEW_ENUM.EDIT_PERIOD, { period: this.period() });
   }
 
-  protected onDelete(): void {
-    this.isConfirmingDelete.set(true);
+  protected onOpenDeletePeriodPopup(): void {
+    this.isDeletePeriodPopupShown.set(true);
   }
 
-  protected onConfirmDelete(): void {
+  protected onCloseDeletePeriodPopup(): void {
+    this.isDeletePeriodPopupShown.set(false);
+  }
+
+  protected onDeletePeriod(): void {
     this.#focusService.removePeriod(this.period().id);
-    this.isConfirmingDelete.set(false);
+    this.isDeletePeriodPopupShown.set(false);
   }
 
   protected onCancelDelete(): void {
-    this.isConfirmingDelete.set(false);
+    this.isDeletePeriodPopupShown.set(false);
   }
 
   protected onIsCurrentPeriodChange(): void {
-    if (this.isCurrentPeriod()) return;
+    if (this.isCurrentPeriod()) {
+      this.#toastService.show({
+        type: TOAST_TYPE_ENUM.WARN,
+        message: TOAST_MESSAGES_ENUM.REQUIRED_PERIOD,
+      });
+      return;
+    }
     this.#focusService.setCurrentPeriod(this.period().id);
+  }
+
+  protected onOpenWebsitesList(): void {
+    const period = this.period();
+    this.#router.navigate(VIEW_ENUM.EDIT_PERIOD_LIBRARY, { period });
   }
 }

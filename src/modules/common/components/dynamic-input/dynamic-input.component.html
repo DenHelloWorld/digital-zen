@@ -21,24 +21,29 @@
 
 <ul class="dz-list dz-list--full">
   @for (entity of entities(); track entity[idKey()]) {
-    <li class="item">
+    <li
+      class="item"
+      (mouseenter)="itemActions.classList.remove('hidden')"
+      (mouseleave)="itemActions.classList.add('hidden')"
+    >
       @if (iconTemplate()) {
         <ng-container *ngTemplateOutlet="iconTemplate(); context: { $implicit: entity }">
         </ng-container>
       }
 
       <input
-        class="dz-input dz-input--borderless"
+        class="dz-input dz-input--free copy"
+        [dzCopy]="getLabel(entity)"
         [id]="entity[idKey()]"
-        [readonly]="isReadonly(entity)"
         [value]="getLabel(entity)"
         [title]="getLabel(entity)"
-        disabled
         type="text"
+        readonly
       />
 
       <button
-        class="dz-button dz-button--xs dz-button--ghost dz-button--error"
+        class="dz-button dz-button--xs dz-button--ghost shadow shadow--hoverless hidden"
+        #itemActions
         [title]="uiText.DYNAMIC_INPUT.TITLES.REMOVE"
         [disabled]="isReadonly(entity)"
         (click)="removeEntity(entity)"
@@ -50,7 +55,7 @@
   }
 
   @if (isAdding()) {
-    <li class="item dz-box shadow">
+    <li class="item dz-box shadow shadow--hoverless">
       <ul class="dz-list dz-list--full">
         <span class="dz-form__hint"> {{ uiText.DYNAMIC_INPUT.HINTS.FILL_TO_ADD }} </span>
 
@@ -58,9 +63,9 @@
           @if (key !== idKey()) {
             <li>
               <input
-                class="dz-input dz-input--borderless"
+                class="dz-input dz-input--free"
                 [class.dz-input--invalid]="key === labelKey() && duplicateValue()"
-                [placeholder]="key"
+                [placeholder]="`${key}✏️`"
                 (input)="updateField(key, $any($event.target).value)"
               />
             </li>

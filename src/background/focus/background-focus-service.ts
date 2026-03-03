@@ -1,6 +1,4 @@
 import { ALARM_PERIOD_IN_MINUTES } from '../../modules/common/constants/alarm-period-in-minutes.const';
-import { QUICK_FOCUS_ID } from '../../modules/common/constants/quick-focus-id.const';
-import { BLOCK_BEHAVIOUR_ENUM } from '../../modules/common/enums/block-behaviour.enum';
 import { CHROME_ALARM_ENUM } from '../../modules/common/enums/chrome-alarm-name.enum';
 import { FOCUS_ERROR_ENUM } from '../../modules/common/enums/focus-error.enum';
 import { filterBlockableWebsites } from '../../modules/common/helpers/filter-blockable-websites.helper';
@@ -17,10 +15,13 @@ export type FocusOperationResult = { success: true } | { success: false; error: 
 export class BackgroundFocusService {
   readonly #blocker = new BlockerService();
 
-  async updateBlockRulesForCurrentPeriod(): Promise<void> {
+  async updateBlockRulesForCurrentPeriodLibrary(): Promise<void> {
     const current = await StorageAdapter.getCurrentPeriod();
-    if (current && current.webSites) {
-      const blockableWebsites = filterBlockableWebsites(current.webSites);
+
+    if (current && current.library) {
+      const allLibraryWebsites = Object.values(current.library).flat();
+      const blockableWebsites = filterBlockableWebsites(allLibraryWebsites);
+
       this.#blocker.updateBlockRulesWithBehaviour(
         blockableWebsites.filter(site => site.isActivated).map(site => site.url),
         current.blockBehaviour
@@ -28,7 +29,7 @@ export class BackgroundFocusService {
     }
   }
 
-  clearBlockRules(): void {
+  public clearBlockRules(): void {
     this.#blocker.clearRules();
   }
 
@@ -46,11 +47,11 @@ export class BackgroundFocusService {
 
     period.isActive = true;
     period.sessionStartTime = now;
-
     await StorageAdapter.saveCurrentPeriod(period);
     await StorageAdapter.savePeriod(period);
 
-    const blockableWebsites = filterBlockableWebsites(period.webSites);
+    const allLibraryWebsites = Object.values(period.library).flat();
+    const blockableWebsites = filterBlockableWebsites(allLibraryWebsites);
     this.#blocker.updateBlockRulesWithBehaviour(
       blockableWebsites.filter(site => site.isActivated).map(site => site.url),
       period.blockBehaviour
@@ -99,44 +100,5 @@ export class BackgroundFocusService {
     if (!current) return { success: true };
     if (current.isActive) return this.stopFocus();
     return this.startFocus(current);
-  }
-
-  async toggleQuickFocus(url: string): Promise<FocusOperationResult> {
-    const current = await StorageAdapter.getCurrentPeriod();
-    if (current && current.id === QUICK_FOCUS_ID && current.isActive) {
-      return this.stopFocus();
-    }
-    return this.startQuickFocus(url);
-  }
-
-  async startQuickFocus(url: string): Promise<FocusOperationResult> {
-    const domain = url.replace(/^https?:\/\//, '').split('/')[0];
-    const quickPeriod: IFocus.Period = {
-      // TODO: process timeLeftSec or delete
-      timeLeftSec: null,
-      id: QUICK_FOCUS_ID,
-      name: `Focus: ${domain}`,
-      description: 'Quick focus session',
-      startFrom: new Date(),
-      endTo: null,
-      isActive: true,
-      focusedTimes: [],
-      blockBehaviour: BLOCK_BEHAVIOUR_ENUM.BLOCK,
-      daysOfWeek: [0, 1, 2, 3, 4, 5, 6],
-      sessionStartTime: null,
-      webSites: [
-        {
-          id: 'ws-' + Date.now(),
-          type: IFocus.EWebSiteType.DEFAULT,
-          name: domain,
-          description: '',
-          url: url,
-          imageUrl: '',
-          iconUrl: '',
-          isActivated: true,
-        },
-      ],
-    };
-    return this.startFocus(quickPeriod);
   }
 }

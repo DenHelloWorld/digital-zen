@@ -19,7 +19,7 @@
       [title]="
         activeTab() ? uiText.FOCUS.ADD_CURRENT_TAB_TITLE : uiText.FOCUS.CANNOT_ADD_CURRENT_TAB_TITLE
       "
-      (click)="onBlockCurrentTab()"
+      (click)="onAddCurrentTab()"
     >
       @if (isSvgIcon(activeTab()?.favIconUrl)) {
         <ng-container
@@ -28,15 +28,17 @@
             context: {
               href: activeTab()?.favIconUrl ? activeTab()?.favIconUrl : icons.SAVE,
               class: 'dz-icon dz-icon--shadow',
+              width: 24,
+              height: 24,
             }
           "
-        ></ng-container>
+        />
       } @else if (isImageIcon(activeTab()?.favIconUrl)) {
         <img
           class="dz-icon dz-icon--shadow"
           [src]="activeTab()?.favIconUrl"
-          width="20"
-          height="20"
+          width="24"
+          height="24"
           alt="Favicon"
         />
       } @else {
@@ -46,11 +48,11 @@
             context: {
               href: icons.GLOBE,
               class: 'dz-icon dz-icon--shadow',
-              width: 20,
-              height: 20,
+              width: 24,
+              height: 24,
             }
           "
-        ></ng-container>
+        />
       }
 
       <span class="dz-focus__tab-title">
@@ -58,105 +60,26 @@
       >
 
       @let tabIcon =
-        !isTabButtonDisabled()
-          ? isCurrentTabInCurrentPeriod()
-            ? icons.CHECK
-            : icons.ADD_LINK
-          : null;
-      <ng-container *ngTemplateOutlet="icon; context: { href: tabIcon }"></ng-container>
+        !isTabButtonDisabled() ? (isCurrentTabInSystem() ? icons.SUCCESS : icons.ADD_LINK) : null;
+      <div
+        class="dz-icon-box dz-icon-box--sm"
+        [class.dz-icon-box--success]="isCurrentTabInSystem()"
+      >
+        <ng-container
+          *ngTemplateOutlet="
+            icon;
+            context: {
+              href: tabIcon,
+            }
+          "
+        />
+      </div>
     </button>
   </div>
-
-  <button
-    class="dz-button dz-button--sm"
-    [title]="uiText.COMMON.WEBSITE_LIBRARY"
-    [style.position]="'relative'"
-    (click)="onOpenWebsitesList()"
-  >
-    <ng-container *ngTemplateOutlet="icon; context: { href: icons.GLOBE_BOOK }"></ng-container>
-  </button>
-
-  <ng-template [dzPopup]="isWebsitesPopupShown()" (closed)="onCloseWebsitesList()">
-    <div
-      class="dz-box shadow shadow--hoverless dz-popup-content dz-popup-content--full-h dz-popup-content--full-w dz-popup-websites"
-    >
-      <dz-toast-container />
-      <header class="dz-popup-content__header">
-        <h1 class="hint hint--xl">Websites</h1>
-
-        <button class="dz-button round dz-button--sm" (click)="onCloseWebsitesList()">
-          <ng-container *ngTemplateOutlet="icon; context: { href: icons.CLOSE }"></ng-container>
-        </button>
-      </header>
-
-      <main class="dz-popup-content__main">
-        <ul class="dz-tree dz-tree--root dz-list">
-          @for (type of websiteTypes; track type) {
-            @let sites = websitesPopupData()[type] || [];
-
-            <li class="dz-box shadow shadow--hoverless">
-              <div class="dz-popup-content__folder-actions">
-                <button
-                  class="dz-button dz-button--ghost dz-button--md"
-                  [disabled]="!sites.length"
-                  [class.shadow]="!isFolderOpen(type)"
-                  (click)="toggleFolder(type)"
-                >
-                  @let folderIcon = isFolderOpen(type) ? icons.FOLDER_OPEN : icons.FOLDER;
-                  <ng-container *ngTemplateOutlet="icon; context: { href: folderIcon }" />
-
-                  <span class="ellipsis">{{ type }}</span>
-                </button>
-
-                <dz-switch
-                  [class.hidden]="!(sites.length > 1)"
-                  [statusIcons]="{
-                    activated: icons.RADIO_CHECKED,
-                    unActivated: isFolderPartiallyActivated(type)
-                      ? icons.RADIO_PARTIAL
-                      : icons.RADIO_UNCHECKED,
-                  }"
-                  [checked]="isFolderFullyActivated(type)"
-                  (checkedChange)="onToggleFolderOfWebsites(type)"
-                  size="md"
-                />
-
-                <small class="hint hint--xs hint--activated round"
-                  >({{ categoryActiveCounts()[type] }})</small
-                >
-                <small class="hint hint--xs">/ ({{ sites.length }})</small>
-              </div>
-
-              <ul class="dz-tree" [class.dz-tree--open]="isFolderOpen(type)">
-                @for (site of sites; track site.url) {
-                  <li class="dz-tree__item fit">
-                    <input
-                      class="dz-input dz-input--checkbox"
-                      [checked]="site.isActivated"
-                      (change)="onToggleBlockedWebsite(site)"
-                      type="checkbox"
-                    />
-                    <img
-                      [alt]="site.url"
-                      [src]="site.imageUrl || getFavicon(site.url)"
-                      style="width: 16px; height: 16px; border-radius: 4px"
-                    />
-                    <span class="ellipsis copy" [dzCopy]="site.url" [title]="site.url">
-                      {{ cleanProtocolHelper(site.url) }}
-                    </span>
-                  </li>
-                }
-              </ul>
-            </li>
-          }
-        </ul>
-      </main>
-    </div>
-  </ng-template>
 </div>
 
 <div class="dz-focus__main">
-  @let bgByStatus = './bg/' + status() + '.png';
+  @let bgByStatus = './bg/' + currentPeriod().blockBehaviour + '.png';
   <div
     class="dz-focus__widget dz-box round square"
     [style.--bg-url]="'url(' + bgByStatus + ')'"
@@ -164,13 +87,13 @@
     [progress]="progress()"
     [progressConfig]="{
       thickness: 10,
-      color: currentPeriod()?.isActive ? colors.ACCENT : colors.DEFAULT,
+      color: currentPeriod().isActive ? colors.ACCENT : colors.DEFAULT,
     }"
     dzProgressBorder
   >
     <div class="dz-box__bg dz-box__bg--transparrent breathe"></div>
 
-    <div class="dz-focus__timer dz-focus__timer--focus">
+    <div class="dz-focus__bahaviour">
       <div class="dz-icon-box dz-icon-box--md">
         <div class="dz-badge" [title]="'More details'">
           <button
@@ -182,10 +105,10 @@
               })
             "
           >
-            <ng-container *ngTemplateOutlet="icon; context: { href: icons.INFO }"></ng-container>
+            <ng-container *ngTemplateOutlet="icon; context: { href: icons.INFO }" />
           </button>
         </div>
-        <ng-container *ngTemplateOutlet="icon; context: { href: statusIcon() }"></ng-container>
+        <ng-container *ngTemplateOutlet="icon; context: { href: statusIcon() }" />
       </div>
 
       <div class="hint hint--xl">
@@ -193,32 +116,30 @@
       </div>
     </div>
 
-    <div class="dz-focus__weekdays">
-      <dz-weekdays-selector
-        [entities]="allDays"
-        [selectedEntities]="selectedDays()"
-        [idKey]="'day'"
-        [isSelectable]="false"
-      />
-    </div>
+    <dz-weekdays-selector
+      [entities]="allDays"
+      [selectedEntities]="selectedDays()"
+      [idKey]="'day'"
+      [isSelectable]="false"
+    />
 
     <div class="dz-focus__time-group">
       <div class="dz-box">
         <span class="hint">Start</span>
 
         <div class="dz-focus__time">
-          {{ (currentPeriod()?.startFrom | date: 'HH:mm') || '00:00' }}
+          {{ (currentPeriod().startFrom | date: 'HH:mm') || '00:00' }}
         </div>
       </div>
 
       <div class="dz-icon-box dz-icon-box--sm">
-        <ng-container *ngTemplateOutlet="icon; context: { href: icons.LINE_END }"></ng-container>
+        <ng-container *ngTemplateOutlet="icon; context: { href: icons.LINE_END }" />
       </div>
 
       <div class="dz-box">
         <span class="hint">End</span>
 
-        <div class="dz-focus__time">{{ (currentPeriod()?.endTo | date: 'HH:mm') || '00:00' }}</div>
+        <div class="dz-focus__time">{{ (currentPeriod().endTo | date: 'HH:mm') || '00:00' }}</div>
       </div>
 
       @if (isPeriodCurrentlyApplicable()) {
@@ -229,6 +150,20 @@
         </div>
       }
     </div>
+
+    <button
+      class="dz-button dz-button--md dz-button--ghost shadow shadow--hoverless relative"
+      [title]="uiText.COMMON.WEBSITE_LIBRARY"
+      (click)="onOpenWebsitesList()"
+    >
+      <ng-container *ngTemplateOutlet="icon; context: { href: icons.GLOBE_BOOK }" />
+
+      <div class="dz-badge" [title]="'Amount of active websites'">
+        <span class="hint hint--activated shadow shadow--hoverless">{{
+          activeWebsitesCount()
+        }}</span>
+      </div>
+    </button>
   </div>
 </div>
 
@@ -242,7 +177,7 @@
     (checkedChange)="onToggleFocus()"
     size="xxl"
   />
-  @let hintText = currentPeriod()?.name || '';
+  @let hintText = currentPeriod().name || '';
 
   <div class="hint full ellipsis" [title]="hintText">{{ hintText }}</div>
 
@@ -251,7 +186,7 @@
     [title]="uiText.PERIOD.ARIA_LABELS.EDIT_PERIOD"
     (click)="onEditCurrentPeriod()"
   >
-    <ng-container *ngTemplateOutlet="icon; context: { href: icons.EDIT }"></ng-container>
+    <ng-container *ngTemplateOutlet="icon; context: { href: icons.EDIT }" />
   </button>
 
   <button
@@ -259,6 +194,11 @@
     [title]="uiText.HEADER.ADD_NEW_PERIOD_TITLE"
     (click)="onAddPeriod()"
   >
-    <ng-container *ngTemplateOutlet="icon; context: { href: icons.PLUS }"></ng-container>
+    <ng-container *ngTemplateOutlet="icon; context: { href: icons.PLUS }" />
   </button>
 </div>
+
+<dz-websites-library-popup
+  [(isWebsitesPopupShown)]="isWebsitesPopupShown"
+  [(period)]="popupPeriodData"
+/>

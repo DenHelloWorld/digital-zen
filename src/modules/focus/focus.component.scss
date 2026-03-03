@@ -9,6 +9,7 @@
 
   .dz-focus {
     &__header {
+      position: relative;
       width: 100%;
       max-height: var(--header-height);
       display: flex;
@@ -17,10 +18,15 @@
       gap: var(--spacing);
       flex-shrink: 0;
       border-bottom: 5px solid var(--color-component-bg-light);
+
+      .library-btn {
+        position: absolute;
+        right: 0;
+      }
     }
 
     &__tab,
-    &__timer {
+    &__bahaviour {
       display: flex;
       justify-content: center;
       align-items: center;
@@ -65,7 +71,7 @@
     }
 
     &__tab-title {
-      width: 27ch;
+      width: 25ch;
       font-size: var(--font-size-sm);
       white-space: nowrap;
       overflow: hidden;
@@ -87,7 +93,7 @@
       gap: var(--spacing);
     }
 
-    &__timer {
+    &__bahaviour {
       position: relative;
       font-size: calc(var(--font-size-md) * 2);
       font-weight: 600;
@@ -122,32 +128,6 @@
       display: flex;
       gap: var(--spacing);
       align-items: center;
-    }
-  }
-}
-
-::ng-deep {
-  // Websites list
-  .dz-popup-content {
-    interpolate-size: allow-keywords;
-
-    &__folder-actions {
-      display: flex;
-      gap: var(--spacing);
-      align-items: center;
-    }
-  }
-  // Websites list
-  .dz-tree {
-    &:not(.dz-tree--root) {
-      height: 0;
-
-      overflow: hidden;
-      transition: height 0.3s ease-in-out;
-    }
-
-    &.dz-tree--open {
-      height: auto;
     }
   }
 }

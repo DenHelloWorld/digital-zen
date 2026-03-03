@@ -1,4 +1,4 @@
-import { DynamicInputComponent } from '../../../common/components/dynamic-input/dynamic-input.component';
+import { DzToastService } from '../../../common/components';
 import { MultiSelectorComponent } from '../../../common/components/multi-selector/multi-selector.component';
 import { SwitchComponent } from '../../../common/components/switch/switch.component';
 import { WeekdaysSelectorComponent } from '../../../common/components/weekdays-selector/weekdays-selector.component';
@@ -11,27 +11,29 @@ import {
 } from '../../../common/constants/time-ranges.const';
 import { UI_TEXT } from '../../../common/constants/ui-text.const';
 import { VALIDATION_ERROR_KEYS } from '../../../common/constants/validation-errors.const';
-import { WEBSITE_FACEBOOK, WEBSITE_TIKTOK } from '../../../common/constants/websites.const';
+import { ProgressBorderDirective } from '../../../common/directives/progress-border.directive';
 import {
   BLOCK_BEHAVIOUR_ENUM,
   BlockBehaviourType,
 } from '../../../common/enums/block-behaviour.enum';
 import { COLORS_ENUM } from '../../../common/enums/colors.enum';
+import { TOAST_MESSAGES_ENUM } from '../../../common/enums/toast-messages.enum';
+import { TOAST_TYPE_ENUM } from '../../../common/enums/toast-type.enum';
 import { VIEW_ENUM } from '../../../common/enums/view.enum';
 import { cleanUrlHelper } from '../../../common/helpers/clean-url.helper';
+import { createDefaultPeriodHelper } from '../../../common/helpers/create-default-period.helper';
 import { FaviconHelper } from '../../../common/helpers/favicon.helper';
 import { logger } from '../../../common/helpers/logger';
-import { setTimeFromStr } from '../../../common/helpers/time.helper';
+import { getTimeInMilliseconds, setTimeFromStr } from '../../../common/helpers/time.helper';
 import { IFocusForm } from '../../../common/models/focus-form.model';
 import { IFocus } from '../../../common/models/focus.model';
-import { WebsiteConnectivityProvider } from '../../../common/providers/website-connectivity.provider';
 import { MiniRouterService } from '../../../common/services/mini-router.service';
 import { arrayMinLengthValidator } from '../../../common/validators/array-min-length.validator';
-import { noUnactivatableWebsitesValidator } from '../../../common/validators/no-unactivatable-websites.validator';
 import { requiredTrimmedValidator } from '../../../common/validators/required-trimmed.validator';
 import { timeRangeValidator } from '../../../common/validators/time-range.validator';
 import { uniquePeriodNameValidator } from '../../../common/validators/unique-period-name.validator';
 import { FocusService } from '../../services/focus.service';
+import { WebsitesLibraryComponent } from '../websites-library/websites-library.component';
 import { CommonModule } from '@angular/common';
 import {
   ChangeDetectionStrategy,
@@ -44,17 +46,14 @@ import {
   AfterViewInit,
   ElementRef,
   viewChild,
-  resource,
-  ResourceRef,
   Signal,
   signal,
-  untracked,
   WritableSignal,
   computed,
 } from '@angular/core';
-import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed, toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { distinctUntilChanged, map } from 'rxjs';
+import { distinctUntilChanged, interval, map } from 'rxjs';
 
 /**
  * Period form component for creating and editing focus periods
@@ -88,9 +87,10 @@ import { distinctUntilChanged, map } from 'rxjs';
     ReactiveFormsModule,
     // components
     WeekdaysSelectorComponent,
-    DynamicInputComponent,
     MultiSelectorComponent,
     SwitchComponent,
+    ProgressBorderDirective,
+    WebsitesLibraryComponent,
   ],
 })
 export class PeriodFormComponent implements OnInit, AfterViewInit {
@@ -100,11 +100,14 @@ export class PeriodFormComponent implements OnInit, AfterViewInit {
   readonly #injector = inject(Injector);
   readonly #focusService = inject(FocusService);
   readonly #router = inject(MiniRouterService);
+  readonly #toastService: DzToastService = inject(DzToastService);
+
   /** @guideline DZ_11 - Universal Logger usage */
   readonly #logger = logger.createLogger('PeriodFormComponent');
 
   readonly #maxPeriodNameLength = 100;
-  readonly #siteStatusesCache = new Map<string, ResourceRef<boolean | undefined>>();
+
+  readonly #tick = toSignal(interval(1000), { initialValue: 0 });
 
   protected readonly payload = this.#router.payload as Signal<{
     period: IFocus.Period;
@@ -128,19 +131,62 @@ export class PeriodFormComponent implements OnInit, AfterViewInit {
   protected readonly blockBehaviours = BLOCK_BEHAVIOUR_ENUM;
   protected readonly allDays: Readonly<IFocus.DayOfWeek>[] = [...ALL_DAYS_OF_WEEK];
 
-  protected readonly excludedSiteKeysArray: (keyof IFocus.WebSite)[] = [
-    'imageUrl',
-    'iconUrl',
-    'isActivated',
-    'description',
-    'type',
-    'name',
-  ];
+  protected readonly status = computed(() => {
+    const blockBehaviour = this.form.controls.blockBehaviour.value;
 
+    switch (blockBehaviour) {
+      case BLOCK_BEHAVIOUR_ENUM.WHITELIST:
+        return 'Focus';
+      case BLOCK_BEHAVIOUR_ENUM.BLOCK:
+        return 'Block';
+      case BLOCK_BEHAVIOUR_ENUM.WARN:
+        return 'Warn';
+      default:
+        return 'Idle';
+    }
+  });
+
+  protected readonly activeWebsitesCount = computed(() => {
+    const library = this.popupPeriodData().library;
+    if (!library) return 0;
+
+    return Object.values(library)
+      .flat()
+      .filter(site => site.isActivated).length;
+  });
   protected readonly isCurrentPeriod = computed(
     () => this.#focusService.currentPeriod()?.id === this.payload()?.period?.id
   );
+  protected readonly isFocusActive: Signal<boolean> = computed(
+    () => this.currentPeriod()?.isActive ?? false
+  );
+  protected readonly formProgress = computed(() => {
+    this.#tick();
+    if (!this.form) return 0;
 
+    const { startFrom, endTo } = this.form.getRawValue();
+    if (!startFrom || !endTo) return 0;
+
+    const nowMs = getTimeInMilliseconds(new Date());
+    const dummyDate = new Date();
+    const startMs = getTimeInMilliseconds(setTimeFromStr(dummyDate, startFrom));
+    const endMs = getTimeInMilliseconds(setTimeFromStr(dummyDate, endTo));
+
+    // TODO: add helper? See focus service duplicate
+    const total = startMs <= endMs ? endMs - startMs : 24 * 60 * 60 * 1000 - startMs + endMs;
+
+    if (total === 0) return 0;
+
+    const elapsed = nowMs >= startMs ? nowMs - startMs : 24 * 60 * 60 * 1000 - startMs + nowMs;
+
+    const result = 1 - elapsed / total;
+    return Math.min(Math.max(result, 0), 1);
+  });
+
+  protected readonly isWebsitesPopupShown = signal<boolean>(
+    this.currentRoute() === VIEW_ENUM.EDIT_PERIOD_LIBRARY
+  );
+  protected readonly popupPeriodData = signal<IFocus.Period>(createDefaultPeriodHelper());
   protected readonly setAsCurrentPeriod = signal<boolean>(false);
   protected readonly selectedTimeRanges: WritableSignal<IFocus.TimeRange[]> = signal<
     IFocus.TimeRange[]
@@ -148,17 +194,10 @@ export class PeriodFormComponent implements OnInit, AfterViewInit {
   protected readonly selectedDays: WritableSignal<IFocus.DayOfWeek[]> = signal<IFocus.DayOfWeek[]>(
     []
   );
-  protected readonly selectedWebSites: WritableSignal<IFocus.WebSite[]> = signal<IFocus.WebSite[]>([
-    WEBSITE_TIKTOK,
-    WEBSITE_FACEBOOK,
-  ]);
-
-  protected readonly siteStatuses = signal<Record<string, ResourceRef<boolean | undefined>>>({});
 
   protected readonly behaviourBlock = viewChild<ElementRef>('behaviourBlock');
 
   public ngOnInit(): void {
-    // TODO: отобразить здесь вебсайты как в попапе или просто показывать здесь тот же попап.
     this.#initForm();
     this.#loadPeriodData();
     this.#setupValidatorUpdates();
@@ -180,21 +219,11 @@ export class PeriodFormComponent implements OnInit, AfterViewInit {
         this.form.controls.daysOfWeek.setValue(value.map((value: IFocus.DayOfWeek) => value.day));
       });
 
-    effect(
-      () => {
-        const sites = this.selectedWebSites();
-        const cleaned = this.#getUniqueCleanedSites(sites);
-
-        untracked(() => {
-          this.form.controls.webSites.setValue(cleaned);
-
-          if (JSON.stringify(sites) !== JSON.stringify(cleaned)) {
-            this.selectedWebSites.set(cleaned);
-          }
-        });
-      },
-      { injector: this.#injector }
-    );
+    toObservable(this.popupPeriodData, { injector: this.#injector })
+      .pipe(takeUntilDestroyed(this.#destroyRef))
+      .subscribe((value: IFocus.Period) => {
+        this.form.controls.library.setValue(value.library);
+      });
 
     effect(
       () => {
@@ -204,43 +233,8 @@ export class PeriodFormComponent implements OnInit, AfterViewInit {
           return;
         }
 
-        this.form.controls.startFrom.enable();
-        this.form.controls.endTo.enable();
-
-        if (timeRange.id !== this.manualTimeRangeId) {
-          this.form.controls.startFrom.disable();
-          this.form.controls.endTo.disable();
-        }
-
         this.form.controls.startFrom.setValue(timeRange.startFrom);
         this.form.controls.endTo.setValue(timeRange.endTo);
-      },
-      { injector: this.#injector }
-    );
-
-    effect(
-      () => {
-        const sites = this.selectedWebSites();
-        let hasChanged = false;
-        const currentMap = { ...this.siteStatuses() };
-
-        sites.forEach(site => {
-          if (!this.#siteStatusesCache.has(site.url)) {
-            const res = untracked(() =>
-              resource({
-                loader: () => WebsiteConnectivityProvider.isAlive(site.url),
-                injector: this.#injector,
-              })
-            );
-            this.#siteStatusesCache.set(site.url, res);
-            currentMap[site.url] = res;
-            hasChanged = true;
-          }
-        });
-
-        if (hasChanged) {
-          this.siteStatuses.set(currentMap);
-        }
       },
       { injector: this.#injector }
     );
@@ -253,20 +247,29 @@ export class PeriodFormComponent implements OnInit, AfterViewInit {
     }
   }
 
+  protected onOpenWebsitesList(): void {
+    this.isWebsitesPopupShown.set(true);
+  }
+
   protected savePeriod() {
     if (this.form.valid) {
       const rawValue = this.form.getRawValue();
       const isCurrentPeriod = this.isCurrentPeriod();
 
-      const webSitesWithFavicons: IFocus.WebSite[] = rawValue.webSites.map(site => {
-        const cleanedUrl = cleanUrlHelper(site.url);
-        const imageUrl = FaviconHelper.getGoogleUrl(cleanedUrl);
+      const library: Record<string, IFocus.WebSite[]> = {};
 
-        return {
-          ...site,
-          url: cleanedUrl,
-          imageUrl,
-        };
+      Object.entries(rawValue.library || {}).forEach(([folderName, sites]) => {
+        library[folderName] = sites.map(site => {
+          const cleanedUrl = cleanUrlHelper(site.url);
+          const imageUrl = FaviconHelper.getGoogleUrl(cleanedUrl);
+
+          return {
+            ...site,
+            url: cleanedUrl,
+            imageUrl,
+            type: folderName,
+          };
+        });
       });
 
       const now = new Date();
@@ -279,12 +282,12 @@ export class PeriodFormComponent implements OnInit, AfterViewInit {
         description: rawValue.description,
         startFrom: setTimeFromStr(now, rawValue.startFrom ?? ALL_DAY_TIME_RANGE.startFrom),
         endTo: setTimeFromStr(now, rawValue.endTo ?? ALL_DAY_TIME_RANGE.endTo),
-        webSites: webSitesWithFavicons,
         blockBehaviour: rawValue.blockBehaviour,
         daysOfWeek: rawValue.daysOfWeek,
         focusedTimes: rawValue.focusedTimes,
         isActive: rawValue.isActive,
         sessionStartTime: rawValue.sessionStartTime,
+        library,
       };
 
       if (this.currentRoute() === VIEW_ENUM.EDIT_PERIOD) {
@@ -304,7 +307,13 @@ export class PeriodFormComponent implements OnInit, AfterViewInit {
   }
 
   protected onSetAsCurrentPeriodChange(value: boolean): void {
-    if (this.isCurrentPeriod()) return;
+    if (this.isCurrentPeriod()) {
+      this.#toastService.show({
+        type: TOAST_TYPE_ENUM.WARN,
+        message: TOAST_MESSAGES_ENUM.REQUIRED_PERIOD,
+      });
+      return;
+    }
     this.form.controls.setAsCurrentPeriod.setValue(value);
   }
 
@@ -312,20 +321,8 @@ export class PeriodFormComponent implements OnInit, AfterViewInit {
     this.#router.navigate(this.#router.previousRoute() || VIEW_ENUM.FOCUS);
   }
 
-  protected getFavicon(url: string): string {
-    return FaviconHelper.getGoogleUrl(url);
-  }
-
   protected setBlockBehaviour(blockBehaviour: BlockBehaviourType): void {
     this.form.patchValue({ blockBehaviour });
-  }
-
-  protected onToggleBlockedWebsite(toggledSite: IFocus.WebSite): void {
-    this.selectedWebSites.update(sites =>
-      sites.map(site =>
-        site.url === toggledSite.url ? { ...site, isActivated: !site.isActivated } : site
-      )
-    );
   }
 
   /**
@@ -367,21 +364,14 @@ export class PeriodFormComponent implements OnInit, AfterViewInit {
         id: this.#fb.nonNullable.control<string>(
           `${Date.now()}-${Math.floor(Math.random() * 10000)}`
         ),
-        name: this.#fb.nonNullable.control(
-          `New Period ${(this.#focusService.periods()?.length ?? 0) + 1}`,
-          [
-            requiredTrimmedValidator,
-            uniquePeriodNameValidator(periods, currentPeriodId),
-            Validators.maxLength(this.#maxPeriodNameLength),
-          ]
-        ),
+        name: this.#fb.nonNullable.control('', [
+          requiredTrimmedValidator,
+          uniquePeriodNameValidator(periods, currentPeriodId),
+          Validators.maxLength(this.#maxPeriodNameLength),
+        ]),
         description: this.#fb.nonNullable.control<string | null>(null),
         startFrom: this.#fb.control<string | null>(null),
         endTo: this.#fb.control<string | null>(null),
-        webSites: this.#fb.nonNullable.control(
-          [],
-          [arrayMinLengthValidator(), noUnactivatableWebsitesValidator]
-        ),
         daysOfWeek: this.#fb.nonNullable.control([], arrayMinLengthValidator()),
         focusedTimes: this.#fb.nonNullable.control([]),
         isActive: this.#fb.nonNullable.control(false),
@@ -390,6 +380,7 @@ export class PeriodFormComponent implements OnInit, AfterViewInit {
         blockBehaviour: this.#fb.nonNullable.control<BlockBehaviourType>(
           BLOCK_BEHAVIOUR_ENUM.BLOCK
         ),
+        library: this.#fb.nonNullable.control<Record<string, IFocus.WebSite[]> | null>(null),
       },
       { validators: timeRangeValidator('startFrom', 'endTo') }
     );
@@ -404,7 +395,11 @@ export class PeriodFormComponent implements OnInit, AfterViewInit {
       return;
     }
 
-    if (this.currentRoute() === VIEW_ENUM.EDIT_PERIOD && periodData) {
+    if (
+      (this.currentRoute() === VIEW_ENUM.EDIT_PERIOD ||
+        this.currentRoute() === VIEW_ENUM.EDIT_PERIOD_LIBRARY) &&
+      periodData
+    ) {
       const startFromTime = periodData.startFrom
         ? this.#dateToTimeString(periodData.startFrom)
         : '';
@@ -421,6 +416,7 @@ export class PeriodFormComponent implements OnInit, AfterViewInit {
         setAsCurrentPeriod: this.isCurrentPeriod(),
         sessionStartTime: periodData.sessionStartTime,
         blockBehaviour: periodData.blockBehaviour,
+        library: periodData.library,
       });
 
       const matchingRange =
@@ -431,7 +427,7 @@ export class PeriodFormComponent implements OnInit, AfterViewInit {
       const selectedDays = ALL_DAYS_OF_WEEK.filter(day => periodData.daysOfWeek.includes(day.day));
       this.selectedDays.set(selectedDays);
 
-      this.selectedWebSites.set(periodData.webSites);
+      this.popupPeriodData.set(periodData);
     }
   }
 
@@ -439,39 +435,5 @@ export class PeriodFormComponent implements OnInit, AfterViewInit {
     const hours = date.getHours().toString().padStart(2, '0');
     const minutes = date.getMinutes().toString().padStart(2, '0');
     return `${hours}:${minutes}`;
-  }
-
-  #getUniqueCleanedSites(sites: IFocus.WebSite[]): IFocus.WebSite[] {
-    const uniqueMap = new Map<string, IFocus.WebSite>();
-
-    sites.forEach(site => {
-      if (!site.url) return;
-
-      const cleanedUrl = cleanUrlHelper(site.url);
-
-      if (cleanedUrl && !uniqueMap.has(cleanedUrl)) {
-        uniqueMap.set(cleanedUrl, {
-          ...site,
-          url: cleanedUrl,
-        });
-      }
-    });
-
-    return Array.from(uniqueMap.values());
-  }
-
-  protected normalizeWebsite(site: IFocus.WebSite): IFocus.WebSite {
-    return {
-      ...site,
-      url: cleanUrlHelper(site.url),
-    };
-  }
-
-  protected previewNormalizedWebsite(site: IFocus.WebSite | null): string | null {
-    if (!site) {
-      return null;
-    }
-
-    return cleanUrlHelper(site.url);
   }
 }

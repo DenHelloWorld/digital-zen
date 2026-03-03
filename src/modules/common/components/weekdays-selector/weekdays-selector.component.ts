@@ -1,6 +1,6 @@
 import { IFocus } from '../../models/focus.model';
 import { MultiSelectorDirective } from '../multi-selector/multi-selector.directive';
-import { TitleCasePipe } from '@angular/common';
+import { NgClass, TitleCasePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject, input, InputSignal } from '@angular/core';
 
 /**
@@ -20,6 +20,7 @@ import { ChangeDetectionStrategy, Component, inject, input, InputSignal } from '
   imports: [
     // components
     TitleCasePipe,
+    NgClass,
   ],
   hostDirectives: [
     {
@@ -45,6 +46,7 @@ export class WeekdaysSelectorComponent {
   protected readonly todayDayId: number = new Date().getDay();
 
   public readonly isTodayShow: InputSignal<boolean> = input<boolean>(true);
+  public readonly size = input<'xs' | 'sm' | 'nm' | 'md' | 'lg'>('nm');
 
   protected isHighlighted(item: IFocus.DayOfWeek): boolean {
     const highlighted = this.isTodayShow() ? this.todayDayId : null;
