@@ -91,7 +91,6 @@ export class ProgressBorderDirective implements OnInit, OnDestroy {
         height: '100%',
         pointerEvents: 'none',
         overflow: 'visible',
-        zIndex: '-1',
       });
 
       this.#bgRect = this.#createRectElement();

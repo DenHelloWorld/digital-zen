@@ -107,8 +107,6 @@ a {
 }
 
 .dz-button {
-  border: 2px solid transparent;
-
   &--free {
     padding: 0;
     width: auto;
@@ -637,4 +635,8 @@ summary::marker {
 
 .relative {
   position: relative;
+}
+
+.radius {
+  border-radius: var(--radius-xs);
 }
