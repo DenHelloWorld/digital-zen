@@ -335,9 +335,12 @@
 >
   <div class="dz-box shadow shadow--hoverless dz-popup-content dz-popup-content--new-folder">
     <header class="dz-popup-content__header">
-      <h1 class="hint hint--xs">
-        {{ uiText.WEBSITE_LIBRARY.DELETE_LINK_TITLE }} {{ deleteLink()?.url }}
-      </h1>
+      @let hint =
+        deleteLink()?.folder === presetFolderNames.DELETE
+          ? uiText.WEBSITE_LIBRARY.DELETE_LINK_TITLE
+          : uiText.WEBSITE_LIBRARY.MOVE_LINK_TO_WASTE_BASKET;
+
+      <h1 class="hint hint--xs">{{ hint }} {{ deleteLink()?.url }}</h1>
 
       <div class="dz-popup-content__header-actions">
         <button class="dz-button round dz-button--sm" (click)="onCloseDeleteLinkPopup()">

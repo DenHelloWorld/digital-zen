@@ -1,12 +1,16 @@
+import { DzToastService } from '../common/components';
 import { SwitchComponent } from '../common/components/switch/switch.component';
 import { WeekdaysSelectorComponent } from '../common/components/weekdays-selector/weekdays-selector.component';
 import { ALL_DAYS_OF_WEEK } from '../common/constants/days-of-week.const';
 import { ICONS } from '../common/constants/icons.const';
 import { UI_TEXT } from '../common/constants/ui-text.const';
-import { WEBSITES_UNBLOCKABLE } from '../common/constants/websites.const';
+import { WEBSITES_LIBRARY_PRESET, WEBSITES_UNBLOCKABLE } from '../common/constants/websites.const';
+import { PopupDirective } from '../common/directives/popup.directive';
 import { ProgressBorderDirective } from '../common/directives/progress-border.directive';
 import { BLOCK_BEHAVIOUR_ENUM } from '../common/enums/block-behaviour.enum';
 import { COLORS_ENUM } from '../common/enums/colors.enum';
+import { TOAST_MESSAGES_ENUM } from '../common/enums/toast-messages.enum';
+import { TOAST_TYPE_ENUM } from '../common/enums/toast-type.enum';
 import { VIEW_ENUM, ViewType } from '../common/enums/view.enum';
 import { cleanUrlHelper } from '../common/helpers/clean-url.helper';
 import { isHttpUrl } from '../common/helpers/is-http-url.helper';
@@ -44,6 +48,7 @@ import { debounceTime, distinctUntilChanged, filter } from 'rxjs';
     WebsitesLibraryComponent,
     // directives
     ProgressBorderDirective,
+    PopupDirective,
   ],
   host: {
     class: 'dz-focus',
@@ -56,6 +61,7 @@ export class FocusComponent implements OnInit {
   readonly #destroyRef = inject(DestroyRef);
   readonly #focusService = inject(FocusService);
   readonly #router = inject(MiniRouterService);
+  readonly #toastService = inject(DzToastService);
 
   /** @guideline DZ_04 - Signals for reactive state */
   protected readonly activeTab: Signal<chrome.tabs.Tab | undefined> = this.#focusService.activeTab;
@@ -77,9 +83,19 @@ export class FocusComponent implements OnInit {
     const selected = this.currentPeriod()?.daysOfWeek;
     return [...ALL_DAYS_OF_WEEK].filter(day => selected?.includes(day.day));
   });
+  protected readonly currentPeriodFoldersToAdd = computed(() => {
+    const lib = this.currentPeriod().library;
+    const presetKeys = Object.keys(WEBSITES_LIBRARY_PRESET);
+    const allKeys = Object.keys(lib);
+
+    return [...presetKeys, ...allKeys.filter(k => !presetKeys.includes(k)).sort()].filter(
+      k => k !== IFocus.EWebSiteType.UNBLOCKABLE && k !== IFocus.EWebSiteType.DELETE
+    );
+  });
 
   protected readonly popupPeriodData = signal<IFocus.Period>(this.currentPeriod());
   protected readonly isWebsitesPopupShown = signal<boolean>(false);
+  protected readonly isFoldersPopupShown = signal<boolean>(false);
   protected readonly isCurrentTabInSystem: Signal<boolean> =
     this.#focusService.isCurrentTabInSystem;
   protected readonly isPeriodCurrentlyApplicable: Signal<boolean> =
@@ -173,10 +189,6 @@ export class FocusComponent implements OnInit {
     this.#focusService.toggleFocus();
   }
 
-  protected onAddCurrentTab(): void {
-    this.#focusService.addCurrentTabWebsiteToLibrary(true);
-  }
-
   protected onEditCurrentPeriod(): void {
     this.onNavigation(VIEW_ENUM.EDIT_PERIOD, { period: this.currentPeriod() });
   }
@@ -185,6 +197,7 @@ export class FocusComponent implements OnInit {
     this.onNavigation(VIEW_ENUM.ADD_PERIOD);
   }
 
+  // Library popup
   protected onOpenWebsitesList(): void {
     const current = this.currentPeriod();
     if (current) {
@@ -192,6 +205,26 @@ export class FocusComponent implements OnInit {
     }
 
     this.isWebsitesPopupShown.set(true);
+  }
+
+  // Folders Popup
+  protected onOpenFoldersPopup(): void {
+    if (this.isCurrentTabInSystem()) {
+      this.#toastService.show({
+        message: TOAST_MESSAGES_ENUM.ALREADY_IN_LIBRARY,
+        type: TOAST_TYPE_ENUM.WARN,
+      });
+      return;
+    } else {
+      this.isFoldersPopupShown.set(true);
+    }
+  }
+  protected onCloseFoldersPopup(): void {
+    this.isFoldersPopupShown.set(false);
+  }
+  protected onAddCurrentTab(folder: string): void {
+    this.#focusService.addCurrentTabWebsiteToLibrary(true, folder);
+    this.onCloseFoldersPopup();
   }
 
   protected onNavigation(route: ViewType, payload: object | null = null): void {

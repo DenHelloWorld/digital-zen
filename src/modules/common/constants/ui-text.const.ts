@@ -13,6 +13,7 @@ export const UI_TEXT = Object.freeze({
     DELETE_FOLDER_TITLE: 'Delete Folder',
     CREATE_LINK_TITLE: 'Create Link',
     DELETE_LINK_TITLE: 'Delete Link',
+    MOVE_LINK_TO_WASTE_BASKET: 'Move Link To Wastebasket 🗑️',
     ALREADY_EXISTS: 'already exists',
     CONFIRM_DELETE: 'Confirm to delete',
     ERRORS: {

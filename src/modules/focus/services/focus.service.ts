@@ -286,12 +286,12 @@ export class FocusService {
     }
   }
 
-  public addCurrentTabWebsiteToLibrary(isActivated = false): void {
+  public addCurrentTabWebsiteToLibrary(isActivated = false, folder: string): void {
     if (!this.#isChromeRuntime) return;
 
     if (this.isCurrentTabInSystem()) {
       this.#toastService.show({
-        message: TOAST_MESSAGES_ENUM.ALREADY_ADDED,
+        message: TOAST_MESSAGES_ENUM.ALREADY_IN_LIBRARY,
         type: TOAST_TYPE_ENUM.WARN,
       });
       return;
@@ -328,7 +328,7 @@ export class FocusService {
         iconUrl: isSvgIcon(iconUrl) ? iconUrl : ICONS.GLOBE,
         description: tab.title || cleanedUrl,
         imageUrl: isImageIcon(iconUrl) ? iconUrl : '',
-        type: IFocus.EWebSiteType.DEFAULT,
+        type: folder,
         isActivated,
         permissionLvl: PERMISSION_LVL_ENUM.USER,
       };
