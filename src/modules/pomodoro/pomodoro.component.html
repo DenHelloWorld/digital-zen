@@ -133,11 +133,61 @@
         </button>
       }
 
-      <button class="dz-button dz-button--md dz-button--warn shadow" (click)="resetSession()">
-        <ng-container *ngTemplateOutlet="icon; context: { href: icons.RESET }"></ng-container>
+      <button class="dz-button dz-button--md dz-button--warn shadow" (click)="onOpenResetPopup()">
+        <ng-container *ngTemplateOutlet="icon; context: { href: icons.RESET }" />
 
         {{ uiText.POMODORO.BUTTONS.RESET }}
       </button>
+
+      <!-- Reset popup-->
+      <ng-template
+        [dzPopup]="isResetPopupShown()"
+        [hasBackdrop]="false"
+        (closed)="onCloseResetPopup()"
+      >
+        <div class="dz-box shadow shadow--hoverless dz-popup-content">
+          <header class="dz-popup-content__header">
+            <h1 class="hint hint--xs">{{ uiText.POMODORO.BUTTONS.RESET_ASK }}</h1>
+
+            <div class="dz-popup-content__header-actions">
+              <button class="dz-button round dz-button--sm" (click)="onCloseResetPopup()">
+                <ng-container *ngTemplateOutlet="icon; context: { href: icons.CLOSE }" />
+              </button>
+            </div>
+          </header>
+
+          <main class="dz-popup-content__main">
+            <div class="dz-banner dz-banner--warn">
+              <div class="dz-banner__icon">
+                <ng-container *ngTemplateOutlet="icon; context: { href: icons.WARNING }" />
+              </div>
+              <div class="dz-banner__message">
+                {{ uiText.POMODORO.BUTTONS.RESET_MESSAGE }}
+              </div>
+            </div>
+          </main>
+
+          <footer class="dz-popup-content__footer">
+            <button
+              class="dz-button dz-button--free dz-button--ghost shadow shadow--hoverless"
+              (click)="onCloseResetPopup()"
+            >
+              <div class="dz-icon-box dz-icon-box--xs">
+                <ng-container *ngTemplateOutlet="icon; context: { href: icons.CANCEL }" />
+              </div>
+            </button>
+
+            <button
+              class="dz-button dz-button--warn shadow shadow--hoverless dz-button--sm"
+              (click)="onConfirmReset()"
+            >
+              <div class="dz-icon-box dz-icon-box--xs">
+                <ng-container *ngTemplateOutlet="icon; context: { href: icons.RESET }" />
+              </div>
+            </button>
+          </footer>
+        </div>
+      </ng-template>
     </div>
   }
 </footer>

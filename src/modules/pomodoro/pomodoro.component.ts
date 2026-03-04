@@ -3,6 +3,7 @@ import { ValueStepperComponent } from '../common/components/value-stepper/value-
 import { FINISHED_CYCLE } from '../common/constants/finished-cycle.const';
 import { ICONS } from '../common/constants/icons.const';
 import { UI_TEXT } from '../common/constants/ui-text.const';
+import { PopupDirective } from '../common/directives/popup.directive';
 import { ProgressBorderDirective } from '../common/directives/progress-border.directive';
 import { COLORS_ENUM } from '../common/enums/colors.enum';
 import { IPomodoro } from '../common/models/pomodoro.model';
@@ -17,6 +18,8 @@ import {
   inject,
   Injector,
   OnInit,
+  signal,
+  WritableSignal,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -49,6 +52,7 @@ import { debounceTime, distinctUntilChanged, filter } from 'rxjs';
 
     // directives
     ProgressBorderDirective,
+    PopupDirective,
   ],
 })
 export class PomodoroComponent implements OnInit {
@@ -147,6 +151,8 @@ export class PomodoroComponent implements OnInit {
     return steps;
   });
 
+  protected readonly isResetPopupShown: WritableSignal<boolean> = signal(false);
+
   protected form: FormGroup<IPomodoro.SettingsForm>;
 
   public ngOnInit(): void {
@@ -200,8 +206,17 @@ export class PomodoroComponent implements OnInit {
     this.#pomodoroService.startSession();
   }
 
-  protected resetSession(): void {
+  protected onOpenResetPopup(): void {
+    this.isResetPopupShown.set(true);
+  }
+
+  protected onCloseResetPopup(): void {
+    this.isResetPopupShown.set(false);
+  }
+
+  protected onConfirmReset(): void {
     this.#pomodoroService.resetSession();
+    this.onCloseResetPopup();
   }
 
   protected pauseSession(): void {
