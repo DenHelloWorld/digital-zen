@@ -13,19 +13,48 @@
         height: 100vh;
         margin: 0;
         color: #f8fafc;
-        background: #334155;
+        background: hsla(356, 68%, 91%, 1);
+        background: linear-gradient(
+          90deg,
+          hsla(356, 68%, 91%, 1) 0%,
+          hsla(275, 100%, 61%, 1) 49%,
+          hsla(316, 66%, 80%, 1) 100%
+        );
+        background: -moz-linear-gradient(
+          90deg,
+          hsla(356, 68%, 91%, 1) 0%,
+          hsla(275, 100%, 61%, 1) 49%,
+          hsla(316, 66%, 80%, 1) 100%
+        );
+        background: -webkit-linear-gradient(
+          90deg,
+          hsla(356, 68%, 91%, 1) 0%,
+          hsla(275, 100%, 61%, 1) 49%,
+          hsla(316, 66%, 80%, 1) 100%
+        );
       }
+
       .box {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
         padding: 2rem;
         border-radius: 8px;
-        background: #fff;
-        color: #334155;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         text-align: center;
-      }
-      #timer {
-        font-weight: bold;
-        color: #ef4444;
+        border: 1px solid color-mix(in srgb, #475569, white 20%);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.25);
+        background: color-mix(in srgb, #475569, transparent 21%);
+
+        #openSidePanelButton {
+          margin-left: 16px;
+          padding: 6px 14px;
+          background: #ac37ff;
+          border-radius: 16px;
+          border: none;
+          cursor: pointer;
+          color: #f1f5f9;
+        }
       }
     </style>
   </head>
@@ -33,9 +62,9 @@
     <div class="box">
       <h1>⛔ Access Blocked</h1>
       <p>This website is blocked during your Digital Zen focus session.</p>
-      <p>This tab will close automatically in <span id="timer">20</span> seconds.</p>
+      <button id="openSidePanelButton">Open Side Panel</button>
     </div>
 
-    <script src="blocked-timer.js"></script>
+    <script src="blocked-page.js"></script>
   </body>
 </html>

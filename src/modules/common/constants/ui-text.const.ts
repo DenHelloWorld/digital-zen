@@ -191,6 +191,9 @@ export const UI_TEXT = Object.freeze({
       RESUME: 'Resume',
       PAUSE: 'Pause',
       RESET: 'Reset',
+      RESET_ASK: 'Reset progress?',
+      RESET_MESSAGE:
+        'The current session will be interrupted. Are you sure you want to start over?',
     },
     UNITS: {
       MINUTES: 'min',
