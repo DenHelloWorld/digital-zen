@@ -85,10 +85,10 @@ export class BlockerService {
       priority: 1,
       action: {
         type: 'redirect',
-        redirect: { url: chrome.runtime.getURL('blocked-page.html') },
+        redirect: { url: chrome.runtime.getURL('index.html?view=options') },
       },
       condition: {
-        urlFilter: '*', // Блокировать всё
+        urlFilter: '*',
         resourceTypes: ['main_frame'],
       },
     };
@@ -100,7 +100,7 @@ export class BlockerService {
       priority: 1,
       action: {
         type: 'redirect',
-        redirect: { url: chrome.runtime.getURL('blocked-page.html') },
+        redirect: { url: chrome.runtime.getURL('index.html?view=options') },
       },
       condition: {
         requestDomains: buildRequestDomainVariants(domain),

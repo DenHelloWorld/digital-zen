@@ -1,3 +1,4 @@
+import { CHROME_COMMAND_ENUM } from '../enums/chrome-command.enum';
 import { CHROME_STORAGE_KEY_ENUM } from '../enums/chrome-storage-key.enum';
 import { VIEW_ENUM, ViewType } from '../enums/view.enum';
 import { ChromeStorageService } from './chrome-storage.service';
@@ -7,11 +8,13 @@ import { distinctUntilChanged } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class MiniRouterService {
+  readonly #isChromeRuntime: boolean = !!chrome.runtime;
   readonly #storageService = inject(ChromeStorageService);
 
   readonly #currentRoute = signal<ViewType>(VIEW_ENUM.FOCUS);
   readonly #payload = signal<unknown | null>(null);
   readonly #isSidePanel = signal<boolean>(window.location.search.includes('view=sidepanel'));
+  readonly #isOptions = signal<boolean>(window.location.search.includes('view=options'));
   readonly #previousRoute = signal<ViewType | null>(null);
 
   public readonly currentRoute = this.#currentRoute.asReadonly();
@@ -19,6 +22,7 @@ export class MiniRouterService {
   public readonly previousRoute = this.#previousRoute.asReadonly();
 
   public readonly isSidePanel = this.#isSidePanel.asReadonly();
+  public readonly isOptions = this.#isOptions.asReadonly();
 
   constructor() {
     this.#storageService.get<ViewType>(CHROME_STORAGE_KEY_ENUM.CURRENT_ROUTE, route => {
@@ -38,5 +42,33 @@ export class MiniRouterService {
     this.#previousRoute.set(this.#currentRoute());
     this.#payload.set(payload);
     this.#currentRoute.set(route);
+  }
+
+  public openSidePanel(): void {
+    if (this.#isChromeRuntime) {
+      chrome.windows.getCurrent(win => {
+        chrome.runtime.sendMessage({
+          command: CHROME_COMMAND_ENUM.OPEN_SIDE_PANEL_APP,
+          windowId: win.id,
+        });
+
+        if (!this.isOptions()) {
+          window.close();
+        }
+      });
+    }
+  }
+
+  public openSettings(): void {
+    if (this.#isChromeRuntime) {
+      chrome.windows.getCurrent(win => {
+        chrome.runtime.sendMessage({
+          command: CHROME_COMMAND_ENUM.OPEN_SETTINGS_APP,
+          windowId: win.id,
+        });
+
+        window.close();
+      });
+    }
   }
 }

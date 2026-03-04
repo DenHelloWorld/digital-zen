@@ -3,7 +3,6 @@ import { DzToastContainerComponent, ThemeSwitcherComponent } from '../modules/co
 import { ICONS } from '../modules/common/constants/icons.const';
 import { UI_TEXT } from '../modules/common/constants/ui-text.const';
 import { WEBSITE_PRIVACY_POLICY } from '../modules/common/constants/websites.const';
-import { CHROME_COMMAND_ENUM } from '../modules/common/enums/chrome-command.enum';
 import { COLOR_SCHEMA_ENUM, ColorSchemaType } from '../modules/common/enums/color-schema.enum';
 import { VIEW_ENUM, ViewType } from '../modules/common/enums/view.enum';
 import { MiniRouterService } from '../modules/common/services/mini-router.service';
@@ -51,8 +50,6 @@ import { ChangeDetectionStrategy, Component, HostBinding, inject, Signal } from 
   },
 })
 export class App {
-  /** @guideline DZ_08 - Private readonly field for runtime check */
-  readonly #isChromeRuntime: boolean = !!chrome.runtime;
   /** @guideline DZ_02, DZ_08, DZ_09 - Dependency injection with inject(), private #, readonly */
   readonly #themeService = inject(ThemeService);
   readonly #authService = inject(AuthService);
@@ -92,16 +89,7 @@ export class App {
   }
 
   public openSidePanel(): void {
-    if (this.#isChromeRuntime) {
-      chrome.windows.getCurrent(win => {
-        chrome.runtime.sendMessage({
-          command: CHROME_COMMAND_ENUM.OPEN_SIDE_PANEL_APP,
-          windowId: win.id,
-        });
-
-        window.close();
-      });
-    }
+    this.#router.openSidePanel();
   }
 
   protected async exportSettings(): Promise<void> {
@@ -127,5 +115,10 @@ export class App {
   @HostBinding('class.dz-app--side-panel')
   get sidePanelClass() {
     return this.#router.isSidePanel();
+  }
+
+  @HostBinding('class.dz-app--options')
+  get optionsClass() {
+    return this.#router.isOptions();
   }
 }
