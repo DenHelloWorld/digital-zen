@@ -2,6 +2,7 @@ import { BLOCK_BEHAVIOUR_ENUM } from '../../modules/common/enums/block-behaviour
 import { CHROME_COMMAND_ENUM } from '../../modules/common/enums/chrome-command.enum';
 import { isHttpUrl } from '../../modules/common/helpers/is-http-url.helper';
 import { buildRequestDomainVariants } from '../../modules/common/helpers/request-domain-variants.helper';
+import { StorageAdapter } from '../common/storage-adapter';
 
 export class BlockerService {
   readonly BLOCK_ALL_RULE_ID = 9999;
@@ -64,6 +65,32 @@ export class BlockerService {
     });
 
     this.#hideWarnInTabs();
+  }
+
+  public async checkAndApplyWarnToTab(tabId: number, url: string): Promise<void> {
+    const current = await StorageAdapter.getCurrentPeriod();
+
+    if (current?.isActive && current.blockBehaviour === BLOCK_BEHAVIOUR_ENUM.WARN) {
+      const allLibraryWebsites = Object.values(current.library).flat();
+      const domainList = allLibraryWebsites.filter(site => site.isActivated).map(site => site.url);
+      const expandedDomains = this.#buildReloadDomains(domainList);
+
+      if (expandedDomains.some(domain => url.includes(domain))) {
+        chrome.scripting.executeScript(
+          {
+            target: { tabId },
+            files: ['inject-loader.js'],
+          },
+          () => {
+            chrome.tabs
+              .sendMessage(tabId, { action: CHROME_COMMAND_ENUM.SHOW_BANNER })
+              .catch(() => {
+                /* empty */
+              });
+          }
+        );
+      }
+    }
   }
 
   #createAllowRule(domain: string, ruleId: number): chrome.declarativeNetRequest.Rule {
