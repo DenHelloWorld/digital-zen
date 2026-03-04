@@ -52,8 +52,15 @@
                     : isFolderOpen(folder)
                       ? icons.FOLDER_OPEN
                       : icons.FOLDER;
-                <div class="dz-icon-box dz-icon-box--md">
+                @let badge = categoryActiveCounts()[folder];
+                <div class="dz-icon-box dz-icon-box--md relative">
                   <ng-container *ngTemplateOutlet="icon; context: { href: folderIcon }" />
+
+                  @if (badge) {
+                    <div class="dz-badge" [title]="'Amount of active websites'">
+                      <span class="hint hint--activated shadow shadow--hoverless">{{ badge }}</span>
+                    </div>
+                  }
                 </div>
 
                 <div class="ellipsis">{{ folder }}</div>
@@ -93,11 +100,11 @@
               </button>
 
               <span class="no-wrap">
-                <small
-                  class="hint hint--xs hint--activated round"
-                  [class.hidden]="folder === presetFolderNames.DELETE"
-                  >({{ categoryActiveCounts()[folder] }})</small
-                >
+                <!--                <small-->
+                <!--                  class="hint hint&#45;&#45;xs hint&#45;&#45;activated round"-->
+                <!--                  [class.hidden]="folder === presetFolderNames.DELETE"-->
+                <!--                  >({{ categoryActiveCounts()[folder] }})</small-->
+                <!--                >-->
                 <small class="hint hint--xs"> ({{ sites.length }})</small>
               </span>
             </div>
@@ -335,9 +342,12 @@
 >
   <div class="dz-box shadow shadow--hoverless dz-popup-content dz-popup-content--new-folder">
     <header class="dz-popup-content__header">
-      <h1 class="hint hint--xs">
-        {{ uiText.WEBSITE_LIBRARY.DELETE_LINK_TITLE }} {{ deleteLink()?.url }}
-      </h1>
+      @let hint =
+        deleteLink()?.folder === presetFolderNames.DELETE
+          ? uiText.WEBSITE_LIBRARY.DELETE_LINK_TITLE
+          : uiText.WEBSITE_LIBRARY.MOVE_LINK_TO_WASTE_BASKET;
+
+      <h1 class="hint hint--xs">{{ hint }} {{ deleteLink()?.url }}</h1>
 
       <div class="dz-popup-content__header-actions">
         <button class="dz-button round dz-button--sm" (click)="onCloseDeleteLinkPopup()">

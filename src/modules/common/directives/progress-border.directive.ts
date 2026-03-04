@@ -13,12 +13,14 @@ export interface ProgressBorderConfig {
   color?: string;
   thickness?: number;
   trackColor?: string;
+  zIndex?: string;
 }
 
 const DEFAULT_PROGRESS_CONFIG: Required<ProgressBorderConfig> = {
   color: '',
   thickness: 4,
   trackColor: '',
+  zIndex: '-1',
 };
 
 @Directive({
@@ -70,6 +72,7 @@ export class ProgressBorderDirective implements OnInit, OnDestroy {
 
   #setupSvgStructure(): void {
     const el = this.#el.nativeElement;
+    const cfg = { ...DEFAULT_PROGRESS_CONFIG, ...this.progressConfig() };
     const rect = el.getBoundingClientRect();
     const { width: w, height: h } = rect;
     if (w === 0 || h === 0) {
@@ -91,7 +94,7 @@ export class ProgressBorderDirective implements OnInit, OnDestroy {
         height: '100%',
         pointerEvents: 'none',
         overflow: 'visible',
-        zIndex: '-1',
+        zIndex: cfg.zIndex,
       });
 
       this.#bgRect = this.#createRectElement();

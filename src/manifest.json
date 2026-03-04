@@ -23,7 +23,7 @@
   "host_permissions": ["<all_urls>"],
   "web_accessible_resources": [
     {
-      "resources": ["blocked-page.html", "blocked-timer.js", "banner.html", "inject-loader.js"],
+      "resources": ["index.html", "banner.html", "inject-loader.js"],
       "matches": ["<all_urls>"]
     }
   ],
@@ -37,6 +37,10 @@
     }
   },
   "side_panel": { "default_path": "index.html?view=sidepanel" },
+  "options_ui": {
+    "page": "index.html?view=options",
+    "open_in_tab": true
+  },
   "background": {
     "service_worker": "background.js",
     "type": "module"

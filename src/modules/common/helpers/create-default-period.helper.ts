@@ -12,7 +12,7 @@ export const createDefaultPeriodHelper = (): IFocus.Period => {
   return {
     timeLeftSec: null,
     id: DEFAULT_PERIOD_ID,
-    name: 'Social Media Block',
+    name: 'Warning for Social Media',
     description: null,
     startFrom: setTimeFromStr(now, ALL_DAY_TIME_RANGE.startFrom),
     endTo: setTimeFromStr(now, ALL_DAY_TIME_RANGE.endTo),

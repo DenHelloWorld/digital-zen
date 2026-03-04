@@ -1,9 +1,8 @@
-import { AuthService } from '../modules/auth';
 import { DzToastContainerComponent, ThemeSwitcherComponent } from '../modules/common/components';
 import { ICONS } from '../modules/common/constants/icons.const';
 import { UI_TEXT } from '../modules/common/constants/ui-text.const';
 import { WEBSITE_PRIVACY_POLICY } from '../modules/common/constants/websites.const';
-import { CHROME_COMMAND_ENUM } from '../modules/common/enums/chrome-command.enum';
+import { ProgressBorderDirective } from '../modules/common/directives/progress-border.directive';
 import { COLOR_SCHEMA_ENUM, ColorSchemaType } from '../modules/common/enums/color-schema.enum';
 import { VIEW_ENUM, ViewType } from '../modules/common/enums/view.enum';
 import { MiniRouterService } from '../modules/common/services/mini-router.service';
@@ -11,8 +10,10 @@ import { SettingsBackupService } from '../modules/common/services/settings-backu
 import { ThemeService } from '../modules/common/services/theme.service';
 import { PeriodFormComponent } from '../modules/focus/components/period-form/period-form.component';
 import { FocusComponent } from '../modules/focus/focus.component';
+import { FocusService } from '../modules/focus/services/focus.service';
 import { MenuComponent } from '../modules/menu/menu.component';
 import { PomodoroComponent } from '../modules/pomodoro/pomodoro.component';
+import { PomodoroService } from '../modules/pomodoro/services/pomodoro.service';
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, HostBinding, inject, Signal } from '@angular/core';
 
@@ -45,29 +46,29 @@ import { ChangeDetectionStrategy, Component, HostBinding, inject, Signal } from 
     DzToastContainerComponent,
     PeriodFormComponent,
     MenuComponent,
+    ProgressBorderDirective,
   ],
   host: {
     class: 'dz-app gradient-overlay',
   },
 })
 export class App {
-  /** @guideline DZ_08 - Private readonly field for runtime check */
-  readonly #isChromeRuntime: boolean = !!chrome.runtime;
   /** @guideline DZ_02, DZ_08, DZ_09 - Dependency injection with inject(), private #, readonly */
   readonly #themeService = inject(ThemeService);
-  readonly #authService = inject(AuthService);
+  // readonly #authService = inject(AuthService);
   readonly #router = inject(MiniRouterService);
   readonly #settingsBackupService = inject(SettingsBackupService);
+  readonly #pomodoroService = inject(PomodoroService);
+  readonly #focusService = inject(FocusService);
 
-  /** @guideline DZ_04 - Signal for reactive theme state */
+  protected readonly currentPeriodProgress: Signal<number> =
+    this.#focusService.currentPeriodProgress;
+  protected readonly pomodoroProgress = this.#pomodoroService.progress;
   protected readonly theme: Signal<ColorSchemaType> = this.#themeService.theme;
-  /** @guideline DZ_04 - Writable signal for view type state */
   protected readonly currentRoute = this.#router.currentRoute;
-  /** @guideline DZ_04 - Signal for reactive authentication state */
-  protected readonly isGoogleAuthenticated: Signal<boolean> =
-    this.#authService.isGoogleAuthenticated;
-  /** @guideline DZ_04 - Signal for reactive auth pending state */
-  protected readonly isGoogleAuthPending: Signal<boolean> = this.#authService.isGoogleAuthPending;
+  // protected readonly isGoogleAuthenticated: Signal<boolean> =
+  //   this.#authService.isGoogleAuthenticated;
+  // protected readonly isGoogleAuthPending: Signal<boolean> = this.#authService.isGoogleAuthPending;
   protected readonly isSidePanel = this.#router.isSidePanel;
   protected readonly isExportingBackup = this.#settingsBackupService.isExportingBackup;
   protected readonly isImportingBackup = this.#settingsBackupService.isImportingBackup;
@@ -83,25 +84,16 @@ export class App {
     this.#router.navigate(viewType);
   }
 
-  protected loginWithGoogle(): void {
-    this.#authService.loginWithGoogle();
-  }
-
-  protected logoutFromGoogle(): void {
-    this.#authService.logoutFromGoogle();
-  }
+  // protected loginWithGoogle(): void {
+  //   this.#authService.loginWithGoogle();
+  // }
+  //
+  // protected logoutFromGoogle(): void {
+  //   this.#authService.logoutFromGoogle();
+  // }
 
   public openSidePanel(): void {
-    if (this.#isChromeRuntime) {
-      chrome.windows.getCurrent(win => {
-        chrome.runtime.sendMessage({
-          command: CHROME_COMMAND_ENUM.OPEN_SIDE_PANEL_APP,
-          windowId: win.id,
-        });
-
-        window.close();
-      });
-    }
+    this.#router.openSidePanel();
   }
 
   protected async exportSettings(): Promise<void> {
@@ -127,5 +119,10 @@ export class App {
   @HostBinding('class.dz-app--side-panel')
   get sidePanelClass() {
     return this.#router.isSidePanel();
+  }
+
+  @HostBinding('class.dz-app--options')
+  get optionsClass() {
+    return this.#router.isOptions();
   }
 }

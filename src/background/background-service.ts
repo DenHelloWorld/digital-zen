@@ -10,6 +10,7 @@ import {
 } from '../modules/common/enums/chrome-command.enum';
 import { FOCUS_ERROR_ENUM } from '../modules/common/enums/focus-error.enum';
 import { createDefaultPomodoroStateHelper } from '../modules/common/helpers/create-default-pomodoro-state.helper';
+import { isHttpUrl } from '../modules/common/helpers/is-http-url.helper';
 import { logger } from '../modules/common/helpers/logger';
 import { isCurrentTimeAfter } from '../modules/common/helpers/time.helper';
 import { IFocus } from '../modules/common/models/focus.model';
@@ -245,9 +246,13 @@ export class BackgroundService {
       chrome.storage.local.set({ tab_id: activeInfo.tabId });
     });
 
-    chrome.tabs.onUpdated.addListener((_, changeInfo, tab) => {
+    chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
       if (changeInfo.status === 'complete' && tab.active && tab.url) {
         chrome.storage.local.set({ tab_url: tab.url });
+      }
+
+      if (changeInfo.status === 'complete' && tab.url && isHttpUrl(tab.url)) {
+        this.#focusService.checkAndApplyWarnToTab(tabId, tab.url);
       }
     });
 
@@ -450,10 +455,6 @@ export class BackgroundService {
   }
 
   private async initWebsitesLibrary(): Promise<void> {
-    /**
-     * Подготовка к менеджменту библиотекой сайтов
-     * TODO: добавить возможность создавать папки(тип сайта) и редактировать его. Удалять предустановленные папки и сайты нельзя(IWebSiteType)
-     * */
     const periods = await StorageAdapter.getPeriods();
     let changed = false;
 

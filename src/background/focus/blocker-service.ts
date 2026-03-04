@@ -2,6 +2,7 @@ import { BLOCK_BEHAVIOUR_ENUM } from '../../modules/common/enums/block-behaviour
 import { CHROME_COMMAND_ENUM } from '../../modules/common/enums/chrome-command.enum';
 import { isHttpUrl } from '../../modules/common/helpers/is-http-url.helper';
 import { buildRequestDomainVariants } from '../../modules/common/helpers/request-domain-variants.helper';
+import { StorageAdapter } from '../common/storage-adapter';
 
 export class BlockerService {
   readonly BLOCK_ALL_RULE_ID = 9999;
@@ -66,6 +67,32 @@ export class BlockerService {
     this.#hideWarnInTabs();
   }
 
+  public async checkAndApplyWarnToTab(tabId: number, url: string): Promise<void> {
+    const current = await StorageAdapter.getCurrentPeriod();
+
+    if (current?.isActive && current.blockBehaviour === BLOCK_BEHAVIOUR_ENUM.WARN) {
+      const allLibraryWebsites = Object.values(current.library).flat();
+      const domainList = allLibraryWebsites.filter(site => site.isActivated).map(site => site.url);
+      const expandedDomains = this.#buildReloadDomains(domainList);
+
+      if (expandedDomains.some(domain => url.includes(domain))) {
+        chrome.scripting.executeScript(
+          {
+            target: { tabId },
+            files: ['inject-loader.js'],
+          },
+          () => {
+            chrome.tabs
+              .sendMessage(tabId, { action: CHROME_COMMAND_ENUM.SHOW_BANNER })
+              .catch(() => {
+                /* empty */
+              });
+          }
+        );
+      }
+    }
+  }
+
   #createAllowRule(domain: string, ruleId: number): chrome.declarativeNetRequest.Rule {
     const requestDomains = buildRequestDomainVariants(domain);
     return {
@@ -74,7 +101,7 @@ export class BlockerService {
       action: { type: 'allow' },
       condition: {
         requestDomains,
-        resourceTypes: ['main_frame'],
+        resourceTypes: ['main_frame', 'sub_frame', 'xmlhttprequest', 'other'],
       },
     };
   }
@@ -85,11 +112,11 @@ export class BlockerService {
       priority: 1,
       action: {
         type: 'redirect',
-        redirect: { url: chrome.runtime.getURL('blocked-page.html') },
+        redirect: { url: chrome.runtime.getURL('index.html?view=options') },
       },
       condition: {
-        urlFilter: '*', // Блокировать всё
-        resourceTypes: ['main_frame'],
+        urlFilter: '*',
+        resourceTypes: ['main_frame', 'sub_frame', 'xmlhttprequest', 'other'],
       },
     };
   }
@@ -100,11 +127,11 @@ export class BlockerService {
       priority: 1,
       action: {
         type: 'redirect',
-        redirect: { url: chrome.runtime.getURL('blocked-page.html') },
+        redirect: { url: chrome.runtime.getURL('index.html?view=options') },
       },
       condition: {
         requestDomains: buildRequestDomainVariants(domain),
-        resourceTypes: ['main_frame'],
+        resourceTypes: ['main_frame', 'sub_frame', 'xmlhttprequest', 'other'],
       },
     };
   }
@@ -115,7 +142,7 @@ export class BlockerService {
       if (tab.id && isHttpUrl(tab.url)) {
         const isBlocked = domainList.some(domain => tab.url?.includes(domain));
         if (isBlocked) {
-          chrome.tabs.reload(tab.id);
+          chrome.tabs.reload(tab.id, { bypassCache: true });
         }
       }
     }
@@ -150,7 +177,7 @@ export class BlockerService {
           ) || whitelistVariants.some(domain => tab.url?.includes(domain));
 
         if (!isAllowed) {
-          chrome.tabs.reload(tab.id);
+          chrome.tabs.reload(tab.id, { bypassCache: true });
         }
       }
     }

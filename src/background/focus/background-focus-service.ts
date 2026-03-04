@@ -101,4 +101,8 @@ export class BackgroundFocusService {
     if (current.isActive) return this.stopFocus();
     return this.startFocus(current);
   }
+
+  public checkAndApplyWarnToTab(tabId: number, url: string): void {
+    this.#blocker.checkAndApplyWarnToTab(tabId, url);
+  }
 }

@@ -8,9 +8,12 @@
   <nav class="dz-header__navigation full">
     <button
       class="dz-button dz-button--nm"
+      [progress]="currentPeriodProgress()"
+      [progressConfig]="{ thickness: 3, zIndex: '0' }"
       [title]="uiText.HEADER.FOCUS_TITLE"
       [class.dz-button--activated]="currentRoute() === views.FOCUS"
       (click)="setViewType(views.FOCUS)"
+      dzProgressBorder
     >
       <ng-container *ngTemplateOutlet="icon; context: { href: icons.PERSON_ZEN }" />
     </button>
@@ -26,9 +29,12 @@
 
     <button
       class="dz-button dz-button--nm"
+      [progress]="pomodoroProgress()"
+      [progressConfig]="{ thickness: 3, zIndex: '0' }"
       [title]="uiText.HEADER.POMODORO_MENU_TITLE"
       [class.dz-button--activated]="currentRoute() === views.POMODORO"
       (click)="setViewType(views.POMODORO)"
+      dzProgressBorder
     >
       <ng-container *ngTemplateOutlet="icon; context: { href: icons.TOMATO }" />
     </button>

@@ -28,10 +28,18 @@
     warnBanner.innerHTML = html;
     document.body.appendChild(warnBanner);
 
-    // Обработка кнопки закрытия
     const closeBtn = warnBanner.querySelector('#dz-close-btn');
+    const sidePanelBtn = warnBanner.querySelector('#dz-side-btn');
     if (closeBtn) {
       closeBtn.onclick = () => (warnBanner.style.display = 'none');
+    }
+
+    if (sidePanelBtn) {
+      sidePanelBtn.onclick = () => {
+        chrome.runtime.sendMessage({
+          command: 'openSidePanel',
+        });
+      };
     }
   } catch (err) {
     console.error('Failed to load Digital Zen banner:', err);

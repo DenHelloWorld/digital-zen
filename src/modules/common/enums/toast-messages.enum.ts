@@ -1,6 +1,7 @@
 export enum TOAST_MESSAGES_ENUM {
   ADDED = 'Added.',
   ALREADY_ADDED = 'Already added.',
+  ALREADY_IN_LIBRARY = 'Already in library.',
   FOCUS_ACTIVE = 'Focus active.',
   NO_SITES_BLOCKED = 'No websites are in your block list.',
   PERIOD_NOT_SCHEDULED_TODAY = 'This period is not scheduled for today.',

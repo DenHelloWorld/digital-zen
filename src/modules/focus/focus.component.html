@@ -19,7 +19,7 @@
       [title]="
         activeTab() ? uiText.FOCUS.ADD_CURRENT_TAB_TITLE : uiText.FOCUS.CANNOT_ADD_CURRENT_TAB_TITLE
       "
-      (click)="onAddCurrentTab()"
+      (click)="onOpenFoldersPopup()"
     >
       @if (isSvgIcon(activeTab()?.favIconUrl)) {
         <ng-container
@@ -59,11 +59,27 @@
         {{ activeTab()?.title ?? uiText.FOCUS.CANNOT_ADD_CURRENT_TAB_TITLE }}</span
       >
 
+      @let isInSystem = isCurrentTabInSystem();
+      @let isActivated = isCurrentTabActivated();
+
       @let tabIcon =
-        !isTabButtonDisabled() ? (isCurrentTabInSystem() ? icons.SUCCESS : icons.ADD_LINK) : null;
+        !isTabButtonDisabled()
+          ? isInSystem
+            ? isActivated
+              ? icons.SUCCESS
+              : icons.GLOBE_BOOK
+            : icons.ADD_LINK
+          : null;
+      @let statusTitle =
+        !isInSystem
+          ? uiText.FOCUS.ADD_CURRENT_TAB_TITLE
+          : isActivated
+            ? 'Website is active in your library'
+            : 'Website is in library but currently disabled';
       <div
         class="dz-icon-box dz-icon-box--sm"
-        [class.dz-icon-box--success]="isCurrentTabInSystem()"
+        [title]="statusTitle"
+        [class.dz-icon-box--success]="isActivated || isInSystem"
       >
         <ng-container
           *ngTemplateOutlet="
@@ -198,7 +214,43 @@
   </button>
 </div>
 
+<!-- Websites Popup-->
 <dz-websites-library-popup
   [(isWebsitesPopupShown)]="isWebsitesPopupShown"
   [(period)]="popupPeriodData"
 />
+
+<!-- Folders Popup-->
+<ng-template
+  [dzPopup]="isFoldersPopupShown()"
+  [hasBackdrop]="false"
+  (closed)="onCloseFoldersPopup()"
+>
+  <div class="dz-box shadow shadow--hoverless dz-popup-content">
+    <header class="dz-popup-content__header">
+      <h1 class="hint hint--xs">Select a folder to add</h1>
+      <button class="dz-button round dz-button--sm" (click)="onCloseFoldersPopup()">
+        <ng-container *ngTemplateOutlet="icon; context: { href: icons.CLOSE }" />
+      </button>
+    </header>
+
+    <main class="dz-popup-content__main">
+      <ul class="dz-list">
+        @for (targetFolder of currentPeriodFoldersToAdd(); track targetFolder) {
+          <li>
+            <button
+              class="dz-button dz-button--ghost full shadow--hoverless"
+              (click)="onAddCurrentTab(targetFolder)"
+              style="justify-content: flex-start; width: 100%"
+            >
+              <div class="dz-icon-box dz-icon-box--sm">
+                <ng-container *ngTemplateOutlet="icon; context: { href: icons.FOLDER }" />
+              </div>
+              <span>{{ targetFolder }}</span>
+            </button>
+          </li>
+        }
+      </ul>
+    </main>
+  </div>
+</ng-template>
