@@ -101,7 +101,7 @@ export class BlockerService {
       action: { type: 'allow' },
       condition: {
         requestDomains,
-        resourceTypes: ['main_frame'],
+        resourceTypes: ['main_frame', 'sub_frame', 'xmlhttprequest', 'other'],
       },
     };
   }
@@ -116,7 +116,7 @@ export class BlockerService {
       },
       condition: {
         urlFilter: '*',
-        resourceTypes: ['main_frame'],
+        resourceTypes: ['main_frame', 'sub_frame', 'xmlhttprequest', 'other'],
       },
     };
   }
@@ -131,7 +131,7 @@ export class BlockerService {
       },
       condition: {
         requestDomains: buildRequestDomainVariants(domain),
-        resourceTypes: ['main_frame'],
+        resourceTypes: ['main_frame', 'sub_frame', 'xmlhttprequest', 'other'],
       },
     };
   }
@@ -142,7 +142,7 @@ export class BlockerService {
       if (tab.id && isHttpUrl(tab.url)) {
         const isBlocked = domainList.some(domain => tab.url?.includes(domain));
         if (isBlocked) {
-          chrome.tabs.reload(tab.id);
+          chrome.tabs.reload(tab.id, { bypassCache: true });
         }
       }
     }
@@ -177,7 +177,7 @@ export class BlockerService {
           ) || whitelistVariants.some(domain => tab.url?.includes(domain));
 
         if (!isAllowed) {
-          chrome.tabs.reload(tab.id);
+          chrome.tabs.reload(tab.id, { bypassCache: true });
         }
       }
     }
