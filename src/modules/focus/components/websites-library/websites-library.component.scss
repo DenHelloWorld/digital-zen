@@ -13,6 +13,10 @@
     }
 
     .dz-tree {
+      &--root {
+        padding: var(--spacing-sm) 0 0 0;
+      }
+
       &__item {
         position: relative;
         display: flex;

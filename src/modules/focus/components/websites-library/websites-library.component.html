@@ -52,8 +52,15 @@
                     : isFolderOpen(folder)
                       ? icons.FOLDER_OPEN
                       : icons.FOLDER;
-                <div class="dz-icon-box dz-icon-box--md">
+                @let badge = categoryActiveCounts()[folder];
+                <div class="dz-icon-box dz-icon-box--md relative">
                   <ng-container *ngTemplateOutlet="icon; context: { href: folderIcon }" />
+
+                  @if (badge) {
+                    <div class="dz-badge" [title]="'Amount of active websites'">
+                      <span class="hint hint--activated shadow shadow--hoverless">{{ badge }}</span>
+                    </div>
+                  }
                 </div>
 
                 <div class="ellipsis">{{ folder }}</div>
@@ -93,11 +100,11 @@
               </button>
 
               <span class="no-wrap">
-                <small
-                  class="hint hint--xs hint--activated round"
-                  [class.hidden]="folder === presetFolderNames.DELETE"
-                  >({{ categoryActiveCounts()[folder] }})</small
-                >
+                <!--                <small-->
+                <!--                  class="hint hint&#45;&#45;xs hint&#45;&#45;activated round"-->
+                <!--                  [class.hidden]="folder === presetFolderNames.DELETE"-->
+                <!--                  >({{ categoryActiveCounts()[folder] }})</small-->
+                <!--                >-->
                 <small class="hint hint--xs"> ({{ sites.length }})</small>
               </span>
             </div>

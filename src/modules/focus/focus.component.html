@@ -59,11 +59,27 @@
         {{ activeTab()?.title ?? uiText.FOCUS.CANNOT_ADD_CURRENT_TAB_TITLE }}</span
       >
 
+      @let isInSystem = isCurrentTabInSystem();
+      @let isActivated = isCurrentTabActivated();
+
       @let tabIcon =
-        !isTabButtonDisabled() ? (isCurrentTabInSystem() ? icons.SUCCESS : icons.ADD_LINK) : null;
+        !isTabButtonDisabled()
+          ? isInSystem
+            ? isActivated
+              ? icons.SUCCESS
+              : icons.GLOBE_BOOK
+            : icons.ADD_LINK
+          : null;
+      @let statusTitle =
+        !isInSystem
+          ? uiText.FOCUS.ADD_CURRENT_TAB_TITLE
+          : isActivated
+            ? 'Website is active in your library'
+            : 'Website is in library but currently disabled';
       <div
         class="dz-icon-box dz-icon-box--sm"
-        [class.dz-icon-box--success]="isCurrentTabInSystem()"
+        [title]="statusTitle"
+        [class.dz-icon-box--success]="isActivated || isInSystem"
       >
         <ng-container
           *ngTemplateOutlet="

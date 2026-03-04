@@ -93,6 +93,21 @@ export class FocusComponent implements OnInit {
     );
   });
 
+  protected readonly isCurrentTabActivated = computed(() => {
+    const tab = this.activeTab();
+    const library = this.currentPeriod()?.library;
+
+    if (!tab?.url || !library) return false;
+
+    const cleanedUrl = cleanUrlHelper(tab.url);
+
+    const foundSite = Object.values(library)
+      .flat()
+      .find(site => cleanUrlHelper(site.url) === cleanedUrl);
+
+    return foundSite?.isActivated ?? false;
+  });
+
   protected readonly popupPeriodData = signal<IFocus.Period>(this.currentPeriod());
   protected readonly isWebsitesPopupShown = signal<boolean>(false);
   protected readonly isFoldersPopupShown = signal<boolean>(false);

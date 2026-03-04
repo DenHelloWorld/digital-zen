@@ -208,7 +208,7 @@ export const WEBSITE_CHATGPT: Readonly<IFocus.WebSite> = {
   imageUrl: FaviconHelper.getGoogleUrl('https://chatgpt.com'),
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.AI,
-  isActivated: true,
+  isActivated: false,
   permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
@@ -220,7 +220,7 @@ export const WEBSITE_CLAUDE: Readonly<IFocus.WebSite> = {
   imageUrl: FaviconHelper.getGoogleUrl('https://claude.ai'),
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.AI,
-  isActivated: true,
+  isActivated: false,
   permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
@@ -232,7 +232,7 @@ export const WEBSITE_GEMINI: Readonly<IFocus.WebSite> = {
   imageUrl: FaviconHelper.getGoogleUrl('https://gemini.google.com'),
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.AI,
-  isActivated: true,
+  isActivated: false,
   permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
@@ -244,7 +244,7 @@ export const WEBSITE_BING_CHAT: Readonly<IFocus.WebSite> = {
   imageUrl: FaviconHelper.getGoogleUrl('https://copilot.microsoft.com/'),
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.AI,
-  isActivated: true,
+  isActivated: false,
   permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
@@ -256,7 +256,7 @@ export const WEBSITE_GROK: Readonly<IFocus.WebSite> = {
   imageUrl: FaviconHelper.getGoogleUrl('https://x.ai'),
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.AI,
-  isActivated: true,
+  isActivated: false,
   permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
@@ -268,7 +268,7 @@ export const WEBSITE_PERPLEXITY: Readonly<IFocus.WebSite> = {
   imageUrl: FaviconHelper.getGoogleUrl('https://perplexity.ai'),
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.AI,
-  isActivated: true,
+  isActivated: false,
   permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
@@ -280,7 +280,7 @@ export const WEBSITE_GITHUB_COPILOT: Readonly<IFocus.WebSite> = {
   imageUrl: FaviconHelper.getGoogleUrl('https://github.com'),
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.AI,
-  isActivated: true,
+  isActivated: false,
   permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
@@ -292,7 +292,7 @@ export const WEBSITE_MIDJOURNEY: Readonly<IFocus.WebSite> = {
   imageUrl: FaviconHelper.getGoogleUrl('https://midjourney.com'),
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.AI,
-  isActivated: true,
+  isActivated: false,
   permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
@@ -304,7 +304,7 @@ export const WEBSITE_POE: Readonly<IFocus.WebSite> = {
   imageUrl: FaviconHelper.getGoogleUrl('https://poe.com'),
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.AI,
-  isActivated: true,
+  isActivated: false,
   permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
@@ -316,7 +316,7 @@ export const WEBSITE_NETFLIX: Readonly<IFocus.WebSite> = {
   imageUrl: FaviconHelper.getGoogleUrl('https://netflix.com'),
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.ENTERTAINMENT,
-  isActivated: true,
+  isActivated: false,
   permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
@@ -328,7 +328,7 @@ export const WEBSITE_SPOTIFY: Readonly<IFocus.WebSite> = {
   imageUrl: FaviconHelper.getGoogleUrl('https://open.spotify.com/'),
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.ENTERTAINMENT,
-  isActivated: true,
+  isActivated: false,
   permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
@@ -340,7 +340,7 @@ export const WEBSITE_DISNEY_PLUS: Readonly<IFocus.WebSite> = {
   imageUrl: FaviconHelper.getGoogleUrl('https://disneyplus.com'),
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.ENTERTAINMENT,
-  isActivated: true,
+  isActivated: false,
   permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
@@ -352,7 +352,7 @@ export const WEBSITE_PRIME_VIDEO: Readonly<IFocus.WebSite> = {
   imageUrl: FaviconHelper.getGoogleUrl('https://primevideo.com'),
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.ENTERTAINMENT,
-  isActivated: true,
+  isActivated: false,
   permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
@@ -364,7 +364,7 @@ export const WEBSITE_HBO_MAX: Readonly<IFocus.WebSite> = {
   imageUrl: FaviconHelper.getGoogleUrl('https://hbomax.com'),
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.ENTERTAINMENT,
-  isActivated: true,
+  isActivated: false,
   permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
@@ -376,7 +376,7 @@ export const WEBSITE_PARAMOUNT_PLUS: Readonly<IFocus.WebSite> = {
   imageUrl: FaviconHelper.getGoogleUrl('https://paramountplus.com'),
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.ENTERTAINMENT,
-  isActivated: true,
+  isActivated: false,
   permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
@@ -388,7 +388,7 @@ export const WEBSITE_STEAM: Readonly<IFocus.WebSite> = {
   imageUrl: FaviconHelper.getGoogleUrl('https://store.steampowered.com'),
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.ENTERTAINMENT,
-  isActivated: true,
+  isActivated: false,
   permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
@@ -400,7 +400,7 @@ export const WEBSITE_9GAG: Readonly<IFocus.WebSite> = {
   imageUrl: FaviconHelper.getGoogleUrl('https://9gag.com'),
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.ENTERTAINMENT,
-  isActivated: true,
+  isActivated: false,
   permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
@@ -412,7 +412,7 @@ export const WEBSITE_AMAZON: Readonly<IFocus.WebSite> = {
   imageUrl: FaviconHelper.getGoogleUrl('https://amazon.com'),
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.SHOPPING,
-  isActivated: true,
+  isActivated: false,
   permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
@@ -424,7 +424,7 @@ export const WEBSITE_ALIEXPRESS: Readonly<IFocus.WebSite> = {
   imageUrl: FaviconHelper.getGoogleUrl('https://aliexpress.com'),
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.SHOPPING,
-  isActivated: true,
+  isActivated: false,
   permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
@@ -436,7 +436,7 @@ export const WEBSITE_EBAY: Readonly<IFocus.WebSite> = {
   imageUrl: FaviconHelper.getGoogleUrl('https://ebay.com'),
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.SHOPPING,
-  isActivated: true,
+  isActivated: false,
   permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
@@ -448,7 +448,7 @@ export const WEBSITE_MEDIUM: Readonly<IFocus.WebSite> = {
   imageUrl: FaviconHelper.getGoogleUrl('https://medium.com'),
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.NEWS,
-  isActivated: true,
+  isActivated: false,
   permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
@@ -460,7 +460,7 @@ export const WEBSITE_QUORA: Readonly<IFocus.WebSite> = {
   imageUrl: FaviconHelper.getGoogleUrl('https://quora.com'),
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.NEWS,
-  isActivated: true,
+  isActivated: false,
   permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
@@ -472,7 +472,7 @@ export const WEBSITE_WIKIPEDIA: Readonly<IFocus.WebSite> = {
   imageUrl: FaviconHelper.getGoogleUrl('https://wikipedia.org'),
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.NEWS,
-  isActivated: true,
+  isActivated: false,
   permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
@@ -484,7 +484,7 @@ export const WEBSITE_BBC: Readonly<IFocus.WebSite> = {
   imageUrl: FaviconHelper.getGoogleUrl('https://bbc.com'),
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.NEWS,
-  isActivated: true,
+  isActivated: false,
   permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
@@ -496,7 +496,7 @@ export const WEBSITE_CNN: Readonly<IFocus.WebSite> = {
   imageUrl: FaviconHelper.getGoogleUrl('https://edition.cnn.com/'),
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.NEWS,
-  isActivated: true,
+  isActivated: false,
   permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
@@ -508,7 +508,7 @@ export const WEBSITE_REUTERS: Readonly<IFocus.WebSite> = {
   imageUrl: FaviconHelper.getGoogleUrl('https://reuters.com'),
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.NEWS,
-  isActivated: true,
+  isActivated: false,
   permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
@@ -520,7 +520,7 @@ export const WEBSITE_COURSERA: Readonly<IFocus.WebSite> = {
   imageUrl: FaviconHelper.getGoogleUrl('https://coursera.org'),
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.EDUCATION,
-  isActivated: true,
+  isActivated: false,
   permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
@@ -532,7 +532,7 @@ export const WEBSITE_UDEMY: Readonly<IFocus.WebSite> = {
   imageUrl: FaviconHelper.getGoogleUrl('https://udemy.com'),
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.EDUCATION,
-  isActivated: true,
+  isActivated: false,
   permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
@@ -544,7 +544,7 @@ export const WEBSITE_KHAN_ACADEMY: Readonly<IFocus.WebSite> = {
   imageUrl: FaviconHelper.getGoogleUrl('https://khanacademy.org'),
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.EDUCATION,
-  isActivated: true,
+  isActivated: false,
   permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
@@ -556,7 +556,7 @@ export const WEBSITE_STACK_OVERFLOW: Readonly<IFocus.WebSite> = {
   imageUrl: FaviconHelper.getGoogleUrl('https://stackoverflow.com'),
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.WORK_DEVELOPMENT,
-  isActivated: true,
+  isActivated: false,
   permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
@@ -568,7 +568,7 @@ export const WEBSITE_HACKER_NEWS: Readonly<IFocus.WebSite> = {
   imageUrl: FaviconHelper.getGoogleUrl('https://ycombinator.com'),
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.WORK_DEVELOPMENT,
-  isActivated: true,
+  isActivated: false,
   permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
@@ -580,7 +580,7 @@ export const WEBSITE_HABR: Readonly<IFocus.WebSite> = {
   imageUrl: FaviconHelper.getGoogleUrl('https://habr.com'),
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.WORK_DEVELOPMENT,
-  isActivated: true,
+  isActivated: false,
   permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
@@ -592,7 +592,7 @@ export const WEBSITE_NOTION: Readonly<IFocus.WebSite> = {
   imageUrl: FaviconHelper.getGoogleUrl('https://notion.com'),
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.WORK_DEVELOPMENT,
-  isActivated: true,
+  isActivated: false,
   permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
@@ -604,7 +604,7 @@ export const WEBSITE_MIRO: Readonly<IFocus.WebSite> = {
   imageUrl: FaviconHelper.getGoogleUrl('https://miro.com'),
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.WORK_DEVELOPMENT,
-  isActivated: true,
+  isActivated: false,
   permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
@@ -617,7 +617,7 @@ export const WEBSITE_GMAIL: Readonly<IFocus.WebSite> = {
   imageUrl: FaviconHelper.getGoogleUrl('https://mail.google.com'),
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.COMMUNICATION,
-  isActivated: true,
+  isActivated: false,
   permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
@@ -629,7 +629,7 @@ export const WEBSITE_OUTLOOK: Readonly<IFocus.WebSite> = {
   imageUrl: FaviconHelper.getGoogleUrl('https://outlook.live.com'),
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.COMMUNICATION,
-  isActivated: true,
+  isActivated: false,
   permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
@@ -641,7 +641,7 @@ export const WEBSITE_SLACK: Readonly<IFocus.WebSite> = {
   imageUrl: FaviconHelper.getGoogleUrl('https://slack.com'),
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.COMMUNICATION,
-  isActivated: true,
+  isActivated: false,
   permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
@@ -653,7 +653,7 @@ export const WEBSITE_TELEGRAM: Readonly<IFocus.WebSite> = {
   imageUrl: FaviconHelper.getGoogleUrl('https://telegram.org'),
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.COMMUNICATION,
-  isActivated: true,
+  isActivated: false,
   permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
@@ -666,7 +666,7 @@ export const WEBSITE_BINANCE: Readonly<IFocus.WebSite> = {
   imageUrl: FaviconHelper.getGoogleUrl('https://binance.com'),
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.FINANCE_CRYPTO,
-  isActivated: true,
+  isActivated: false,
   permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
@@ -678,7 +678,7 @@ export const WEBSITE_TRADINGVIEW: Readonly<IFocus.WebSite> = {
   imageUrl: FaviconHelper.getGoogleUrl('https://tradingview.com'),
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.FINANCE_CRYPTO,
-  isActivated: true,
+  isActivated: false,
   permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
@@ -690,7 +690,7 @@ export const WEBSITE_COINMARKETCAP: Readonly<IFocus.WebSite> = {
   imageUrl: FaviconHelper.getGoogleUrl('https://coinmarketcap.com'),
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.FINANCE_CRYPTO,
-  isActivated: true,
+  isActivated: false,
   permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
@@ -703,7 +703,7 @@ export const WEBSITE_MYFITNESSPAL: Readonly<IFocus.WebSite> = {
   imageUrl: FaviconHelper.getGoogleUrl('https://myfitnesspal.com'),
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.HEALTH_FITNESS,
-  isActivated: true,
+  isActivated: false,
   permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
@@ -715,7 +715,7 @@ export const WEBSITE_STRAVA: Readonly<IFocus.WebSite> = {
   imageUrl: FaviconHelper.getGoogleUrl('https://strava.com'),
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.HEALTH_FITNESS,
-  isActivated: true,
+  isActivated: false,
   permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
@@ -728,7 +728,7 @@ export const WEBSITE_PORNHUB: Readonly<IFocus.WebSite> = {
   imageUrl: FaviconHelper.getGoogleUrl('https://pornhub.com'),
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.ADULT,
-  isActivated: true,
+  isActivated: false,
   permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
@@ -740,7 +740,7 @@ export const WEBSITE_XNXX: Readonly<IFocus.WebSite> = {
   imageUrl: FaviconHelper.getGoogleUrl('https://xnxx.com'),
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.ADULT,
-  isActivated: true,
+  isActivated: false,
   permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
@@ -752,7 +752,7 @@ export const WEBSITE_DUOLINGO: Readonly<IFocus.WebSite> = {
   imageUrl: FaviconHelper.getGoogleUrl('https://duolingo.com'),
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.EDUCATION,
-  isActivated: true,
+  isActivated: false,
   permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
@@ -764,7 +764,7 @@ export const WEBSITE_EDX: Readonly<IFocus.WebSite> = {
   imageUrl: FaviconHelper.getGoogleUrl('https://edx.org'),
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.EDUCATION,
-  isActivated: true,
+  isActivated: false,
   permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
@@ -776,7 +776,7 @@ export const WEBSITE_ETSY: Readonly<IFocus.WebSite> = {
   imageUrl: FaviconHelper.getGoogleUrl('https://etsy.com'),
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.SHOPPING,
-  isActivated: true,
+  isActivated: false,
   permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
@@ -788,7 +788,7 @@ export const WEBSITE_TEMU: Readonly<IFocus.WebSite> = {
   imageUrl: FaviconHelper.getGoogleUrl('https://temu.com'),
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.SHOPPING,
-  isActivated: true,
+  isActivated: false,
   permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
@@ -800,7 +800,7 @@ export const WEBSITE_XVIDEOS: Readonly<IFocus.WebSite> = {
   imageUrl: FaviconHelper.getGoogleUrl('https://xvideos.com'),
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.ADULT,
-  isActivated: true,
+  isActivated: false,
   permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
@@ -812,7 +812,7 @@ export const WEBSITE_XHAMSTER: Readonly<IFocus.WebSite> = {
   imageUrl: FaviconHelper.getGoogleUrl('https://xhamster.com'),
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.ADULT,
-  isActivated: true,
+  isActivated: false,
   permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
@@ -824,7 +824,7 @@ export const WEBSITE_CHATURBATE: Readonly<IFocus.WebSite> = {
   imageUrl: FaviconHelper.getGoogleUrl('https://chaturbate.com'),
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.ADULT,
-  isActivated: true,
+  isActivated: false,
   permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
@@ -836,7 +836,7 @@ export const WEBSITE_FITBIT: Readonly<IFocus.WebSite> = {
   imageUrl: FaviconHelper.getGoogleUrl('https://fitbit.com'),
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.HEALTH_FITNESS,
-  isActivated: true,
+  isActivated: false,
   permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
@@ -848,7 +848,7 @@ export const WEBSITE_NIKE_TRAINING: Readonly<IFocus.WebSite> = {
   imageUrl: FaviconHelper.getGoogleUrl('https://nike.com'),
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.HEALTH_FITNESS,
-  isActivated: true,
+  isActivated: false,
   permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
@@ -860,7 +860,7 @@ export const WEBSITE_HEALTHLINE: Readonly<IFocus.WebSite> = {
   imageUrl: FaviconHelper.getGoogleUrl('https://healthline.com'),
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.HEALTH_FITNESS,
-  isActivated: true,
+  isActivated: false,
   permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
@@ -872,7 +872,7 @@ export const WEBSITE_COINBASE: Readonly<IFocus.WebSite> = {
   imageUrl: FaviconHelper.getGoogleUrl('https://coinbase.com'),
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.FINANCE_CRYPTO,
-  isActivated: true,
+  isActivated: false,
   permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
@@ -884,7 +884,7 @@ export const WEBSITE_YAHOO_FINANCE: Readonly<IFocus.WebSite> = {
   imageUrl: FaviconHelper.getGoogleUrl('https://finance.yahoo.com'),
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.FINANCE_CRYPTO,
-  isActivated: true,
+  isActivated: false,
   permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
@@ -896,7 +896,7 @@ export const WEBSITE_WHATSAPP: Readonly<IFocus.WebSite> = {
   imageUrl: FaviconHelper.getGoogleUrl('https://whatsapp.com'),
   iconUrl: ICONS.GLOBE,
   type: IFocus.EWebSiteType.COMMUNICATION,
-  isActivated: true,
+  isActivated: false,
   permissionLvl: PERMISSION_LVL_ENUM.READ_ONLY,
 };
 
