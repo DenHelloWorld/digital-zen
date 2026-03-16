@@ -202,5 +202,12 @@ export const UI_TEXT = Object.freeze({
       POMODORO: 'Pomodoro',
       FINISH: 'Finish',
     },
+    NOTIFICATIONS: {
+      TITLE: 'Digital Zen',
+      WORK_END: 'The break is over. Time to focus!',
+      SHORT_BREAK_START: "It's time for a short break. Take a moment to relax.",
+      LONG_BREAK_START: "You've earned a long break!",
+      ALL_CYCLES_COMPLETE: 'All cycles are complete! Great job.',
+    },
   },
 });

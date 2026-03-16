@@ -11,7 +11,8 @@
     "activeTab",
     "identity",
     "scripting",
-    "sidePanel"
+    "sidePanel",
+    "notifications"
   ],
   "oauth2": {
     "client_id": "__OAUTH_CLIENT_ID__",

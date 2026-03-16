@@ -1,9 +1,11 @@
 import { FINISHED_CYCLE } from '../../modules/common/constants/finished-cycle.const';
+import { UI_TEXT } from '../../modules/common/constants/ui-text.const';
 import { CHROME_ALARM_ENUM } from '../../modules/common/enums/chrome-alarm-name.enum';
 import { logger } from '../../modules/common/helpers/logger';
 import { IPomodoro } from '../../modules/common/models/pomodoro.model';
 import { AlarmAdapter } from '../common/alarm-adapter';
 import { ExtensionIconAdapter } from '../common/extension-icon-adapter';
+import { NotificationAdapter } from '../common/notification-adapter';
 import { StorageAdapter } from '../common/storage-adapter';
 
 const SECONDS_IN_MINUTE = 60;
@@ -241,10 +243,18 @@ export class BackgroundPomodoroService {
    */
   async #switchPhase(state: IPomodoro.State, settings: IPomodoro.Settings): Promise<void> {
     if (state.phase === IPomodoro.EPomodoroPhase.LONG_BREAK) {
+      NotificationAdapter.show(
+        'pomodoro-end',
+        UI_TEXT.POMODORO.NOTIFICATIONS.TITLE,
+        UI_TEXT.POMODORO.NOTIFICATIONS.ALL_CYCLES_COMPLETE
+      );
+
       return await this.stop();
     }
 
     this.#updateStateToNextPhase(state, settings);
+
+    this.#sendPhaseNotification(state.phase);
 
     await StorageAdapter.savePomodoroState(state);
 
@@ -294,5 +304,21 @@ export class BackgroundPomodoroService {
     AlarmAdapter.create(CHROME_ALARM_ENUM.POMODORO_TICK, {
       when: Date.now() + state.timeLeftSec * 1000,
     });
+  }
+
+  #sendPhaseNotification(phase: IPomodoro.EPomodoroPhase): void {
+    const { NOTIFICATIONS } = UI_TEXT.POMODORO;
+    const title = NOTIFICATIONS.TITLE;
+    let message = '';
+
+    if (phase === IPomodoro.EPomodoroPhase.WORK) {
+      message = NOTIFICATIONS.WORK_END;
+    } else if (phase === IPomodoro.EPomodoroPhase.SHORT_BREAK) {
+      message = NOTIFICATIONS.SHORT_BREAK_START;
+    } else if (phase === IPomodoro.EPomodoroPhase.LONG_BREAK) {
+      message = NOTIFICATIONS.LONG_BREAK_START;
+    }
+
+    NotificationAdapter.show('pomodoro-phase-switch', title, message);
   }
 }
