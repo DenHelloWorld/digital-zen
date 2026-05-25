@@ -66,7 +66,6 @@ Websites are organised into pre-defined folders:
 | Mail & Chat 📩      | Gmail, Outlook, Slack, Telegram                                                 |
 | Finance & Crypto 💸 | Binance, TradingView, CoinMarketCap                                             |
 | Health & Fitness 🍎 | MyFitnessPal, Strava, Fitbit                                                    |
-| Adult 18+ 🔞        | Pornhub, XNXX, XVideos, xHamster, Chaturbate                                    |
 | Default 🌐          | Generic catch-all                                                               |
 
 #### Folder Management

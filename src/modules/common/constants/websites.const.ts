@@ -1042,7 +1042,6 @@ export const WEBSITES_LIBRARY_PRESET: Record<string, readonly IFocus.WebSite[]> 
   [IFocus.EWebSiteType.ENTERTAINMENT]: WEBSITES_ENTERTAINMENT,
   [IFocus.EWebSiteType.SHOPPING]: WEBSITES_SHOPPING,
   [IFocus.EWebSiteType.NEWS]: WEBSITES_NEWS,
-  [IFocus.EWebSiteType.ADULT]: WEBSITES_ADULT,
   [IFocus.EWebSiteType.UNBLOCKABLE]: WEBSITES_UNBLOCKABLE,
   [IFocus.EWebSiteType.DELETE]: [],
 });
